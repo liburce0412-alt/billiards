@@ -1,5 +1,6 @@
 import { id } from "../utils/dom"
 import { LOBBY_URL } from "../network/client/constants"
+import { localizeText } from "../utils/locale"
 
 export interface NotificationHighBreak {
   score: number
@@ -70,7 +71,7 @@ export class Notification {
     return `
       <div class="notification-banner">
         <div class="notification-text-group">
-          <div class="notification-subtext">${message}</div>
+          <div class="notification-subtext">${localizeText(message)}</div>
         </div>
       </div>
     `
@@ -90,12 +91,12 @@ export class Notification {
           <div class="notification-main">
             <div class="notification-icon">${icon}</div>
             <div class="notification-text-group">
-              <div class="notification-title">${data.title}</div>
+              <div class="notification-title">${localizeText(data.title)}</div>
               ${(() => {
                 if (!data.subtext) return ""
                 const subtextClass =
                   data.type === "GameOver" ? " notification-subtext-light" : ""
-                return `<div class="notification-subtext${subtextClass}">${data.subtext}</div>`
+                return `<div class="notification-subtext${subtextClass}">${localizeText(data.subtext)}</div>`
               })()}
             </div>
           </div>
@@ -128,7 +129,7 @@ export class Notification {
     if (extra.includes("<")) {
       return `<div class="notification-actions">${extra}</div>`
     }
-    return `<div class="notification-badge">${extra}</div>`
+    return `<div class="notification-badge">${localizeText(extra)}</div>`
   }
 
   private renderHighBreaks(highBreaks?: NotificationHighBreak[]): string {
@@ -154,11 +155,11 @@ export class Notification {
         type="button"
         class="notification-high-break"
         data-notification-upload-url="${highBreak.url}"
-        title="Open high break ${highBreak.score}"
+        title="打开单杆 ${highBreak.score} 分回放"
       >
-        <span class="notification-high-break-label">Break : ${highBreak.score}</span>
+        <span class="notification-high-break-label">单杆：${highBreak.score}</span>
         <span class="notification-high-break-icon">${medals}</span>
-        <span class="notification-high-break-upload">upload⇗</span>
+        <span class="notification-high-break-upload">上传⇗</span>
       </button>
     `
   }

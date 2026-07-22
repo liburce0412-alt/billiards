@@ -1,7 +1,7 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-CN">
   <head>
-    <title>Billiards + Pool Free Physics Simulator</title>
+    <title>Break Builder 3D｜拟真台球</title>
     <!-- Preconnect to Google Fonts to establish early TCP/TLS handshake -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,7 +15,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta
       name="description"
-      content="Play free online billiards with realistic physics - open source browser game"
+      content="支持 8 球、9 球、斯诺克与三库的拟真 3D 台球游戏。"
     />
     <meta
       name="keywords"
@@ -29,13 +29,10 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
     />
     <link rel="canonical" href="https://tailuge.github.io/billiards/dist/" />
-    <meta
-      property="og:title"
-      content="Billiards + Pool Free Physics Simulator"
-    />
+    <meta property="og:title" content="Break Builder 3D｜拟真台球" />
     <meta
       property="og:description"
-      content="Play free online billiards with realistic physics - open source browser game"
+      content="支持练习、AI 对战和多种规则的拟真 3D 台球游戏。"
     />
     <meta property="og:type" content="website" />
     <meta
@@ -55,13 +52,10 @@
       name="ocs-site-verification"
       content="7e2c8724a132bd19fa2cac60ae730ba5"
     />
-    <meta
-      name="twitter:title"
-      content="Billiards Pool and Snooker Game - Free"
-    />
+    <meta name="twitter:title" content="Break Builder 3D｜拟真台球" />
     <meta
       name="twitter:description"
-      content="Play pool online with accurate physics. Open source and browser-based."
+      content="支持练习、AI 对战和多种规则的拟真 3D 台球游戏。"
     />
     <script type="application/ld+json">
       {
@@ -116,7 +110,7 @@
 
   <body>
     <div id="gameLauncher" hidden></div>
-    <h1 hidden>Free Pool, Billiards and Snooker</h1>
+    <h1 hidden>在线 3D 台球、斯诺克与三库</h1>
     <div id="viewP1" class="view3d">
       <div id="snookerScoreOverlay">
         <div id="snookerScore" aria-live="polite">
@@ -136,31 +130,27 @@
                 'https://billiards.tailuge.workers.dev/lobby'
             "
           >
-            Visit Lobby
+            返回大厅
           </button>
-          <span class="help-text">to set graphics mode and player name</span>
-          <button id="helpClose">close</button>
+          <span class="help-text">可设置游戏模式、画质和玩家名称</span>
+          <button id="helpClose">关闭</button>
         </div>
       </div>
       <div id="botDebugOverlay">
         <header>
           <span id="botDebugToggle">🦞</span>
           <div>
-            <button
-              id="botDebugClear"
-              type="button"
-              aria-label="Clear debug log"
-            >
-              Clear
+            <button id="botDebugClear" type="button" aria-label="清空调试日志">
+              清空
             </button>
           </div>
         </header>
         <pre id="botDebugLog" aria-live="polite">
           <!-- loading="lazy" avoids downloading this 143KB image on initial paint since botDebugOverlay starts hidden/closed -->
           <img src="images/billiards.png" loading="lazy" alt="Billiards Pool Game Promo - Realistic Physics Simulation">
-          Play free realistic pool online with accurate physics. Open source billiards simulation in your browser.
+          在浏览器中体验拟真物理台球，支持 AI 对战、8 球、9 球、斯诺克与三库。
           billiards, snooker, 9-ball, pool, carom, three-cushion, online game, free, open source, ビリヤード, スヌーカー, 9ボール, 3クッション, オンラインゲーム, 無料, 당구, 스누커, 9볼, 3쿠션, 온라인 게임, 무료
-          Find it on <a href="https://github.com/tailuge/billiards">github</a>
+          在 <a href="https://github.com/tailuge/billiards">GitHub</a> 查看开源项目
         </pre>
       </div>
       <div class="chatarea">
@@ -170,14 +160,14 @@
         <input
           id="inputText"
           type="text"
-          placeholder="Enter text here..."
+          placeholder="输入消息……"
           maxlength="24"
           autofocus
           autocomplete="off"
-          aria-label="Chat message input"
+          aria-label="聊天消息"
         />
-        <button id="inputSend">send</button>
-        <button id="inputClose">close</button>
+        <button id="inputSend">发送</button>
+        <button id="inputClose">关闭</button>
       </dialog>
     </div>
     <div id="panel" class="panel wood-texture">
@@ -187,13 +177,17 @@
             class="hitButton timeout-btn"
             id="cueHit"
             type="button"
-            aria-label="Hit cue ball"
+            aria-label="击打母球"
           >
-            hit
+            击球
           </button>
         </div>
         <div id="tiltSliderContainer" class="tiltSliderContainer" hidden>
-          <angle-input id="cueTilt" aria-label="tilt angle"></angle-input>
+          <angle-input
+            id="cueTilt"
+            title="球杆俯仰角（0–72°）"
+            aria-label="球杆俯仰角，0 到 72 度"
+          ></angle-input>
         </div>
         <template id="angle-input-template">
           <div class="area" id="area">
@@ -209,7 +203,14 @@
           </div>
         </template>
         <div id="ballContainerWrapper" class="ballContainerWrapper">
-          <button id="openElevation" class="openElevation">+</button>
+          <button
+            id="openElevation"
+            class="openElevation"
+            title="调节球杆俯仰角"
+            aria-label="打开球杆俯仰角控制"
+          >
+            ↗
+          </button>
           <div id="ballContainer" class="ballContainer">
             <div id="objectBall" class="objectBall"></div>
             <div id="cueBall" class="cueBall">
@@ -228,16 +229,17 @@
           step="0.01"
           value="0.65"
           id="cuePower"
-          aria-label="power slider"
+          title="击球力度；开球建议 90–100%"
+          aria-label="击球力度，开球建议使用百分之九十到一百"
         />
       </div>
       <div class="outerMenu">
         <button
           class="menuButton half-height"
-          title="comment"
+          title="聊天"
           id="comment"
           type="submit"
-          aria-label="Comment"
+          aria-label="聊天"
           hidden
         >
           🗨
@@ -264,20 +266,20 @@
         </div>
         <button
           class="menuButton half-height"
-          title="diagram"
+          title="生成击球图"
           id="diagram"
           type="submit"
-          aria-label="Diagram"
+          aria-label="生成击球图"
           hidden
         >
           📸
         </button>
         <button
           class="menuButton half-height"
-          title="share"
+          title="分享回放"
           id="share"
           type="submit"
-          aria-label="Share replay link"
+          aria-label="分享回放链接"
           hidden
         >
           <svg
@@ -300,30 +302,30 @@
         </button>
         <button
           class="menuButton half-height"
-          title="concede"
+          title="认输"
           id="concede"
           type="submit"
-          aria-label="Concede"
+          aria-label="认输"
           hidden
         >
           🏳️
         </button>
         <button
           class="menuButton half-height"
-          title="shot analysis"
+          title="击球分析"
           id="analysis"
           type="submit"
-          aria-label="Shot analysis"
+          aria-label="击球分析"
           hidden
         >
           🔍
         </button>
         <button
           class="menuButton half-height"
-          title="menu"
+          title="帮助"
           id="menu"
           type="submit"
-          aria-label="Menu"
+          aria-label="打开帮助"
         >
           <svg
             width="24"
@@ -340,10 +342,10 @@
         </button>
         <button
           class="menuButton"
-          title="view"
+          title="视角：点击切换；在球桌上纵向拖动调节俯仰"
           id="camera"
           type="submit"
-          aria-label="Toggle camera view"
+          aria-label="切换相机视角"
         >
           🎥
         </button>
@@ -362,21 +364,21 @@
     <div id="lobbyContainer">
       <div class="challenge-row">
         <span id="challengePill" class="challenge-pill" hidden>
-          <button id="challengeAccept">accept</button>
-          <button id="challengeDecline">decline</button>
+          <button id="challengeAccept">接受</button>
+          <button id="challengeDecline">拒绝</button>
         </span>
       </div>
       <a
         href="https://billiards.tailuge.workers.dev/lobby.html"
         class="pill"
-        title="Lobby"
+        title="联机大厅"
         id="lobbyOverlay"
-        aria-label="Multiplayer Lobby"
+        aria-label="联机大厅"
         ><span class="lobby-count"></span
       ></a>
     </div>
-    <section class="constants" id="constants" aria-label="Physical Constants">
-      <p>Physical Constants</p>
+    <section class="constants" id="constants" aria-label="物理参数">
+      <p>物理参数</p>
       <div class="nw">
         <input id="R" type="range" /><label for="R">R</label>
       </div>
@@ -405,9 +407,7 @@
         <input id="μw" type="range" /><label for="μw">μw</label>
       </div>
       <div class="nw">
-        <button id="network" aria-label="Toggle network settings">
-          network🗲
-        </button>
+        <button id="network" aria-label="切换网络设置">网络🗲</button>
       </div>
     </section>
     <script defer src="launcher.js"></script>

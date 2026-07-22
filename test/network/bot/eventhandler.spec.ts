@@ -357,6 +357,61 @@ describe("BotEventHandler Respot Logic", () => {
     expect(watchEvent).toBeDefined()
   })
 
+  it("eightball: bot ends its turn when it only pots the player's group", () => {
+    Ball.id = 0
+    Session.init("test-client", "TestPlayer", "test-table", false)
+    Session.getInstance().p1type = 1
+
+    const eightBallContainer = new Container({
+      element: undefined,
+      log: (_: any) => {},
+      assets: Assets.localAssets(),
+      ruletype: "eightball",
+    })
+    const cueball = eightBallContainer.table.cueball
+    const botBall = eightBallContainer.table.balls.find((b) => b.label === 9)!
+    const playerBall = eightBallContainer.table.balls.find(
+      (b) => b.label === 1
+    )!
+    eightBallContainer.table.outcome = [
+      Outcome.collision(cueball, botBall, 1),
+      Outcome.pot(playerBall, 1),
+    ]
+
+    const events: GameEvent[] = []
+    const handler = createBotEventHandler(eightBallContainer, events)
+    handler.handle(mockEvent(EventType.BEGIN))
+
+    expect(events.find((e) => e instanceof WatchEvent)).toBeDefined()
+    expect(events.find((e) => e instanceof StartAimEvent)).toBeDefined()
+  })
+
+  it("eightball: bot continues when it pots at least one ball from its group", () => {
+    Ball.id = 0
+    Session.init("test-client", "TestPlayer", "test-table", false)
+    Session.getInstance().p1type = 1
+
+    const eightBallContainer = new Container({
+      element: undefined,
+      log: (_: any) => {},
+      assets: Assets.localAssets(),
+      ruletype: "eightball",
+    })
+    const cueball = eightBallContainer.table.cueball
+    const botBall = eightBallContainer.table.balls.find((b) => b.label === 9)!
+    eightBallContainer.table.outcome = [
+      Outcome.collision(cueball, botBall, 1),
+      Outcome.pot(botBall, 1),
+    ]
+
+    const events: GameEvent[] = []
+    const handler = createBotEventHandler(eightBallContainer, events)
+    handler.handle(mockEvent(EventType.BEGIN))
+
+    expect(events.find((e) => e instanceof WatchEvent)).toBeDefined()
+    expect(events.find((e) => e instanceof StartAimEvent)).toBeUndefined()
+  })
+
   it("should handle foul with 9-ball potted and respot it", () => {
     const { cueball, nineBall } = setupCueballAndNineball(container)
     const outcome = [Outcome.pot(cueball, 1), Outcome.pot(nineBall, 1)]

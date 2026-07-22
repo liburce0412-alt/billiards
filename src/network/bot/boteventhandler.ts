@@ -142,7 +142,7 @@ export class BotEventHandler {
       const shouldRespot = !isSnooker || redsOnTable.length > 0
       const respotted = shouldRespot ? this.botRules.respot(outcome) : []
       respotted.forEach((ball) => ball.fround())
-      this.handlePot(pots, outcome)
+      this.handlePot(pots, outcome, this.keepsTurnAfterPot(outcome))
       return
     }
     this.logs.hide()
@@ -201,6 +201,21 @@ export class BotEventHandler {
       return (ball.label ?? 0) >= 9 && (ball.label ?? 0) <= 15
     }
     return false
+  }
+
+  private keepsTurnAfterPot(outcome: Outcome[]): boolean {
+    if (this.container.rules.rulename !== "eightball") {
+      return true
+    }
+
+    const botType = this.botType()
+    if (botType === 0) {
+      return true
+    }
+
+    return Outcome.pots(outcome).some((ball) =>
+      this.isEightBallType(ball, botType)
+    )
   }
 
   private validNineBallTargets(): Ball[] {
@@ -393,7 +408,11 @@ export class BotEventHandler {
     return (Session.getInstance().playerIndex + 1) as 1 | 2
   }
 
-  private handlePot(pots: number, outcome: Outcome[]): void {
+  private handlePot(
+    pots: number,
+    outcome: Outcome[],
+    keepsTurn: boolean
+  ): void {
     this.logs.info(
       `Bot handlePot: scored ${pots} points. Next cueball=${this.botRules.cueball?.id}`
     )
@@ -417,9 +436,14 @@ export class BotEventHandler {
       0,
       this.container.inferActivePlayer()
     )
-    this.publishSequenceToPlayer([
-      new WatchEvent(this.container.table.serialise()),
-    ])
+    const watchEvent = new WatchEvent(this.container.table.serialise())
+    if (!keepsTurn) {
+      this.logs.hide()
+      this.publishSequenceToPlayer([watchEvent, new StartAimEvent()])
+      return
+    }
+
+    this.publishSequenceToPlayer([watchEvent])
     this.queuedOwnStartAim = true
     this.enqueueMessage(EventUtil.serialise(new StartAimEvent()))
   }

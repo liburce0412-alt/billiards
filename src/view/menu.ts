@@ -60,8 +60,8 @@ export class Menu {
             title: "Concede Game",
             subtext: "opponent will win",
             extra:
-              '<button class="notification-btn" data-notification-action="concede-confirm">Concede</button>' +
-              '<button class="notification-btn" data-notification-action="concede-cancel">Play on</button>',
+              '<button class="notification-btn" data-notification-action="concede-confirm">确认认输</button>' +
+              '<button class="notification-btn" data-notification-action="concede-cancel">继续比赛</button>',
             duration: 0,
           },
           0,

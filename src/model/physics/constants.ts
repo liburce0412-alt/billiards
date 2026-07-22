@@ -72,6 +72,9 @@ export function setBallRestitution(val: number) {
 export function setBallFrictionScale(val: number) {
   ballFrictionScale = val
 }
+export function setMaxPower(val: number) {
+  maxPower = val
+}
 export function setmuS(val: number) {
   muS = val
 }

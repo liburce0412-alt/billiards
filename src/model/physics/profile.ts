@@ -2,6 +2,7 @@ import {
   setR,
   setBallFrictionScale,
   setBallRestitution,
+  setMaxPower,
   setee,
   setm,
   setmu,
@@ -23,6 +24,7 @@ export interface PhysicsProfile {
   readonly spinFriction: number
   readonly ballRestitution: number
   readonly ballFrictionScale: number
+  readonly maxCueSpeed: number
   readonly cushionRestitution: number
   readonly tableFriction: number
   readonly cushionFriction: number
@@ -40,6 +42,7 @@ export const LEGACY_PHYSICS: PhysicsProfile = {
   spinFriction: 0.045,
   ballRestitution: 0.925,
   ballFrictionScale: 1,
+  maxCueSpeed: 160 * 0.03275,
   cushionRestitution: 0.85,
   tableFriction: 0.2,
   cushionFriction: 0.2,
@@ -59,6 +62,7 @@ export const POOL_STANDARD_PHYSICS: PhysicsProfile = {
   rollingFriction: Math.SQRT2 * 0.01,
   slidingFriction: 0.2,
   ballRestitution: 0.95,
+  maxCueSpeed: 8.5,
 }
 
 export function physicsProfileForRule(ruleType: string): PhysicsProfile {
@@ -75,6 +79,7 @@ export function applyPhysicsProfile(profile: PhysicsProfile) {
   setrho(profile.spinFriction)
   setBallRestitution(profile.ballRestitution)
   setBallFrictionScale(profile.ballFrictionScale)
+  setMaxPower(profile.maxCueSpeed)
   setee(profile.cushionRestitution)
   setμs(profile.tableFriction)
   setμw(profile.cushionFriction)

@@ -32,9 +32,9 @@ describe("Notification", () => {
     })
     const element = document.getElementById("notification")
     expect(element?.classList.contains("type-Foul")).toBe(true)
-    expect(element?.innerHTML).toContain("FOUL")
-    expect(element?.innerHTML).toContain("Wrong ball")
-    expect(element?.innerHTML).toContain("Ball in hand")
+    expect(element?.innerHTML).toContain("犯规")
+    expect(element?.innerHTML).toContain("击球顺序错误")
+    expect(element?.innerHTML).toContain("自由球")
     expect(element?.innerHTML).toContain("notification-title")
     expect(element?.innerHTML).toContain("notification-banner")
     expect(element?.innerHTML).toContain("notification-badge")
@@ -59,8 +59,8 @@ describe("Notification", () => {
     )
     expect(element?.querySelector(".notification-actions")).not.toBeNull()
     expect(element?.querySelector(".notification-footer")).not.toBeNull()
-    expect(element?.innerHTML).toContain("Break : 9")
-    expect(element?.innerHTML).toContain("upload⇗")
+    expect(element?.innerHTML).toContain("单杆：9")
+    expect(element?.innerHTML).toContain("上传⇗")
     expect(
       (element?.querySelector(".notification-high-break") as HTMLButtonElement)
         ?.dataset.notificationUploadUrl

@@ -9,17 +9,29 @@ import { Session } from "../network/client/session"
 import { BallAppearance } from "../view/ballappearance"
 
 export class Rack {
-  static readonly noise = Math.fround(R * 0.023 + 0.0015 * Math.random())
-  static readonly gap = 2 * R + 2 * Rack.noise
+  static get noise() {
+    return Math.fround(R * 0.003)
+  }
+
+  static get gap() {
+    return 2 * R + 2 * Rack.noise
+  }
+
   static readonly up = new Vector3(0, 0, -1)
   static get spot() {
     return new Vector3(-TableGeometry.X / 2, 0, 0)
   }
-  static readonly across = new Vector3(0, Rack.gap, 0)
-  static readonly down = new Vector3(Rack.gap, 0, 0)
-  static readonly diagonal = Rack.across
-    .clone()
-    .applyAxisAngle(Rack.up, (Math.PI * 1) / 3)
+  static get across() {
+    return new Vector3(0, Rack.gap, 0)
+  }
+
+  static get down() {
+    return new Vector3(Rack.gap, 0, 0)
+  }
+
+  static get diagonal() {
+    return Rack.across.clone().applyAxisAngle(Rack.up, Math.PI / 3)
+  }
 
   static readonly BALL_COLORS = [
     "#FFFFFF", // 0: Cue Ball

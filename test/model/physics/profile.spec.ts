@@ -14,6 +14,7 @@ import {
   muS,
   R,
 } from "../../../src/model/physics/constants"
+import { Rack } from "../../../src/utils/rack"
 
 describe("PhysicsProfile", () => {
   afterEach(() => applyPhysicsProfile(LEGACY_PHYSICS))
@@ -31,6 +32,7 @@ describe("PhysicsProfile", () => {
     expect(mu).to.be.closeTo(Math.SQRT2 * 0.01, 1e-12)
     expect(muS).to.be.closeTo(0.2, 1e-12)
     expect(ballRestitution).to.be.closeTo(0.95, 1e-12)
-    expect(maxPower).to.be.closeTo(160 * R, 1e-12)
+    expect(maxPower).to.be.closeTo(8.5, 1e-12)
+    expect(Rack.gap - 2 * R).to.be.lessThan(0.0002)
   })
 })

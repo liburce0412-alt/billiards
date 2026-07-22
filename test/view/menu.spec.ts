@@ -38,7 +38,7 @@ describe("Menu", () => {
     fireEvent.click(concede)
 
     const notification = document.getElementById("notification")
-    expect(notification?.innerHTML).to.contain("Concede Game")
+    expect(notification?.innerHTML).to.contain("认输")
 
     const playOn = document.querySelector(
       "[data-notification-action='concede-cancel']"
@@ -61,8 +61,8 @@ describe("Menu", () => {
 
     expect(container.controller.name).to.equal("End")
     const notification = document.getElementById("notification")
-    expect(notification?.innerHTML).to.contain("YOU LOST")
-    expect(notification?.innerHTML).to.contain("Lostber 🦞")
+    expect(notification?.innerHTML).to.contain("你输了")
+    expect(notification?.innerHTML).to.contain("被龙虾击败了 🦞")
 
     Session.reset()
     done()

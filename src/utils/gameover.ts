@@ -1,9 +1,9 @@
 import { LOBBY_URL } from "../network/client/constants"
 
 export const gameOverButtons = {
-  lobby: `<button type="button" class="notification-btn" data-notification-action="lobby">Back to Lobby</button>`,
-  newGame: `<button type="button" class="notification-btn" data-notification-action="reload">New Game</button>`,
-  replay: `<button type="button" class="notification-btn" data-notification-action="replay">Replay</button>`,
+  lobby: `<button type="button" class="notification-btn" data-notification-action="lobby">返回大厅</button>`,
+  newGame: `<button type="button" class="notification-btn" data-notification-action="reload">新一局</button>`,
+  replay: `<button type="button" class="notification-btn" data-notification-action="replay">回放</button>`,
 
   rematch(
     opponentId: string | undefined,
@@ -42,7 +42,7 @@ export const gameOverButtons = {
       }
     }
 
-    return `<button type="button" class="notification-btn" data-notification-action="rematch" data-notification-url="${url.toString()}">Rematch</button>`
+    return `<button type="button" class="notification-btn" data-notification-action="rematch" data-notification-url="${url.toString()}">再来一局</button>`
   },
 
   forMode(

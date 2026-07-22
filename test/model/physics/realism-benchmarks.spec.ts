@@ -1,6 +1,6 @@
 import { expect } from "chai"
 import { Vector3 } from "three"
-import { Ball } from "../../../src/model/ball"
+import { Ball, State } from "../../../src/model/ball"
 import { Collision } from "../../../src/model/physics/collision"
 import {
   cueToSpin,
@@ -13,7 +13,10 @@ import {
   LEGACY_PHYSICS,
   POOL_STANDARD_PHYSICS,
 } from "../../../src/model/physics/profile"
-import { g, R } from "../../../src/model/physics/constants"
+import { g, maxPower, R } from "../../../src/model/physics/constants"
+import { Table } from "../../../src/model/table"
+import { Rack } from "../../../src/utils/rack"
+import { TableConfig } from "../../../src/view/tableconfig"
 
 describe("Pool-standard realism benchmarks", () => {
   beforeEach(() => applyPhysicsProfile(POOL_STANDARD_PHYSICS))
@@ -54,5 +57,25 @@ describe("Pool-standard realism benchmarks", () => {
     const rebound = velocity.clone().add(delta.v)
     expect(rebound.x).to.be.lessThan(0)
     expect(rebound.length()).to.be.at.most(velocity.length())
+  })
+
+  it("transfers a full-power break through a tightly packed rack", () => {
+    TableConfig.apply("eightball")
+    Ball.id = 0
+    const table = new Table(Rack.eightBall())
+    const initialPositions = table.balls.map((ball) => ball.pos.clone())
+    table.cueball.vel.set(maxPower, 0, 0)
+    table.cueball.state = State.Sliding
+
+    for (let step = 0; step < 512; step++) {
+      table.advance(1 / 512)
+    }
+
+    const displacedObjectBalls = table.balls
+      .slice(1)
+      .filter(
+        (ball, index) => ball.pos.distanceTo(initialPositions[index + 1]) > R
+      )
+    expect(displacedObjectBalls.length).to.be.at.least(8)
   })
 })

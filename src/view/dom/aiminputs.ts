@@ -8,6 +8,7 @@ import { id } from "../../utils/dom"
 import { TimeoutButton } from "../timeoutbutton"
 import { AngleInput } from "./angleinput"
 import { maxPower } from "../../model/physics/constants"
+import { localizeText } from "../../utils/locale"
 
 export class AimInputs {
   readonly ballContainerWrapperElement
@@ -92,7 +93,7 @@ export class AimInputs {
   }
 
   setButtonText(text) {
-    this.cueHitElement && (this.cueHitElement.innerText = text)
+    this.cueHitElement && (this.cueHitElement.innerText = localizeText(text))
   }
 
   setDisabled(disabled: boolean) {

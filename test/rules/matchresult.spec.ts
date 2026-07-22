@@ -199,8 +199,8 @@ describe("MatchResult Construction", () => {
     const result = (container.rules as any).handleGameEnd(false)
     expect(result.name).to.equal("End")
     const notification = document.getElementById("notification")
-    expect(notification?.innerHTML).to.contain("Lostber 🦞")
-    expect(notification?.innerHTML).to.contain("New Game")
+    expect(notification?.innerHTML).to.contain("被龙虾击败了 🦞")
+    expect(notification?.innerHTML).to.contain("新一局")
   })
 
   it("MatchResult should include bot flag when playing against bot", () => {
@@ -233,7 +233,7 @@ describe("MatchResult Construction", () => {
       notification?.querySelectorAll(".notification-high-break-label") ?? []
     ).map((element) => element.textContent?.trim())
 
-    expect(scores).to.deep.equal(["Break : 11", "Break : 7", "Break : 4"])
+    expect(scores).to.deep.equal(["单杆：11", "单杆：7", "单杆：4"])
     expect(
       notification?.querySelectorAll(".notification-high-break").length
     ).to.equal(3)
