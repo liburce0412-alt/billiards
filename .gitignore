@@ -3,6 +3,9 @@ dist/*.js
 !dist/lobby.js
 !dist/sw.js
 !dist/ww-node.js
+dist/client/
+dist/server/
+dist/.openai/
 dist.tsconfig.tsbuildinfo
 
 # Logs
