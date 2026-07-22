@@ -1,7 +1,7 @@
 import { Vector3 } from "three"
 import { Ball } from "../ball"
 import { Collision } from "./collision"
-import { I, m, R } from "./constants"
+import { ballFrictionScale, ballRestitution, I, m, R } from "./constants"
 import { exp } from "../../utils/utils"
 
 const ab_v = new Vector3()
@@ -23,7 +23,7 @@ export class CollisionThrow {
   tangentialImpulse: number
 
   private dynamicFriction(vRel: number): number {
-    return 0.01 + 0.108 * exp(-1.088 * vRel)
+    return ballFrictionScale * (0.01 + 0.108 * exp(-1.088 * vRel))
   }
 
   public updateVelocities(a: Ball, b: Ball) {
@@ -33,7 +33,6 @@ export class CollisionThrow {
     const ab = ab_v.subVectors(contact.b, contact.a).normalize()
     const abTangent = abTangent_v.set(-ab.y, ab.x, 0)
 
-    const e = 0.925
     const vPoint = vPoint_v
       .copy(a.vel)
       .sub(b.vel)
@@ -49,7 +48,7 @@ export class CollisionThrow {
     const μ = this.dynamicFriction(vRelMag)
 
     // Normal impulse (inelastic collision)
-    this.normalImpulse = (-(1 + e) * vRelNormalMag) / (2 / m)
+    this.normalImpulse = (-(1 + ballRestitution) * vRelNormalMag) / (2 / m)
 
     // Tangential impulse (frictional constraint)
     const impulseTangential = impulseTangential_v.set(0, 0, 0)

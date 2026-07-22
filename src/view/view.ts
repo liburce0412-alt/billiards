@@ -1,4 +1,13 @@
-import { Scene, WebGLRenderer, Frustum, Matrix4, AmbientLight } from "three"
+import {
+  DirectionalLight,
+  Frustum,
+  HemisphereLight,
+  Matrix4,
+  PMREMGenerator,
+  Scene,
+  WebGLRenderer,
+  WebGLRenderTarget,
+} from "three"
 import { Camera } from "./camera"
 import { Drawing } from "./drawing"
 import { LineData } from "../events/chatevent"
@@ -8,6 +17,9 @@ import { Grid } from "./grid"
 import { renderer } from "../utils/webgl"
 import { Assets } from "./assets"
 import { Snooker } from "../controller/rules/snooker"
+import { getRenderQuality } from "./renderquality"
+import { R } from "../model/physics/constants"
+import { TableGeometry } from "./tablegeometry"
 
 export class View {
   readonly scene = new Scene()
@@ -23,6 +35,7 @@ export class View {
   loadAssets = true
   assets: Assets
   drawing: Drawing
+  private environmentTarget?: WebGLRenderTarget
 
   // Reuse objects to reduce garbage collection pressure in high-frequency rendering
   private readonly frustum = new Frustum()
@@ -138,14 +151,87 @@ export class View {
     this.renderer?.render(this.scene, cam.camera)
   }
 
+  warmup() {
+    this.configureTextureFiltering()
+    this.renderer
+      ?.compileAsync(this.scene, this.camera.camera)
+      .catch(() => undefined)
+  }
+
+  private configureTextureFiltering() {
+    if (!this.renderer) return
+    const quality = getRenderQuality()
+    const hardwareLimit = this.renderer.capabilities.getMaxAnisotropy()
+    let qualityLimit = 4
+    if (quality.name === "high") qualityLimit = 8
+    else if (quality.name === "low") qualityLimit = 1
+    const anisotropy = Math.min(hardwareLimit, qualityLimit)
+    this.scene.traverse((object: any) => {
+      if (!object.isMesh) return
+      const materials = Array.isArray(object.material)
+        ? object.material
+        : [object.material]
+      for (const material of materials) {
+        for (const key of [
+          "map",
+          "normalMap",
+          "roughnessMap",
+          "metalnessMap",
+        ]) {
+          const texture = material[key]
+          if (texture) texture.anisotropy = anisotropy
+        }
+      }
+    })
+  }
+
   private initialiseScene() {
-    this.scene.add(new AmbientLight(0x009922, 0.3))
+    const quality = getRenderQuality()
+    this.scene.add(new HemisphereLight(0xfff4df, 0x18202c, 0.45))
+
+    const keyLight = new DirectionalLight(0xfff1d6, 1.6)
+    keyLight.position.set(-R * 20, -R * 12, R * 65)
+    keyLight.castShadow = quality.dynamicShadows
+    if (quality.dynamicShadows) {
+      const shadow = keyLight.shadow
+      shadow.mapSize.set(quality.shadowMapSize, quality.shadowMapSize)
+      shadow.camera.left = -TableGeometry.X
+      shadow.camera.right = TableGeometry.X
+      shadow.camera.top = TableGeometry.Y
+      shadow.camera.bottom = -TableGeometry.Y
+      shadow.camera.near = R
+      shadow.camera.far = R * 140
+      shadow.bias = -0.00008
+      shadow.normalBias = R * 0.015
+    }
+    this.scene.add(keyLight)
+
+    if (quality.environmentLighting && this.renderer) {
+      const pmrem = new PMREMGenerator(this.renderer)
+      import("three/addons/environments/RoomEnvironment.js").then(
+        ({ RoomEnvironment }) => {
+          this.environmentTarget = pmrem.fromScene(new RoomEnvironment(), 0.04)
+          this.scene.environment = this.environmentTarget.texture
+          pmrem.dispose()
+          this.warmup()
+        }
+      )
+    }
+
     if (this.assets.background) {
       this.scene.add(this.assets.background)
     }
     this.scene.add(this.assets.table)
+    if (this.assets.sound?.listener) {
+      this.camera.camera.add(this.assets.sound.listener)
+      this.scene.add(this.assets.sound.root)
+    }
     this.table.mesh = this.assets.table
-    if (this.assets.rules.asset !== Snooker.tablemodel) {
+    const showGrid =
+      quality.name === "low" ||
+      new URLSearchParams(globalThis.location?.search ?? "").get("grid") ===
+        "true"
+    if (this.assets.rules.asset !== Snooker.tablemodel && showGrid) {
       this.scene.add(new Grid().generateLineSegments())
     }
   }

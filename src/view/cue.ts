@@ -41,6 +41,7 @@ export class Cue {
   private readonly tempVec2 = new Vector3()
   private readonly tempVec3 = new Vector3()
   hitAnimationWeight: number = 0
+  private lastUpdateElapsed = 1 / 60
 
   constructor() {
     if (typeof document !== "undefined") {
@@ -184,7 +185,10 @@ export class Cue {
     if (this.hittingAnimation) {
       this.hitAnimationWeight = 1
     } else {
-      this.hitAnimationWeight *= 0.97
+      this.hitAnimationWeight *= Math.pow(
+        0.97,
+        Math.max(0, this.lastUpdateElapsed) * 60
+      )
     }
 
     let curveVal = this.hitAnimationCurve(this.t)
@@ -275,6 +279,7 @@ export class Cue {
   }
 
   update(t) {
+    this.lastUpdateElapsed = t
     this.t += t
     this.moveTo(this.aim.pos)
   }

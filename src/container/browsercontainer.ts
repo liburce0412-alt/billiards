@@ -26,6 +26,8 @@ import { DrillPanel } from "../view/drillpanel"
 import { AnalysisPanel } from "../view/analysispanel"
 import { applyPhysicsParams } from "../utils/physicsparams"
 import { TableConfig } from "../view/tableconfig"
+import { applyPhysicsProfileForRule } from "../model/physics/profile"
+import { Camera } from "../view/camera"
 
 /**
  * Integrate game container into HTML page
@@ -80,6 +82,8 @@ export class BrowserContainer {
       params.get("userId") ?? params.get("clientId") ?? `G_${getUID()}`
     this.replay = params.get("state")
     this.ruletype = params.get("ruletype") ?? "nineball"
+    applyPhysicsProfileForRule(this.ruletype)
+    Camera.configureForRule(this.ruletype)
     const lobbyUrl = params.get("lobbyUrl")
     const wss = params.get("websocketserver")
     this.lobbyUrl = lobbyUrl

@@ -29,6 +29,14 @@ Demos run in all major desktop and mobile browsers and use WebGL
 * Parallel [parameter ⬀](https://tailuge.github.io/billiards/dist/fit/common.html) tuning using [Web Workers ⬀](https://tailuge.github.io/billiards/dist/ww.html).
 * Three cushion trainer and [sensitivity analysis ⬀](https://velikodimov.github.io/billiards/dist/index.html?ruletype=threecushion&practice&drill) from an excellent [fork ⬀](https://github.com/velikodimov/billiards) of this project.
 
+### Render quality
+
+Use `quality=low|balanced|high` to select a render profile. `quality` takes
+precedence over the legacy `lod` parameter; when it is omitted, existing `lod`
+links continue to select the closest quality profile. Low quality uses lightweight
+blob shadows, while balanced and high enable PBR environment lighting and dynamic
+shadows with device-appropriate resolution and pixel-ratio limits.
+
 ## Features
 
 * Backspin, sidespin and cushion bounces well modeled.

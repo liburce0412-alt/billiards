@@ -4,10 +4,9 @@ import {
   MeshPhysicalMaterial,
   MeshStandardMaterial,
 } from "three"
-import { R } from "../model/physics/constants"
 import { BallTextureFactory } from "./balltexturefactory"
 import { BallCubeTextureFactory } from "./ballcubetexturefactory"
-import { Session } from "../network/client/session"
+import { getRenderQuality } from "./renderquality"
 
 export class BallMaterialFactory {
   private static readonly materialCache: Map<
@@ -95,74 +94,22 @@ export class BallMaterialFactory {
     )
 
     const material =
-      Session.getLod() <= 1
+      getRenderQuality().name === "low"
         ? new MeshStandardMaterial({
-            color: color,
-            roughness: 0.5,
+            color: 0xffffff,
+            map: numberTexture,
+            roughness: 0.28,
             metalness: 0,
-            flatShading: true,
-            transparent: false,
-            depthWrite: true,
           })
         : new MeshPhysicalMaterial({
-            color: color,
-            roughness: 0.1,
+            color: 0xffffff,
+            map: numberTexture,
+            roughness: 0.16,
             metalness: 0,
-            clearcoat: 1.0,
-            clearcoatRoughness: 0.02,
-            reflectivity: 0.25,
+            clearcoat: 0.9,
+            clearcoatRoughness: 0.07,
+            reflectivity: 0.35,
           })
-
-    material.onBeforeCompile = (shader: any) => {
-      shader.uniforms.numberTex = { value: numberTexture }
-      shader.uniforms.invScale = { value: 1 / (R * 2) }
-
-      shader.vertexShader = shader.vertexShader.replace(
-        "#include <common>",
-        `#include <common>
-         varying vec3 vLocalPosition;`
-      )
-      shader.vertexShader = shader.vertexShader.replace(
-        "#include <begin_vertex>",
-        `#include <begin_vertex>
-         vLocalPosition = position;`
-      )
-
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <common>",
-        `#include <common>
-        uniform sampler2D numberTex;
-        uniform float invScale;
-        varying vec3 vLocalPosition;`
-      )
-      shader.fragmentShader = shader.fragmentShader.replace(
-        "#include <color_fragment>",
-        `#include <color_fragment>
-        // Calculate the base UV mapping
-        vec2 projUv = vLocalPosition.xz * invScale + 0.5;
-
-        // Capture derivatives BEFORE the flip. 
-        // This prevents the GPU from seeing the 'teleport' at the equator.
-        vec2 dx = dFdx(projUv);
-        vec2 dy = dFdy(projUv);
-
-        // Flip logic for the bottom hemisphere
-        if (vLocalPosition.y < 0.0) {
-          projUv.x = 1.0 - projUv.x;
-          // Mirror the derivatives so mipmapping stays consistent
-          dx.x = -dx.x;
-          dy.x = -dy.x;
-        }
-
-        projUv = clamp(projUv, 0.0, 1.0);
-
-        // Add a negative bias to force a higher-resolution mipmap level
-        // -0.5 to -1.0 usually restores the "crisp" look.
-        vec4 texColor = textureGrad(numberTex, projUv, dx * 0.5, dy * 0.5);
-     
-        diffuseColor.rgb = texColor.rgb;`
-      )
-    }
     this.materialCache.set(key, material)
     return material
   }

@@ -13,6 +13,8 @@ import {
   MeshPhysicalMaterial,
   Scene,
   Line,
+  BufferGeometry,
+  SphereGeometry,
 } from "three"
 import { State } from "../model/ball"
 import { norm, up, zero } from "./../utils/three-utils"
@@ -21,9 +23,10 @@ import { Trace } from "./trace"
 import { BallMaterialFactory } from "./ballmaterialfactory"
 import { Session } from "../network/client/session"
 import { BallAppearance } from "./ballappearance"
+import { getRenderQuality } from "./renderquality"
 
 export class BallMesh {
-  private static _ballGeometry: IcosahedronGeometry
+  private static _ballGeometry: BufferGeometry
   private static _shadowGeometry: CircleGeometry
   private static _shadowMaterial: MeshBasicMaterial
   private static readonly _dottedGeometryCache = new Map<
@@ -33,10 +36,17 @@ export class BallMesh {
 
   private static getBallGeometry() {
     if (!this._ballGeometry) {
-      this._ballGeometry = new IcosahedronGeometry(
-        R,
-        Math.max(1, Session.getLod())
-      )
+      const quality = getRenderQuality()
+      let segments = 32
+      let rows = 20
+      if (quality.name === "high") {
+        segments = 48
+        rows = 32
+      } else if (quality.name === "low") {
+        segments = 16
+        rows = 12
+      }
+      this._ballGeometry = new SphereGeometry(R, segments, rows)
     }
     return this._ballGeometry
   }
@@ -56,7 +66,12 @@ export class BallMesh {
 
   private static getShadowMaterial() {
     if (!this._shadowMaterial) {
-      this._shadowMaterial = new MeshBasicMaterial({ color: 0x111122 })
+      this._shadowMaterial = new MeshBasicMaterial({
+        color: 0x111122,
+        opacity: 0.34,
+        transparent: true,
+        depthWrite: false,
+      })
     }
     return this._shadowMaterial
   }
@@ -127,7 +142,7 @@ export class BallMesh {
   }
 
   initialiseMesh(color: Color, label?: number, appearance?: BallAppearance) {
-    let geometry: IcosahedronGeometry
+    let geometry: BufferGeometry
     let material:
       MeshPhongMaterial | MeshStandardMaterial | MeshPhysicalMaterial
     const effectiveAppearance =
@@ -151,16 +166,22 @@ export class BallMesh {
         throw new Error("Projected ball material requires a label")
       }
       geometry = BallMesh.getBallGeometry()
-      material = BallMaterialFactory.createProjectedMaterial(label, color)
+      material = BallMaterialFactory.createProjectedMaterial(
+        label,
+        color,
+        getRenderQuality().ballTextureSize
+      )
     }
     this.mesh = new Mesh(geometry, material)
     this.mesh.name = "ball"
+    this.mesh.castShadow = getRenderQuality().dynamicShadows
     this.updateRotation(new Vector3().random(), 100)
 
     this.shadow = new Mesh(
       BallMesh.getShadowGeometry(),
       BallMesh.getShadowMaterial()
     )
+    this.shadow.visible = !getRenderQuality().dynamicShadows
     this.spinAxisArrow = new ArrowHelper(up, zero, 2, 0x000000, 0.01, 0.01)
     this.spinAxisArrow.visible = false
     this.trace = new Trace(500, color)

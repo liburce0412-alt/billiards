@@ -3,6 +3,7 @@ const TerserPlugin = require("terser-webpack-plugin")
 module.exports = {
   entry: {
     index: "./src/index.ts",
+    launcher: "./src/launcher.ts",
     diagram: "./src/diagrams.ts",
     mathavan: "./src/mathavan.ts",
     compare: "./src/compare.ts",

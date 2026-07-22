@@ -1,107 +1,152 @@
-import { AudioListener, Audio, AudioLoader, MathUtils } from "three"
+import {
+  Audio as ThreeAudio,
+  AudioListener,
+  AudioLoader,
+  Group,
+  MathUtils,
+  PositionalAudio,
+  Vector3,
+} from "three"
+import { Outcome, OutcomeType } from "../model/outcome"
+import { R } from "../model/physics/constants"
+import { getRenderQuality } from "./renderquality"
+import { gainForImpact } from "../utils/impactgain"
+
+type SoundKey = "collision" | "cue" | "cushion" | "pot" | "success"
+type Voice = ThreeAudio | PositionalAudio
+
+const definitions: Record<SoundKey, { path: string; spatial: boolean }> = {
+  collision: { path: "sounds/ballcollision.ogg", spatial: true },
+  cue: { path: "sounds/cue.ogg", spatial: true },
+  cushion: { path: "sounds/cushion.ogg", spatial: true },
+  pot: { path: "sounds/pot.ogg", spatial: true },
+  success: { path: "sounds/success.ogg", spatial: false },
+}
 
 export class Sound {
   listener: AudioListener
   audioLoader: AudioLoader
-
-  ballcollision
-  cue
-  cushion
-  pot
-  success
-
+  readonly root = new Group()
+  private readonly pools = new Map<SoundKey, Voice[]>()
+  private readonly cursors = new Map<SoundKey, number>()
+  private readonly contactPosition = new Vector3()
   lastOutcomeTime = 0
   lastOutcomeIndex = 0
-  lastOutcomesRef: any[] | null = null
-  loadAssets
+  lastOutcomesRef: Outcome[] | null = null
 
-  constructor(loadAssets) {
-    this.loadAssets = loadAssets
-    if (!loadAssets) {
-      return
-    }
+  constructor(readonly loadAssets: boolean) {
+    if (!loadAssets) return
+
     this.listener = new AudioListener()
     this.audioLoader = new AudioLoader()
-
-    this.ballcollision = new Audio(this.listener)
-    this.load("sounds/ballcollision.ogg", this.ballcollision)
-
-    this.cue = new Audio(this.listener)
-    this.load("sounds/cue.ogg", this.cue)
-
-    this.cushion = new Audio(this.listener)
-    this.load("sounds/cushion.ogg", this.cushion)
-
-    this.pot = new Audio(this.listener)
-    this.load("sounds/pot.ogg", this.pot)
-
-    this.success = new Audio(this.listener)
-    this.load("sounds/success.ogg", this.success)
+    for (const [key, definition] of Object.entries(definitions)) {
+      this.loadPool(key as SoundKey, definition.path, definition.spatial)
+    }
   }
 
-  addCameraToListener(camera) {
-    camera.add(this.listener)
-  }
-
-  load(path, audio) {
+  private loadPool(key: SoundKey, path: string, spatial: boolean) {
     this.audioLoader.load(
       path,
       (buffer) => {
-        audio.setBuffer(buffer)
-        audio.setLoop(false)
+        const useSpatial = spatial && getRenderQuality().name !== "low"
+        const voices: Voice[] = []
+        for (let i = 0; i < 4; i++) {
+          const voice = useSpatial
+            ? new PositionalAudio(this.listener)
+            : new ThreeAudio(this.listener)
+          voice.setBuffer(buffer)
+          voice.setLoop(false)
+          if (voice instanceof PositionalAudio) {
+            voice.setRefDistance(R * 18)
+            voice.setMaxDistance(R * 180)
+            voice.setRolloffFactor(0.8)
+            this.root.add(voice)
+          }
+          voices.push(voice)
+        }
+        this.pools.set(key, voices)
       },
-      (_) => {},
-      (_) => {}
+      undefined,
+      () => console.warn(`Failed to load sound: ${path}`)
     )
   }
 
-  play(audio: Audio, volume, detune = 0) {
-    if (this.loadAssets) {
-      const context = this.listener.context
-      if (context?.state === "suspended") {
-        if (navigator?.userActivation?.hasBeenActive) {
-          context.resume()
-        }
-        return
-      }
-      audio.setVolume(volume)
-      if (audio.isPlaying) {
-        audio.stop()
-      }
-      audio.play(MathUtils.randFloat(0, 0.01))
-      audio.setDetune(detune)
+  addCameraToListener(camera) {
+    if (this.listener) camera.add(this.listener)
+  }
+
+  private play(
+    key: SoundKey,
+    volume: number,
+    detune = 0,
+    position?: Vector3,
+    delay = 0
+  ) {
+    if (!this.loadAssets) return
+    const context = this.listener.context
+    if (context?.state === "suspended") {
+      if (globalThis.navigator?.userActivation?.hasBeenActive) context.resume()
+      return
+    }
+
+    const voices = this.pools.get(key)
+    if (!voices?.length) return
+    const cursor = this.cursors.get(key) ?? 0
+    const available = voices.find((voice) => !voice.isPlaying)
+    const voice = available ?? voices[cursor % voices.length]
+    this.cursors.set(key, cursor + 1)
+    if (voice.isPlaying) voice.stop()
+
+    voice.setVolume(MathUtils.clamp(volume, 0, 1))
+    voice.setDetune(detune + MathUtils.randFloat(-22, 22))
+    if (position && voice instanceof PositionalAudio) {
+      voice.position.copy(position)
+      voice.updateMatrixWorld(true)
+    }
+    voice.play(delay)
+  }
+
+  private outcomePosition(outcome: Outcome) {
+    if (outcome.ballA && outcome.ballB && outcome.ballA !== outcome.ballB) {
+      return this.contactPosition
+        .copy(outcome.ballA.pos)
+        .add(outcome.ballB.pos)
+        .multiplyScalar(0.5)
+    }
+    return outcome.ballA?.pos
+  }
+
+  outcomeToSound(outcome: Outcome) {
+    const position = this.outcomePosition(outcome)
+    if (outcome.type === OutcomeType.Collision) {
+      this.play(
+        "collision",
+        gainForImpact(outcome.incidentSpeed, 4.5, 0.9),
+        outcome.incidentSpeed * 8,
+        position
+      )
+    } else if (outcome.type === OutcomeType.Pot) {
+      const gain = gainForImpact(outcome.incidentSpeed, 3, 0.85)
+      this.play("pot", gain, -180, position)
+      this.play("pot", gain * 0.45, -720, position, 0.055)
+    } else if (outcome.type === OutcomeType.Cushion) {
+      this.play(
+        "cushion",
+        gainForImpact(outcome.incidentSpeed, 4, 0.72),
+        -80,
+        position
+      )
+    } else if (outcome.type === OutcomeType.Hit) {
+      this.play(
+        "cue",
+        gainForImpact(outcome.incidentSpeed, 5, 0.9),
+        0,
+        position
+      )
     }
   }
 
-  outcomeToSound(outcome) {
-    if (outcome.type === "Collision") {
-      this.play(
-        this.ballcollision,
-        outcome.incidentSpeed / 80,
-        outcome.incidentSpeed * 5
-      )
-    }
-    if (outcome.type === "Pot") {
-      this.play(
-        this.pot,
-        outcome.incidentSpeed / 10,
-        -1000 + outcome.incidentSpeed * 10
-      )
-    }
-    if (outcome.type === "Cushion") {
-      this.play(this.cushion, outcome.incidentSpeed / 70)
-    }
-    if (outcome.type === "Hit") {
-      this.play(this.cue, outcome.incidentSpeed / 30)
-    }
-    if (outcome.type === "Proximity") {
-      // tbd
-    }
-  }
-
-  processOutcomes(outcomes) {
-    // Optimize processOutcomes to avoid scanning from index 0 every frame.
-    // We cache the last checked outcomes array reference and track the next outcome index.
+  processOutcomes(outcomes: Outcome[]) {
     if (
       this.lastOutcomeTime === -1 ||
       outcomes !== this.lastOutcomesRef ||
@@ -110,6 +155,7 @@ export class Sound {
       this.lastOutcomeIndex = 0
       this.lastOutcomesRef = outcomes
     }
+
     for (let i = this.lastOutcomeIndex; i < outcomes.length; i++) {
       const outcome = outcomes[i]
       if (outcome.timestamp > this.lastOutcomeTime) {
@@ -122,10 +168,10 @@ export class Sound {
   }
 
   playNotify() {
-    this.play(this.pot, 1)
+    this.play("pot", 0.7)
   }
 
   playSuccess(pitch) {
-    this.play(this.success, 0.1, pitch * 100 - 2200)
+    this.play("success", 0.1, pitch * 100 - 2200)
   }
 }

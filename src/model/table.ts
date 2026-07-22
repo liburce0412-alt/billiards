@@ -14,6 +14,7 @@ import { R } from "./physics/constants"
 import { ProximityIndicator } from "../view/proximityindicator"
 import { checkProximity } from "../utils/proximity"
 import { ShotStartUtils, type ShotStartConditions } from "../utils/shotstart"
+import { getRenderQuality } from "../view/renderquality"
 
 interface Pair {
   a: Ball
@@ -227,10 +228,15 @@ export class Table {
   }
 
   addToScene(scene) {
+    const quality = getRenderQuality()
     this.balls.forEach((b) => {
       b.ballmesh?.addToScene(scene)
     })
     if (this.cue) {
+      this.cue.mesh.traverse((object: any) => {
+        if (object.isMesh) object.castShadow = quality.dynamicShadows
+      })
+      this.cue.shadowMesh.visible = !quality.dynamicShadows
       scene.add(this.cue.mesh)
       scene.add(this.cue.helperMesh)
       scene.add(this.cue.placerMesh)

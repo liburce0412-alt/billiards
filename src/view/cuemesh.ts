@@ -11,6 +11,7 @@ import {
   PlaneGeometry,
   MeshBasicMaterial,
   ConeGeometry,
+  MeshStandardMaterial,
 } from "three"
 
 export type CueMeshes = {
@@ -137,13 +138,22 @@ export class CueMesh {
     const group = new Group()
 
     // Material Definitions
-    const ashWoodMat = new MeshPhongMaterial({ color: 0xd2b48c, shininess: 50 })
-    const ebonyMat = new MeshPhongMaterial({ color: 0x1a1a1a, shininess: 80 })
-    const ferruleMat = new MeshPhongMaterial({
-      color: 0xe5e5e5,
-      shininess: 100,
+    const ashWoodMat = new MeshStandardMaterial({
+      color: 0xd2b48c,
+      roughness: 0.3,
     })
-    const tipMat = new MeshPhongMaterial({ color: 0x4a7c9a, shininess: 5 })
+    const ebonyMat = new MeshStandardMaterial({
+      color: 0x1a1a1a,
+      roughness: 0.24,
+    })
+    const ferruleMat = new MeshStandardMaterial({
+      color: 0xe5e5e5,
+      roughness: 0.18,
+    })
+    const tipMat = new MeshStandardMaterial({
+      color: 0x4a7c9a,
+      roughness: 0.78,
+    })
 
     // Ratios for a standard snooker cue
     const buttLength = length * 0.28

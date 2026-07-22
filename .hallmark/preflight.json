@@ -1,0 +1,9 @@
+{
+  "date": "2026-07-23",
+  "framework": "Vanilla HTML + TypeScript + Three.js",
+  "font_stack": "Exo",
+  "palette": "Legacy hex colours across dist/css; no shared design tokens",
+  "motion": "No motion library",
+  "spacing": "No shared spacing scale",
+  "preserve": ["game routes", "gameplay UI", "URL parameters"]
+}

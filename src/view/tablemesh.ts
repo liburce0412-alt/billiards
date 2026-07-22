@@ -3,7 +3,7 @@ import {
   Mesh,
   CylinderGeometry,
   BoxGeometry,
-  MeshPhongMaterial,
+  MeshStandardMaterial,
   PointLight,
   Group,
 } from "three"
@@ -42,22 +42,28 @@ export class TableMesh {
     return group
   }
 
-  private readonly cloth = new MeshPhongMaterial({
+  private readonly cloth = new MeshStandardMaterial({
     color: 0x243599,
+    roughness: 0.88,
+    metalness: 0,
     wireframe: false,
     flatShading: true,
     transparent: false,
   })
 
-  private readonly cushion = new MeshPhongMaterial({
+  private readonly cushion = new MeshStandardMaterial({
     color: 0x4455a9,
+    roughness: 0.62,
+    metalness: 0,
     wireframe: false,
     flatShading: true,
     transparent: false,
   })
 
-  private readonly pocket = new MeshPhongMaterial({
+  private readonly pocket = new MeshStandardMaterial({
     color: 0x445599,
+    roughness: 0.75,
+    metalness: 0,
     wireframe: false,
     flatShading: true,
     transparent: true,

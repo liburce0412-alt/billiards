@@ -1,4 +1,4 @@
-import { CanvasTexture, Color } from "three"
+import { CanvasTexture, Color, SRGBColorSpace } from "three"
 
 export class BallTextureFactory {
   private static readonly textureCache: Map<string, CanvasTexture> = new Map()
@@ -25,58 +25,51 @@ export class BallTextureFactory {
   ): CanvasTexture {
     const scale = size / 256
     const canvas = document.createElement("canvas")
-    canvas.width = size
+    canvas.width = size * 2
     canvas.height = size
     const ctx = canvas.getContext("2d")
-    if (!ctx) {
-      return new CanvasTexture(canvas)
-    }
+    if (!ctx) return new CanvasTexture(canvas)
 
-    // Background
-    ctx.fillStyle = `#${color.getHexString()}`
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    const width = canvas.width
+    const height = canvas.height
+    const ballColor = `#${color.getHexString()}`
 
-    // Stripes for Nineball (9-15)
+    ctx.fillStyle = label >= 9 || label === 0 ? "white" : ballColor
+    ctx.fillRect(0, 0, width, height)
     if (label >= 9) {
-      ctx.fillStyle = "white"
-      ctx.fillRect(0, 0, size, size * 0.2)
-      ctx.fillRect(0, size * 0.8, size, size * 0.2)
+      ctx.fillStyle = ballColor
+      ctx.fillRect(0, height * 0.25, width, height * 0.5)
     }
 
     if (label > 0) {
-      const centerX = size / 2
-      const centerY = size / 2
-      const radius = Math.round(52 * scale)
-      const border = Math.round(15 * scale)
+      const centerY = height / 2
+      const radius = Math.round(42 * scale)
+      const border = Math.round(8 * scale)
+      for (const centerX of [width * 0.25, width * 0.75]) {
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radius + border, 0, Math.PI * 2)
+        ctx.fillStyle = "black"
+        ctx.fill()
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
+        ctx.fillStyle = "white"
+        ctx.fill()
 
-      // Black circle (border)
-      ctx.beginPath()
-      ctx.arc(centerX, centerY, radius + border, 0, Math.PI * 2)
-      ctx.fillStyle = "black"
-      ctx.fill()
-
-      // White circle
-      ctx.beginPath()
-      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
-      ctx.fillStyle = "white"
-      ctx.fill()
-
-      // Number
-      ctx.fillStyle = "black"
-      ctx.strokeStyle = "black"
-      const fontSize = Math.round(97 * scale)
-      ctx.lineWidth = fontSize * 0.05
-      ctx.font = `900 ${fontSize}px "Arial Black", Arial, sans-serif`
-      ctx.textAlign = "center"
-      ctx.textBaseline = "middle"
-      const textX = centerX
-      const textY = centerY + Math.round(5 * scale)
-      ctx.strokeText(label.toString(), textX, textY)
-      ctx.fillText(label.toString(), textX, textY)
+        ctx.fillStyle = "black"
+        ctx.strokeStyle = "black"
+        const fontSize = Math.round(68 * scale)
+        ctx.lineWidth = fontSize * 0.04
+        ctx.font = `900 ${fontSize}px "Arial Black", Arial, sans-serif`
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.strokeText(label.toString(), centerX, centerY + 3 * scale)
+        ctx.fillText(label.toString(), centerX, centerY + 3 * scale)
+      }
     }
 
     const texture = new CanvasTexture(canvas)
     texture.flipY = false
+    texture.colorSpace = SRGBColorSpace
     return texture
   }
 }

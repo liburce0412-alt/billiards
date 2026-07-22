@@ -1,8 +1,13 @@
 import { expect } from "chai"
-import { Camera } from "../../src/view/camera"
+import { Camera, frameRateIndependentLerp } from "../../src/view/camera"
 import { AimEvent } from "../../src/events/aimevent"
 
 describe("Camera", () => {
+  it("keeps damping equivalent across refresh rates", () => {
+    const at30 = frameRateIndependentLerp(0.1, 1 / 30)
+    const twoFramesAt60 = 1 - Math.pow(1 - 0.1, 2)
+    expect(at30).to.be.closeTo(twoFramesAt60, 1e-12)
+  })
   it("increments t in update", () => {
     const camera = new Camera(1)
     const aim = new AimEvent()

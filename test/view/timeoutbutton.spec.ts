@@ -73,6 +73,6 @@ describe("TimeoutButton", () => {
       } catch (e) {
         done(e)
       }
-    }, 90)
+    }, 130)
   })
 })

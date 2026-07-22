@@ -42,6 +42,7 @@ import { WatchAim } from "../controller/watchaim"
 import { WatchShot } from "../controller/watchshot"
 import { BallTray } from "../view/ball-tray"
 import { ExportUtils } from "../utils/export-utils"
+import { FixedStepAccumulator } from "../utils/fixedstep"
 
 type ActivePlayer = 0 | 1 | 2
 
@@ -94,6 +95,10 @@ export class Container {
 
   last = performance.now()
   readonly step = 0.001953125 * 1
+  private readonly fixedStep = new FixedStepAccumulator(
+    this.step,
+    Number.POSITIVE_INFINITY
+  )
 
   broadcast: (event: GameEvent) => void = () => {}
   log: (text: string) => void
@@ -132,6 +137,7 @@ export class Container {
     this.menu = new Menu(this)
     this.comment = new Comment(this)
     this.table.addToScene(this.view.scene)
+    this.view.warmup()
     this.view.onLineDrawn = (line) => {
       this.sendEvent(new ChatEvent(this.id, "", line))
     }
@@ -293,8 +299,9 @@ export class Container {
   advance(elapsed) {
     this.frame?.(elapsed)
 
-    const steps = Math.floor((elapsed * this.timeScale) / this.step)
-    const computedElapsed = steps * this.step
+    const fixed = this.fixedStep.consume(elapsed, this.timeScale)
+    const steps = fixed.steps
+    const computedElapsed = fixed.elapsed
     const stateBefore = this.table.allStationary()
     for (let i = 0; i < steps; i++) {
       this.table.advance(this.step)
@@ -336,7 +343,9 @@ export class Container {
   lastEventTime = performance.now()
 
   animate(timestamp): void {
-    this.advance((timestamp - this.last) / 1000)
+    // A suspended tab can resume with seconds of wall time. Never try to
+    // simulate more than 100 ms of missed real time in one render frame.
+    this.advance(Math.min((timestamp - this.last) / 1000, 0.1))
     this.last = timestamp
     this.processEvents()
     const needsRender =

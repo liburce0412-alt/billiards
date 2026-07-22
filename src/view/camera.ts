@@ -4,12 +4,27 @@ import { AimEvent } from "../events/aimevent"
 import { CameraTop } from "./cameratop"
 import { R } from "../model/physics/constants"
 
+/** Preserve the feel of an old per-frame lerp while making it refresh-rate independent. */
+export function frameRateIndependentLerp(
+  fractionAt60Fps: number,
+  elapsed: number
+) {
+  if (fractionAt60Fps >= 1) return 1
+  if (fractionAt60Fps <= 0) return 0
+  return 1 - Math.pow(1 - fractionAt60Fps, Math.max(0, elapsed) * 60)
+}
+
 export class Camera {
   static defaultHeight = R * 8
   static defaultDistance = R * 18
   static defaultFovOffset = 0
 
   static configureForRule(ruleType: string) {
+    Camera.defaultHeight = R * 8
+    Camera.defaultDistance = R * 18
+    Camera.defaultFovOffset = 0
+    CameraTop.zoomFactor = 1
+
     if (ruleType === "threecushion" || ruleType === "sagu") {
       Camera.defaultHeight = R * 23
       Camera.defaultDistance = R * 22
@@ -36,7 +51,7 @@ export class Camera {
   private fovOffset = Camera.defaultFovOffset
   savedDistance?: number
 
-  elapsed: number
+  elapsed: number = 1 / 60
   private t = 0
 
   update(elapsed, aim: AimEvent) {
@@ -54,7 +69,10 @@ export class Camera {
       Math.cos(this.t / 5) * orbitR,
       orbitH + Math.sin(this.t / 19) * orbitH * 0.25
     )
-    this.camera.position.lerp(this.target, 0.004)
+    this.camera.position.lerp(
+      this.target,
+      frameRateIndependentLerp(0.004, this.elapsed)
+    )
     this.camera.up = up
     this.camera.lookAt(zero)
   }
@@ -73,14 +91,17 @@ export class Camera {
         unitAtAngle(aim.angle, this.tempVec),
         -(this.distance + R * 12)
       )
-    this.camera.position.lerp(this.target, 0.1)
+    this.camera.position.lerp(
+      this.target,
+      frameRateIndependentLerp(0.1, this.elapsed)
+    )
     this.camera.position.z = h
     this.camera.up = up
     this.lookTarget.lerp(
       this.tempVec2
         .copy(aim.pos)
         .addScaledVector(unitAtAngle(aim.angle, this.tempVec), R * 10),
-      0.03
+      frameRateIndependentLerp(0.03, this.elapsed)
     )
     this.camera.lookAt(this.lookTarget)
   }
@@ -89,7 +110,7 @@ export class Camera {
     this.camera.fov = CameraTop.fov
     this.camera.position.lerp(
       CameraTop.viewPoint(this.camera.aspect, this.camera.fov, this.tempVec),
-      0.9
+      frameRateIndependentLerp(0.9, this.elapsed)
     )
     this.camera.up = up
     this.camera.lookAt(zero)
@@ -106,7 +127,10 @@ export class Camera {
     this.target
       .copy(aim.pos)
       .addScaledVector(unitAtAngle(aim.angle, this.tempVec), -this.distance)
-    this.camera.position.lerp(this.target, fraction)
+    this.camera.position.lerp(
+      this.target,
+      frameRateIndependentLerp(fraction, this.elapsed)
+    )
     this.camera.position.z = h
     this.camera.up = up
     this.lookTarget.copy(aim.pos).addScaledVector(up, h / 2)

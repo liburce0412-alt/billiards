@@ -11,6 +11,8 @@ import { Rules } from "../controller/rules/rules"
 import { Sound } from "./sound"
 import { TableMesh } from "./tablemesh"
 import { TableGeometry } from "./tablegeometry"
+import { enhanceTableMaterials } from "./materialenhancer"
+import { getRenderQuality } from "./renderquality"
 
 export class Assets {
   private static readonly tableCustomization = {
@@ -46,6 +48,7 @@ export class Assets {
       if (this.isTableSize5()) {
         this.customizeTableScene(m.scene)
       }
+      enhanceTableMaterials(m.scene, getRenderQuality(), this.rules.rulename)
       this.table = m.scene
       TableMesh.mesh = m.scene.children[0]
       this.done()
@@ -55,6 +58,11 @@ export class Assets {
   createLocal() {
     this.sound = new Sound(false)
     TableMesh.mesh = new TableMesh().generateTable(TableGeometry.hasPockets)
+    enhanceTableMaterials(
+      TableMesh.mesh,
+      getRenderQuality(),
+      this.rules.rulename
+    )
     this.table = TableMesh.mesh
   }
 

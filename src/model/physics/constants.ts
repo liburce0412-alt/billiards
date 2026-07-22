@@ -1,6 +1,8 @@
 export let mu = 0.0055 // Han rolling friction
 export let muS = 0.126 // Han sliding friction
 export let rho = 0.045 // Han spindown rate
+export let ballRestitution = 0.925
+export let ballFrictionScale = 1
 
 export let m = 0.23
 export let R = 0.03275
@@ -37,7 +39,7 @@ export const sinθ = 2 / 5
 export const cosθ = Math.sqrt(21) / 5
 
 export const offCenterLimit = 0.45
-export const maxPower = 160 * R
+export let maxPower: number
 
 refresh()
 
@@ -45,6 +47,7 @@ function refresh() {
   Mz = ((mu * m * g * 2) / 3) * rho
   Mxy = (7 / (5 * Math.sqrt(2))) * R * mu * m * g
   I = (2 / 5) * m * R * R
+  maxPower = 160 * R
 }
 
 export function setR(val: number) {
@@ -62,6 +65,12 @@ export function setmu(val: number) {
 export function setrho(val: number) {
   rho = val
   refresh()
+}
+export function setBallRestitution(val: number) {
+  ballRestitution = val
+}
+export function setBallFrictionScale(val: number) {
+  ballFrictionScale = val
 }
 export function setmuS(val: number) {
   muS = val
