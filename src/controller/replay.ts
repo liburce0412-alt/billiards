@@ -13,7 +13,6 @@ import { ScoreEvent } from "../events/scoreevent"
 import { ChatEvent } from "../events/chatevent"
 import { share, shorten } from "../utils/shorten"
 import { anglesAlign } from "../utils/three-utils"
-import { LOBBY_URL } from "../network/client/constants"
 import { gameOverButtons } from "../utils/gameover"
 
 export class Replay extends ControllerBase {
@@ -173,10 +172,10 @@ export class Replay extends ControllerBase {
         {
           type: "Info",
           title: "Replay Complete",
-          extra: gameOverButtons.replay + " " + gameOverButtons.lobby,
+          extra: gameOverButtons.replay + " " + gameOverButtons.home,
         },
         0,
-        { lobby: () => (globalThis.location.href = LOBBY_URL) }
+        { home: () => (globalThis.location.href = "/") }
       )
       return new End(this.container)
     }

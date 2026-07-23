@@ -262,7 +262,7 @@ describe("NineBall Rules", () => {
       'data-notification-action="rematch"'
     )
     expect(notifySpy.mock.calls[0][0].extra).to.contain(
-      'data-notification-action="lobby"'
+      'data-notification-action="home"'
     )
     expect(notifySpy.mock.calls[0][0].extra).to.contain(
       "opponentId=opponent-client"

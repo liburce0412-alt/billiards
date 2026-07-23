@@ -26,7 +26,7 @@ const ZH_TEXT: Record<string, string> = {
   "GAME OVER": "比赛结束",
   "Replay Complete": "回放结束",
   "System error": "系统错误",
-  "please return to lobby": "请返回大厅后重试",
+  "please return to lobby": "请返回首页后重试",
   "Waiting for opponent to join": "正在等待对手加入",
   "Concede Game": "认输",
   "opponent will win": "确认后对手将获胜",

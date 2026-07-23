@@ -230,20 +230,28 @@ describe("BotEventHandler Respot Logic", () => {
     )
   })
 
-  it("should set bot aim.pos from placed cue ball after PLACEBALL", () => {
+  it("should choose a new legal cue-ball position after PLACEBALL", () => {
     const eventHandler = createBotEventHandler(container, publishedEvents)
 
     container.table.cueball.state = State.InPocket
-    const placedPos = new Vector3(-0.7205, 0, 0)
+    const placedPos = new Vector3(-0.7205, 0.4, 0)
 
     eventHandler.handle(new PlaceBallEvent(placedPos, undefined, true))
 
     const hit = publishedEvents.find((e) => e instanceof HitEvent)
     if (!(hit instanceof HitEvent)) throw new Error("Expected HitEvent")
 
-    expect(hit.tablejson.aim.pos.x).toBeCloseTo(Math.fround(placedPos.x), 9)
-    expect(hit.tablejson.aim.pos.y).toBeCloseTo(Math.fround(placedPos.y), 9)
-    expect(hit.tablejson.aim.pos.z).toBeCloseTo(Math.fround(placedPos.z), 9)
+    const selected = new Vector3(
+      hit.tablejson.aim.pos.x,
+      hit.tablejson.aim.pos.y,
+      hit.tablejson.aim.pos.z ?? 0
+    )
+    expect(selected.distanceTo(placedPos)).toBeGreaterThan(0.001)
+    expect(
+      container.rules.placeBall(selected).distanceTo(selected)
+    ).toBeLessThan(0.000001)
+    expect(container.table.overlapsAny(selected)).toBe(false)
+    expect(container.table.cueball.pos).toEqual(selected)
     expect(hit.tablejson.aim.i).toBe(0)
   })
 

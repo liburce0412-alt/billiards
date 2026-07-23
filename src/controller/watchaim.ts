@@ -44,8 +44,8 @@ export class WatchAim extends ControllerBase {
     return new WatchShot(this.container, event)
   }
 
-  override handleStartAim(_: StartAimEvent) {
-    this.container.rules.startTurn()
+  override handleStartAim(event: StartAimEvent) {
+    this.container.rules.startTurn(event.allowLetStroke)
     return new Aim(this.container)
   }
 }

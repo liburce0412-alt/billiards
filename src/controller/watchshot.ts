@@ -7,6 +7,7 @@ import { RerackEvent } from "../events/rerackevent"
 import { Session } from "../network/client/session"
 import { BeginEvent } from "../events/beginevent"
 import { HitEvent } from "../events/hitevent"
+import { StartAimEvent } from "../events/startaimevent"
 
 export class WatchShot extends ControllerBase {
   override get name(): string {
@@ -34,8 +35,8 @@ export class WatchShot extends ControllerBase {
     return this
   }
 
-  override handleStartAim(_) {
-    this.container.rules.startTurn()
+  override handleStartAim(event: StartAimEvent) {
+    this.container.rules.startTurn(event.allowLetStroke)
     return new Aim(this.container)
   }
 
@@ -49,10 +50,10 @@ export class WatchShot extends ControllerBase {
       }
     }
     if (event.useStartPos) {
-      this.container.rules.startTurn()
+      this.container.rules.startTurn(false)
       return new PlaceBall(this.container, event.pos.clone())
     }
-    this.container.rules.startTurn()
+    this.container.rules.startTurn(false)
     return new PlaceBall(this.container)
   }
 

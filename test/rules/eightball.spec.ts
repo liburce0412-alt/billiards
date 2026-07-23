@@ -264,6 +264,33 @@ describe("EightBall Rules", () => {
     expect(Session.getInstance().p1type).to.equal(0)
   })
 
+  it("keeps the table open when both groups are potted on the break", () => {
+    const ball1 = container.table.balls.find((b) => b.label === 1)!
+    const ball9 = container.table.balls.find((b) => b.label === 9)!
+    const outcome = [
+      Outcome.collision(container.table.cueball, ball1, 1),
+      Outcome.pot(ball1, 1),
+      Outcome.pot(ball9, 2),
+    ]
+
+    expect(eightball.update(outcome)).to.be.an.instanceof(Aim)
+    expect(Session.getInstance().p1type).to.equal(0)
+  })
+
+  it("keeps the table open when a combo pots the other group", () => {
+    markBreakComplete(container)
+    const ball1 = container.table.balls.find((b) => b.label === 1)!
+    const ball9 = container.table.balls.find((b) => b.label === 9)!
+    const outcome = [
+      Outcome.collision(container.table.cueball, ball1, 1),
+      Outcome.collision(ball1, ball9, 2),
+      Outcome.pot(ball9, 3),
+    ]
+
+    expect(eightball.update(outcome)).to.be.an.instanceof(Aim)
+    expect(Session.getInstance().p1type).to.equal(0)
+  })
+
   it("requires four object balls to reach cushions on a dry break", () => {
     const objects = container.table.balls.filter(
       (ball) => ball !== container.table.cueball

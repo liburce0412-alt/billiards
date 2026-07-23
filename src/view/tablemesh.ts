@@ -70,6 +70,12 @@ export class TableMesh {
     opacity: 0.3,
   })
 
+  constructor() {
+    this.cloth.name = "cloth"
+    this.cushion.name = "cushion"
+    this.pocket.name = "blackpocket"
+  }
+
   private knuckleCylinder(knuckle, scene, material = this.cloth) {
     const k = this.cylinder(
       knuckle.pos,

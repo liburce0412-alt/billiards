@@ -123,19 +123,63 @@
       <div id="helpOverlay" hidden>
         <iframe></iframe>
         <div class="help-footer">
-          <button
-            class="lobby-btn"
-            onclick="
-              window.location.href =
-                'https://billiards.tailuge.workers.dev/lobby'
-            "
-          >
-            返回大厅
+          <button class="lobby-btn" onclick="window.location.href = '/'">
+            返回首页
           </button>
           <span class="help-text">可设置游戏模式、画质和玩家名称</span>
           <button id="helpClose">关闭</button>
         </div>
       </div>
+      <section
+        id="cueSelector"
+        class="cue-selector"
+        aria-labelledby="cueSelectorTitle"
+        hidden
+      >
+        <header class="cue-selector__header">
+          <div>
+            <span class="cue-selector__eyebrow">局内装备</span>
+            <h2 id="cueSelectorTitle">选择球杆</h2>
+          </div>
+          <button
+            id="cueSelectorClose"
+            class="cue-selector__close"
+            type="button"
+            aria-label="关闭球杆选择"
+          >
+            ×
+          </button>
+        </header>
+        <p class="cue-selector__intro">
+          仅改变外观，不影响力度、旋转或物理结果。
+        </p>
+        <div id="cueStyleOptions" class="cue-style-options"></div>
+      </section>
+      <section
+        id="tableSelector"
+        class="table-selector"
+        aria-labelledby="tableSelectorTitle"
+        hidden
+      >
+        <header class="table-selector__header">
+          <div>
+            <span class="table-selector__eyebrow">局内球台</span>
+            <h2 id="tableSelectorTitle">选择台型与材质</h2>
+          </div>
+          <button
+            id="tableSelectorClose"
+            class="table-selector__close"
+            type="button"
+            aria-label="关闭球台选择"
+          >
+            ×
+          </button>
+        </header>
+        <p class="table-selector__intro">
+          美式台采用直袋口，中式台采用更窄的圆角袋口与钢库造型；选择只影响本机视觉。
+        </p>
+        <div id="tableStyleOptions" class="table-style-options"></div>
+      </section>
       <div id="botDebugOverlay">
         <header>
           <span id="botDebugToggle">🦞</span>
@@ -319,6 +363,24 @@
           hidden
         >
           🔍
+        </button>
+        <button
+          class="menuButton half-height"
+          title="选择球杆"
+          id="cueStyle"
+          type="button"
+          aria-label="选择局内球杆"
+        >
+          🪄
+        </button>
+        <button
+          class="menuButton half-height"
+          title="选择球台"
+          id="tableStyle"
+          type="button"
+          aria-label="选择局内球台"
+        >
+          🎱
         </button>
         <button
           class="menuButton half-height"

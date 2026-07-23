@@ -141,7 +141,7 @@ export class MatchResultHelper {
       highBreaks: this.getHighBreaks(container),
       icon: "🏆",
       extraClass: "",
-      extra: gameOverButtons.lobby,
+      extra: gameOverButtons.home,
       duration: 0,
     })
   }

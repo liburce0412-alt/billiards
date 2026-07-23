@@ -27,6 +27,7 @@ import { Rules } from "./rules"
 interface ChaseState {
   visitsWithoutClearance: number
   openingPlacement: boolean
+  letStrokeAvailable: boolean
 }
 
 type FourBallContainer = Container & { isBotRules?: boolean }
@@ -54,7 +55,11 @@ export class FourBallChase implements Rules {
   private state(): ChaseState {
     let state = FourBallChase.stateByTable.get(this.container.table)
     if (!state) {
-      state = { visitsWithoutClearance: 0, openingPlacement: true }
+      state = {
+        visitsWithoutClearance: 0,
+        openingPlacement: true,
+        letStrokeAvailable: false,
+      }
       FourBallChase.stateByTable.set(this.container.table, state)
     }
     return state
@@ -67,9 +72,10 @@ export class FourBallChase implements Rules {
     return Number.isFinite(value) && value > 0 ? value : 21
   }
 
-  startTurn(): void {
+  startTurn(allowLetStroke = true): void {
     this.previousBreak = this.currentBreak
     this.currentBreak = 0
+    this.state().letStrokeAvailable = allowLetStroke
   }
 
   tableGeometry(): void {
@@ -82,6 +88,7 @@ export class FourBallChase implements Rules {
     FourBallChase.stateByTable.set(table, {
       visitsWithoutClearance: 0,
       openingPlacement: true,
+      letStrokeAvailable: false,
     })
     return table
   }
@@ -113,7 +120,7 @@ export class FourBallChase implements Rules {
   }
 
   canLetStroke(): boolean {
-    if (this.isOpeningRack()) return false
+    if (this.isOpeningRack() || !this.state().letStrokeAvailable) return false
     const target = this.nextCandidateBall()
     if (!target) return false
 
@@ -147,6 +154,7 @@ export class FourBallChase implements Rules {
     }
 
     if (this.isPartOfBreak(outcome)) {
+      this.state().letStrokeAvailable = false
       this.container.sound.playSuccess(this.container.table.inPockets())
       this.container.sendEvent(new WatchEvent(this.container.table.serialise()))
       return new Aim(this.container)
@@ -251,6 +259,7 @@ export class FourBallChase implements Rules {
     })
     this.state().visitsWithoutClearance = 0
     this.state().openingPlacement = true
+    this.state().letStrokeAvailable = false
     return balls
   }
 

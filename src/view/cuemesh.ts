@@ -11,8 +11,10 @@ import {
   PlaneGeometry,
   MeshBasicMaterial,
   ConeGeometry,
-  MeshStandardMaterial,
+  MeshPhysicalMaterial,
+  Object3D,
 } from "three"
+import { CueStyle, cueStyleById } from "./cuestyle"
 
 export type CueMeshes = {
   mesh: Group
@@ -119,8 +121,14 @@ export class CueMesh {
     return mesh
   }
 
-  static createCue(tip, but, length): CueMeshes {
+  private static readonly styleMaterials = new Map<
+    string,
+    Record<string, MeshPhysicalMaterial>
+  >()
+
+  static createCue(tip, but, length, styleId?: string): CueMeshes {
     const cueBody = this.cueGeometry(tip, but, length)
+    this.applyStyle(cueBody, styleId)
     const tiltGroup = new Group()
     const mesh = new Group()
 
@@ -134,66 +142,105 @@ export class CueMesh {
     return { mesh, tiltMesh: tiltGroup, cueBody }
   }
 
-  static cueGeometry(tipRadius, buttRadius, length, segments = 9) {
+  static cueGeometry(tipRadius, buttRadius, length, segments = 20) {
     const group = new Group()
+    const placeholder = new MeshPhysicalMaterial()
+    const addPart = (mesh: Mesh, role: string, positionY: number): Mesh => {
+      mesh.position.y = positionY
+      mesh.userData.cueRole = role
+      group.add(mesh)
+      return mesh
+    }
 
-    // Material Definitions
-    const ashWoodMat = new MeshStandardMaterial({
-      color: 0xd2b48c,
-      roughness: 0.3,
-    })
-    const ebonyMat = new MeshStandardMaterial({
-      color: 0x1a1a1a,
-      roughness: 0.24,
-    })
-    const ferruleMat = new MeshStandardMaterial({
-      color: 0xe5e5e5,
-      roughness: 0.18,
-    })
-    const tipMat = new MeshStandardMaterial({
-      color: 0x4a7c9a,
-      roughness: 0.78,
-    })
-
-    // Ratios for a standard snooker cue
     const buttLength = length * 0.28
     const shaftLength = length * 0.71
     const ferruleLength = length * 0.007
+    const capLength = length * 0.012
+    const sleeveLength = length * 0.055
+    const wrapLength = length * 0.085
+    const forearmLength = buttLength - capLength - sleeveLength - wrapLength
+    let cursor = -length / 2
 
-    // 1. Butt
-    const buttGeom = new CylinderGeometry(
+    const addSection = (
+      role: string,
+      bottomRadius: number,
+      topRadius: number,
+      sectionLength: number
+    ) => {
+      const mesh = new Mesh(
+        new CylinderGeometry(topRadius, bottomRadius, sectionLength, segments),
+        placeholder
+      )
+      addPart(mesh, role, cursor + sectionLength / 2)
+      cursor += sectionLength
+      return mesh
+    }
+
+    addSection("buttCap", buttRadius, buttRadius, capLength)
+    addSection("sleeve", buttRadius, buttRadius * 0.985, sleeveLength)
+    addSection("wrap", buttRadius * 0.985, buttRadius * 0.94, wrapLength)
+    const forearm = addSection(
+      "forearm",
+      buttRadius * 0.94,
       buttRadius * 0.9,
-      buttRadius,
-      buttLength,
-      segments
+      forearmLength
     )
-    const butt = new Mesh(buttGeom, ebonyMat)
-    butt.position.y = -length / 2 + buttLength / 2
-    group.add(butt)
 
-    // 2. Shaft
+    const ringPositions = [
+      -length / 2 + capLength,
+      -length / 2 + capLength + sleeveLength,
+      -length / 2 + capLength + sleeveLength + wrapLength,
+      -length / 2 + buttLength,
+    ]
+    ringPositions.forEach((positionY, index) => {
+      const ring = new Mesh(
+        new CylinderGeometry(
+          buttRadius * (index === 3 ? 0.91 : 1.005),
+          buttRadius * (index === 3 ? 0.91 : 1.005),
+          length * 0.004,
+          segments
+        ),
+        placeholder
+      )
+      addPart(ring, "accent", positionY)
+    })
+
     const shaftGeom = new CylinderGeometry(
       tipRadius,
       buttRadius * 0.9,
       shaftLength,
       segments
     )
-    const shaft = new Mesh(shaftGeom, ashWoodMat)
-    shaft.position.y = butt.position.y + buttLength / 2 + shaftLength / 2
-    group.add(shaft)
+    const shaft = new Mesh(shaftGeom, placeholder)
+    addPart(shaft, "shaft", cursor + shaftLength / 2)
+    cursor += shaftLength
 
-    // 3. Ferrule
+    for (let i = 0; i < 4; i++) {
+      const inlay = new Mesh(
+        new ConeGeometry(buttRadius * 0.11, forearmLength * 0.48, 3, 1, false),
+        placeholder
+      )
+      const angle = (i * Math.PI) / 2
+      inlay.position.set(
+        Math.cos(angle) * buttRadius * 0.88,
+        forearm.position.y - forearmLength * 0.08,
+        Math.sin(angle) * buttRadius * 0.88
+      )
+      inlay.rotation.y = -angle
+      inlay.userData.cueRole = "accent"
+      group.add(inlay)
+    }
+
     const ferruleGeom = new CylinderGeometry(
       tipRadius,
       tipRadius,
       ferruleLength,
       segments
     )
-    const ferrule = new Mesh(ferruleGeom, ferruleMat)
-    ferrule.position.y = shaft.position.y + shaftLength / 2 + ferruleLength / 2
-    group.add(ferrule)
+    const ferrule = new Mesh(ferruleGeom, placeholder)
+    addPart(ferrule, "ferrule", cursor + ferruleLength / 2)
+    cursor += ferruleLength
 
-    // 4. Tip
     const tipHeight = 0.0055
     const tipTopRadius = tipRadius * 0.93
     const tipGeom = new CylinderGeometry(
@@ -202,11 +249,64 @@ export class CueMesh {
       tipHeight,
       segments
     )
-    const tip = new Mesh(tipGeom, tipMat)
-    tip.position.y = ferrule.position.y + ferruleLength / 2 + tipHeight / 2
+    const tip = new Mesh(tipGeom, placeholder)
+    tip.position.y = cursor + tipHeight / 2
     tip.name = "cueTip"
+    tip.userData.cueRole = "tip"
     group.add(tip)
 
     return group
+  }
+
+  static applyStyle(cueBody: Object3D, styleId?: string): CueStyle {
+    const style = cueStyleById(styleId)
+    const materials = this.materialsForStyle(style)
+    cueBody.traverse((object) => {
+      if (!(object instanceof Mesh)) return
+      const role = object.userData.cueRole
+      if (role && materials[role]) {
+        object.material = materials[role]
+      }
+    })
+    cueBody.userData.cueStyleId = style.id
+    return style
+  }
+
+  private static materialsForStyle(
+    style: CueStyle
+  ): Record<string, MeshPhysicalMaterial> {
+    const cached = this.styleMaterials.get(style.id)
+    if (cached) return cached
+
+    const material = (
+      color: number,
+      roughness: number,
+      metalness = 0,
+      clearcoat = 0.25
+    ) =>
+      new MeshPhysicalMaterial({
+        color,
+        roughness,
+        metalness,
+        clearcoat,
+        clearcoatRoughness: 0.2,
+      })
+    const materials = {
+      shaft: material(
+        style.shaft,
+        style.shaftMetalness ? 0.22 : 0.31,
+        style.shaftMetalness ?? 0,
+        style.shaftMetalness ? 0.5 : 0.2
+      ),
+      forearm: material(style.forearm, 0.24, 0, 0.62),
+      sleeve: material(style.sleeve, 0.22, 0, 0.58),
+      wrap: material(style.wrap, 0.68, 0, 0.04),
+      buttCap: material(style.sleeve, 0.28, 0.08, 0.42),
+      accent: material(style.accent, 0.18, 0.56, 0.48),
+      ferrule: material(style.ferrule, 0.2, 0.02, 0.5),
+      tip: material(style.tip, 0.82, 0, 0),
+    }
+    this.styleMaterials.set(style.id, materials)
+    return materials
   }
 }

@@ -1,7 +1,7 @@
 import { LOBBY_URL } from "../network/client/constants"
 
 export const gameOverButtons = {
-  lobby: `<button type="button" class="notification-btn" data-notification-action="lobby">返回大厅</button>`,
+  home: `<button type="button" class="notification-btn" data-notification-action="home">返回首页</button>`,
   newGame: `<button type="button" class="notification-btn" data-notification-action="reload">新一局</button>`,
   replay: `<button type="button" class="notification-btn" data-notification-action="replay">回放</button>`,
 
@@ -53,10 +53,10 @@ export const gameOverButtons = {
     nextTurnId?: string
   ): string {
     if (isSinglePlayer) {
-      return this.newGame + " " + this.lobby
+      return this.newGame + " " + this.home
     }
-    if (!ruletype) return this.lobby
+    if (!ruletype) return this.home
     const rematch = this.rematch(opponentId, opponentName, ruletype, nextTurnId)
-    return rematch ? rematch + " " + this.lobby : this.lobby
+    return rematch ? rematch + " " + this.home : this.home
   },
 }

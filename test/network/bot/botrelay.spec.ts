@@ -51,6 +51,22 @@ describe("BotRelay", () => {
   })
 
   describe("publish", () => {
+    it("preserves let-stroke eligibility through serialisation", () => {
+      const event = EventUtil.fromSerialised(
+        EventUtil.serialise(new StartAimEvent(false))
+      ) as StartAimEvent
+
+      expect(event.allowLetStroke).toBe(false)
+    })
+
+    it("defaults legacy STARTAIM messages to normal turn handover", () => {
+      const event = EventUtil.fromSerialised(
+        JSON.stringify({ type: EventType.STARTAIM })
+      ) as StartAimEvent
+
+      expect(event.allowLetStroke).toBe(true)
+    })
+
     it("should enqueue non-AIM messages", () => {
       const chatEvent = new ChatEvent("me", "hello")
       const message = EventUtil.serialise(chatEvent)

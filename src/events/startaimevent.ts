@@ -3,16 +3,19 @@ import { EventType } from "./eventtype"
 import { Controller } from "../controller/controller"
 
 export class StartAimEvent extends GameEvent {
-  constructor() {
+  readonly allowLetStroke: boolean
+
+  constructor(allowLetStroke = true) {
     super()
     this.type = EventType.STARTAIM
+    this.allowLetStroke = allowLetStroke
   }
 
   applyToController(controller: Controller) {
     return controller.handleStartAim(this)
   }
 
-  static fromJson() {
-    return new StartAimEvent()
+  static fromJson(json?: { allowLetStroke?: boolean }) {
+    return new StartAimEvent(json?.allowLetStroke ?? true)
   }
 }

@@ -4,6 +4,8 @@ import {
   RepeatWrapping,
   Float32BufferAttribute,
   BufferGeometry,
+  Group,
+  Object3D,
 } from "three"
 import { RuleFactory } from "../controller/rules/rulefactory"
 import { importGltf } from "../utils/gltf"
@@ -13,6 +15,13 @@ import { TableMesh } from "./tablemesh"
 import { TableGeometry } from "./tablegeometry"
 import { enhanceTableMaterials } from "./materialenhancer"
 import { getRenderQuality } from "./renderquality"
+import {
+  applyTableStyle,
+  savedTableStyleId,
+  saveTableStyleId,
+  tableAssetForStyle,
+  tableStyleById,
+} from "./tablestyle"
 
 export class Assets {
   private static readonly tableCustomization = {
@@ -27,9 +36,15 @@ export class Assets {
   ready
   rules: Rules
   background: Mesh
-  table: Mesh
+  table: Object3D
+  tableStyleId = savedTableStyleId()
 
   sound: Sound
+  private tableScene?: Object3D
+  private readonly tableVariants = new Map<string, Object3D>()
+  private tableReady = false
+  private tableLoadToken = 0
+  private localMesh = false
 
   constructor(ruletype) {
     this.rules = RuleFactory.create(ruletype, null)
@@ -39,37 +54,87 @@ export class Assets {
   loadFromWeb(ready) {
     this.ready = ready
     this.sound = new Sound(true)
+    this.table = new Group()
     importGltf("models/background.gltf", (m) => {
       this.background = m.scene
       this.done()
     })
-    importGltf(this.rules.asset, (m) => {
-      this.rules.scaleTableModel?.(m.scene)
-      if (this.isTableSize5()) {
-        this.customizeTableScene(m.scene)
-      }
-      enhanceTableMaterials(m.scene, getRenderQuality(), this.rules.rulename)
-      this.table = m.scene
-      TableMesh.mesh = m.scene.children[0]
+    this.loadTableVariant(this.tableStyleId, () => {
+      this.tableReady = true
       this.done()
     })
   }
 
   createLocal() {
     this.sound = new Sound(false)
-    TableMesh.mesh = new TableMesh().generateTable(TableGeometry.hasPockets)
-    enhanceTableMaterials(
-      TableMesh.mesh,
-      getRenderQuality(),
-      this.rules.rulename
-    )
-    this.table = TableMesh.mesh
+    this.localMesh = true
+    const tableMesh = new TableMesh().generateTable(TableGeometry.hasPockets)
+    TableMesh.mesh = tableMesh
+    enhanceTableMaterials(tableMesh, getRenderQuality(), this.rules.rulename)
+    this.table = tableMesh
+    this.tableScene = tableMesh
+    applyTableStyle(tableMesh, this.tableStyleId)
+    this.tableReady = true
   }
 
   static localAssets(ruletype = "") {
     const assets = new Assets(ruletype)
     assets.createLocal()
     return assets
+  }
+
+  setTableStyle(styleId: string, ready: () => void = () => {}): string {
+    this.tableStyleId = saveTableStyleId(styleId)
+    if (this.localMesh) {
+      if (this.tableScene) {
+        applyTableStyle(this.tableScene, this.tableStyleId)
+      }
+      ready()
+      return this.tableStyleId
+    }
+
+    this.loadTableVariant(this.tableStyleId, ready)
+    return this.tableStyleId
+  }
+
+  private loadTableVariant(styleId: string, ready: () => void) {
+    const normalizedStyleId = tableStyleById(styleId).id
+    const asset = tableAssetForStyle(
+      this.rules.rulename,
+      this.rules.asset,
+      normalizedStyleId
+    )
+    const token = ++this.tableLoadToken
+    const cached = this.tableVariants.get(asset)
+    if (cached) {
+      this.activateTableVariant(cached, normalizedStyleId)
+      ready()
+      return
+    }
+
+    importGltf(asset, (m) => {
+      this.rules.scaleTableModel?.(m.scene)
+      if (this.isTableSize5()) {
+        this.customizeTableScene(m.scene)
+      }
+      enhanceTableMaterials(m.scene, getRenderQuality(), this.rules.rulename)
+      this.tableVariants.set(asset, m.scene)
+      if (token !== this.tableLoadToken) return
+      this.activateTableVariant(m.scene, normalizedStyleId)
+      ready()
+    })
+  }
+
+  private activateTableVariant(scene: Object3D, styleId: string) {
+    if (this.tableScene !== scene) {
+      if (this.tableScene) {
+        this.table.remove(this.tableScene)
+      }
+      this.table.add(scene)
+      this.tableScene = scene
+      TableMesh.mesh = scene.children[0]
+    }
+    applyTableStyle(scene, styleId)
   }
 
   private isTableSize5(): boolean {
@@ -175,7 +240,7 @@ export class Assets {
   }
 
   private done() {
-    if (this.background && this.table) {
+    if (this.background && this.table && this.tableReady) {
       this.ready()
     }
   }

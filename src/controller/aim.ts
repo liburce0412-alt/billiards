@@ -81,7 +81,7 @@ export class Aim extends ControllerBase {
         "let-stroke": () => {
           this.container.notification.clear()
           this.container.table.cue.aimInputs.setDisabled(true)
-          this.container.sendEvent(new StartAimEvent())
+          this.container.sendEvent(new StartAimEvent(false))
           this.container.updateController(new WatchAim(this.container))
         },
         "play-on": () => this.container.notification.clear(),
@@ -118,7 +118,7 @@ export class Aim extends ControllerBase {
           type: "Info",
           title: "System error",
           subtext: "please return to lobby",
-          extra: gameOverButtons.lobby,
+          extra: gameOverButtons.home,
           icon: "⚠️",
         },
         0

@@ -11,6 +11,7 @@ import { Mesh, Vector3, Object3D } from "three"
 import { maxPower, offCenterLimit, R } from "../model/physics/constants"
 import { cueIntersectsAnything } from "../utils/cueintersect"
 import { id } from "../utils/dom"
+import { savedCueStyleId, saveCueStyleId } from "./cuestyle"
 
 export class Cue {
   mesh: Object3D
@@ -42,13 +43,15 @@ export class Cue {
   private readonly tempVec3 = new Vector3()
   hitAnimationWeight: number = 0
   private lastUpdateElapsed = 1 / 60
+  styleId = savedCueStyleId()
 
   constructor() {
     if (typeof document !== "undefined") {
       const cue = CueMesh.createCue(
         (R * 0.07) / 0.5,
         (R * 0.23) / 0.5,
-        this.length
+        this.length,
+        this.styleId
       )
       this.mesh = cue.mesh
       this.tiltMesh = cue.tiltMesh
@@ -57,6 +60,15 @@ export class Cue {
       this.placerMesh = CueMesh.createPlacer()
       this.shadowMesh = CueMesh.createShadow(this.length)
     }
+  }
+
+  setStyle(styleId: string, persist = true): string {
+    const style = CueMesh.applyStyle(this.cueBody, styleId)
+    this.styleId = style.id
+    if (persist) {
+      saveCueStyleId(style.id)
+    }
+    return style.id
   }
 
   rotateAim(angle, table: Table) {

@@ -302,7 +302,7 @@ export class EightBall implements Rules {
     }
 
     const myGroupBefore = session.p1type
-    this.assignGroupAfterBreak(session, pots)
+    this.assignGroupAfterOpenTable(session, outcome, pots)
 
     this.currentBreak += pots.length
     session.addMyScore(pots.length)
@@ -340,15 +340,32 @@ export class EightBall implements Rules {
     )
   }
 
-  private assignGroupAfterBreak(session: Session, pots: Ball[]) {
+  private assignGroupAfterOpenTable(
+    session: Session,
+    outcome: Outcome[],
+    pots: Ball[]
+  ) {
     if (session.p1type !== 0 || isOpeningShot(this.container.recorder)) {
       return
     }
+    const firstContact = Outcome.firstCollision(
+      Outcome.cueBallFirst(this.container.table.cueball, outcome)
+    )?.ballB
     const solids = pots.filter((ball) => ball.label! >= 1 && ball.label! <= 7)
     const stripes = pots.filter((ball) => ball.label! >= 9 && ball.label! <= 15)
-    if (solids.length > 0 && stripes.length === 0) {
+    if (
+      solids.length > 0 &&
+      stripes.length === 0 &&
+      firstContact &&
+      this.isMyType(firstContact, 1)
+    ) {
       session.p1type = 1
-    } else if (stripes.length > 0 && solids.length === 0) {
+    } else if (
+      stripes.length > 0 &&
+      solids.length === 0 &&
+      firstContact &&
+      this.isMyType(firstContact, 2)
+    ) {
       session.p1type = 2
     }
   }

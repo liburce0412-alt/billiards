@@ -6,6 +6,7 @@ import { CueMesh } from "../../src/view/cuemesh"
 import { Vector3 } from "three"
 import { zero } from "../../src/utils/three-utils"
 import { maxPower, offCenterLimit, R } from "../../src/model/physics/constants"
+import { CUE_STYLE_STORAGE_KEY, saveCueStyleId } from "../../src/view/cuestyle"
 
 const t = 0.1
 
@@ -141,6 +142,26 @@ describe("Cue", () => {
     const visibleBefore = cue.helperMesh.visible
     cue.toggleHelper()
     expect(cue.helperMesh.visible).to.equal(!visibleBefore)
+  })
+
+  test("applies a cue style without changing cue geometry", () => {
+    const cue = new Cue()
+    const childCount = cue.cueBody.children.length
+    const selected = cue.setStyle("obsidian", false)
+
+    expect(selected).to.equal("obsidian")
+    expect(cue.styleId).to.equal("obsidian")
+    expect(cue.cueBody.userData.cueStyleId).to.equal("obsidian")
+    expect(cue.cueBody.children).to.have.lengthOf(childCount)
+  })
+
+  test("restores the saved cue style", () => {
+    saveCueStyleId("glacier")
+    const cue = new Cue()
+
+    expect(cue.styleId).to.equal("glacier")
+    expect(cue.cueBody.userData.cueStyleId).to.equal("glacier")
+    globalThis.localStorage.removeItem(CUE_STYLE_STORAGE_KEY)
   })
 
   test("rotateAim calls showOverlap if aimInputs present", () => {

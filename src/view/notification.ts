@@ -1,5 +1,4 @@
 import { id } from "../utils/dom"
-import { LOBBY_URL } from "../network/client/constants"
 import { localizeText } from "../utils/locale"
 
 export interface NotificationHighBreak {
@@ -250,8 +249,8 @@ export class Notification {
       case "replay":
         globalThis.location.reload()
         break
-      case "lobby":
-        globalThis.location.href = LOBBY_URL
+      case "home":
+        globalThis.location.href = "/"
         break
       case "rematch":
         if (url) {

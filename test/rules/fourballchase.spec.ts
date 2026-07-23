@@ -89,7 +89,7 @@ describe("FourBallChase Rules", () => {
     ).to.be.closeTo(Rack.spot.x - 0.2, 1e-9)
   })
 
-  it("offers a let stroke only when the lowest ball is obscured", () => {
+  it("offers a let only on a blocked turn received from the opponent", () => {
     const { container, rules } = initFourBall()
     container.recorder.entries.push(
       { event: { type: EventType.AIM } } as any,
@@ -105,6 +105,29 @@ describe("FourBallChase Rules", () => {
     expect(rules.canLetStroke()).to.equal(false)
     blocker.pos.set(0, R, 0)
     expect(rules.canLetStroke()).to.equal(true)
+
+    rules.startTurn(false)
+    expect(rules.canLetStroke()).to.equal(false)
+  })
+
+  it("does not offer a let while the same player continues after a pot", () => {
+    const { container, rules } = initFourBall()
+    container.recorder.entries.push(
+      { event: { type: EventType.AIM } } as any,
+      { event: { type: EventType.AIM } } as any
+    )
+    const cue = container.table.cueball
+    const one = container.table.balls.find((ball) => ball.label === 1)!
+    const blocker = container.table.balls.find((ball) => ball.label === 2)!
+    rules.update([Outcome.collision(cue, one, 1), Outcome.cushion(one, 1, 2)])
+    rules.startTurn(true)
+    cue.pos.set(-0.8, 0, 0)
+    one.pos.set(0.4, 0, 0)
+    blocker.pos.set(0, R, 0)
+    expect(rules.canLetStroke()).to.equal(true)
+
+    rules.update([Outcome.collision(cue, one, 1), Outcome.pot(one, 1, 2)])
+    expect(rules.canLetStroke()).to.equal(false)
   })
 
   it("awards 10 for a break-and-run and reracks", () => {

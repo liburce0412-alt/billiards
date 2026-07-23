@@ -21,6 +21,7 @@ import { isFirstShot, isOpeningShot } from "../../utils/utils"
 import { BotShotContext, BotStrategy } from "./botstrategy"
 import { ClawBreak } from "./strategies/clawbreak"
 import { TheFarJaw } from "./strategies/thefarjaw"
+import { R } from "../../model/physics/constants"
 
 class BotContainer {
   table
@@ -51,6 +52,8 @@ export class BotEventHandler {
   protected readonly botRules: Rules
   private shouldStartTurnOnNextControl = false
   private queuedOwnStartAim = false
+  private allowLetStrokeOnNextTurn = true
+  private ballInHandForNextShot = false
 
   constructor(
     logs: Logger,
@@ -92,12 +95,16 @@ export class BotEventHandler {
       case EventType.STARTAIM:
         if (!this.queuedOwnStartAim) {
           this.shouldStartTurnOnNextControl = true
+          this.allowLetStrokeOnNextTurn = (
+            event as StartAimEvent
+          ).allowLetStroke
         }
         this.queuedOwnStartAim = false
         this.handleStartAim()
         break
       case EventType.PLACEBALL:
         this.shouldStartTurnOnNextControl = true
+        this.allowLetStrokeOnNextTurn = false
         this.handlePlaceBall(event as PlaceBallEvent)
         break
       case EventType.BEGIN:
@@ -535,10 +542,13 @@ export class BotEventHandler {
 
     const cueball = table.cueball
     cueball.pos.copy(
-      event.useStartPos ? event.pos : this.container.rules.placeBall()
+      this.container.rules.allowsPlaceBall()
+        ? this.chooseBallInHandPosition(event.pos)
+        : this.container.rules.placeBall()
     )
     cueball.setStationary()
     cueball.fround()
+    this.ballInHandForNextShot = true
     this.container.table.cue.aim.elevation = 0
     this.publishSequenceToPlayer(this.aim())
   }
@@ -547,12 +557,105 @@ export class BotEventHandler {
     if (!this.shouldStartTurnOnNextControl) {
       return
     }
-    this.botRules.startTurn()
+    this.botRules.startTurn(this.allowLetStrokeOnNextTurn)
     this.shouldStartTurnOnNextControl = false
+    this.allowLetStrokeOnNextTurn = true
   }
 
   private aim() {
-    return this.strategy.aim(this.buildShotContext(), this.calculator)
+    const events = this.strategy.aim(this.buildShotContext(), this.calculator)
+    this.ballInHandForNextShot = false
+    return events
+  }
+
+  private chooseBallInHandPosition(fallback: Vector3): Vector3 {
+    const table = this.container.table
+    const targets = this.validTargetBalls()
+    const candidates: { pos: Vector3; score: number }[] = []
+    const addCandidate = (candidate: Vector3, score: number) => {
+      const pos = this.container.rules.placeBall(candidate)
+      if (![pos.x, pos.y, pos.z].every(Number.isFinite)) return
+      if (table.overlapsAny(pos)) return
+      if (
+        candidates.some(
+          (existing) => existing.pos.distanceToSquared(pos) < 0.000001
+        )
+      ) {
+        return
+      }
+      candidates.push({ pos, score })
+    }
+
+    targets.forEach((target, targetIndex) => {
+      this.calculator.pockets.forEach((pocket, pocketIndex) => {
+        const fromPocket = target.pos.clone().sub(pocket).normalize()
+        const pos = target.pos.clone().addScaledVector(fromPocket, 4 * R)
+        const ghost = this.calculator.getAimPoint(pos, target.pos, [pocket])
+        const blocked =
+          this.isPathBlocked(pos, ghost, target) ||
+          this.isPathBlocked(target.pos, pocket, target)
+        const distance =
+          pos.distanceTo(ghost) + target.pos.distanceTo(pocket) * 0.35
+        addCandidate(
+          pos,
+          (blocked ? 100 : 0) +
+            distance +
+            targetIndex * 0.001 +
+            pocketIndex * 0.00001
+        )
+      })
+    })
+
+    const xSteps = [-0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75]
+    const ySteps = [-0.7, -0.35, 0, 0.35, 0.7]
+    xSteps.forEach((x, xIndex) => {
+      ySteps.forEach((y, yIndex) => {
+        const pos = new Vector3(
+          x * TableGeometry.tableX,
+          y * TableGeometry.tableY,
+          0
+        )
+        const target = targets[0]
+        const blocked = target
+          ? this.isPathBlocked(pos, target.pos, target)
+          : false
+        addCandidate(
+          pos,
+          200 +
+            (blocked ? 100 : 0) +
+            (target ? pos.distanceTo(target.pos) : 0) +
+            xIndex * 0.001 +
+            yIndex * 0.00001
+        )
+      })
+    })
+
+    addCandidate(fallback, 1000)
+    addCandidate(this.container.rules.placeBall(), 2000)
+    candidates.sort((a, b) => a.score - b.score)
+    return (
+      candidates[0]?.pos.clone() ?? this.container.rules.placeBall(fallback)
+    )
+  }
+
+  private isPathBlocked(from: Vector3, to: Vector3, target: Ball): boolean {
+    const line = to.clone().sub(from)
+    const lengthSquared = line.lengthSq()
+    if (lengthSquared === 0) return true
+
+    return this.container.table.balls.some((ball) => {
+      if (
+        ball === this.container.table.cueball ||
+        ball === target ||
+        !ball.onTable()
+      ) {
+        return false
+      }
+      const projection = ball.pos.clone().sub(from).dot(line) / lengthSquared
+      if (projection <= 0 || projection >= 1) return false
+      const closest = from.clone().addScaledVector(line, projection)
+      return closest.distanceTo(ball.pos) < 2.1 * R
+    })
   }
 
   private buildShotContext(): BotShotContext {
@@ -566,7 +669,7 @@ export class BotEventHandler {
       table: this.container.table,
       cueBall,
       validTargetBalls: this.validTargetBalls(),
-      ballInHand: false,
+      ballInHand: this.ballInHandForNextShot,
       ruleName: this.container.rules.rulename,
       shotIndex: this.container.recorder.entries.filter(
         (entry) => entry.event.type === EventType.AIM

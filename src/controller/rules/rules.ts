@@ -21,7 +21,7 @@ export interface Rules {
   allowsPlaceBall(): boolean
   placeBall(target?: Vector3): Vector3
   nextCandidateBall(p1type?: number): Ball | undefined
-  startTurn(): void
+  startTurn(allowLetStroke?: boolean): void
   handleGameEnd(isWinner: boolean, endSubtext?: string): Controller
   foulReason(outcome: Outcome[], type?: number): string | null
   getAmountScored(outcome: Outcome[]): number
