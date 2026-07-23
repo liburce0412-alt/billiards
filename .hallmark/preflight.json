@@ -1,9 +1,14 @@
 {
   "date": "2026-07-23",
   "framework": "Vanilla HTML + TypeScript + Three.js",
-  "font_stack": "Exo",
-  "palette": "Legacy hex colours across dist/css; no shared design tokens",
-  "motion": "No motion library",
-  "spacing": "No shared spacing scale",
-  "preserve": ["game routes", "gameplay UI", "URL parameters"]
+  "font_stack": "Tomorrow display + IBM Plex Sans body",
+  "palette": "Existing OKLCH Midnight tokens",
+  "motion": "Motion-cut; no animation library",
+  "spacing": "Existing 4pt CSS token scale",
+  "preserve": [
+    "game routes",
+    "gameplay UI",
+    "URL parameters",
+    "Midnight design tokens"
+  ]
 }

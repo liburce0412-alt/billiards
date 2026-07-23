@@ -34,22 +34,22 @@ export class Rack {
   }
 
   static readonly BALL_COLORS = [
-    "#FFFFFF", // 0: Cue Ball
-    "#ffd900", // 1: Yellow
-    "#0000FF", // 2: Blue
-    "#FF0000", // 3: Red
-    "#800080", // 4: Purple
-    "#ff3300", // 5: Orange
-    "#008000", // 6: Green
-    "#600000", // 7: Maroon
-    "#000000", // 8: Black
-    "#FFFF00", // 9: Yellow (Striped)
-    "#0000FF", // 10: Blue (Striped)
-    "#FF0000", // 11: Red (Striped)
-    "#800080", // 12: Purple (Striped)
-    "#FF8000", // 13: Orange (Striped)
-    "#008000", // 14: Green (Striped)
-    "#600000", // 15: Maroon (Striped)
+    "#f5f0df", // 0: warm ivory cue ball
+    "#e8bb27", // 1: Yellow
+    "#1767a3", // 2: Blue
+    "#c82f3a", // 3: Red
+    "#70438f", // 4: Purple
+    "#df6a25", // 5: Orange
+    "#238052", // 6: Green
+    "#743244", // 7: Burgundy
+    "#111214", // 8: Black
+    "#e8bb27", // 9: Yellow (Striped)
+    "#1767a3", // 10: Blue (Striped)
+    "#c82f3a", // 11: Red (Striped)
+    "#70438f", // 12: Purple (Striped)
+    "#df6a25", // 13: Orange (Striped)
+    "#238052", // 14: Green (Striped)
+    "#743244", // 15: Burgundy (Striped)
   ]
   private static jitter(pos) {
     return roundVec(
@@ -217,6 +217,33 @@ export class Rack {
       ),
     ]
     return fourballs
+  }
+
+  /**
+   * Project four-ball chase rack: cue ball plus 1, 2, 3 and 9.
+   * This is a pocket-billiards mode and is intentionally separate from the
+   * Korean four-ball carom rack above.
+   */
+  static fourBallChasePositions(): Vector3[] {
+    const apex = new Vector3(TableGeometry.tableX / 2, 0, 0)
+    return [
+      Rack.spot.clone(),
+      apex,
+      apex.clone().add(Rack.diagonal),
+      apex.clone().add(Rack.diagonal).sub(Rack.across),
+      apex.clone().add(Rack.down),
+    ].map((position) => roundVec(position))
+  }
+
+  static fourBallChase(): Ball[] {
+    const positions = Rack.fourBallChasePositions()
+    return [
+      Rack.cueBall(Rack.jitter(positions[0])),
+      new Ball(Rack.jitter(positions[1]), Rack.BALL_COLORS[1], 1),
+      new Ball(Rack.jitter(positions[2]), Rack.BALL_COLORS[2], 2),
+      new Ball(Rack.jitter(positions[3]), Rack.BALL_COLORS[3], 3),
+      new Ball(Rack.jitter(positions[4]), Rack.BALL_COLORS[9], 9),
+    ]
   }
 
   static get sixth() {

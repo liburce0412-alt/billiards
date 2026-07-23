@@ -175,7 +175,7 @@ describe("EightBall Rules", () => {
     expect(nextController).to.be.an.instanceof(End)
   })
 
-  it("should respot 8-ball and give ball in hand if cue ball and 8-ball both potted with other balls remaining", () => {
+  it("should lose if cue ball and 8-ball are potted after groups are assigned", () => {
     Session.getInstance().p1type = 1 // Solids assigned
     const eightBall = container.table.balls.find((b) => b.label === 8)!
     // Leave some solids and stripes on the table
@@ -185,8 +185,7 @@ describe("EightBall Rules", () => {
       Outcome.pot(container.table.cueball, 1),
     ]
     const nextController = eightball.update(outcome)
-    expect(nextController).to.be.an.instanceof(PlaceBall)
-    expect(eightBall.onTable()).to.be.true
+    expect(nextController).to.be.an.instanceof(End)
   })
 
   it("should lose if cue ball and 8-ball both potted with only those two on table", () => {

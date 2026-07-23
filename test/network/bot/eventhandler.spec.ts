@@ -428,7 +428,7 @@ describe("BotEventHandler Respot Logic", () => {
     expect(placeBallEvent.respot?.id).toBe(9)
   })
 
-  it("eightball foul: bot pots black and cue ball with balls remaining - black is respotted", () => {
+  it("eightball foul: assigned bot pots black and loses", () => {
     Ball.id = 0
     Session.init("test-client", "TestPlayer", "test-table", false)
     Session.getInstance().p1type = 1
@@ -451,15 +451,19 @@ describe("BotEventHandler Respot Logic", () => {
 
     const events: GameEvent[] = []
     const handler = createBotEventHandler(eightBallContainer, events)
+    const updateControllerSpy = jest.spyOn(
+      eightBallContainer,
+      "updateController"
+    )
     handler.handle(mockEvent(EventType.BEGIN))
 
     const placeBallEvent = events.find((e) => e instanceof PlaceBallEvent)
-    expect(placeBallEvent).toBeInstanceOf(PlaceBallEvent)
-    expect(eightBall.onTable()).toBe(true)
-    expect((placeBallEvent as PlaceBallEvent).respot?.id).toBe(eightBall.id)
+    expect(placeBallEvent).toBeUndefined()
+    expect(eightBall.onTable()).toBe(false)
+    expect(updateControllerSpy).toHaveBeenCalled()
   })
 
-  it("eightball early black after valid hit: bot respots black and gives ball in hand", () => {
+  it("eightball early black after groups are assigned: bot loses", () => {
     Ball.id = 0
     Session.init("test-client", "TestPlayer", "test-table", false)
     Session.getInstance().p1type = 1
@@ -481,12 +485,16 @@ describe("BotEventHandler Respot Logic", () => {
 
     const events: GameEvent[] = []
     const handler = createBotEventHandler(eightBallContainer, events)
+    const updateControllerSpy = jest.spyOn(
+      eightBallContainer,
+      "updateController"
+    )
     handler.handle(mockEvent(EventType.BEGIN))
 
     const placeBallEvent = events.find((e) => e instanceof PlaceBallEvent)
-    expect(placeBallEvent).toBeInstanceOf(PlaceBallEvent)
-    expect(eightBall.onTable()).toBe(true)
-    expect((placeBallEvent as PlaceBallEvent).respot?.id).toBe(eightBall.id)
+    expect(placeBallEvent).toBeUndefined()
+    expect(eightBall.onTable()).toBe(false)
+    expect(updateControllerSpy).toHaveBeenCalled()
   })
 
   it("eightball foul: bot pots black and cue ball with no balls remaining - bot wins", () => {

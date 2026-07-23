@@ -25,6 +25,12 @@ const ruleDetails: Record<
     description: "全色与花色分组，最后处理黑八。",
     meta: "有袋 · 分组",
   },
+  fourball: {
+    number: "4",
+    name: "四球追分",
+    description: "依次进攻 1、2、3、9，按 1/4/7/10 追分。",
+    meta: "有袋 · 21 分",
+  },
   snooker: {
     number: "S",
     name: "斯诺克",
@@ -125,7 +131,10 @@ function launcherMarkup(selection: LauncherSelection) {
         <a class="launcher-wordmark" href="./" aria-label="Break Builder 首页">
           <span aria-hidden="true">●</span> Break Builder
         </a>
-        <a class="launcher-lobby" href="lobby.html">联机大厅 <span aria-hidden="true">↗</span></a>
+        <div class="launcher-nav__links">
+          <a class="launcher-lobby" href="rules.html">规则对照</a>
+          <a class="launcher-lobby" href="lobby.html">联机大厅 <span aria-hidden="true">↗</span></a>
+        </div>
       </header>
 
       <main class="launcher-layout">
@@ -133,7 +142,7 @@ function launcherMarkup(selection: LauncherSelection) {
           <p class="launcher-kicker">浏览器台球模拟器</p>
           <h1 id="launcherTitle">选一张球桌。<br />打好下一杆。</h1>
           <p class="launcher-lede">
-            四种规则、两档本地机器人，以及针对当前设备的渲染画质。物理结果不随画质改变。
+            五种规则、两档本地机器人，以及针对当前设备的渲染画质。物理结果不随画质改变。
           </p>
           <dl class="launcher-facts">
             <div><dt>物理</dt><dd>固定 1/512 秒</dd></div>
@@ -179,7 +188,7 @@ function launcherMarkup(selection: LauncherSelection) {
       </main>
 
       <footer class="launcher-footer">
-        <p>GPL-3.0 · TypeScript + Three.js</p>
+        <p>GPL-3.0 · TypeScript + Three.js · <a href="rules.html">查看规则与实现差异</a></p>
         <p>方向键选择 · Enter 开始</p>
       </footer>
     </div>`

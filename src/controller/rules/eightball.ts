@@ -226,10 +226,7 @@ export class EightBall implements Rules {
 
     if (eightBallPotted) {
       const session = Session.getInstance()
-      const hasGroupBalls = this.container.table.balls.some(
-        (b) => b !== cueball && b.label !== 8 && b.onTable()
-      )
-      if (session.p1type !== 0 && hasGroupBalls) {
+      if (this.canRespotEightBall(session)) {
         return this.respotEightBallFoul()
       }
       return this.handleGameEnd(false, "8-ball pocketed on foul")
@@ -256,7 +253,7 @@ export class EightBall implements Rules {
     }
 
     if (pots.some((b) => b.label === 8)) {
-      return this.respotEightBallFoul()
+      return this.handleEarlyEightBall(session)
     }
 
     const myGroupBefore = session.p1type
@@ -299,6 +296,13 @@ export class EightBall implements Rules {
     return new Aim(this.container)
   }
 
+  private handleEarlyEightBall(session: Session): Controller {
+    if (this.canRespotEightBall(session)) {
+      return this.respotEightBallFoul()
+    }
+    return this.handleGameEnd(false, "8-ball pocketed early")
+  }
+
   private respotEightBallFoul(): Controller {
     const table = this.container.table
     const eightBall = table.balls.find((b) => b.label === 8)!
@@ -309,6 +313,18 @@ export class EightBall implements Rules {
       RerackEvent.fromJson({ balls: [eightBall.serialise()] })
     )
     return this.handleFoul([], "8-ball pocketed early")
+  }
+
+  private canRespotEightBall(session: Session): boolean {
+    return (
+      session.p1type === 0 &&
+      this.container.table.balls.some(
+        (ball) =>
+          ball !== this.container.table.cueball &&
+          ball.label !== 8 &&
+          ball.onTable()
+      )
+    )
   }
 
   private handleMiss(): Controller {
@@ -325,28 +341,32 @@ export class EightBall implements Rules {
   isEndOfGame(outcome: Outcome[], type?: number): boolean {
     const eightBall = this.container.table.balls.find((b) => b.label === 8)!
     const eightBallPotted = Outcome.pots(outcome).includes(eightBall)
-    if (!eightBallPotted || this.foulReason(outcome, type)) {
-      return false
-    }
+    if (!eightBallPotted) return false
+    if (this.foulReason(outcome, type)) return false
 
     const session = Session.getInstance()
     if (session.p1type === 0) {
       return false
     }
 
-    const table = this.container.table
-    const cueball = table.cueball
-    const pottedThisShot = new Set(Outcome.pots(outcome))
-    const myGroup = table.balls.filter(
-      (b) =>
-        b !== cueball &&
-        b !== eightBall &&
-        b.onTable() &&
-        this.isMyType(b, type) &&
-        !pottedThisShot.has(b)
-    )
+    return !this.hasRemainingGroupBalls(outcome, eightBall, type)
+  }
 
-    return myGroup.length === 0
+  private hasRemainingGroupBalls(
+    outcome: Outcome[],
+    eightBall: Ball,
+    type?: number
+  ): boolean {
+    const table = this.container.table
+    const pottedThisShot = new Set(Outcome.pots(outcome))
+    return table.balls.some(
+      (ball) =>
+        ball !== table.cueball &&
+        ball !== eightBall &&
+        ball.onTable() &&
+        this.isMyType(ball, type) &&
+        !pottedThisShot.has(ball)
+    )
   }
 
   handleGameEnd(isWinner: boolean, endSubtext?: string): Controller {

@@ -34,42 +34,41 @@ export class BallTextureFactory {
     const height = canvas.height
     const ballColor = `#${color.getHexString()}`
 
-    ctx.fillStyle = label >= 9 || label === 0 ? "white" : ballColor
+    const ivory = "#f6f1e3"
+    ctx.fillStyle = label >= 9 || label === 0 ? ivory : ballColor
     ctx.fillRect(0, 0, width, height)
     if (label >= 9) {
       ctx.fillStyle = ballColor
-      ctx.fillRect(0, height * 0.25, width, height * 0.5)
+      ctx.fillRect(0, height * 0.29, width, height * 0.42)
     }
 
     if (label > 0) {
       const centerY = height / 2
-      const radius = Math.round(42 * scale)
-      const border = Math.round(8 * scale)
+      const radius = Math.round(39 * scale)
+      const border = Math.max(2, Math.round(3 * scale))
       for (const centerX of [width * 0.25, width * 0.75]) {
         ctx.beginPath()
         ctx.arc(centerX, centerY, radius + border, 0, Math.PI * 2)
-        ctx.fillStyle = "black"
+        ctx.fillStyle = "#151619"
         ctx.fill()
         ctx.beginPath()
         ctx.arc(centerX, centerY, radius, 0, Math.PI * 2)
-        ctx.fillStyle = "white"
+        ctx.fillStyle = ivory
         ctx.fill()
 
-        ctx.fillStyle = "black"
-        ctx.strokeStyle = "black"
-        const fontSize = Math.round(68 * scale)
-        ctx.lineWidth = fontSize * 0.04
-        ctx.font = `900 ${fontSize}px "Arial Black", Arial, sans-serif`
+        ctx.fillStyle = "#111214"
+        const fontSize = Math.round((label >= 10 ? 54 : 62) * scale)
+        ctx.font = `800 ${fontSize}px Arial, Helvetica, sans-serif`
         ctx.textAlign = "center"
         ctx.textBaseline = "middle"
-        ctx.strokeText(label.toString(), centerX, centerY + 3 * scale)
-        ctx.fillText(label.toString(), centerX, centerY + 3 * scale)
+        ctx.fillText(label.toString(), centerX, centerY + 2 * scale)
       }
     }
 
     const texture = new CanvasTexture(canvas)
     texture.flipY = false
     texture.colorSpace = SRGBColorSpace
+    texture.generateMipmaps = true
     return texture
   }
 }

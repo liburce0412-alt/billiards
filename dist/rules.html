@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Break Builder 3D 的中式八球、美式九球、斯诺克、三库与四球追分规则对照和实现状态。"
+    />
+    <title>规则对照｜Break Builder 3D</title>
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&family=Tomorrow:wght@500;700&display=swap"
+    />
+    <link rel="stylesheet" href="css/rules.css" />
+  </head>
+  <body>
+    <nav class="rule-rail" aria-label="规则页导航">
+      <a class="rule-rail__brand" href="./">Break Builder</a>
+      <div class="rule-rail__links">
+        <a href="#eightball">八球</a>
+        <a href="#nineball">九球</a>
+        <a href="#snooker">斯诺克</a>
+        <a href="#fourball">追分</a>
+        <a href="#carom">开伦</a>
+      </div>
+      <a class="rule-rail__back" href="./">返回游戏</a>
+    </nav>
+
+    <main class="rule-document">
+      <header class="rule-intro">
+        <p class="rule-intro__date">规则审阅 · 2026-07-23</p>
+        <h1>规则讲清楚，<br />再把球打准。</h1>
+        <p class="rule-intro__lede">
+          这不是一份把“能玩”写成“完全符合比赛规则”的宣传页。下面逐项列出参考规则、当前已经实现的部分，以及仍然简化的裁判细节。四球追分没有全球统一规则，本项目采用公开赛事中的
+          <strong>1 / 4 / 7 / 10</strong> 计分框架，并为双人和本地 AI
+          做了确定性实现。
+        </p>
+        <div class="rule-summary" aria-label="实现状态概览">
+          <p><span>中式八球</span><strong>核心可玩</strong></p>
+          <p><span>美式九球</span><strong>核心可玩</strong></p>
+          <p><span>斯诺克</span><strong>简化裁判</strong></p>
+          <p><span>四球追分</span><strong>项目规则</strong></p>
+          <p><span>三库开伦</span><strong>核心可玩</strong></p>
+        </div>
+      </header>
+
+      <article class="rule-prose">
+        <section id="eightball">
+          <h2>中式八球</h2>
+          <p>
+            本项目按中式八球处理，而不是 WPA
+            叫球叫袋八球。开球后保持开放球台；合法打进全色或花色才确定球组；清完本组后进攻黑八。开放球台不得先碰黑八，犯规后对手获得全台自由球。
+          </p>
+          <dl class="implementation-list">
+            <div>
+              <dt>已实现</dt>
+              <dd>
+                开放球台、球组归属、先碰本组球、无进球必须碰库、自由球、黑八胜负。
+              </dd>
+            </div>
+            <div>
+              <dt>仍简化</dt>
+              <dd>
+                暂未完整统计开球“四颗目标球碰库”；跳球、球离台和裁判干扰未单独建模。
+              </dd>
+            </div>
+          </dl>
+          <p class="source-line">
+            规则依据：
+            <a
+              href="https://www.xingpaibilliard.com/news/hydt/2020/06/01/4508.html"
+              target="_blank"
+              rel="noreferrer"
+              >星牌《中式台球竞赛总则》</a
+            >。其中球台规格为 2540 × 1270 mm，球直径 57.15 mm；项目物理 profile
+            使用同规格球径。
+          </p>
+        </section>
+
+        <section id="nineball">
+          <h2>美式九球</h2>
+          <p>
+            母球必须先碰台面上号码最小的球；合法击球打进任意目标球可以继续，合法打进
+            9 号球赢得本局。犯规后对手全台自由球，犯规或推球时落袋的 9
+            号球应复位。
+          </p>
+          <dl class="implementation-list">
+            <div>
+              <dt>已实现</dt>
+              <dd>
+                最低号球优先、碰球后进袋或碰库、自由球、9
+                号球合法胜局与犯规复位。
+              </dd>
+            </div>
+            <div>
+              <dt>仍简化</dt>
+              <dd>
+                暂未加入开球三球线规则、开球四球碰库、第二杆 push-out
+                和连续三次犯规判负。
+              </dd>
+            </div>
+          </dl>
+          <p class="source-line">
+            规则依据：
+            <a
+              href="https://wpapool.com/wp-content/uploads/2025/10/2025.09.15-WPA-Rules-NP.pdf"
+              target="_blank"
+              rel="noreferrer"
+              >WPA Rules of Play 2025</a
+            >。
+          </p>
+        </section>
+
+        <section id="snooker">
+          <h2>斯诺克</h2>
+          <p>
+            红球每颗 1 分；黄、绿、棕、蓝、粉、黑依次为 2–7
+            分。有红球时红彩交替，红球清完后按黄到黑的顺序清彩球。犯规分记给对手，至少
+            4 分，或按相关高分球计算。
+          </p>
+          <dl class="implementation-list">
+            <div>
+              <dt>已实现</dt>
+              <dd>
+                红彩交替、彩球复位、清彩顺序、连续得分、基础犯规分和 6/10/15
+                红球配置。
+              </dd>
+            </div>
+            <div>
+              <dt>仍简化</dt>
+              <dd>
+                未实现自由球、无意识救球与复位重打、指定彩球、贴球、争黑及完整裁判裁量。
+              </dd>
+            </div>
+          </dl>
+          <p class="source-line">
+            规则依据：
+            <a
+              href="https://wpbsa.com/wp-content/uploads/2198_WPBSA-Rulebook-2024-25.pdf"
+              target="_blank"
+              rel="noreferrer"
+              >WPBSA Official Rules 2024–25</a
+            >。
+          </p>
+        </section>
+
+        <section id="fourball">
+          <h2>四球追分</h2>
+          <p>
+            使用母球和 1、2、3、9
+            四颗目标球，始终先碰台面最低号球。合法进球继续，合法打进 9
+            号球结算本局；默认先到 21 分获胜，可用 URL 参数
+            <code>raceTo=目标分</code> 调整。
+          </p>
+          <dl class="score-sheet" aria-label="四球追分计分">
+            <div>
+              <dt>犯规</dt>
+              <dd>−1</dd>
+              <p>最低不低于 0 分，对手全台自由球。</p>
+            </div>
+            <div>
+              <dt>普通胜局 / 金九</dt>
+              <dd>+4</dd>
+              <p>合法打进 9 号球结算。</p>
+            </div>
+            <div>
+              <dt>小金</dt>
+              <dd>+7</dd>
+              <p>一次失手机会后完成清台。</p>
+            </div>
+            <div>
+              <dt>大金</dt>
+              <dd>+10</dd>
+              <p>从开球开始连续完成清台。</p>
+            </div>
+          </dl>
+          <p class="source-line">
+            说明：公开比赛存在 1/3/5/7、1/4/7/10 等不同版本，本项目选择 1/4/7/10
+            并固定成可回放的双人规则。参考：
+            <a
+              href="https://tw.zzlgxy.net/i/H202510185713000033282.shtml"
+              target="_blank"
+              rel="noreferrer"
+              >郑州赛事 1/4/7/10 赛制</a
+            >
+            与
+            <a
+              href="https://www.sohu.com/a/788879095_121894857"
+              target="_blank"
+              rel="noreferrer"
+              >陕西赛事 1/3/5/7 赛制</a
+            >。它是项目标准，不宣称为全球统一官方规则。
+          </p>
+        </section>
+
+        <section id="carom">
+          <h2>三库开伦与内部四球</h2>
+          <p>
+            三库模式要求母球在碰到第二颗目标球之前至少累计三次碰库，随后完成对两颗目标球的碰撞才得
+            1 分。项目保留内部
+            <code>sagu</code>
+            韩式四球开伦规则，但它不是有袋四球追分，因此不放进主菜单，避免名称混淆。
+          </p>
+          <dl class="implementation-list">
+            <div>
+              <dt>已实现</dt>
+              <dd>
+                三库碰库计数、双目标球碰撞、轮次与抢分；练习模式还提供接近度辅助分。
+              </dd>
+            </div>
+            <div>
+              <dt>仍简化</dt>
+              <dd>
+                未覆盖正式赛事的平等局数、开球权判定、限时和整套竞赛组织条款。
+              </dd>
+            </div>
+          </dl>
+          <p class="source-line">
+            规则依据：
+            <a
+              href="https://www.umb-carom.org/uploads/documents/wifwnpfs.bz0.pdf"
+              target="_blank"
+              rel="noreferrer"
+              >UMB Statutes and Rules</a
+            >。
+          </p>
+        </section>
+
+        <section class="rule-note">
+          <h2>实现原则</h2>
+          <p>
+            物理结果与画质档无关；规则判断使用每杆事件序列，因此同一初始状态和击球输入应产生相同结果。没有实现的裁判条款会明确标成“仍简化”，后续按模式逐项补齐，而不是把不同协会规则混在一起。
+          </p>
+          <p><a class="text-cta" href="./">返回模式选择并开球 →</a></p>
+        </section>
+      </article>
+    </main>
+
+    <footer class="rule-colophon">
+      <p>
+        Break Builder 3D · GPL-3.0 · TypeScript + Three.js ·
+        规则文本仅作实现校验，正式比赛请以对应协会最新原文与赛事规程为准。
+      </p>
+    </footer>
+  </body>
+</html>

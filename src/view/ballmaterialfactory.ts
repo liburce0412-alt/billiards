@@ -23,11 +23,13 @@ export class BallMaterialFactory {
     const cubeTexture = BallCubeTextureFactory.getOrCreateTexture(color)
     const material = new MeshPhysicalMaterial({
       color: color,
-      roughness: 0.1,
+      roughness: 0.18,
       metalness: 0,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.02,
-      reflectivity: 0.25,
+      clearcoat: 1,
+      clearcoatRoughness: 0.035,
+      ior: 1.53,
+      reflectivity: 0.45,
+      envMapIntensity: 1.05,
     })
 
     material.onBeforeCompile = (shader: any) => {
@@ -98,17 +100,20 @@ export class BallMaterialFactory {
         ? new MeshStandardMaterial({
             color: 0xffffff,
             map: numberTexture,
-            roughness: 0.28,
+            roughness: 0.26,
             metalness: 0,
+            envMapIntensity: 0.7,
           })
         : new MeshPhysicalMaterial({
             color: 0xffffff,
             map: numberTexture,
-            roughness: 0.16,
+            roughness: 0.2,
             metalness: 0,
-            clearcoat: 0.9,
-            clearcoatRoughness: 0.07,
-            reflectivity: 0.35,
+            clearcoat: 1,
+            clearcoatRoughness: 0.035,
+            ior: 1.53,
+            reflectivity: 0.45,
+            envMapIntensity: getRenderQuality().name === "high" ? 1.15 : 0.95,
           })
     this.materialCache.set(key, material)
     return material

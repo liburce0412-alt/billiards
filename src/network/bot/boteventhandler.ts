@@ -25,6 +25,7 @@ import { TheFarJaw } from "./strategies/thefarjaw"
 class BotContainer {
   table
   recorder
+  readonly isBotRules = true
   notify() {}
   sendEvent() {}
   sound = { playSuccess() {} }
@@ -105,22 +106,16 @@ export class BotEventHandler {
   private handleStationary(): void {
     const outcome = this.container.table.outcome
     const botType = this.botType()
-    if (this.container.rules.isEndOfGame(outcome, botType)) {
+    const isFourBall = this.container.rules.rulename === "fourball"
+    if (!isFourBall && this.container.rules.isEndOfGame(outcome, botType)) {
       this.handleGameEnd()
       return
     }
-    const foulReason = this.botRules.foulReason(outcome, botType)
-    if (foulReason) {
-      this.logs.info(`Bot foul: ${foulReason}`)
-      if (this.handleEightBallFoul(outcome)) {
-        this.botRules.advanceState?.(outcome)
-        return
-      }
-      this.handleFoul(foulReason, outcome)
-      this.botRules.advanceState?.(outcome)
-      return
-    }
+    if (this.handleFoulOutcome(outcome, botType)) return
     const pots = this.botRules.getAmountScored(outcome)
+    const keepsBreak = this.botRules.isPartOfBreak(outcome)
+    const endsFourBallGame =
+      isFourBall && this.botRules.isEndOfGame(outcome, botType)
     this.logs.info(
       `Bot handleStationary: cueball=${this.botRules.cueball?.id}, pots=${pots}, outcomeLen=${outcome.length}`
     )
@@ -130,7 +125,7 @@ export class BotEventHandler {
     ) {
       this.botRules.advanceState?.(outcome)
     }
-    if (pots > 0) {
+    if (this.shouldContinueAfterShot(pots, isFourBall, keepsBreak)) {
       if (this.handleEightBallEarlyPot(outcome)) {
         return
       }
@@ -140,13 +135,39 @@ export class BotEventHandler {
         ? SnookerUtils.redsOnTable(this.container.table)
         : []
       const shouldRespot = !isSnooker || redsOnTable.length > 0
-      const respotted = shouldRespot ? this.botRules.respot(outcome) : []
+      const respotted =
+        shouldRespot && !endsFourBallGame ? this.botRules.respot(outcome) : []
       respotted.forEach((ball) => ball.fround())
-      this.handlePot(pots, outcome, this.keepsTurnAfterPot(outcome))
+      this.handlePot(
+        pots,
+        outcome,
+        this.keepsTurnAfterPot(outcome),
+        endsFourBallGame
+      )
       return
     }
     this.logs.hide()
     this.publishSequenceToPlayer([new StartAimEvent()])
+  }
+
+  private handleFoulOutcome(outcome: Outcome[], botType: number): boolean {
+    const foulReason = this.botRules.foulReason(outcome, botType)
+    if (!foulReason) return false
+
+    this.logs.info(`Bot foul: ${foulReason}`)
+    if (!this.handleEightBallFoul(outcome)) {
+      this.handleFoul(foulReason, outcome)
+    }
+    this.botRules.advanceState?.(outcome)
+    return true
+  }
+
+  private shouldContinueAfterShot(
+    pots: number,
+    isFourBall: boolean,
+    keepsBreak: boolean
+  ): boolean {
+    return pots > 0 || (isFourBall && keepsBreak)
   }
 
   private botType(): number {
@@ -161,6 +182,7 @@ export class BotEventHandler {
       case "eightball":
         return this.validEightBallTargets(this.botType())
       case "nineball":
+      case "fourball":
         return this.validNineBallTargets()
       case "snooker":
         return this.validSnookerTargets()
@@ -290,18 +312,13 @@ export class BotEventHandler {
     }
 
     const table = this.container.table
-    const cueball = table.cueball
     const eightBall = table.balls.find((b) => b.label === 8)
     if (!eightBall || !Outcome.pots(outcome).includes(eightBall)) {
       return false
     }
 
     const session = Session.getInstance()
-    const hasObjectBallsRemaining = table.balls.some(
-      (b) => b !== cueball && b.label !== 8 && b.onTable()
-    )
-
-    if (session.p1type !== 0 && hasObjectBallsRemaining) {
+    if (this.canRespotEightBall(session)) {
       const footSpot = new Vector3(TableGeometry.tableX / 2, 0, 0)
       Respot.respotBehind(footSpot, eightBall, table)
       eightBall.fround()
@@ -314,31 +331,19 @@ export class BotEventHandler {
   }
 
   private handleEightBallEarlyPot(outcome: Outcome[]): boolean {
-    if (this.container.rules.rulename !== "eightball") {
-      return false
-    }
+    return this.handleEightBallFoul(outcome)
+  }
 
-    const table = this.container.table
-    const cueball = table.cueball
-    const eightBall = table.balls.find((b) => b.label === 8)
-    if (!eightBall || !Outcome.pots(outcome).includes(eightBall)) {
-      return false
-    }
-
-    const session = Session.getInstance()
-    const hasObjectBallsRemaining = table.balls.some(
-      (b) => b !== cueball && b.label !== 8 && b.onTable()
+  private canRespotEightBall(session: Session): boolean {
+    return (
+      session.p1type === 0 &&
+      this.container.table.balls.some(
+        (ball) =>
+          ball !== this.container.table.cueball &&
+          ball.label !== 8 &&
+          ball.onTable()
+      )
     )
-
-    if (session.p1type !== 0 && hasObjectBallsRemaining) {
-      const footSpot = new Vector3(TableGeometry.tableX / 2, 0, 0)
-      Respot.respotBehind(footSpot, eightBall, table)
-      eightBall.fround()
-      this.handleFoul("8-ball pocketed early", [], [eightBall])
-      return true
-    }
-
-    return false
   }
 
   private handleFoul(
@@ -357,6 +362,9 @@ export class BotEventHandler {
     }
 
     if (this.container.rules.rulename === "sagu") {
+      session.setOpponentScore(Math.max(0, session.opponentScore() - 1))
+    }
+    if (this.container.rules.rulename === "fourball") {
       session.setOpponentScore(Math.max(0, session.opponentScore() - 1))
     }
 
@@ -411,7 +419,8 @@ export class BotEventHandler {
   private handlePot(
     pots: number,
     outcome: Outcome[],
-    keepsTurn: boolean
+    keepsTurn: boolean,
+    endsGame = false
   ): void {
     this.logs.info(
       `Bot handlePot: scored ${pots} points. Next cueball=${this.botRules.cueball?.id}`
@@ -420,6 +429,11 @@ export class BotEventHandler {
     session.addOpponentScore(pots)
     this.botRules.currentBreak += pots
     this.assignEightBallType(session, outcome)
+
+    if (endsGame) {
+      this.handleGameEnd()
+      return
+    }
 
     if (
       this.container.rules.rulename === "snooker" &&

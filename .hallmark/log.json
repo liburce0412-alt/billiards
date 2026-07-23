@@ -1,6 +1,15 @@
 [
   {
     "date": "2026-07-23",
+    "macrostructure": "Long Document",
+    "theme": "Midnight",
+    "enrichment": "none",
+    "nav": "N3",
+    "footer": "Ft4",
+    "brief": "Chinese rules comparison and implementation status"
+  },
+  {
+    "date": "2026-07-23",
     "macrostructure": "Index-First",
     "theme": "Midnight",
     "enrichment": "none",

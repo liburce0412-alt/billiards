@@ -49,6 +49,12 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   min-height: 3.5rem;
 }
 
+.launcher-nav__links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
 .launcher-wordmark,
 .launcher-lobby {
   min-height: 2.75rem;
@@ -417,6 +423,21 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   margin: 0;
 }
 
+.launcher-footer a {
+  color: var(--color-ink-2);
+  text-underline-offset: var(--space-2xs);
+  white-space: nowrap;
+}
+
+.launcher-footer a:hover {
+  color: var(--color-accent);
+}
+
+.launcher-footer a:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: var(--space-2xs);
+}
+
 @media (hover: hover) and (pointer: fine) {
   .mode-option:hover,
   .segment-control label:hover {
@@ -474,6 +495,10 @@ html.launcher-mode body > :not(#gameLauncher, script) {
 }
 
 @media (width < 40rem) {
+  .launcher-nav__links .launcher-lobby:first-child {
+    display: none;
+  }
+
   .launcher-shell {
     padding-inline: max(var(--space-md), env(safe-area-inset-left));
   }

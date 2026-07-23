@@ -1,0 +1,325 @@
+/* Hallmark · genre: editorial · macrostructure: Long Document · theme: Midnight · enrichment: none · nav: N3 · footer: Ft4 · audience: Chinese billiards players · use: rules comparison · tone: technical */
+
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 */
+/* stylelint-disable no-descending-specificity -- prose rhythm intentionally precedes component overrides */
+@import url("../tokens.css");
+
+html,
+body {
+  margin: 0;
+  overflow-x: clip;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+body {
+  min-width: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.68;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: var(--color-ink-2);
+  text-decoration-color: var(--color-rule);
+  text-underline-offset: var(--space-2xs);
+  white-space: nowrap;
+}
+
+a:hover {
+  color: var(--color-accent);
+  text-decoration-color: var(--color-accent);
+}
+
+a:active {
+  color: var(--color-accent);
+}
+
+a[aria-disabled="true"] {
+  color: var(--color-neutral);
+  cursor: not-allowed;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: var(--space-2xs);
+}
+
+.rule-rail {
+  min-height: 3.5rem;
+  padding: var(--space-xs) clamp(var(--space-md), 4vw, var(--space-xl));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+  background: var(--color-paper);
+}
+
+.rule-rail__brand,
+.rule-rail__back {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.rule-rail__links {
+  display: none;
+}
+
+.rule-document {
+  width: min(100%, 78rem);
+  margin-inline: auto;
+  padding: var(--space-2xl) clamp(var(--space-md), 5vw, var(--space-3xl));
+}
+
+.rule-intro,
+.rule-prose,
+.rule-colophon {
+  max-width: var(--measure-copy);
+}
+
+.rule-intro__date {
+  margin: 0 0 var(--space-lg);
+  color: var(--color-neutral);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.rule-intro h1 {
+  min-width: 0;
+  margin: 0;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
+.rule-intro__lede {
+  margin: var(--space-xl) 0 0;
+  color: var(--color-ink-2);
+  font-size: var(--text-md);
+}
+
+.rule-summary {
+  margin-top: var(--space-2xl);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.rule-summary p {
+  margin: 0;
+  padding-block: var(--space-sm);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+.rule-summary strong {
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+.rule-prose {
+  margin-top: var(--space-3xl);
+}
+
+.rule-prose section {
+  scroll-margin-top: var(--space-xl);
+}
+
+.rule-prose section + section {
+  margin-top: var(--space-3xl);
+}
+
+.rule-prose h2 {
+  margin: 0 0 var(--space-md);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.rule-prose p {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.rule-prose p + p {
+  margin-top: var(--space-md);
+}
+
+.implementation-list {
+  margin: var(--space-xl) 0;
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.implementation-list div {
+  padding-block: var(--space-md);
+  display: grid;
+  gap: var(--space-xs);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+.implementation-list dt {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.implementation-list dd {
+  margin: 0;
+  color: var(--color-ink-2);
+}
+
+.source-line {
+  font-size: var(--text-sm);
+}
+
+.score-sheet {
+  margin: var(--space-xl) 0;
+  display: grid;
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.score-sheet div {
+  min-width: 0;
+  padding-block: var(--space-md);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-xs) var(--space-md);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+}
+
+.score-sheet dt {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+
+.score-sheet dd {
+  margin: 0;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+.score-sheet p {
+  grid-column: 1 / -1;
+  font-size: var(--text-sm);
+}
+
+code {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+.rule-note {
+  padding-top: var(--space-xl);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
+.text-cta {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-decoration-color: var(--color-accent);
+}
+
+.rule-colophon {
+  margin: var(--space-xl) auto 0;
+  padding: var(--space-xl) clamp(var(--space-md), 5vw, var(--space-3xl))
+    calc(var(--space-2xl) + env(safe-area-inset-bottom));
+  border-top: var(--rule-hair) solid var(--color-rule);
+  color: var(--color-neutral);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+}
+
+.rule-colophon p {
+  margin: 0;
+}
+
+@media (width >= 40rem) {
+  .implementation-list div {
+    grid-template-columns: 7rem minmax(0, 1fr);
+  }
+
+  .score-sheet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-xl);
+  }
+}
+
+@media (width >= 60rem) {
+  body {
+    padding-left: calc(var(--space-2xl) + var(--space-2xs));
+  }
+
+  .rule-rail {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: var(--z-sticky);
+    width: calc(var(--space-2xl) + var(--space-2xs));
+    padding: var(--space-md) var(--space-xs);
+    flex-direction: column;
+    border-right: var(--rule-hair) solid var(--color-rule);
+    border-bottom: 0;
+  }
+
+  .rule-rail__brand,
+  .rule-rail__back {
+    writing-mode: vertical-rl;
+  }
+
+  .rule-rail__links {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .rule-rail__links a {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    display: grid;
+    place-items: center;
+    color: var(--color-neutral);
+    font-size: var(--text-sm);
+    text-decoration: none;
+    writing-mode: vertical-rl;
+  }
+
+  .rule-document {
+    padding-top: var(--space-3xl);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,4 +1,5 @@
-export type LauncherRule = "nineball" | "eightball" | "snooker" | "threecushion"
+export type LauncherRule =
+  "nineball" | "eightball" | "fourball" | "snooker" | "threecushion"
 
 export type LauncherOpponent = "practice" | "ClawBreak" | "TheFarJaw"
 export type LauncherQuality = "low" | "balanced" | "high"

@@ -37,14 +37,17 @@ export class BallMesh {
   private static getBallGeometry() {
     if (!this._ballGeometry) {
       const quality = getRenderQuality()
-      let segments = 32
-      let rows = 20
+      let segments: number
+      let rows: number
       if (quality.name === "high") {
-        segments = 48
-        rows = 32
+        segments = 64
+        rows = 40
       } else if (quality.name === "low") {
-        segments = 16
-        rows = 12
+        segments = 20
+        rows = 14
+      } else {
+        segments = 40
+        rows = 28
       }
       this._ballGeometry = new SphereGeometry(R, segments, rows)
     }

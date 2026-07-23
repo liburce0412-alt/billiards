@@ -18,6 +18,7 @@
 
   --font-display: "Tomorrow", "Exo", sans-serif;
   --font-body: "IBM Plex Sans", "Exo", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
 
   --space-3xs: 0.125rem;
   --space-2xs: 0.25rem;

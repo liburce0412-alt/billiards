@@ -66,7 +66,7 @@ export const POOL_STANDARD_PHYSICS: PhysicsProfile = {
 }
 
 export function physicsProfileForRule(ruleType: string): PhysicsProfile {
-  return ruleType === "eightball" || ruleType === "nineball"
+  return ["eightball", "nineball", "fourball"].includes(ruleType)
     ? POOL_STANDARD_PHYSICS
     : LEGACY_PHYSICS
 }
