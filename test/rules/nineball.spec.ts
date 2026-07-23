@@ -127,14 +127,28 @@ describe("NineBall Rules", () => {
     expect(nextController).to.be.an.instanceof(PlaceBall)
   })
 
-  it("should be legal if cushion is hit after contact", () => {
+  it("should foul a dry opening break when fewer than four object balls reach a cushion", () => {
     const ball1 = container.table.balls.find((b) => b.label === 1)!
+    const ball2 = container.table.balls.find((b) => b.label === 2)!
+    const ball3 = container.table.balls.find((b) => b.label === 3)!
     const outcome = [
       Outcome.collision(container.table.cueball, ball1, 1),
       Outcome.cushion(ball1, 1),
+      Outcome.cushion(ball2, 1),
+      Outcome.cushion(ball3, 1),
     ]
-    const nextController = nineball.update(outcome)
-    expect(nextController).to.be.an.instanceof(Aim)
+    expect(nineball.update(outcome)).to.be.an.instanceof(PlaceBall)
+  })
+
+  it("should accept a dry opening break when four object balls reach a cushion", () => {
+    const objectBalls = [1, 2, 3, 4].map(
+      (label) => container.table.balls.find((b) => b.label === label)!
+    )
+    const outcome = [
+      Outcome.collision(container.table.cueball, objectBalls[0], 1),
+      ...objectBalls.map((ball) => Outcome.cushion(ball, 1)),
+    ]
+    expect(nineball.update(outcome)).to.be.an.instanceof(Aim)
   })
 
   it("should respot 9-ball if potted on foul", () => {

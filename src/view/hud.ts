@@ -44,7 +44,7 @@ export class Hud {
     this.setText(this.middleElement, "")
     if (score > 0 && this.breakElement) {
       this.breakElement.textContent = ""
-      this.breakElement.appendChild(document.createTextNode("Break"))
+      this.breakElement.appendChild(document.createTextNode("单杆"))
       this.breakElement.appendChild(document.createElement("br"))
       this.breakElement.appendChild(document.createTextNode(score.toString()))
     } else {
@@ -104,7 +104,7 @@ export class Hud {
     }
 
     if (b > 0) {
-      this.setText(this.breakElement, `Break: ${b}`)
+      this.setText(this.breakElement, `单杆 ${b}`)
     }
   }
 }

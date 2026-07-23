@@ -1,5 +1,5 @@
 import { ParticleSystem } from "../../src/view/particle-system"
-import { Scene, InstancedMesh } from "three"
+import { Color, Scene, InstancedMesh, MeshStandardMaterial } from "three"
 
 describe("ParticleSystem", () => {
   let scene: Scene
@@ -76,5 +76,24 @@ describe("ParticleSystem", () => {
 
     expect(scene.remove).toHaveBeenCalledWith(mesh)
     expect((system as any).instancedMesh).toBeNull()
+  })
+
+  it("should create a gold confetti rain across the full table", () => {
+    const system = new ParticleSystem({
+      tableWidth: 8,
+      tableLength: 4,
+      backgroundColor: "#000000",
+    })
+
+    system.initParticles(scene)
+
+    const mesh = (system as any).instancedMesh as InstancedMesh
+    const colour = new Color()
+    mesh.getColorAt(0, colour)
+    expect(mesh.count).toBe(32)
+    expect(colour.r).toBeGreaterThan(colour.b)
+    expect((mesh.material as MeshStandardMaterial).metalness).toBeGreaterThan(
+      0.7
+    )
   })
 })

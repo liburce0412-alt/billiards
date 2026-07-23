@@ -90,7 +90,11 @@ export class NineBall implements Rules {
   }
 
   update(outcome: Outcome[]): Controller {
-    const reason = NineBall.foulReason(this.container.table, outcome)
+    const reason = NineBall.foulReason(
+      this.container.table,
+      outcome,
+      this.isOpeningPlacement() && !Session.isPracticeMode()
+    )
     const state = NineBall.placementState.get(this.container.table)
     if (state) state.openingPlacement = false
 
@@ -192,11 +196,21 @@ export class NineBall implements Rules {
   }
 
   protected isFoul(outcome: Outcome[]): boolean {
-    return NineBall.foulReason(this.container.table, outcome) !== null
+    return (
+      NineBall.foulReason(
+        this.container.table,
+        outcome,
+        this.isOpeningPlacement() && !Session.isPracticeMode()
+      ) !== null
+    )
   }
 
   foulReason(outcome: Outcome[]): string | null {
-    return NineBall.foulReason(this.container.table, outcome)
+    return NineBall.foulReason(
+      this.container.table,
+      outcome,
+      this.isOpeningPlacement() && !Session.isPracticeMode()
+    )
   }
 
   getAmountScored(outcome: Outcome[]): number {
@@ -212,7 +226,11 @@ export class NineBall implements Rules {
     return []
   }
 
-  public static foulReason(table: Table, outcome: Outcome[]): string | null {
+  public static foulReason(
+    table: Table,
+    outcome: Outcome[],
+    openingBreak = false
+  ): string | null {
     const cueball = table.cueball
 
     // 1. Cue ball potted
@@ -243,7 +261,16 @@ export class NineBall implements Rules {
       }
     }
 
-    // 3. No cushion after contact
+    // 3. On a dry opening break, at least four distinct object balls must
+    // reach a cushion. This is the WPA break requirement.
+    const openingBreakReason = NineBall.openingBreakFoulReason(
+      cueball,
+      outcome,
+      openingBreak
+    )
+    if (openingBreakReason) return openingBreakReason
+
+    // 4. No cushion after contact
     if (Outcome.potCount(outcome) === 0) {
       // Find cushions after first collision
       const firstCollisionIndex = outcome.indexOf(firstCollision)
@@ -275,6 +302,27 @@ export class NineBall implements Rules {
     return table.balls.some(
       (b) => b !== table.cueball && b !== table.balls[9] && b.onTable()
     )
+  }
+
+  private static openingBreakFoulReason(
+    cueball: Ball,
+    outcome: Outcome[],
+    openingBreak: boolean
+  ): string | null {
+    if (!openingBreak || Outcome.potCount(outcome) > 0) return null
+    const objectBallsAtCushion = new Set(
+      outcome
+        .filter(
+          (o) =>
+            o.type === OutcomeType.Cushion &&
+            o.ballA &&
+            o.ballA !== cueball
+        )
+        .map((o) => o.ballA)
+    )
+    return objectBallsAtCushion.size > 0 && objectBallsAtCushion.size < 4
+      ? "Illegal break: fewer than four object balls reached a cushion"
+      : null
   }
 
   private respotAndBroadcastNineBall(outcome: Outcome[]) {

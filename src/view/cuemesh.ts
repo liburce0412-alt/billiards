@@ -275,7 +275,17 @@ export class CueMesh {
   private static materialsForStyle(
     style: CueStyle
   ): Record<string, MeshPhysicalMaterial> {
-    const cached = this.styleMaterials.get(style.id)
+    const cacheKey = [
+      style.id,
+      style.shaft,
+      style.forearm,
+      style.sleeve,
+      style.wrap,
+      style.accent,
+      style.ferrule,
+      style.tip,
+    ].join(":")
+    const cached = this.styleMaterials.get(cacheKey)
     if (cached) return cached
 
     const material = (
@@ -306,7 +316,7 @@ export class CueMesh {
       ferrule: material(style.ferrule, 0.2, 0.02, 0.5),
       tip: material(style.tip, 0.82, 0, 0),
     }
-    this.styleMaterials.set(style.id, materials)
+    this.styleMaterials.set(cacheKey, materials)
     return materials
   }
 }

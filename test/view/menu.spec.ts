@@ -5,7 +5,11 @@ import { Container } from "../../src/container/container"
 import { Menu } from "../../src/view/menu"
 import { Assets } from "../../src/view/assets"
 import { Session } from "../../src/network/client/session"
-import { CUE_STYLE_STORAGE_KEY } from "../../src/view/cuestyle"
+import {
+  CUE_STYLE_STORAGE_KEY,
+  CUSTOM_CUE_STYLE_ID,
+  CUSTOM_CUE_STYLE_STORAGE_KEY,
+} from "../../src/view/cuestyle"
 import { TABLE_STYLE_STORAGE_KEY } from "../../src/view/tablestyle"
 
 initDom()
@@ -14,6 +18,7 @@ let container: Container
 
 beforeEach(function (done) {
   globalThis.localStorage.removeItem(CUE_STYLE_STORAGE_KEY)
+  globalThis.localStorage.removeItem(CUSTOM_CUE_STYLE_STORAGE_KEY)
   globalThis.localStorage.removeItem(TABLE_STYLE_STORAGE_KEY)
   container = new Container({
     element: document.getElementById("viewP1"),
@@ -65,6 +70,37 @@ describe("Menu", () => {
       "chinese-ebony"
     )
     expect(chineseTable.classList.contains("is-selected")).to.be.true
+  })
+
+  it("applies a personalised cue colour combination", () => {
+    fireEvent.click(
+      document.getElementById("cueStyle") as HTMLButtonElement
+    )
+    const selector = document.getElementById("cueSelector")!
+    const forearm = selector.querySelector(
+      "[data-custom-cue-colour='forearm']"
+    ) as HTMLInputElement
+    forearm.value = "#315a48"
+    fireEvent.click(
+      selector.querySelector(
+        "[data-custom-cue-action='apply']"
+      ) as HTMLButtonElement
+    )
+
+    expect(container.table.cue.styleId).to.equal(CUSTOM_CUE_STYLE_ID)
+    expect(globalThis.localStorage.getItem(CUE_STYLE_STORAGE_KEY)).to.equal(
+      CUSTOM_CUE_STYLE_ID
+    )
+    expect(
+      JSON.parse(
+        globalThis.localStorage.getItem(CUSTOM_CUE_STYLE_STORAGE_KEY) ?? "{}"
+      ).forearm
+    ).to.equal(0x315a48)
+    expect(
+      selector
+        .querySelector(".cue-customizer")
+        ?.classList.contains("is-selected")
+    ).to.be.true
   })
 
   it("camera", (done) => {

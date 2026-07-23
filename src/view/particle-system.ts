@@ -2,7 +2,7 @@ import {
   Scene,
   BufferGeometry,
   BufferAttribute,
-  MeshLambertMaterial,
+  MeshStandardMaterial,
   InstancedMesh,
   Object3D,
   Color,
@@ -77,13 +77,34 @@ export class ParticleSystem {
   }
 
   initParticles(scene: Scene) {
-    const sourceCanvas = ParticleUtils.generateTextCanvas(
-      ParticleUtils.randomText(),
+    const sourceCanvas = document.createElement("canvas")
+    sourceCanvas.width = this.config.tableWidth
+    sourceCanvas.height = this.config.tableLength
+    const ctx = sourceCanvas.getContext("2d")
+    if (!ctx) return
+
+    const gold = [
+      [255, 235, 156],
+      [247, 202, 72],
+      [216, 154, 35],
+      [255, 248, 205],
+      [190, 118, 20],
+    ]
+    const image = ctx.createImageData(
       this.config.tableWidth,
-      this.config.tableLength,
-      "bold sans-serif",
-      this.config.backgroundColor
+      this.config.tableLength
     )
+    for (let y = 0; y < this.config.tableLength; y++) {
+      for (let x = 0; x < this.config.tableWidth; x++) {
+        const pixel = (y * this.config.tableWidth + x) * 4
+        const colour = gold[(x * 13 + y * 7) % gold.length]
+        image.data[pixel] = colour[0]
+        image.data[pixel + 1] = colour[1]
+        image.data[pixel + 2] = colour[2]
+        image.data[pixel + 3] = 255
+      }
+    }
+    ctx.putImageData(image, 0, 0)
     this.initialise(scene, sourceCanvas)
   }
 
@@ -134,12 +155,34 @@ export class ParticleSystem {
     this.dummy = new Object3D()
 
     const geo = new BufferGeometry()
-    const v = R * 0.8
-    const vertices = new Float32Array([-v, -v, 0, v, -v, 0, 0, v, 0])
+    const halfWidth = R * 0.22
+    const halfLength = R * 0.78
+    const vertices = new Float32Array([
+      -halfWidth,
+      -halfLength,
+      0,
+      halfWidth,
+      -halfLength,
+      0,
+      halfWidth,
+      halfLength,
+      0,
+      -halfWidth,
+      -halfLength,
+      0,
+      halfWidth,
+      halfLength,
+      0,
+      -halfWidth,
+      halfLength,
+      0,
+    ])
     geo.setAttribute("position", new BufferAttribute(vertices, 3))
     geo.computeVertexNormals()
-    const mat = new MeshLambertMaterial({
+    const mat = new MeshStandardMaterial({
       side: DoubleSide,
+      metalness: 0.72,
+      roughness: 0.3,
     })
 
     this.instancedMesh = new InstancedMesh(geo, mat, this.count)
@@ -165,13 +208,16 @@ export class ParticleSystem {
 
       this.initParticle(i, x, y, offset)
     }
+    if (this.instancedMesh.instanceColor) {
+      this.instancedMesh.instanceColor.needsUpdate = true
+    }
   }
 
   private initParticle(i: number, x: number, y: number, offset: number): void {
     const { tableWidth, tableLength, scaleX, scaleY } = this.config
     this.pPosX[i] = offset + (x - tableWidth / 2) * scaleX
     this.pPosY[i] = -offset + (tableLength / 2 - y) * scaleY
-    this.pPosZ[i] = 65 * R + Math.random() * 45 * R
+    this.pPosZ[i] = 52 * R + Math.random() * 42 * R
 
     this.pRot[i * 3] = Math.random() * Math.PI
     this.pRot[i * 3 + 1] = Math.random() * Math.PI
@@ -182,7 +228,7 @@ export class ParticleSystem {
     this.pRotVel[i * 3 + 1] = (Math.random() - 0.5) * 15
     this.pRotVel[i * 3 + 2] = (Math.random() - 0.5) * 15
 
-    this.pDelay[i] = Math.random() * 5
+    this.pDelay[i] = Math.random() * 2.6
     this.pAge[i] = 0
     this.pState[i] = 0
 
@@ -200,7 +246,7 @@ export class ParticleSystem {
     if (this.instancedMesh && this.scene) {
       this.scene.remove(this.instancedMesh)
       this.instancedMesh.geometry.dispose()
-      ;(this.instancedMesh.material as MeshLambertMaterial).dispose()
+      ;(this.instancedMesh.material as MeshStandardMaterial).dispose()
     }
     this.count = 0
     this.pPosX = new Float32Array(0)
@@ -258,7 +304,13 @@ export class ParticleSystem {
       }
     }
 
-    this.dummy.position.set(this.pPosX[i], this.pPosY[i], this.pPosZ[i])
+    const flutterX = Math.sin(this.pAge[i] * 2.8 + i * 0.71) * R * 0.55
+    const flutterY = Math.cos(this.pAge[i] * 2.1 + i * 0.37) * R * 0.3
+    this.dummy.position.set(
+      this.pPosX[i] + flutterX,
+      this.pPosY[i] + flutterY,
+      this.pPosZ[i]
+    )
     this.dummy.rotation.set(
       this.pRot[i * 3],
       this.pRot[i * 3 + 1],

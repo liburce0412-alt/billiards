@@ -3,7 +3,14 @@ import { getButton } from "../utils/dom"
 import { Session } from "../network/client/session"
 import { ConcedeEvent } from "../events/concedeevent"
 import { ExportUtils } from "../utils/export-utils"
-import { CUE_STYLES } from "./cuestyle"
+import {
+  CUE_STYLES,
+  CUSTOM_CUE_STYLE_ID,
+  CustomCueColours,
+  cueColourHex,
+  customCueColours,
+  saveCustomCueColours,
+} from "./cuestyle"
 import { TABLE_STYLES } from "./tablestyle"
 
 export class Menu {
@@ -65,8 +72,8 @@ export class Menu {
         this.container.notification.show(
           {
             type: "Info",
-            title: "Concede Game",
-            subtext: "opponent will win",
+            title: "确认认输",
+            subtext: "认输后本局由对手获胜",
             extra:
               '<button class="notification-btn" data-notification-action="concede-confirm">确认认输</button>' +
               '<button class="notification-btn" data-notification-action="concede-cancel">继续比赛</button>',
@@ -169,7 +176,7 @@ export class Menu {
     const options = document.getElementById("cueStyleOptions")
     if (!selector || !options || !this.cueStyle) return
 
-    options.innerHTML = CUE_STYLES.map(
+    const presetMarkup = CUE_STYLES.map(
       (style) => `
         <button
           type="button"
@@ -193,6 +200,44 @@ export class Menu {
         </button>
       `
     ).join("")
+    const custom = customCueColours()
+    options.innerHTML = `${presetMarkup}
+      <section class="cue-customizer" aria-labelledby="cueCustomizerTitle">
+        <div class="cue-customizer__heading">
+          <div>
+            <span>专属配色</span>
+            <strong id="cueCustomizerTitle">我的定制杆</strong>
+          </div>
+          <span class="cue-customizer__badge">自定义</span>
+        </div>
+        <div class="cue-customizer__colours">
+          ${(
+            [
+              ["forearm", "前把", custom.forearm],
+              ["sleeve", "后把", custom.sleeve],
+              ["wrap", "握把", custom.wrap],
+              ["accent", "嵌花", custom.accent],
+            ] as [keyof CustomCueColours, string, number][]
+          )
+            .map(
+              ([key, label, colour]) => `
+                <label>
+                  <input
+                    type="color"
+                    data-custom-cue-colour="${key}"
+                    value="${cueColourHex(colour)}"
+                    aria-label="${label}颜色"
+                  />
+                  <span>${label}</span>
+                </label>`
+            )
+            .join("")}
+        </div>
+        <div class="cue-customizer__actions">
+          <button type="button" data-custom-cue-action="shuffle">换一组灵感</button>
+          <button type="button" data-custom-cue-action="apply">应用定制</button>
+        </div>
+      </section>`
 
     const updateSelected = () => {
       const current = this.container.table.cue.styleId
@@ -203,6 +248,9 @@ export class Menu {
           button.classList.toggle("is-selected", selected)
           button.setAttribute("aria-pressed", String(selected))
         })
+      options
+        .querySelector(".cue-customizer")
+        ?.classList.toggle("is-selected", current === CUSTOM_CUE_STYLE_ID)
     }
     updateSelected()
 
@@ -219,7 +267,46 @@ export class Menu {
         selector.setAttribute("hidden", "true")
       })
     options.onclick = (event) => {
-      const button = (event.target as HTMLElement | null)?.closest(
+      const target = event.target as HTMLElement | null
+      const customAction = target?.closest<HTMLElement>(
+        "[data-custom-cue-action]"
+      )?.dataset.customCueAction
+      if (customAction) {
+        if (customAction === "shuffle") {
+          const palettes = [
+            ["#173f5f", "#0a1726", "#762a3a", "#e3bf67"],
+            ["#6a244d", "#271024", "#121216", "#e6a84e"],
+            ["#0b675f", "#06342f", "#40251c", "#f0d487"],
+            ["#e5ddd0", "#6e4933", "#164b50", "#d59343"],
+            ["#22272e", "#08090b", "#6b1524", "#c5d0dc"],
+          ]
+          const palette = palettes[Math.floor(Math.random() * palettes.length)]
+          options
+            .querySelectorAll<HTMLInputElement>("[data-custom-cue-colour]")
+            .forEach((input, index) => {
+              input.value = palette[index]
+            })
+          return
+        }
+        const colours: Partial<
+          Record<keyof CustomCueColours, string>
+        > = {}
+        options
+          .querySelectorAll<HTMLInputElement>("[data-custom-cue-colour]")
+          .forEach((input) => {
+            const key = input.dataset.customCueColour as
+              | keyof CustomCueColours
+              | undefined
+            if (key) colours[key] = input.value
+          })
+        saveCustomCueColours(colours)
+        this.container.table.cue.setStyle(CUSTOM_CUE_STYLE_ID)
+        this.container.lastEventTime = performance.now()
+        updateSelected()
+        return
+      }
+
+      const button = target?.closest(
         "[data-cue-style]"
       ) as HTMLElement | null
       const styleId = button?.dataset.cueStyle

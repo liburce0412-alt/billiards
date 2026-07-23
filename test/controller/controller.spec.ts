@@ -370,14 +370,16 @@ describe("Controller", () => {
     done()
   })
 
-  it("StationaryEvent takes active PlayShot to Aim if no pot singleplayer", (done) => {
+  it("StationaryEvent takes a legal dry opening break to Aim in singleplayer", (done) => {
     container.controller = new PlayShot(container)
     container.isSinglePlayer = true
     container.table.cueball.setStationary()
-    const ball1 = container.table.balls.find((b) => b.label === 1)!
+    const objectBalls = [1, 2, 3, 4].map(
+      (label) => container.table.balls.find((b) => b.label === label)!
+    )
     container.table.outcome.push(
-      Outcome.collision(container.table.cueball, ball1, 1),
-      Outcome.cushion(ball1, 1)
+      Outcome.collision(container.table.cueball, objectBalls[0], 1),
+      ...objectBalls.map((ball) => Outcome.cushion(ball, 1))
     )
     container.eventQueue.push(new StationaryEvent())
     container.processEvents()

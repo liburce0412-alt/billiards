@@ -14,6 +14,22 @@ export interface CueStyle {
 }
 
 export const CUE_STYLE_STORAGE_KEY = "break-builder.cue-style"
+export const CUSTOM_CUE_STYLE_STORAGE_KEY = "break-builder.custom-cue-style"
+export const CUSTOM_CUE_STYLE_ID = "custom"
+
+export interface CustomCueColours {
+  forearm: number
+  sleeve: number
+  wrap: number
+  accent: number
+}
+
+const DEFAULT_CUSTOM_CUE_COLOURS: CustomCueColours = {
+  forearm: 0x0c5d53,
+  sleeve: 0x171b22,
+  wrap: 0x4c1f2a,
+  accent: 0xe8c66a,
+}
 
 export const CUE_STYLES: readonly CueStyle[] = [
   {
@@ -98,7 +114,88 @@ export const CUE_STYLES: readonly CueStyle[] = [
 ]
 
 export function cueStyleById(id?: string | null): CueStyle {
+  if (id === CUSTOM_CUE_STYLE_ID) return customCueStyle()
   return CUE_STYLES.find((style) => style.id === id) ?? CUE_STYLES[0]
+}
+
+function validColour(value: unknown, fallback: number): number {
+  const parsed =
+    typeof value === "number"
+      ? value
+      : Number.parseInt(String(value ?? "").replace(/^#/, ""), 16)
+  return Number.isInteger(parsed) && parsed >= 0 && parsed <= 0xffffff
+    ? parsed
+    : fallback
+}
+
+export function customCueColours(): CustomCueColours {
+  if (typeof globalThis.localStorage === "undefined") {
+    return { ...DEFAULT_CUSTOM_CUE_COLOURS }
+  }
+  try {
+    const stored = JSON.parse(
+      globalThis.localStorage.getItem(CUSTOM_CUE_STYLE_STORAGE_KEY) ?? "{}"
+    )
+    return {
+      forearm: validColour(
+        stored.forearm,
+        DEFAULT_CUSTOM_CUE_COLOURS.forearm
+      ),
+      sleeve: validColour(stored.sleeve, DEFAULT_CUSTOM_CUE_COLOURS.sleeve),
+      wrap: validColour(stored.wrap, DEFAULT_CUSTOM_CUE_COLOURS.wrap),
+      accent: validColour(stored.accent, DEFAULT_CUSTOM_CUE_COLOURS.accent),
+    }
+  } catch {
+    return { ...DEFAULT_CUSTOM_CUE_COLOURS }
+  }
+}
+
+export function saveCustomCueColours(
+  colours: Partial<Record<keyof CustomCueColours, number | string>>
+): CueStyle {
+  const current = customCueColours()
+  const next: CustomCueColours = {
+    forearm: validColour(colours.forearm, current.forearm),
+    sleeve: validColour(colours.sleeve, current.sleeve),
+    wrap: validColour(colours.wrap, current.wrap),
+    accent: validColour(colours.accent, current.accent),
+  }
+  if (typeof globalThis.localStorage !== "undefined") {
+    try {
+      globalThis.localStorage.setItem(
+        CUSTOM_CUE_STYLE_STORAGE_KEY,
+        JSON.stringify(next)
+      )
+    } catch {
+      // The live customisation still works when storage is unavailable.
+    }
+  }
+  return customCueStyle(next)
+}
+
+export function cueColourHex(colour: number): string {
+  return `#${colour.toString(16).padStart(6, "0")}`
+}
+
+function customCueStyle(colours = customCueColours()): CueStyle {
+  return {
+    id: CUSTOM_CUE_STYLE_ID,
+    name: "我的定制杆",
+    description: "自由组合前把、后把、握把与金属嵌花",
+    shaft: 0xd8bf96,
+    forearm: colours.forearm,
+    sleeve: colours.sleeve,
+    wrap: colours.wrap,
+    accent: colours.accent,
+    ferrule: 0xf4eee2,
+    tip: 0x2e7190,
+    swatches: [
+      cueColourHex(colours.forearm),
+      cueColourHex(colours.sleeve),
+      cueColourHex(colours.wrap),
+      cueColourHex(colours.accent),
+    ],
+  }
 }
 
 export function savedCueStyleId(): string {
