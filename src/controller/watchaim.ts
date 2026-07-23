@@ -3,6 +3,8 @@ import { HitEvent } from "../events/hitevent"
 import { BreakEvent } from "../events/breakevent"
 import { WatchShot } from "./watchshot"
 import { ControllerBase } from "./controllerbase"
+import { StartAimEvent } from "../events/startaimevent"
+import { Aim } from "./aim"
 
 export class WatchAim extends ControllerBase {
   override get name() {
@@ -40,5 +42,10 @@ export class WatchAim extends ControllerBase {
     this.container.table.cue.updateAimInput()
 
     return new WatchShot(this.container, event)
+  }
+
+  override handleStartAim(_: StartAimEvent) {
+    this.container.rules.startTurn()
+    return new Aim(this.container)
   }
 }

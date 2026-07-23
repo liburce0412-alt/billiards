@@ -8,8 +8,7 @@ import { Rules } from "./rules"
 import { TableGeometry } from "../../view/tablegeometry"
 import { TableConfig } from "../../view/tableconfig"
 import { Rack } from "../../utils/rack"
-import { isFirstShot } from "../../utils/utils"
-import { R } from "../../model/physics/constants"
+import { isFirstShot, isOpeningShot } from "../../utils/utils"
 import { Session } from "../../network/client/session"
 import { MatchResultHelper } from "../../network/client/matchresult"
 import { Aim } from "../aim"
@@ -36,6 +35,10 @@ export class EightBall implements Rules {
   currentBreak = 0
   previousBreak = 0
   rulename = "eightball"
+  private static readonly placementState = new WeakMap<
+    Table,
+    { behindLine: boolean }
+  >()
 
   constructor(container: Container) {
     this.container = container
@@ -55,6 +58,7 @@ export class EightBall implements Rules {
   table(): Table {
     const table = new Table(this.rack())
     this.cueball = table.cueball
+    EightBall.placementState.set(table, { behindLine: false })
     return table
   }
 
@@ -79,18 +83,23 @@ export class EightBall implements Rules {
   }
 
   placeBall(target?: Vector3): Vector3 {
+    const baulkline = Rack.spot.x
     if (target) {
       const max = new Vector3(TableGeometry.tableX, TableGeometry.tableY)
       const min = new Vector3(-TableGeometry.tableX, -TableGeometry.tableY)
-      if (isFirstShot(this.container.recorder)) {
-        const baulkline = (-R * 11) / 0.5
+      if (this.placementLineX() !== undefined) {
         max.setX(baulkline)
-        min.setX(baulkline)
       }
       return target.clone().clamp(min, max)
     }
-    const baulkline = (-R * 11) / 0.5
     return new Vector3(baulkline, 0, 0)
+  }
+
+  placementLineX(): number | undefined {
+    const state = EightBall.placementState.get(this.container.table)
+    return isFirstShot(this.container.recorder) || state?.behindLine
+      ? Rack.spot.x
+      : undefined
   }
 
   nextCandidateBall(p1type?: number): Ball | undefined {
@@ -163,7 +172,7 @@ export class EightBall implements Rules {
     const cueball = table.cueball
 
     if (Outcome.isCueBallPotted(cueball, outcome)) {
-      return "Cue ball potted"
+      return this.markBallInHand("Cue ball potted")
     }
 
     const firstCollision = Outcome.firstCollision(
@@ -171,7 +180,7 @@ export class EightBall implements Rules {
     )
 
     if (!firstCollision) {
-      return "No ball hit"
+      return this.markBallInHand("No ball hit")
     }
 
     const wrongBall = this.wrongBallHitReason(
@@ -180,7 +189,31 @@ export class EightBall implements Rules {
       type
     )
     if (wrongBall) {
-      return wrongBall
+      return this.markBallInHand(wrongBall)
+    }
+
+    if (isOpeningShot(this.container.recorder)) {
+      const objectBallPotted = Outcome.pots(outcome).some(
+        (ball) => ball !== cueball
+      )
+      if (!objectBallPotted) {
+        const cushionedObjects = new Set(
+          outcome
+            .filter(
+              (result) =>
+                result.type === OutcomeType.Cushion &&
+                result.ballA !== cueball &&
+                result.ballA
+            )
+            .map((result) => result.ballA)
+        )
+        if (cushionedObjects.size < 4) {
+          return this.markBallInHand(
+            "Illegal break: fewer than four object balls hit a cushion"
+          )
+        }
+      }
+      return null
     }
 
     // 3. No cushion after contact
@@ -190,11 +223,19 @@ export class EightBall implements Rules {
         .slice(firstCollisionIndex + 1)
         .some((o) => o.type === OutcomeType.Cushion)
       if (!cushionsAfter) {
-        return "No cushion after contact"
+        return this.markBallInHand("No cushion after contact")
       }
     }
 
     return null
+  }
+
+  private markBallInHand(reason: string): string {
+    const state = EightBall.placementState.get(this.container.table)
+    if (state) {
+      state.behindLine = isOpeningShot(this.container.recorder)
+    }
+    return reason
   }
 
   update(outcome: Outcome[]): Controller {
@@ -248,6 +289,10 @@ export class EightBall implements Rules {
     const table = this.container.table
     const pots = Outcome.pots(outcome)
 
+    if (this.isLegalEightOnBreak(session, pots)) {
+      return this.handleEightOnBreak(pots)
+    }
+
     if (this.isEndOfGame(outcome)) {
       return this.handleGameEnd(true)
     }
@@ -257,16 +302,7 @@ export class EightBall implements Rules {
     }
 
     const myGroupBefore = session.p1type
-    if (session.p1type === 0) {
-      const solids = pots.filter((b) => b.label! >= 1 && b.label! <= 7)
-      const stripes = pots.filter((b) => b.label! >= 9 && b.label! <= 15)
-
-      if (solids.length > 0 && stripes.length === 0) {
-        session.p1type = 1
-      } else if (stripes.length > 0 && solids.length === 0) {
-        session.p1type = 2
-      }
-    }
+    this.assignGroupAfterBreak(session, pots)
 
     this.currentBreak += pots.length
     session.addMyScore(pots.length)
@@ -293,6 +329,64 @@ export class EightBall implements Rules {
       }
     }
 
+    return new Aim(this.container)
+  }
+
+  private isLegalEightOnBreak(session: Session, pots: Ball[]): boolean {
+    return (
+      session.p1type === 0 &&
+      isOpeningShot(this.container.recorder) &&
+      pots.some((ball) => ball.label === 8)
+    )
+  }
+
+  private assignGroupAfterBreak(session: Session, pots: Ball[]) {
+    if (session.p1type !== 0 || isOpeningShot(this.container.recorder)) {
+      return
+    }
+    const solids = pots.filter((ball) => ball.label! >= 1 && ball.label! <= 7)
+    const stripes = pots.filter((ball) => ball.label! >= 9 && ball.label! <= 15)
+    if (solids.length > 0 && stripes.length === 0) {
+      session.p1type = 1
+    } else if (stripes.length > 0 && solids.length === 0) {
+      session.p1type = 2
+    }
+  }
+
+  private handleEightOnBreak(pots: Ball[]): Controller {
+    const table = this.container.table
+    const session = Session.getInstance()
+    const eightBall = pots.find((ball) => ball.label === 8)!
+    const footSpot = new Vector3(TableGeometry.tableX / 2, 0, 0)
+    Respot.respotBehind(footSpot, eightBall, table)
+    eightBall.fround()
+
+    const otherPots = pots.filter(
+      (ball) => ball !== eightBall && ball !== table.cueball
+    )
+    this.currentBreak += otherPots.length
+    session.addMyScore(otherPots.length)
+    this.container.sendEvent(
+      RerackEvent.fromJson({ balls: [eightBall.serialise()] })
+    )
+    const p1typeForEvent =
+      session.playerIndex === 0 ? session.p1type : flipType(session.p1type)
+    this.container.sendEvent(
+      new ScoreEvent(
+        session.playerIndex === 0 ? session.myScore() : session.opponentScore(),
+        session.playerIndex === 1 ? session.myScore() : session.opponentScore(),
+        this.currentBreak,
+        (session.playerIndex + 1) as 1 | 2,
+        p1typeForEvent
+      )
+    )
+    this.container.sendEvent(new WatchEvent(table.serialise()))
+    this.container.notify({
+      type: "Info",
+      title: "开球进黑八",
+      subtext: "黑八复位，球组保持开放，由开球方继续击打。",
+      extra: "继续击打",
+    })
     return new Aim(this.container)
   }
 

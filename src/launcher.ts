@@ -47,9 +47,24 @@ const ruleDetails: Record<
 
 const opponentNames: Record<LauncherOpponent, string> = {
   practice: "自由练习",
+  ai: "AI 对战",
   ClawBreak: "基础 AI",
   TheFarJaw: "进阶 AI",
 }
+
+const levelNames = [
+  "1 档 · 入门新手",
+  "2 档 · 初学瞄准",
+  "3 档 · 基础连续进攻",
+  "4 档 · 偶尔清台",
+  "5 档 · 稳定业余高手",
+  "6 档 · 县级第一杆",
+  "7 档 · 地区赛强手",
+  "8 档 · 市级顶尖",
+  "9 档 · 省级强手",
+  "10 档 · 全国赛强手",
+  "11 档 · 顶级挑战",
+]
 
 const qualityNames: Record<LauncherQuality, string> = {
   low: "省电",
@@ -59,7 +74,8 @@ const qualityNames: Record<LauncherQuality, string> = {
 
 const defaultSelection: LauncherSelection = {
   rule: "eightball",
-  opponent: "TheFarJaw",
+  opponent: "ai",
+  botLevel: 4,
   quality: "high",
 }
 
@@ -75,6 +91,14 @@ function isQuality(value: unknown): value is LauncherQuality {
   return typeof value === "string" && value in qualityNames
 }
 
+function normalizeLevel(value: unknown): number {
+  const parsed =
+    typeof value === "number" ? value : Number.parseInt(String(value ?? ""))
+  return Number.isFinite(parsed)
+    ? Math.max(1, Math.min(11, Math.round(parsed)))
+    : defaultSelection.botLevel
+}
+
 function readSelection(params: URLSearchParams): LauncherSelection {
   let stored: Partial<LauncherSelection>
   try {
@@ -87,11 +111,14 @@ function readSelection(params: URLSearchParams): LauncherSelection {
   let quality = defaultSelection.quality
   if (isQuality(stored.quality)) quality = stored.quality
   if (isQuality(requestedQuality)) quality = requestedQuality
+  let opponent = defaultSelection.opponent
+  if (isOpponent(stored.opponent)) {
+    opponent = stored.opponent === "practice" ? "practice" : "ai"
+  }
   return {
     rule: isRule(stored.rule) ? stored.rule : defaultSelection.rule,
-    opponent: isOpponent(stored.opponent)
-      ? stored.opponent
-      : defaultSelection.opponent,
+    opponent,
+    botLevel: normalizeLevel(stored.botLevel),
     quality,
   }
 }
@@ -125,6 +152,14 @@ function ruleOptions(selection: LauncherSelection) {
 }
 
 function launcherMarkup(selection: LauncherSelection) {
+  const levelOptions = levelNames
+    .map(
+      (name, index) =>
+        `<option value="${index + 1}" ${
+          selection.botLevel === index + 1 ? "selected" : ""
+        }>${name}</option>`
+    )
+    .join("")
   return `
     <div class="launcher-shell">
       <header class="launcher-nav">
@@ -142,7 +177,7 @@ function launcherMarkup(selection: LauncherSelection) {
           <p class="launcher-kicker">浏览器台球模拟器</p>
           <h1 id="launcherTitle">选一张球桌。<br />打好下一杆。</h1>
           <p class="launcher-lede">
-            五种规则、两档本地机器人，以及针对当前设备的渲染画质。物理结果不随画质改变。
+            五种规则、11 档本地 AI，以及针对当前设备的渲染画质。物理结果不随画质改变。
           </p>
           <dl class="launcher-facts">
             <div><dt>物理</dt><dd>固定 1/512 秒</dd></div>
@@ -160,11 +195,18 @@ function launcherMarkup(selection: LauncherSelection) {
           <div class="launcher-controls">
             <fieldset class="launcher-fieldset">
               <legend>对手</legend>
-              <div class="segment-control">
+              <div class="segment-control segment-control--two">
                 <label>${checked("opponent", "practice", selection.opponent)}<span>自由练习</span></label>
-                <label>${checked("opponent", "ClawBreak", selection.opponent)}<span>基础 AI</span></label>
-                <label>${checked("opponent", "TheFarJaw", selection.opponent)}<span>进阶 AI</span></label>
+                <label>${checked("opponent", "ai", selection.opponent)}<span>AI 对战</span></label>
               </div>
+            </fieldset>
+
+            <fieldset class="launcher-fieldset">
+              <legend>AI 能力（1 弱 → 11 强）</legend>
+              <label class="level-select">
+                <span class="sr-only">AI 能力档位</span>
+                <select id="botLevel" name="botLevel">${levelOptions}</select>
+              </label>
             </fieldset>
 
             <fieldset class="launcher-fieldset">
@@ -199,6 +241,7 @@ function selectionFromForm(form: HTMLFormElement): LauncherSelection {
   return {
     rule: data.get("rule") as LauncherRule,
     opponent: data.get("opponent") as LauncherOpponent,
+    botLevel: normalizeLevel(data.get("botLevel")),
     quality: data.get("quality") as LauncherQuality,
   }
 }
@@ -214,7 +257,11 @@ function saveSelection(selection: LauncherSelection) {
 function updateSummary(form: HTMLFormElement) {
   const selection = selectionFromForm(form)
   const summary = document.querySelector<HTMLElement>("#launcherSummary")!
-  summary.textContent = `${ruleDetails[selection.rule].name} · ${opponentNames[selection.opponent]} · ${qualityNames[selection.quality]}`
+  const opponent =
+    selection.opponent === "practice"
+      ? opponentNames.practice
+      : levelNames[selection.botLevel - 1]
+  summary.textContent = `${ruleDetails[selection.rule].name} · ${opponent} · ${qualityNames[selection.quality]}`
   saveSelection(selection)
 }
 

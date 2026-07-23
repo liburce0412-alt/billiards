@@ -13,6 +13,8 @@ import { WatchAim } from "../../src/controller/watchaim"
 import { End } from "../../src/controller/end"
 import { Session } from "../../src/network/client/session"
 import { ScoreEvent } from "../../src/events/scoreevent"
+import { EventType } from "../../src/events/eventtype"
+import { Rack } from "../../src/utils/rack"
 
 initDom()
 
@@ -31,6 +33,13 @@ function initEightBall(): {
   })
   const eightball = container.rules as EightBall
   return { container, eightball }
+}
+
+function markBreakComplete(container: Container) {
+  container.recorder.entries.push(
+    { event: { type: EventType.AIM } } as any,
+    { event: { type: EventType.AIM } } as any
+  )
 }
 
 describe("EightBall Rules", () => {
@@ -65,6 +74,7 @@ describe("EightBall Rules", () => {
   })
 
   it("should assign solids if only solids are potted", () => {
+    markBreakComplete(container)
     const ball1 = container.table.balls.find((b) => b.label === 1)!
     const outcome = [
       Outcome.collision(container.table.cueball, ball1, 1),
@@ -75,6 +85,7 @@ describe("EightBall Rules", () => {
   })
 
   it("should assign stripes if only stripes are potted", () => {
+    markBreakComplete(container)
     const ball9 = container.table.balls.find((b) => b.label === 9)!
     const outcome = [
       Outcome.collision(container.table.cueball, ball9, 1),
@@ -85,6 +96,7 @@ describe("EightBall Rules", () => {
   })
 
   it("should remain open if both solid and stripe are potted", () => {
+    markBreakComplete(container)
     const ball1 = container.table.balls.find((b) => b.label === 1)!
     const ball9 = container.table.balls.find((b) => b.label === 9)!
     const outcome = [
@@ -113,6 +125,7 @@ describe("EightBall Rules", () => {
   })
 
   it("should respot 8-ball and give ball in hand if 8-ball potted early", () => {
+    markBreakComplete(container)
     const eightBall = container.table.balls.find((b) => b.label === 8)!
     const ball1 = container.table.balls.find((b) => b.label === 1)!
     const outcome = [
@@ -143,6 +156,7 @@ describe("EightBall Rules", () => {
   })
 
   it("should lose if 8-ball potted on open table with no other balls remaining", () => {
+    markBreakComplete(container)
     // Clear all non-8-ball, non-cue balls so it's a valid end-game foul
     container.table.balls.forEach((b) => {
       if (b !== container.table.cueball && b.label !== 8) {
@@ -224,6 +238,7 @@ describe("EightBall Rules", () => {
   })
 
   it("should broadcast ScoreEvent with p1type", () => {
+    markBreakComplete(container)
     const sentEvents: any[] = []
     container.broadcast = (event) => sentEvents.push(event)
 
@@ -237,6 +252,58 @@ describe("EightBall Rules", () => {
     const scoreEvents = sentEvents.filter((e) => e instanceof ScoreEvent)
     expect(scoreEvents).to.have.length(1)
     expect(scoreEvents[0].p1type).to.equal(1)
+  })
+
+  it("keeps the table open when a group ball is potted on the break", () => {
+    const ball1 = container.table.balls.find((b) => b.label === 1)!
+    const outcome = [
+      Outcome.collision(container.table.cueball, ball1, 1),
+      Outcome.pot(ball1, 1),
+    ]
+    expect(eightball.update(outcome)).to.be.an.instanceof(Aim)
+    expect(Session.getInstance().p1type).to.equal(0)
+  })
+
+  it("requires four object balls to reach cushions on a dry break", () => {
+    const objects = container.table.balls.filter(
+      (ball) => ball !== container.table.cueball
+    )
+    const legal = [
+      Outcome.collision(container.table.cueball, objects[0], 1),
+      ...objects
+        .slice(0, 4)
+        .map((ball, index) => Outcome.cushion(ball, 1, index + 2)),
+    ]
+    expect(eightball.foulReason(legal)).to.be.null
+    expect(eightball.foulReason(legal.slice(0, 4))).to.contain(
+      "fewer than four"
+    )
+  })
+
+  it("gives only behind-line ball in hand after an opening scratch", () => {
+    const cueball = container.table.cueball
+    const outcome = [Outcome.pot(cueball, 1)]
+    expect(eightball.update(outcome)).to.be.an.instanceof(PlaceBall)
+    expect(eightball.placementLineX()).to.equal(Rack.spot.x)
+    expect(eightball.placeBall(new Vector3(1, 0, 0)).x).to.be.closeTo(
+      Rack.spot.x,
+      1e-9
+    )
+    expect(
+      eightball.placeBall(new Vector3(Rack.spot.x - 0.2, 0, 0)).x
+    ).to.be.closeTo(Rack.spot.x - 0.2, 1e-9)
+  })
+
+  it("respots a legally potted 8-ball on the break and keeps the turn", () => {
+    const one = container.table.balls.find((ball) => ball.label === 1)!
+    const eight = container.table.balls.find((ball) => ball.label === 8)!
+    const outcome = [
+      Outcome.collision(container.table.cueball, one, 1),
+      Outcome.pot(eight, 1),
+    ]
+    expect(eightball.update(outcome)).to.be.an.instanceof(Aim)
+    expect(eight.onTable()).to.be.true
+    expect(Session.getInstance().p1type).to.equal(0)
   })
 
   it("nextCandidateBall should return group ball", () => {

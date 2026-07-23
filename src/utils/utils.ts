@@ -5,6 +5,12 @@ export function isFirstShot(recorder: Recorder): boolean {
   return !recorder.entries.some((e) => e.event.type === EventType.AIM)
 }
 
+export function isOpeningShot(recorder: Recorder): boolean {
+  return (
+    recorder.entries.filter((e) => e.event.type === EventType.AIM).length <= 1
+  )
+}
+
 export function round(num) {
   return Math.fround(num)
 }

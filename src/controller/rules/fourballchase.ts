@@ -18,6 +18,7 @@ import { R } from "../../model/physics/constants"
 import { Rack } from "../../utils/rack"
 import { Respot } from "../../utils/respot"
 import { roundVec } from "../../utils/three-utils"
+import { isFirstShot } from "../../utils/utils"
 import { TableConfig } from "../../view/tableconfig"
 import { TableGeometry } from "../../view/tablegeometry"
 import { NineBall } from "./nineball"
@@ -25,6 +26,7 @@ import { Rules } from "./rules"
 
 interface ChaseState {
   visitsWithoutClearance: number
+  openingPlacement: boolean
 }
 
 type FourBallContainer = Container & { isBotRules?: boolean }
@@ -52,7 +54,7 @@ export class FourBallChase implements Rules {
   private state(): ChaseState {
     let state = FourBallChase.stateByTable.get(this.container.table)
     if (!state) {
-      state = { visitsWithoutClearance: 0 }
+      state = { visitsWithoutClearance: 0, openingPlacement: true }
       FourBallChase.stateByTable.set(this.container.table, state)
     }
     return state
@@ -77,7 +79,10 @@ export class FourBallChase implements Rules {
   table(): Table {
     const table = new Table(this.rack())
     this.cueball = table.cueball
-    FourBallChase.stateByTable.set(table, { visitsWithoutClearance: 0 })
+    FourBallChase.stateByTable.set(table, {
+      visitsWithoutClearance: 0,
+      openingPlacement: true,
+    })
     return table
   }
 
@@ -92,18 +97,45 @@ export class FourBallChase implements Rules {
   }
 
   placeBall(target?: Vector3): Vector3 {
-    if (target) {
-      return target
-        .clone()
-        .clamp(
-          new Vector3(-TableGeometry.tableX, -TableGeometry.tableY, 0),
-          new Vector3(TableGeometry.tableX, TableGeometry.tableY, 0)
-        )
+    const min = new Vector3(-TableGeometry.tableX, -TableGeometry.tableY, 0)
+    const max = new Vector3(TableGeometry.tableX, TableGeometry.tableY, 0)
+    if (this.isOpeningRack()) {
+      max.x = Rack.spot.x
     }
-    return new Vector3((-R * 11) / 0.5, 0, 0)
+    if (target) {
+      return target.clone().clamp(min, max)
+    }
+    return new Vector3(Rack.spot.x - 2 * R, 0, 0).clamp(min, max)
+  }
+
+  placementLineX(): number | undefined {
+    return this.isOpeningRack() ? Rack.spot.x : undefined
+  }
+
+  canLetStroke(): boolean {
+    if (this.isOpeningRack()) return false
+    const target = this.nextCandidateBall()
+    if (!target) return false
+
+    const cue = this.cueball.pos
+    const line = target.pos.clone().sub(cue)
+    const lengthSquared = line.lengthSq()
+    if (lengthSquared === 0) return true
+
+    return this.container.table.balls.some((ball) => {
+      if (ball === this.cueball || ball === target || !ball.onTable()) {
+        return false
+      }
+      const fromCue = ball.pos.clone().sub(cue)
+      const projection = fromCue.dot(line) / lengthSquared
+      if (projection <= 0 || projection >= 1) return false
+      const closest = cue.clone().addScaledVector(line, projection)
+      return closest.distanceTo(ball.pos) < 2 * R
+    })
   }
 
   update(outcome: Outcome[]): Controller {
+    this.state().openingPlacement = false
     const reason = this.foulReason(outcome)
     if (reason) {
       this.advanceState(outcome)
@@ -218,6 +250,7 @@ export class FourBallChase implements Rules {
       ball.fround()
     })
     this.state().visitsWithoutClearance = 0
+    this.state().openingPlacement = true
     return balls
   }
 
@@ -256,7 +289,7 @@ export class FourBallChase implements Rules {
       subtext: resultName,
       extra: "继续开球",
     })
-    return new Aim(this.container)
+    return new PlaceBall(this.container)
   }
 
   private handleFoul(outcome: Outcome[], reason: string): Controller {
@@ -314,5 +347,9 @@ export class FourBallChase implements Rules {
 
   allowsPlaceBall(): boolean {
     return true
+  }
+
+  private isOpeningRack(): boolean {
+    return this.state().openingPlacement || isFirstShot(this.container.recorder)
   }
 }

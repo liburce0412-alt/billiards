@@ -17,13 +17,19 @@ describe("Launcher configuration", () => {
   it("builds a local AI game URL", () => {
     const url = new URL(
       buildGameUrl(
-        { rule: "eightball", opponent: "TheFarJaw", quality: "high" },
+        {
+          rule: "eightball",
+          opponent: "ai",
+          botLevel: 9,
+          quality: "high",
+        },
         "https://example.test/index.html?old=value#fragment"
       )
     )
     expect(url.searchParams.get("play")).to.equal("1")
     expect(url.searchParams.get("ruletype")).to.equal("eightball")
     expect(url.searchParams.get("bot")).to.equal("TheFarJaw")
+    expect(url.searchParams.get("botLevel")).to.equal("9")
     expect(url.searchParams.get("practice")).to.equal("false")
     expect(url.searchParams.get("quality")).to.equal("high")
     expect(url.searchParams.has("old")).to.be.false
@@ -33,7 +39,12 @@ describe("Launcher configuration", () => {
   it("builds a practice URL without a bot", () => {
     const url = new URL(
       buildGameUrl(
-        { rule: "snooker", opponent: "practice", quality: "balanced" },
+        {
+          rule: "snooker",
+          opponent: "practice",
+          botLevel: 4,
+          quality: "balanced",
+        },
         "https://example.test/"
       )
     )

@@ -12,7 +12,6 @@ import { Outcome, OutcomeType } from "../../model/outcome"
 import { Table } from "../../model/table"
 import { Rack } from "../../utils/rack"
 import { Rules } from "./rules"
-import { R } from "../../model/physics/constants"
 import { Respot } from "../../utils/respot"
 import { TableGeometry } from "../../view/tablegeometry"
 import { TableConfig } from "../../view/tableconfig"
@@ -29,6 +28,10 @@ export class NineBall implements Rules {
   currentBreak = 0
   previousBreak = 0
   rulename = "nineball"
+  private static readonly placementState = new WeakMap<
+    Table,
+    { openingPlacement: boolean }
+  >()
 
   constructor(container: Container) {
     this.container = container
@@ -46,17 +49,27 @@ export class NineBall implements Rules {
   }
 
   placeBall(target?: Vector3): Vector3 {
-    const baulkline = (-R * 11) / 0.5
+    const baulkline = Rack.spot.x
     if (target) {
       const max = new Vector3(TableGeometry.tableX, TableGeometry.tableY)
       const min = new Vector3(-TableGeometry.tableX, -TableGeometry.tableY)
-      if (isFirstShot(this.container.recorder)) {
+      if (this.isOpeningPlacement()) {
         max.setX(baulkline)
-        min.setX(baulkline)
       }
       return target.clone().clamp(min, max)
     }
     return new Vector3(baulkline, 0, 0)
+  }
+
+  placementLineX(): number | undefined {
+    return this.isOpeningPlacement() ? Rack.spot.x : undefined
+  }
+
+  private isOpeningPlacement(): boolean {
+    return (
+      NineBall.placementState.get(this.container.table)?.openingPlacement ??
+      isFirstShot(this.container.recorder)
+    )
   }
 
   readonly asset = "models/p8.min.gltf"
@@ -68,6 +81,7 @@ export class NineBall implements Rules {
   table(): Table {
     const table = new Table(this.rack())
     this.cueball = table.cueball
+    NineBall.placementState.set(table, { openingPlacement: true })
     return table
   }
 
@@ -77,6 +91,8 @@ export class NineBall implements Rules {
 
   update(outcome: Outcome[]): Controller {
     const reason = NineBall.foulReason(this.container.table, outcome)
+    const state = NineBall.placementState.get(this.container.table)
+    if (state) state.openingPlacement = false
 
     if (reason) {
       return this.handleFoul(outcome, reason)

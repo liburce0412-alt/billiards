@@ -1,12 +1,13 @@
 export type LauncherRule =
   "nineball" | "eightball" | "fourball" | "snooker" | "threecushion"
 
-export type LauncherOpponent = "practice" | "ClawBreak" | "TheFarJaw"
+export type LauncherOpponent = "practice" | "ai" | "ClawBreak" | "TheFarJaw"
 export type LauncherQuality = "low" | "balanced" | "high"
 
 export interface LauncherSelection {
   rule: LauncherRule
   opponent: LauncherOpponent
+  botLevel: number
   quality: LauncherQuality
 }
 
@@ -37,7 +38,9 @@ export function buildGameUrl(selection: LauncherSelection, baseHref: string) {
   if (selection.opponent === "practice") {
     url.searchParams.set("practice", "true")
   } else {
-    url.searchParams.set("bot", selection.opponent)
+    const level = Math.max(1, Math.min(11, Math.round(selection.botLevel)))
+    url.searchParams.set("bot", level >= 6 ? "TheFarJaw" : "ClawBreak")
+    url.searchParams.set("botLevel", level.toString())
     url.searchParams.set("practice", "false")
   }
   return url.toString()

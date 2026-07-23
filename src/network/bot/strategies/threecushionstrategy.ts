@@ -4,6 +4,7 @@ import { Vector3 } from "three"
 import { AimCalculator } from "../aimcalculator"
 import { BotShotContext, BotStrategy } from "../botstrategy"
 import { Cushion } from "../../../model/physics/cushion"
+import { Ball } from "../../../model/ball"
 
 type ShotCandidate = {
   overlap: number
@@ -73,10 +74,20 @@ export class ThreeStrategy implements BotStrategy {
 
     switch (category) {
       case "LongShortLongNatural":
-        return this.handleLongShortLongNatural(candidate!, context, calculator)
+        return this.handleLongShortLongNatural(
+          candidate!,
+          targetBall,
+          context,
+          calculator
+        )
       case "FallbackRandom":
       default:
-        return this.handleFallbackRandom(candidate!, context, calculator)
+        return this.handleFallbackRandom(
+          candidate!,
+          targetBall,
+          context,
+          calculator
+        )
     }
   }
 
@@ -126,6 +137,7 @@ export class ThreeStrategy implements BotStrategy {
    */
   private handleLongShortLongNatural(
     best: ShotCandidate,
+    targetBall: Ball,
     context: BotShotContext,
     calculator: AimCalculator
   ): GameEvent[] {
@@ -139,7 +151,7 @@ export class ThreeStrategy implements BotStrategy {
 
     const shot = calculator.generateShot(
       context.table,
-      0,
+      calculator.skillError(context, targetBall).angle,
       this.power,
       best.ghostPos,
       new Vector3(sideSpin, 0, 0)
@@ -154,11 +166,17 @@ export class ThreeStrategy implements BotStrategy {
    */
   private handleFallbackRandom(
     best: ShotCandidate,
+    targetBall: Ball,
     context: BotShotContext,
     calculator: AimCalculator
   ): GameEvent[] {
     console.log(`[ThreeStrategy] FallbackRandom: using random shot`)
 
-    return this.handleLongShortLongNatural(best, context, calculator)
+    return this.handleLongShortLongNatural(
+      best,
+      targetBall,
+      context,
+      calculator
+    )
   }
 }

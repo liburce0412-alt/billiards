@@ -1,13 +1,16 @@
 import { expect } from "chai"
 import { Container } from "../../src/container/container"
 import { FourBallChase } from "../../src/controller/rules/fourballchase"
-import { Aim } from "../../src/controller/aim"
+import { PlaceBall } from "../../src/controller/placeball"
 import { Ball, State } from "../../src/model/ball"
 import { Outcome } from "../../src/model/outcome"
 import { Session } from "../../src/network/client/session"
 import { R } from "../../src/model/physics/constants"
 import { Assets } from "../../src/view/assets"
 import { initDom } from "../view/dom"
+import { Vector3 } from "three"
+import { EventType } from "../../src/events/eventtype"
+import { Rack } from "../../src/utils/rack"
 
 initDom()
 
@@ -71,6 +74,37 @@ describe("FourBallChase Rules", () => {
       Outcome.pot(nine, 1, 2),
     ]
     expect(rules.getAmountScored(outcome)).to.equal(4)
+    expect(rules.foulReason(outcome)).to.be.null
+  })
+
+  it("allows opening placement anywhere behind the head string", () => {
+    const { rules } = initFourBall()
+    expect(rules.placementLineX()).to.equal(Rack.spot.x)
+    expect(rules.placeBall(new Vector3(1, 0, 0)).x).to.be.closeTo(
+      Rack.spot.x,
+      1e-9
+    )
+    expect(
+      rules.placeBall(new Vector3(Rack.spot.x - 0.2, 0, 0)).x
+    ).to.be.closeTo(Rack.spot.x - 0.2, 1e-9)
+  })
+
+  it("offers a let stroke only when the lowest ball is obscured", () => {
+    const { container, rules } = initFourBall()
+    container.recorder.entries.push(
+      { event: { type: EventType.AIM } } as any,
+      { event: { type: EventType.AIM } } as any
+    )
+    const cue = container.table.cueball
+    const one = container.table.balls.find((ball) => ball.label === 1)!
+    const blocker = container.table.balls.find((ball) => ball.label === 2)!
+    rules.update([Outcome.collision(cue, one, 1), Outcome.cushion(one, 1, 2)])
+    cue.pos.set(-0.8, 0, 0)
+    one.pos.set(0.4, 0, 0)
+    blocker.pos.set(0, 0.5, 0)
+    expect(rules.canLetStroke()).to.equal(false)
+    blocker.pos.set(0, R, 0)
+    expect(rules.canLetStroke()).to.equal(true)
   })
 
   it("awards 10 for a break-and-run and reracks", () => {
@@ -86,7 +120,7 @@ describe("FourBallChase Rules", () => {
       ...objects.map((ball, index) => Outcome.pot(ball, 1, index + 2)),
     ]
     expect(rules.getAmountScored(outcome)).to.equal(10)
-    expect(rules.update(outcome)).to.be.an.instanceof(Aim)
+    expect(rules.update(outcome)).to.be.an.instanceof(PlaceBall)
     expect(Session.getInstance().myScore()).to.equal(10)
     expect(objects.every((ball) => ball.onTable())).to.be.true
   })

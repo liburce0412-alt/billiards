@@ -8,6 +8,12 @@ import { PocketGeometry } from "../../view/pocketgeometry"
 import { Knuckle } from "../../model/physics/knuckle"
 import { TableGeometry } from "../../view/tablegeometry"
 import { Ball } from "../../model/ball"
+import type { BotShotContext } from "./botstrategy"
+
+export interface SkillError {
+  angle: number
+  difficulty: number
+}
 
 /**
  * AimCalculator provides logic for the bot to calculate shot angles and power.
@@ -17,10 +23,11 @@ import { Ball } from "../../model/ball"
 export class AimCalculator {
   private static readonly POCKET_INSET_FACTOR = 0.94
   private static readonly GHOST_BALL_DISTANCE_FACTOR = 2.001
-  private static readonly RANDOM_OFFSET_RANGE = 0.6
-
   static readonly DEFAULT_SHOT_POWER = 90 * R
   static readonly MAX_SHOT_POWER = 110 * R
+  private static readonly MAX_ERROR_DEGREES = [
+    8, 6.8, 5.5, 4.2, 3.2, 2.4, 1.8, 1.35, 1, 0.78, 0.65,
+  ]
   public readonly pockets: Vector3[]
   public readonly knuckles: Vector3[]
 
@@ -72,14 +79,15 @@ export class AimCalculator {
   }
 
   /**
-   * Generates a HitEvent for a shot towards a target position, optionally adding noise.
+   * Generates a HitEvent for a shot towards a target position.
+   * angleError is an exact offset so bot shots remain deterministic in replays.
    */
   public generateShot(
     table: Table,
-    noise: number,
+    angleError: number,
     power: number,
     targetPos: Vector3 = new Vector3().random(),
-    spinOffset: Vector3 = AimCalculator.randomSpin()
+    spinOffset: Vector3 = new Vector3()
   ): HitEvent {
     const { cueball, cue, balls } = table
     const { aim } = cue
@@ -88,7 +96,7 @@ export class AimCalculator {
     aim.i = balls.indexOf(cueball)
 
     const lineTo = targetPos.clone().sub(cueball.pos)
-    aim.angle = atan2(lineTo.y, lineTo.x) + (Math.random() - 0.5) * noise
+    aim.angle = atan2(lineTo.y, lineTo.x) + angleError
     aim.power = power
     aim.offset = spinOffset
 
@@ -97,6 +105,112 @@ export class AimCalculator {
     }
 
     return new HitEvent(table.serialiseHit())
+  }
+
+  /**
+   * Returns a repeatable, difficulty-sensitive angular error for AI levels 1–11.
+   * The level only scales the result; the sign and shot variation come from the
+   * table state, so stronger levels are always more accurate for the same shot.
+   */
+  public skillError(
+    context: BotShotContext,
+    target: Ball,
+    destination?: Vector3
+  ): SkillError {
+    const tableDiagonal = Math.hypot(
+      TableGeometry.tableX * 2,
+      TableGeometry.tableY * 2
+    )
+    const targetDestination =
+      destination ??
+      (this.pockets.length > 0
+        ? this.findBestPocket(context.cueBall.pos, target.pos, this.pockets)
+        : undefined)
+    const cueDistance = Math.min(
+      1,
+      context.cueBall.pos.distanceTo(target.pos) / tableDiagonal
+    )
+    const objectDistance = targetDestination
+      ? Math.min(1, target.pos.distanceTo(targetDestination) / tableDiagonal)
+      : 0.65
+    const cut = targetDestination
+      ? Math.min(
+          1,
+          this.calculateCutScore(
+            context.cueBall.pos,
+            target.pos,
+            targetDestination
+          )
+        )
+      : 0.55
+    const railDistance = Math.min(
+      TableGeometry.tableX - Math.abs(target.pos.x),
+      TableGeometry.tableY - Math.abs(target.pos.y)
+    )
+    const nearRail = railDistance < 4 * R ? 1 : 0
+    const blocked = context.table.balls.some((ball) => {
+      if (ball === context.cueBall || ball === target || !ball.onTable()) {
+        return false
+      }
+      const shotLine = target.pos.clone().sub(context.cueBall.pos)
+      const lengthSquared = shotLine.lengthSq()
+      if (lengthSquared === 0) return true
+      const projection =
+        ball.pos.clone().sub(context.cueBall.pos).dot(shotLine) / lengthSquared
+      if (projection <= 0 || projection >= 1) return false
+      const closest = context.cueBall.pos
+        .clone()
+        .addScaledVector(shotLine, projection)
+      return closest.distanceTo(ball.pos) < 2.2 * R
+    })
+      ? 1
+      : 0
+
+    let difficulty =
+      0.12 +
+      cueDistance * 0.24 +
+      objectDistance * 0.22 +
+      cut * 0.5 +
+      nearRail * 0.12 +
+      blocked * 0.18
+    if (context.ruleName === "fourball") difficulty *= 1.18
+    if (context.ruleName === "threecushion" || context.ruleName === "sagu") {
+      difficulty *= 1.15
+    }
+    difficulty = Math.max(0.12, Math.min(1, difficulty))
+
+    const variation = this.deterministicUnit(context, target, "angle")
+    const direction =
+      this.deterministicUnit(context, target, "direction") < 0.5 ? -1 : 1
+    const level = Math.max(1, Math.min(11, Math.round(context.level)))
+    const maxDegrees = AimCalculator.MAX_ERROR_DEGREES[level - 1]
+    const magnitude = (0.3 + variation * 0.7) * difficulty
+    return {
+      angle: direction * ((maxDegrees * magnitude * Math.PI) / 180),
+      difficulty,
+    }
+  }
+
+  private deterministicUnit(
+    context: BotShotContext,
+    target: Ball,
+    salt: string
+  ): number {
+    const ballState = context.table.balls
+      .map(
+        (ball) =>
+          `${ball.id}:${Math.round(ball.pos.x * 10000)}:${Math.round(
+            ball.pos.y * 10000
+          )}:${ball.onTable() ? 1 : 0}`
+      )
+      .join("|")
+    const value = `${context.ruleName}|${context.shotIndex}|${target.id}|${salt}|${ballState}`
+    let hash = 2166136261
+    for (let i = 0; i < value.length; i++) {
+      hash ^= value.charCodeAt(i)
+      hash = Math.imul(hash, 16777619)
+    }
+    return (hash >>> 0) / 4294967295
   }
 
   /**
@@ -144,13 +258,6 @@ export class AimCalculator {
 
   private getDirectionVector(from: Vector3, to: Vector3): Vector3 {
     return new Vector3().subVectors(to, from).normalize()
-  }
-
-  static randomSpin() {
-    return new Vector3(
-      0,
-      (Math.random() - 0.5) * AimCalculator.RANDOM_OFFSET_RANGE
-    )
   }
 
   /**

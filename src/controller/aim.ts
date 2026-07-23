@@ -4,6 +4,8 @@ import { ControllerBase } from "./controllerbase"
 import { PlayShot } from "./playshot"
 import { Replay } from "./replay"
 import { gameOverButtons } from "../utils/gameover"
+import { StartAimEvent } from "../events/startaimevent"
+import { WatchAim } from "./watchaim"
 
 /**
  * Aim using input events.
@@ -57,6 +59,34 @@ export class Aim extends ControllerBase {
     this.container.view.clearLines()
     this.container.table.cue.aimInputs.setDisabled(false)
     this.container.table.cue.aimInputs.setButtonText("Hit")
+    this.offerLetStroke()
+  }
+
+  private offerLetStroke() {
+    if (!this.container.rules.canLetStroke?.()) return
+    const extra = [
+      '<button type="button" class="notification-btn" data-notification-action="let-stroke">让杆</button>',
+      '<button type="button" class="notification-btn" data-notification-action="play-on">继续击打</button>',
+    ].join("")
+    this.container.notifyLocal(
+      {
+        type: "Info",
+        title: "目标球被遮挡",
+        subtext: "可选择让上一位球员继续击打；目标球完全可见时不能让杆。",
+        extra,
+        icon: "↩️",
+      },
+      0,
+      {
+        "let-stroke": () => {
+          this.container.notification.clear()
+          this.container.table.cue.aimInputs.setDisabled(true)
+          this.container.sendEvent(new StartAimEvent())
+          this.container.updateController(new WatchAim(this.container))
+        },
+        "play-on": () => this.container.notification.clear(),
+      }
+    )
   }
 
   override handleInput(input: Input): Controller {

@@ -26,18 +26,16 @@ export class TheFarJaw implements BotStrategy {
     }
 
     const targetPoint = targetBall.pos
-    const aimPoint = calculator.getAimPoint(
+    const pocket = calculator.findBestPocket(
       context.cueBall.pos,
       targetPoint,
       calculator.pockets
     )
-    const knuckles = calculator.closestKnuckles(
-      calculator.findBestPocket(
-        context.cueBall.pos,
-        targetPoint,
-        calculator.pockets
-      )
-    )
+    const aimPoint = calculator.getAimPoint(context.cueBall.pos, targetPoint, [
+      pocket,
+    ])
+    const knuckles = calculator.closestKnuckles(pocket)
+    const error = calculator.skillError(context, targetBall, pocket).angle
 
     const farKnuckle =
       targetPoint.distanceTo(knuckles[0]) > targetPoint.distanceTo(knuckles[1])
@@ -52,14 +50,14 @@ export class TheFarJaw implements BotStrategy {
 
     const pocketHitEvent = calculator.generateShot(
       context.table,
-      0,
+      error,
       AimCalculator.DEFAULT_SHOT_POWER,
       aimPoint,
       new Vector3(0, 0, 0)
     )
     const farKnuckleHitEvent = calculator.generateShot(
       context.table,
-      0,
+      error,
       AimCalculator.MAX_SHOT_POWER,
       farKnuckleAimPoint,
       new Vector3(0, -0.3, 0)

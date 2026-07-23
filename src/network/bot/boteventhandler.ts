@@ -17,7 +17,7 @@ import { RuleFactory } from "../../controller/rules/rulefactory"
 import { TableGeometry } from "../../view/tablegeometry"
 import { Snooker } from "../../controller/rules/snooker"
 import { SnookerUtils } from "../../controller/rules/snookerutils"
-import { isFirstShot } from "../../utils/utils"
+import { isFirstShot, isOpeningShot } from "../../utils/utils"
 import { BotShotContext, BotStrategy } from "./botstrategy"
 import { ClawBreak } from "./strategies/clawbreak"
 import { TheFarJaw } from "./strategies/thefarjaw"
@@ -47,6 +47,7 @@ export class BotEventHandler {
   protected enqueueMessage: (message: string) => void
   private readonly calculator: AimCalculator
   private readonly strategy: BotStrategy
+  private readonly level: number
   protected readonly botRules: Rules
   private shouldStartTurnOnNextControl = false
   private queuedOwnStartAim = false
@@ -62,9 +63,14 @@ export class BotEventHandler {
     this.publishSequenceToPlayer = publishSequenceToPlayer
     this.enqueueMessage = enqueueMessage
     this.calculator = new AimCalculator()
-    const botName =
-      new URLSearchParams(globalThis.location.search).get("bot") ?? "ClawBreak"
-    this.strategy = botName === "TheFarJaw" ? new TheFarJaw() : new ClawBreak()
+    const params = new URLSearchParams(globalThis.location.search)
+    const botName = params.get("bot") ?? "ClawBreak"
+    const requestedLevel = Number.parseInt(params.get("botLevel") ?? "")
+    const legacyLevel = botName === "TheFarJaw" ? 8 : 3
+    this.level = Number.isFinite(requestedLevel)
+      ? Math.max(1, Math.min(11, requestedLevel))
+      : legacyLevel
+    this.strategy = this.level >= 6 ? new TheFarJaw() : new ClawBreak()
     this.botRules = RuleFactory.create(
       container.rules.rulename,
       new BotContainer(container)
@@ -331,6 +337,29 @@ export class BotEventHandler {
   }
 
   private handleEightBallEarlyPot(outcome: Outcome[]): boolean {
+    if (
+      this.container.rules.rulename === "eightball" &&
+      Session.getInstance().p1type === 0 &&
+      isOpeningShot(this.container.recorder)
+    ) {
+      const eightBall = this.container.table.balls.find(
+        (ball) => ball.label === 8
+      )
+      if (eightBall && Outcome.pots(outcome).includes(eightBall)) {
+        Respot.respotBehind(
+          new Vector3(TableGeometry.tableX / 2, 0, 0),
+          eightBall,
+          this.container.table
+        )
+        eightBall.fround()
+        this.handlePot(
+          Math.max(0, Outcome.potCount(outcome) - 1),
+          outcome,
+          true
+        )
+        return true
+      }
+    }
     return this.handleEightBallFoul(outcome)
   }
 
@@ -463,7 +492,11 @@ export class BotEventHandler {
   }
 
   private assignEightBallType(session: Session, outcome: Outcome[]): void {
-    if (session.p1type !== 0 || this.container.rules.rulename !== "eightball") {
+    if (
+      session.p1type !== 0 ||
+      this.container.rules.rulename !== "eightball" ||
+      isOpeningShot(this.container.recorder)
+    ) {
       return
     }
     const pottedBalls = Outcome.pots(outcome)
@@ -534,6 +567,11 @@ export class BotEventHandler {
       cueBall,
       validTargetBalls: this.validTargetBalls(),
       ballInHand: false,
+      ruleName: this.container.rules.rulename,
+      shotIndex: this.container.recorder.entries.filter(
+        (entry) => entry.event.type === EventType.AIM
+      ).length,
+      level: this.level,
     }
   }
 }

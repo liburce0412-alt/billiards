@@ -8,6 +8,9 @@ export interface BotShotContext {
   cueBall: Ball
   validTargetBalls: Ball[]
   ballInHand: boolean
+  ruleName: string
+  shotIndex: number
+  level: number
 }
 
 export interface BotStrategy {

@@ -3,9 +3,10 @@ import { Controller, Input } from "./controller"
 import { Aim } from "./aim"
 import { BreakEvent } from "../events/breakevent"
 import { R } from "../model/physics/constants"
-import { Vector3 } from "three"
+import { BufferGeometry, Line, LineBasicMaterial, Vector3 } from "three"
 import { CueMesh } from "../view/cuemesh"
 import { CameraTop } from "../view/cameratop"
+import { TableGeometry } from "../view/tablegeometry"
 
 /**
  * Place cue ball using input events.
@@ -18,6 +19,7 @@ export class PlaceBall extends ControllerBase {
   }
   readonly placescale = 0.02 * R
   private readonly startPos: Vector3 | undefined
+  private placementLine?: Line
 
   constructor(container, startPos?: Vector3) {
     super(container)
@@ -42,6 +44,7 @@ export class PlaceBall extends ControllerBase {
     this.container.table.cue.moveTo(this.container.table.cueball.pos)
     this.container.table.cue.aimInputs.setButtonText("Place\nBall")
     this.container.table.cue.aimInputs.setDisabled(false)
+    this.showPlacementLine()
     if (!this.container.rules.allowsPlaceBall()) {
       this.container.inputQueue.push(new Input(1, "SpaceUp"))
     }
@@ -98,6 +101,7 @@ export class PlaceBall extends ControllerBase {
       return this
     }
     this.container.table.cueball.fround()
+    this.removePlacementLine()
     this.container.table.cue.aimInputs.setButtonText("Hit")
     this.container.sound.playNotify()
     this.container.sendEvent(
@@ -105,5 +109,31 @@ export class PlaceBall extends ControllerBase {
     )
     this.container.view.camera.forceMode(this.container.view.camera.aimView)
     return new Aim(this.container)
+  }
+
+  private showPlacementLine() {
+    const x = this.container.rules.placementLineX?.()
+    if (x === undefined) return
+    const geometry = new BufferGeometry().setFromPoints([
+      new Vector3(x, -TableGeometry.tableY, 0.001),
+      new Vector3(x, TableGeometry.tableY, 0.001),
+    ])
+    const material = new LineBasicMaterial({
+      color: 0xf1c232,
+      opacity: 0.8,
+      transparent: true,
+      depthTest: false,
+    })
+    this.placementLine = new Line(geometry, material)
+    this.placementLine.renderOrder = 10
+    this.container.view.scene.add(this.placementLine)
+  }
+
+  private removePlacementLine() {
+    if (!this.placementLine) return
+    this.container.view.scene.remove(this.placementLine)
+    this.placementLine.geometry.dispose()
+    ;(this.placementLine.material as LineBasicMaterial).dispose()
+    this.placementLine = undefined
   }
 }

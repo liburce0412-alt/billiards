@@ -30,4 +30,6 @@ export interface Rules {
   initialController?(): Controller
   hideScoreHud?(): boolean
   scaleTableModel?(scene: any): void
+  placementLineX?(): number | undefined
+  canLetStroke?(): boolean
 }
