@@ -15,12 +15,20 @@ import { gainForImpact } from "../utils/impactgain"
 type SoundKey = "collision" | "cue" | "cushion" | "pot" | "success"
 type Voice = ThreeAudio | PositionalAudio
 
-const definitions: Record<SoundKey, { path: string; spatial: boolean }> = {
-  collision: { path: "sounds/ballcollision.ogg", spatial: true },
-  cue: { path: "sounds/cue.ogg", spatial: true },
-  cushion: { path: "sounds/cushion.ogg", spatial: true },
-  pot: { path: "sounds/pot.ogg", spatial: true },
-  success: { path: "sounds/success.ogg", spatial: false },
+const definitions: Record<SoundKey, { paths: string[]; spatial: boolean }> = {
+  collision: {
+    paths: [
+      "sounds/ballcollision-room-01.ogg",
+      "sounds/ballcollision-room-02.ogg",
+      "sounds/ballcollision-room-03.ogg",
+      "sounds/ballcollision-room-04.ogg",
+    ],
+    spatial: true,
+  },
+  cue: { paths: ["sounds/cue.ogg"], spatial: true },
+  cushion: { paths: ["sounds/cushion.ogg"], spatial: true },
+  pot: { paths: ["sounds/pot.ogg"], spatial: true },
+  success: { paths: ["sounds/success.ogg"], spatial: false },
 }
 
 export class Sound {
@@ -40,35 +48,38 @@ export class Sound {
     this.listener = new AudioListener()
     this.audioLoader = new AudioLoader()
     for (const [key, definition] of Object.entries(definitions)) {
-      this.loadPool(key as SoundKey, definition.path, definition.spatial)
+      this.loadPool(key as SoundKey, definition.paths, definition.spatial)
     }
   }
 
-  private loadPool(key: SoundKey, path: string, spatial: boolean) {
-    this.audioLoader.load(
-      path,
-      (buffer) => {
-        const useSpatial = spatial && getRenderQuality().name !== "low"
-        const voices: Voice[] = []
-        for (let i = 0; i < 4; i++) {
-          const voice = useSpatial
-            ? new PositionalAudio(this.listener)
-            : new ThreeAudio(this.listener)
-          voice.setBuffer(buffer)
-          voice.setLoop(false)
-          if (voice instanceof PositionalAudio) {
-            voice.setRefDistance(R * 18)
-            voice.setMaxDistance(R * 180)
-            voice.setRolloffFactor(0.8)
-            this.root.add(voice)
+  private loadPool(key: SoundKey, paths: string[], spatial: boolean) {
+    const voicesPerBuffer = Math.max(2, Math.ceil(4 / paths.length))
+    paths.forEach((path) => {
+      this.audioLoader.load(
+        path,
+        (buffer) => {
+          const useSpatial = spatial && getRenderQuality().name !== "low"
+          const voices = this.pools.get(key) ?? []
+          for (let i = 0; i < voicesPerBuffer; i++) {
+            const voice = useSpatial
+              ? new PositionalAudio(this.listener)
+              : new ThreeAudio(this.listener)
+            voice.setBuffer(buffer)
+            voice.setLoop(false)
+            if (voice instanceof PositionalAudio) {
+              voice.setRefDistance(R * 18)
+              voice.setMaxDistance(R * 180)
+              voice.setRolloffFactor(0.8)
+              this.root.add(voice)
+            }
+            voices.push(voice)
           }
-          voices.push(voice)
-        }
-        this.pools.set(key, voices)
-      },
-      undefined,
-      () => console.warn(`Failed to load sound: ${path}`)
-    )
+          this.pools.set(key, voices)
+        },
+        undefined,
+        () => console.warn(`Failed to load sound: ${path}`)
+      )
+    })
   }
 
   addCameraToListener(camera) {
@@ -92,7 +103,10 @@ export class Sound {
     const voices = this.pools.get(key)
     if (!voices?.length) return
     const cursor = this.cursors.get(key) ?? 0
-    const available = voices.find((voice) => !voice.isPlaying)
+    const orderedVoices = voices.map(
+      (_, index) => voices[(cursor + index) % voices.length]
+    )
+    const available = orderedVoices.find((voice) => !voice.isPlaying)
     const voice = available ?? voices[cursor % voices.length]
     this.cursors.set(key, cursor + 1)
     if (voice.isPlaying) voice.stop()

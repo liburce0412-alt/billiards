@@ -1143,15 +1143,19 @@ body.analysis-mode #commentMenu {
 /* stylelint-disable no-descending-specificity, no-duplicate-selectors -- deliberate late overrides for the game HUD */
 /* 2026 game HUD refinement */
 #snookerScoreOverlay {
-  inset: 14px auto auto 50%;
+  inset: 70px auto auto 50%;
   transform: translateX(-50%);
-  z-index: 1200;
+  z-index: 1502;
+}
+
+#snookerScoreOverlay:not(:has(.breakScore:not(:empty))) {
+  display: none;
 }
 
 #snookerScore {
-  min-width: 190px;
-  min-height: 44px;
-  padding: 7px 16px;
+  min-width: 82px;
+  min-height: 32px;
+  padding: 5px 12px;
   box-sizing: border-box;
   gap: 16px;
   color: #f4ead4;
@@ -1197,15 +1201,19 @@ body.analysis-mode #commentMenu {
 .breakScore {
   margin: 0;
   color: #efcd78;
-  font-size: 18px;
+  font-size: 15px;
   font-style: normal;
 }
 
 .panel {
+  flex: 0 0 78px;
+  min-height: 78px;
   height: 78px;
   padding: 7px 10px 8px;
   gap: 10px;
-  align-items: center;
+  align-items: flex-end;
+  overflow: visible;
+  z-index: 1800;
   background:
     linear-gradient(90deg, rgb(30 24 17 / 82%), transparent 28%),
     linear-gradient(180deg, #171a1b, #090b0c);
@@ -1213,6 +1221,22 @@ body.analysis-mode #commentMenu {
   box-shadow:
     0 -14px 34px rgb(0 0 0 / 32%),
     inset 0 1px rgb(255 255 255 / 4%);
+}
+
+.view3d {
+  z-index: 0;
+  overflow: hidden;
+}
+
+.aimControlColumn {
+  align-self: flex-end;
+  height: 70px;
+  z-index: 2100;
+}
+
+.outerMenu {
+  align-self: flex-end;
+  z-index: 2200;
 }
 
 .powerSliderContainer {
@@ -1342,7 +1366,7 @@ body.analysis-mode #commentMenu {
 
 @media (width <= 640px) {
   #snookerScoreOverlay {
-    top: 8px;
+    top: 66px;
   }
 
   #snookerScore {
@@ -1352,6 +1376,8 @@ body.analysis-mode #commentMenu {
   }
 
   .panel {
+    flex-basis: 72px;
+    min-height: 72px;
     height: 72px;
     padding-inline: 6px;
     gap: 6px;

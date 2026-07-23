@@ -524,7 +524,7 @@ export class BotEventHandler {
     this.startTurnIfNeeded()
     this.logs.show()
     this.container.table.cue.aim.elevation = 0
-    this.publishSequenceToPlayer(this.aim())
+    this.publishSequenceToPlayer(this.aim(), this.shotPacingMs())
   }
 
   private handlePlaceBall(event: PlaceBallEvent): void {
@@ -550,7 +550,11 @@ export class BotEventHandler {
     cueball.fround()
     this.ballInHandForNextShot = true
     this.container.table.cue.aim.elevation = 0
-    this.publishSequenceToPlayer(this.aim())
+    this.publishSequenceToPlayer(this.aim(), this.shotPacingMs())
+  }
+
+  private shotPacingMs(): number {
+    return 700 + this.level * 40
   }
 
   private startTurnIfNeeded(): void {

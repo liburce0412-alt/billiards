@@ -10,6 +10,17 @@ import { AngleInput } from "./angleinput"
 import { maxPower } from "../../model/physics/constants"
 import { localizeText } from "../../utils/locale"
 
+export const DEFAULT_SHOT_CLOCK_MS = 35000
+export const SHOT_CLOCK_CRITICAL_MS = 7000
+
+export function shotClockDuration(search: string): number {
+  const seconds = new URLSearchParams(search).get("shotClock")
+  const duration = Number(seconds) * 1000
+  return seconds && Number.isFinite(duration) && duration > 0
+    ? duration
+    : DEFAULT_SHOT_CLOCK_MS
+}
+
 export class AimInputs {
   readonly ballContainerWrapperElement
   readonly ballContainerElement
@@ -48,13 +59,9 @@ export class AimInputs {
     this.cueTiltElement = id("cueTilt") as AngleInput
     this.cueHitElement = id("cueHit") as HTMLButtonElement
     if (this.cueHitElement) {
-      const params = new URLSearchParams(location.search)
-      const shotClockSeconds = params.get("shotClock")
-      const duration = shotClockSeconds
-        ? Number(shotClockSeconds) * 1000
-        : 20000
       this.timeoutButton = new TimeoutButton(this.cueHitElement, {
-        duration,
+        duration: shotClockDuration(location.search),
+        criticalMs: SHOT_CLOCK_CRITICAL_MS,
         onComplete: () => {
           this.cueHitElement?.click()
         },

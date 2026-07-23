@@ -13,7 +13,10 @@ html.launcher-mode body {
   overflow: auto;
   overflow-x: clip;
   display: block;
-  background-color: var(--color-paper);
+  background:
+    radial-gradient(circle at 12% 8%, rgb(44 153 145 / 28%), transparent 34rem),
+    radial-gradient(circle at 88% 18%, rgb(223 173 74 / 14%), transparent 28rem),
+    linear-gradient(145deg, #123d43 0%, #102f38 42%, #10252e 100%);
   color: var(--color-ink);
 }
 
@@ -23,6 +26,40 @@ html.launcher-mode body > :not(#gameLauncher, script) {
 
 #gameLauncher {
   min-height: 100svh;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+#gameLauncher::before,
+#gameLauncher::after {
+  content: "";
+  position: fixed;
+  z-index: -1;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(2px);
+  opacity: 0.62;
+}
+
+#gameLauncher::before {
+  top: -26rem;
+  left: -18rem;
+  width: 54rem;
+  height: 54rem;
+  border: 1px solid rgb(128 225 207 / 18%);
+  background: radial-gradient(circle, rgb(59 179 165 / 20%), transparent 66%);
+  animation: launcher-light-drift 18s ease-in-out infinite alternate;
+}
+
+#gameLauncher::after {
+  right: -16rem;
+  bottom: -30rem;
+  width: 48rem;
+  height: 48rem;
+  border: 1px solid rgb(240 198 105 / 14%);
+  background: radial-gradient(circle, rgb(232 181 75 / 13%), transparent 66%);
+  animation: launcher-light-drift 22s ease-in-out -8s infinite alternate-reverse;
 }
 
 .launcher-shell,
@@ -39,6 +76,7 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   font-family: var(--font-body);
   font-size: var(--text-base);
   line-height: 1.55;
+  position: relative;
 }
 
 .launcher-nav {
@@ -99,6 +137,7 @@ html.launcher-mode body > :not(#gameLauncher, script) {
 
 .launcher-intro {
   min-width: 0;
+  animation: launcher-rise 650ms var(--ease-out) both;
 }
 
 .launcher-kicker {
@@ -164,6 +203,7 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   display: grid;
   align-content: start;
   gap: var(--space-xl);
+  animation: launcher-rise 720ms 80ms var(--ease-out) both;
 }
 
 .launcher-fieldset {
@@ -196,12 +236,43 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   align-items: center;
   gap: var(--space-md);
   border-radius: var(--radius-md);
-  background-color: var(--color-paper-2);
+  border: var(--rule-hair) solid rgb(164 225 213 / 8%);
+  background:
+    linear-gradient(115deg, rgb(255 255 255 / 5%), transparent 52%),
+    rgb(24 73 78 / 84%);
   color: var(--color-ink);
   cursor: pointer;
   outline: 2px solid transparent;
   outline-offset: 2px;
-  transition: background-color var(--dur-short) var(--ease-out);
+  box-shadow:
+    0 12px 30px rgb(4 20 24 / 18%),
+    inset 0 1px rgb(255 255 255 / 5%);
+  transition:
+    background-color var(--dur-short) var(--ease-out),
+    border-color var(--dur-short) var(--ease-out),
+    box-shadow var(--dur-short) var(--ease-out),
+    transform var(--dur-short) var(--ease-out);
+  animation: launcher-card-in 520ms var(--ease-out) both;
+}
+
+.mode-option:nth-child(2) {
+  animation-delay: 50ms;
+}
+
+.mode-option:nth-child(3) {
+  animation-delay: 100ms;
+}
+
+.mode-option:nth-child(4) {
+  animation-delay: 150ms;
+}
+
+.mode-option:nth-child(5) {
+  animation-delay: 200ms;
+}
+
+.mode-option:nth-child(6) {
+  animation-delay: 250ms;
 }
 
 .mode-option input,
@@ -215,7 +286,14 @@ html.launcher-mode body > :not(#gameLauncher, script) {
 }
 
 .mode-option:has(input:checked) {
-  background-color: var(--color-paper-3);
+  border-color: rgb(238 199 103 / 45%);
+  background:
+    radial-gradient(circle at 92% 20%, rgb(238 199 103 / 15%), transparent 35%),
+    linear-gradient(115deg, rgb(255 255 255 / 7%), transparent 55%),
+    var(--color-paper-3);
+  box-shadow:
+    0 16px 38px rgb(4 20 24 / 28%),
+    inset 3px 0 var(--color-accent);
 }
 
 .mode-option:has(input:checked) .mode-option__ball {
@@ -324,6 +402,7 @@ html.launcher-mode body > :not(#gameLauncher, script) {
 }
 
 .level-select {
+  width: 100%;
   display: block;
 }
 
@@ -395,9 +474,10 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   justify-content: space-between;
   gap: var(--space-md);
   border-top: var(--rule-hair) solid var(--color-rule);
-  background-color: var(--color-paper-2);
+  background: rgb(22 61 66 / 88%);
   color: var(--color-ink);
   box-shadow: 0 var(--space-xs) var(--space-xl) var(--color-shadow);
+  backdrop-filter: blur(16px);
 }
 
 .launcher-action p {
@@ -475,6 +555,14 @@ html.launcher-mode body > :not(#gameLauncher, script) {
     color: var(--color-ink);
   }
 
+  .mode-option:hover {
+    border-color: rgb(160 224 211 / 24%);
+    box-shadow:
+      0 18px 42px rgb(4 20 24 / 28%),
+      inset 0 1px rgb(255 255 255 / 8%);
+    transform: translateY(-2px);
+  }
+
   .launcher-lobby:hover {
     background-color: var(--color-paper-2);
     color: var(--color-ink);
@@ -482,6 +570,40 @@ html.launcher-mode body > :not(#gameLauncher, script) {
 
   #launcherStart:hover {
     transform: translateY(-1px);
+  }
+}
+
+@keyframes launcher-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes launcher-card-in {
+  from {
+    opacity: 0;
+    transform: translateX(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes launcher-light-drift {
+  from {
+    transform: translate3d(-2%, -1%, 0) scale(0.96);
+  }
+
+  to {
+    transform: translate3d(7%, 5%, 0) scale(1.06);
   }
 }
 
@@ -577,6 +699,11 @@ html.launcher-mode body > :not(#gameLauncher, script) {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  #gameLauncher::before,
+  #gameLauncher::after {
+    animation: none !important;
+  }
+
   .launcher-shell *,
   .launcher-shell *::before,
   .launcher-shell *::after {

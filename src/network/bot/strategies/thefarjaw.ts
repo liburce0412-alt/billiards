@@ -20,6 +20,7 @@ interface PlannedShot {
   pocket: Vector3
   aimPoint: Vector3
   difficulty: number
+  blockedSegments: number
   position: PositionPlan
 }
 
@@ -56,12 +57,25 @@ export class TheFarJaw implements BotStrategy {
 
     if (context.table.proximityEnabled) {
       const target = Respot.furthest(context.cueBall, context.validTargetBalls)
-      return target ? this.planShot(context, calculator, target) : undefined
+      const pocket = target
+        ? calculator.findBestPocket(
+            context.cueBall.pos,
+            target.pos,
+            calculator.pockets
+          )
+        : undefined
+      return target && pocket
+        ? this.planShot(context, calculator, target, pocket)
+        : undefined
     }
 
-    const positionWeight = ((context.level - 6) / 5) * 0.35
+    const positionWeight = ((context.level - 6) / 5) * 0.46
     return context.validTargetBalls
-      .map((target) => this.planShot(context, calculator, target))
+      .flatMap((target) =>
+        calculator.pockets.map((pocket) =>
+          this.planShot(context, calculator, target, pocket)
+        )
+      )
       .sort((a, b) => {
         const aScore =
           a.difficulty * (1 - positionWeight) +
@@ -69,47 +83,81 @@ export class TheFarJaw implements BotStrategy {
         const bScore =
           b.difficulty * (1 - positionWeight) +
           b.position.score * positionWeight
-        return aScore - bScore || a.target.id - b.target.id
+        return (
+          a.blockedSegments - b.blockedSegments ||
+          aScore - bScore ||
+          a.target.id - b.target.id ||
+          a.pocket.x - b.pocket.x ||
+          a.pocket.y - b.pocket.y
+        )
       })[0]
   }
 
   private planShot(
     context: BotShotContext,
     calculator: AimCalculator,
-    target: Ball
+    target: Ball,
+    pocket: Vector3
   ): PlannedShot {
-    const pocket = calculator.findBestPocket(
-      context.cueBall.pos,
-      target.pos,
-      calculator.pockets
-    )
     const aimPoint = calculator.getAimPoint(context.cueBall.pos, target.pos, [
       pocket,
     ])
-    const blockedPenalty = this.pathBlocked(context, target.pos, pocket, target)
-      ? 0.65
-      : 0
+    const cuePathBlocked = this.pathBlocked(
+      context,
+      context.cueBall.pos,
+      aimPoint,
+      target
+    )
+    const objectPathBlocked = this.pathBlocked(
+      context,
+      target.pos,
+      pocket,
+      target
+    )
+    const blockedSegments = Number(cuePathBlocked) + Number(objectPathBlocked)
+    const cueDirection = target.pos.clone().sub(context.cueBall.pos).normalize()
+    const pocketDirection = pocket.clone().sub(target.pos).normalize()
+    const alignment = cueDirection.dot(pocketDirection)
+    let impossibleCutPenalty = 0
+    if (alignment <= 0) {
+      impossibleCutPenalty = 2
+    } else if (alignment < 0.15) {
+      impossibleCutPenalty = 0.4
+    }
+    const difficulty =
+      calculator.skillError(context, target, pocket).difficulty +
+      blockedSegments * 0.8 +
+      impossibleCutPenalty
     return {
       target,
       pocket,
       aimPoint,
-      difficulty:
-        calculator.skillError(context, target, pocket).difficulty +
-        blockedPenalty,
-      position: this.positionPlan(context, target, pocket, aimPoint),
+      difficulty,
+      blockedSegments,
+      position: this.positionPlan(
+        context,
+        calculator,
+        target,
+        pocket,
+        aimPoint,
+        difficulty
+      ),
     }
   }
 
   private positionPlan(
     context: BotShotContext,
+    calculator: AimCalculator,
     target: Ball,
     pocket: Vector3,
-    aimPoint: Vector3
+    aimPoint: Vector3,
+    difficulty: number
   ): PositionPlan {
     const remaining = this.positionTargets(context, target)
+    const basePower = this.shotPower(context, target, pocket, difficulty)
     if (context.level <= 6 || remaining.length === 0) {
       return {
-        power: AimCalculator.DEFAULT_SHOT_POWER,
+        power: basePower,
         spin: new Vector3(),
         score: remaining.length === 0 ? 0 : 0.65,
       }
@@ -124,40 +172,87 @@ export class TheFarJaw implements BotStrategy {
       TableGeometry.tableX * 2,
       TableGeometry.tableY * 2
     )
-    const shotDistance =
-      context.cueBall.pos.distanceTo(target.pos) + target.pos.distanceTo(pocket)
-    const powerScale = 0.92 + Math.min(1, shotDistance / tableDiagonal) * 0.22
-    const power = Math.min(
-      AimCalculator.MAX_SHOT_POWER,
-      AimCalculator.DEFAULT_SHOT_POWER * powerScale
-    )
+    let powerScales = [1]
+    if (context.level >= 9) {
+      powerScales = [0.88, 1, 1.12]
+    } else if (context.level >= 8) {
+      powerScales = [0.94, 1.06]
+    }
 
-    return spinOptions
-      .map((spinY) => {
-        const predicted = this.estimateCuePosition(
-          context,
-          target,
-          pocket,
-          aimPoint,
-          spinY
-        )
-        const nextBallDistance = Math.min(
-          ...remaining.map((ball) => predicted.distanceTo(ball.pos))
-        )
-        const railClearance = Math.min(
-          TableGeometry.tableX - Math.abs(predicted.x),
-          TableGeometry.tableY - Math.abs(predicted.y)
-        )
-        const railPenalty = railClearance < 4 * R ? 0.18 : 0
-        return {
-          power,
-          spin: new Vector3(0, spinY, 0),
-          score: nextBallDistance / tableDiagonal + railPenalty,
-        }
-      })
+    return powerScales
+      .flatMap((powerScale) =>
+        spinOptions.map((spinY) => {
+          const power = Math.min(
+            AimCalculator.MAX_SHOT_POWER,
+            Math.max(44 * R, basePower * powerScale)
+          )
+          const predicted = this.estimateCuePosition(
+            context,
+            target,
+            pocket,
+            aimPoint,
+            spinY,
+            power
+          )
+          const nextRouteScore = Math.min(
+            ...remaining.map((ball) => {
+              const nextPocket = calculator.findBestPocket(
+                predicted,
+                ball.pos,
+                calculator.pockets
+              )
+              const nextAimPoint = calculator.getAimPoint(predicted, ball.pos, [
+                nextPocket,
+              ])
+              const blocked = this.pathBlocked(
+                context,
+                predicted,
+                nextAimPoint,
+                ball
+              )
+              return (
+                predicted.distanceTo(ball.pos) / tableDiagonal +
+                (blocked ? 0.32 : 0)
+              )
+            })
+          )
+          const railClearance = Math.min(
+            TableGeometry.tableX - Math.abs(predicted.x),
+            TableGeometry.tableY - Math.abs(predicted.y)
+          )
+          const railPenalty = railClearance < 4 * R ? 0.18 : 0
+          return {
+            power,
+            spin: new Vector3(0, spinY, 0),
+            score:
+              nextRouteScore + railPenalty + Math.abs(powerScale - 1) * 0.025,
+          }
+        })
+      )
       .sort(
         (a, b) => a.score - b.score || a.spin.lengthSq() - b.spin.lengthSq()
       )[0]
+  }
+
+  private shotPower(
+    context: BotShotContext,
+    target: Ball,
+    pocket: Vector3,
+    difficulty: number
+  ): number {
+    if (context.shotIndex === 0) {
+      return AimCalculator.MAX_SHOT_POWER
+    }
+    const tableDiagonal = Math.hypot(
+      TableGeometry.tableX * 2,
+      TableGeometry.tableY * 2
+    )
+    const shotDistance =
+      context.cueBall.pos.distanceTo(target.pos) + target.pos.distanceTo(pocket)
+    const distanceFactor = Math.min(1, shotDistance / tableDiagonal)
+    const difficultyBoost = Math.max(0, Math.min(1, difficulty) - 0.45) * 18
+    const powerInRadii = 48 + distanceFactor * 38 + difficultyBoost
+    return Math.min(98 * R, Math.max(48 * R, powerInRadii * R))
   }
 
   private positionTargets(context: BotShotContext, target: Ball): Ball[] {
@@ -185,14 +280,18 @@ export class TheFarJaw implements BotStrategy {
     target: Ball,
     pocket: Vector3,
     aimPoint: Vector3,
-    spinY: number
+    spinY: number,
+    power: number
   ): Vector3 {
     const tangent = AimCalculator.getTangentVector(
       context.cueBall.pos,
       target.pos,
       aimPoint
     )
-    const predicted = target.pos.clone().addScaledVector(tangent, 6 * R)
+    const travelScale = 4 + (power / AimCalculator.MAX_SHOT_POWER) * 5
+    const predicted = target.pos
+      .clone()
+      .addScaledVector(tangent, travelScale * R)
     if (spinY > 0) {
       predicted.addScaledVector(
         pocket.clone().sub(target.pos).normalize(),

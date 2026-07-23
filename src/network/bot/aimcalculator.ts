@@ -26,7 +26,7 @@ export class AimCalculator {
   static readonly DEFAULT_SHOT_POWER = 90 * R
   static readonly MAX_SHOT_POWER = 110 * R
   private static readonly MAX_ERROR_DEGREES = [
-    7.5, 6.2, 4.8, 3.5, 2.55, 0.65, 0.61, 0.57, 0.52, 0.46, 0.4,
+    7.5, 6.2, 4.8, 3.5, 2.55, 0.32, 0.3, 0.28, 0.26, 0.24, 0.22,
   ]
   public readonly pockets: Vector3[]
   public readonly knuckles: Vector3[]

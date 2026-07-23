@@ -175,7 +175,7 @@ function launcherMarkup(selection: LauncherSelection) {
       <main class="launcher-layout">
         <section class="launcher-intro" aria-labelledby="launcherTitle">
           <p class="launcher-kicker">浏览器台球模拟器</p>
-          <h1 id="launcherTitle">选一张球桌。<br />打好下一杆。</h1>
+          <h1 id="launcherTitle">选一张球桌<br />打好下一杆</h1>
           <p class="launcher-lede">
             五种规则、11 档本地 AI，以及针对当前设备的渲染画质。物理结果不随画质改变。
           </p>
