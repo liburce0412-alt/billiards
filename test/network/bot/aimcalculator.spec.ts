@@ -137,6 +137,21 @@ describe("AimCalculator", () => {
       expect(errors[3]).toBeGreaterThan(0)
     })
 
+    it("keeps levels 6–11 close in potting accuracy", () => {
+      const pocket = new Vector3(1.2, 0.7, 0)
+      const level6 = context(6)
+      const level11 = context(11)
+      const level6Error = Math.abs(
+        calculator.skillError(level6.context, level6.target, pocket).angle
+      )
+      const level11Error = Math.abs(
+        calculator.skillError(level11.context, level11.target, pocket).angle
+      )
+
+      expect(level6Error / level11Error).toBeLessThan(1.7)
+      expect(level11Error).toBeGreaterThan(0)
+    })
+
     it("rates long thin shots as harder than short straight shots", () => {
       const easy = context(
         6,
@@ -161,6 +176,25 @@ describe("AimCalculator", () => {
         new Vector3(0.5, 1.2, 0)
       )
       expect(hardResult.difficulty).toBeGreaterThan(easyResult.difficulty)
+    })
+
+    it("keeps a level 6 routine straight shot inside a small error window", () => {
+      const easy = context(
+        6,
+        "eightball",
+        new Vector3(-0.2, 0, 0),
+        new Vector3(0, 0, 0)
+      )
+      const result = calculator.skillError(
+        easy.context,
+        easy.target,
+        new Vector3(1, 0, 0)
+      )
+      const errorDegrees = Math.abs((result.angle * 180) / Math.PI)
+
+      expect(result.difficulty).toBeLessThan(0.2)
+      expect(errorDegrees).toBeLessThan(0.3)
+      expect(errorDegrees).toBeGreaterThan(0)
     })
 
     it("applies the extra four-ball difficulty without making level 11 perfect", () => {

@@ -26,7 +26,7 @@ export class AimCalculator {
   static readonly DEFAULT_SHOT_POWER = 90 * R
   static readonly MAX_SHOT_POWER = 110 * R
   private static readonly MAX_ERROR_DEGREES = [
-    8, 6.8, 5.5, 4.2, 3.2, 2.4, 1.8, 1.35, 1, 0.78, 0.65,
+    7.5, 6.2, 4.8, 3.5, 2.55, 0.65, 0.61, 0.57, 0.52, 0.46, 0.4,
   ]
   public readonly pockets: Vector3[]
   public readonly knuckles: Vector3[]
@@ -167,9 +167,9 @@ export class AimCalculator {
       : 0
 
     let difficulty =
-      0.12 +
-      cueDistance * 0.24 +
-      objectDistance * 0.22 +
+      0.08 +
+      cueDistance * 0.2 +
+      objectDistance * 0.18 +
       cut * 0.5 +
       nearRail * 0.12 +
       blocked * 0.18
@@ -177,7 +177,7 @@ export class AimCalculator {
     if (context.ruleName === "threecushion" || context.ruleName === "sagu") {
       difficulty *= 1.15
     }
-    difficulty = Math.max(0.12, Math.min(1, difficulty))
+    difficulty = Math.max(0.08, Math.min(1, difficulty))
 
     const variation = this.deterministicUnit(context, target, "angle")
     const direction =
