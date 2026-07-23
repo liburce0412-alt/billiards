@@ -5,6 +5,7 @@ import { Aim } from "../../src/controller/aim"
 import { Ball, State } from "../../src/model/ball"
 import { Outcome } from "../../src/model/outcome"
 import { Session } from "../../src/network/client/session"
+import { R } from "../../src/model/physics/constants"
 import { Assets } from "../../src/view/assets"
 import { initDom } from "../view/dom"
 
@@ -39,6 +40,16 @@ describe("FourBallChase Rules", () => {
       3,
       9,
     ])
+  })
+
+  it("starts with every ball separated by at least one diameter", () => {
+    const { container } = initFourBall()
+    const balls = container.table.balls
+    balls.forEach((ball, index) => {
+      balls.slice(index + 1).forEach((other) => {
+        expect(ball.pos.distanceTo(other.pos)).to.be.greaterThanOrEqual(2 * R)
+      })
+    })
   })
 
   it("requires the lowest numbered ball first", () => {

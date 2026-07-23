@@ -226,12 +226,16 @@ export class Rack {
    */
   static fourBallChasePositions(): Vector3[] {
     const apex = new Vector3(TableGeometry.tableX / 2, 0, 0)
+    const rear = apex
+      .clone()
+      .addScaledVector(Rack.diagonal, 2)
+      .sub(Rack.across)
     return [
       Rack.spot.clone(),
       apex,
       apex.clone().add(Rack.diagonal),
       apex.clone().add(Rack.diagonal).sub(Rack.across),
-      apex.clone().add(Rack.down),
+      rear,
     ].map((position) => roundVec(position))
   }
 
