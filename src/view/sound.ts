@@ -16,15 +16,7 @@ type SoundKey = "collision" | "cue" | "cushion" | "pot" | "success"
 type Voice = ThreeAudio | PositionalAudio
 
 const definitions: Record<SoundKey, { paths: string[]; spatial: boolean }> = {
-  collision: {
-    paths: [
-      "sounds/ballcollision-room-01.ogg",
-      "sounds/ballcollision-room-02.ogg",
-      "sounds/ballcollision-room-03.ogg",
-      "sounds/ballcollision-room-04.ogg",
-    ],
-    spatial: true,
-  },
+  collision: { paths: ["sounds/ballcollision.ogg"], spatial: true },
   cue: { paths: ["sounds/cue.ogg"], spatial: true },
   cushion: { paths: ["sounds/cushion.ogg"], spatial: true },
   pot: { paths: ["sounds/pot.ogg"], spatial: true },
@@ -96,7 +88,13 @@ export class Sound {
     if (!this.loadAssets) return
     const context = this.listener.context
     if (context?.state === "suspended") {
-      if (globalThis.navigator?.userActivation?.hasBeenActive) context.resume()
+      if (globalThis.navigator?.userActivation?.hasBeenActive) {
+        const retryPosition = position?.clone()
+        void context
+          .resume()
+          .then(() => this.play(key, volume, detune, retryPosition, delay))
+          .catch(() => {})
+      }
       return
     }
 
@@ -135,8 +133,8 @@ export class Sound {
     if (outcome.type === OutcomeType.Collision) {
       this.play(
         "collision",
-        gainForImpact(outcome.incidentSpeed, 4.5, 0.9),
-        outcome.incidentSpeed * 8,
+        gainForImpact(outcome.incidentSpeed, 3.6, 1),
+        Math.min(35, outcome.incidentSpeed * 5),
         position
       )
     } else if (outcome.type === OutcomeType.Pot) {
@@ -153,7 +151,7 @@ export class Sound {
     } else if (outcome.type === OutcomeType.Hit) {
       this.play(
         "cue",
-        gainForImpact(outcome.incidentSpeed, 5, 0.9),
+        gainForImpact(outcome.incidentSpeed, 3.2, 1),
         0,
         position
       )

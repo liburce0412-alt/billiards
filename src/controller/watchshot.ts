@@ -15,8 +15,7 @@ export class WatchShot extends ControllerBase {
   }
   constructor(container, _hitEvent?: HitEvent) {
     super(container)
-    this.container.table.outcome = []
-    this.container.table.hit()
+    this.hit()
   }
 
   override onFirst() {

@@ -28,19 +28,34 @@ export class ClawBreak implements BotStrategy {
           calculator.pockets
         )
       : undefined
-    const aimPoint = calculator.getAimPoint(
+    const directAimPoint = calculator.getAimPoint(
       context.cueBall.pos,
       targetPoint,
       destination ? [destination] : undefined
     )
-    const error = targetBall
-      ? calculator.skillError(context, targetBall, destination).angle
+    const directBlocked =
+      targetBall &&
+      calculator.pathBlocked(
+        context.table,
+        context.cueBall.pos,
+        directAimPoint,
+        [context.cueBall, targetBall]
+      )
+    const escape = directBlocked
+      ? calculator.findLegalEscape(context)
+      : undefined
+    const shotTarget = escape?.target ?? targetBall
+    const shotDestination = escape?.aimPoint ?? destination
+    const escapeErrorScale = escape ? 1.12 : 1
+    const error = shotTarget
+      ? calculator.skillError(context, shotTarget, shotDestination).angle *
+        escapeErrorScale
       : 0
     const hitEvent = calculator.generateShot(
       context.table,
       error,
-      AimCalculator.DEFAULT_SHOT_POWER,
-      aimPoint ?? undefined,
+      escape?.power ?? AimCalculator.DEFAULT_SHOT_POWER,
+      escape?.aimPoint ?? directAimPoint,
       zero
     )
     const aimEvent = AimEvent.fromJson(hitEvent.tablejson.aim)

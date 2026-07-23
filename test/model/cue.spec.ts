@@ -197,4 +197,31 @@ describe("Cue", () => {
     cue.avoidCueTouchingOtherBall(table)
     expect(cue.aim.offset.length()).to.be.closeTo(offCenterLimit, 0.001)
   })
+
+  test("shows style-specific inlays and textured wrap rings", () => {
+    const cue = new Cue()
+    cue.setStyle("obsidian", false)
+    const visiblePatterns: string[] = []
+    let wrapThreads = 0
+    cue.cueBody.traverse((object) => {
+      if (object.userData.cuePattern && object.visible) {
+        visiblePatterns.push(object.userData.cuePattern)
+      }
+      if (object.userData.cueRole === "wrapThread") wrapThreads++
+    })
+
+    expect(visiblePatterns).not.to.be.empty
+    expect(visiblePatterns.every((pattern) => pattern === "chevron")).to.be.true
+    expect(wrapThreads).to.equal(13)
+
+    cue.setStyle("ivory", false)
+    const visibleAfterSwitch: string[] = []
+    cue.cueBody.traverse((object) => {
+      if (object.userData.cuePattern && object.visible) {
+        visibleAfterSwitch.push(object.userData.cuePattern)
+      }
+    })
+    expect(visibleAfterSwitch.every((pattern) => pattern === "feather")).to.be
+      .true
+  })
 })

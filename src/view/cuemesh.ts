@@ -13,6 +13,9 @@ import {
   ConeGeometry,
   MeshPhysicalMaterial,
   Object3D,
+  Shape,
+  ShapeGeometry,
+  TorusGeometry,
 } from "three"
 import { CueStyle, cueStyleById } from "./cuestyle"
 
@@ -215,20 +218,116 @@ export class CueMesh {
     addPart(shaft, "shaft", cursor + shaftLength / 2)
     cursor += shaftLength
 
-    for (let i = 0; i < 4; i++) {
-      const inlay = new Mesh(
-        new ConeGeometry(buttRadius * 0.11, forearmLength * 0.48, 3, 1, false),
+    const diamondGeometry = (width: number, height: number) => {
+      const shape = new Shape()
+      shape.moveTo(0, height / 2)
+      shape.lineTo(width / 2, 0)
+      shape.lineTo(0, -height / 2)
+      shape.lineTo(-width / 2, 0)
+      shape.closePath()
+      return new ShapeGeometry(shape)
+    }
+    const spearGeometry = (width: number, height: number) => {
+      const shape = new Shape()
+      shape.moveTo(0, height / 2)
+      shape.lineTo(width / 2, -height * 0.12)
+      shape.lineTo(width * 0.22, -height / 2)
+      shape.lineTo(-width * 0.22, -height / 2)
+      shape.lineTo(-width / 2, -height * 0.12)
+      shape.closePath()
+      return new ShapeGeometry(shape)
+    }
+    const chevronGeometry = (width: number, height: number) => {
+      const shape = new Shape()
+      shape.moveTo(-width / 2, height * 0.08)
+      shape.lineTo(0, height / 2)
+      shape.lineTo(width / 2, height * 0.08)
+      shape.lineTo(width * 0.22, -height / 2)
+      shape.lineTo(0, -height * 0.13)
+      shape.lineTo(-width * 0.22, -height / 2)
+      shape.closePath()
+      return new ShapeGeometry(shape)
+    }
+    const addSurfaceInlay = (
+      pattern: CueStyle["inlayPattern"],
+      geometry: ShapeGeometry,
+      positionY: number,
+      role = "accent"
+    ) => {
+      for (let i = 0; i < 4; i++) {
+        const angle = (i * Math.PI) / 2
+        const radius = buttRadius * 0.946
+        const inlay = new Mesh(geometry, placeholder)
+        inlay.position.set(
+          Math.sin(angle) * radius,
+          positionY,
+          Math.cos(angle) * radius
+        )
+        inlay.rotation.y = angle
+        inlay.userData.cueRole = role
+        inlay.userData.cuePattern = pattern
+        group.add(inlay)
+      }
+    }
+
+    addSurfaceInlay(
+      "spear",
+      spearGeometry(buttRadius * 0.42, forearmLength * 0.68),
+      forearm.position.y - forearmLength * 0.04
+    )
+    addSurfaceInlay(
+      "spear",
+      diamondGeometry(buttRadius * 0.32, forearmLength * 0.12),
+      forearm.position.y - forearmLength * 0.37,
+      "inlayLight"
+    )
+    ;[-0.27, 0, 0.27].forEach((offset, index) =>
+      addSurfaceInlay(
+        "diamond",
+        diamondGeometry(
+          buttRadius * (index === 1 ? 0.48 : 0.34),
+          forearmLength * 0.16
+        ),
+        forearm.position.y + forearmLength * offset,
+        index === 1 ? "accent" : "inlayLight"
+      )
+    )
+    addSurfaceInlay(
+      "chevron",
+      chevronGeometry(buttRadius * 0.58, forearmLength * 0.52),
+      forearm.position.y - forearmLength * 0.02
+    )
+    addSurfaceInlay(
+      "chevron",
+      diamondGeometry(buttRadius * 0.25, forearmLength * 0.1),
+      forearm.position.y - forearmLength * 0.34,
+      "inlayLight"
+    )
+    addSurfaceInlay(
+      "feather",
+      spearGeometry(buttRadius * 0.3, forearmLength * 0.58),
+      forearm.position.y - forearmLength * 0.03
+    )
+    ;[-0.31, -0.18, 0.18, 0.31].forEach((offset) =>
+      addSurfaceInlay(
+        "feather",
+        diamondGeometry(buttRadius * 0.23, forearmLength * 0.095),
+        forearm.position.y + forearmLength * offset,
+        "inlayLight"
+      )
+    )
+
+    const wrapCenter = -length / 2 + capLength + sleeveLength + wrapLength / 2
+    for (let i = -6; i <= 6; i++) {
+      const wrapProgress = (i + 6) / 12
+      const wrapRadius =
+        buttRadius * (0.985 - wrapProgress * 0.045) + length * 0.0003
+      const thread = new Mesh(
+        new TorusGeometry(wrapRadius, length * 0.00048, 4, segments),
         placeholder
       )
-      const angle = (i * Math.PI) / 2
-      inlay.position.set(
-        Math.cos(angle) * buttRadius * 0.88,
-        forearm.position.y - forearmLength * 0.08,
-        Math.sin(angle) * buttRadius * 0.88
-      )
-      inlay.rotation.y = -angle
-      inlay.userData.cueRole = "accent"
-      group.add(inlay)
+      thread.rotation.x = Math.PI / 2
+      addPart(thread, "wrapThread", wrapCenter + (i * wrapLength) / 13)
     }
 
     const ferruleGeom = new CylinderGeometry(
@@ -263,6 +362,10 @@ export class CueMesh {
     const materials = this.materialsForStyle(style)
     cueBody.traverse((object) => {
       if (!(object instanceof Mesh)) return
+      const pattern = object.userData.cuePattern
+      if (pattern) {
+        object.visible = pattern === style.inlayPattern
+      }
       const role = object.userData.cueRole
       if (role && materials[role]) {
         object.material = materials[role]
@@ -313,6 +416,8 @@ export class CueMesh {
       wrap: material(style.wrap, 0.68, 0, 0.04),
       buttCap: material(style.sleeve, 0.28, 0.08, 0.42),
       accent: material(style.accent, 0.18, 0.56, 0.48),
+      inlayLight: material(style.ferrule, 0.2, 0.08, 0.62),
+      wrapThread: material(style.accent, 0.54, 0.08, 0.18),
       ferrule: material(style.ferrule, 0.2, 0.02, 0.5),
       tip: material(style.tip, 0.82, 0, 0),
     }

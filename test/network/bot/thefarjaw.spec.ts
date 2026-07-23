@@ -4,6 +4,7 @@ import { Table } from "../../../src/model/table"
 import { AimCalculator } from "../../../src/network/bot/aimcalculator"
 import { BotShotContext } from "../../../src/network/bot/botstrategy"
 import { TheFarJaw } from "../../../src/network/bot/strategies/thefarjaw"
+import { ClawBreak } from "../../../src/network/bot/strategies/clawbreak"
 import { HitEvent } from "../../../src/events/hitevent"
 
 describe("TheFarJaw", () => {
@@ -129,5 +130,39 @@ describe("TheFarJaw", () => {
 
     const orderedLevel11 = shotForLevel(11, "nineball")
     expect(orderedLevel11.offset.lengthSq()).toBeGreaterThan(0)
+  })
+
+  it("uses legal escape routes instead of striking a blocker", () => {
+    const shotFor = (level: number) => {
+      Ball.id = 0
+      const cueBall = new Ball(new Vector3(0, -0.72, 0))
+      const target = new Ball(new Vector3(0, 0.34, 0), 1)
+      const blocker = new Ball(new Vector3(0, -0.18, 0), 2)
+      const table = new Table([cueBall, target, blocker])
+      const context: BotShotContext = {
+        table,
+        cueBall,
+        validTargetBalls: [target],
+        ballInHand: false,
+        ruleName: "nineball",
+        shotIndex: 3,
+        level,
+      }
+      const strategy = level >= 6 ? new TheFarJaw() : new ClawBreak()
+      const events = strategy.aim(context, new AimCalculator())
+      return { hit: events.at(-1) as HitEvent, cueBall, blocker }
+    }
+
+    ;[3, 11].forEach((level) => {
+      const { hit, cueBall, blocker } = shotFor(level)
+      const direction = new Vector3(
+        Math.cos(hit.tablejson.aim.angle),
+        Math.sin(hit.tablejson.aim.angle),
+        0
+      )
+      expect(
+        AimCalculator.checkCollision(cueBall.pos, direction, blocker.pos)
+      ).toBe(false)
+    })
   })
 })

@@ -8,6 +8,7 @@ import { Vector3 } from "three"
 import { Assets } from "../../src/view/assets"
 import { initDom } from "../view/dom"
 import { Session } from "../../src/network/client/session"
+import { OutcomeType } from "../../src/model/outcome"
 
 initDom()
 
@@ -24,6 +25,17 @@ describe("WatchShot Controller", () => {
       ruletype: "nineball",
     })
     container.isSinglePlayer = false
+  })
+
+  it("records an audible cue hit for an opponent or AI shot", () => {
+    container.table.cue.aim.power = 2.4
+
+    new WatchShot(container)
+
+    expect(container.table.outcome).to.have.length(1)
+    expect(container.table.outcome[0].type).to.equal(OutcomeType.Hit)
+    expect(container.table.outcome[0].incidentSpeed).to.be.closeTo(2.4, 0.0001)
+    expect(container.sound.lastOutcomeTime).to.equal(-1)
   })
 
   it("should update ball state from PlaceBallEvent", () => {

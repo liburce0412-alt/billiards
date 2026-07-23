@@ -21,6 +21,7 @@ interface PlannedShot {
   aimPoint: Vector3
   difficulty: number
   blockedSegments: number
+  cuePathBlocked: boolean
   position: PositionPlan
 }
 
@@ -38,13 +39,22 @@ export class TheFarJaw implements BotStrategy {
     const shot = this.pickShot(context, calculator)
     if (!shot) return []
 
-    const error = calculator.skillError(context, shot.target, shot.pocket).angle
+    const escape = shot.cuePathBlocked
+      ? calculator.findLegalEscape(context)
+      : undefined
+    const target = escape?.target ?? shot.target
+    const aimPoint = escape?.aimPoint ?? shot.aimPoint
+    const destination = escape?.aimPoint ?? shot.pocket
+    const baseError = calculator.skillError(context, target, destination).angle
+    const error = escape
+      ? baseError * (1.18 - Math.min(11, context.level) * 0.025)
+      : baseError
     const hitEvent = calculator.generateShot(
       context.table,
       error,
-      shot.position.power,
-      shot.aimPoint,
-      shot.position.spin
+      escape?.power ?? shot.position.power,
+      aimPoint,
+      escape ? new Vector3() : shot.position.spin
     )
     return [AimEvent.fromJson(hitEvent.tablejson.aim), hitEvent]
   }
@@ -134,6 +144,7 @@ export class TheFarJaw implements BotStrategy {
       aimPoint,
       difficulty,
       blockedSegments,
+      cuePathBlocked,
       position: this.positionPlan(
         context,
         calculator,

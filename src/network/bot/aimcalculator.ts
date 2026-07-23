@@ -15,6 +15,21 @@ export interface SkillError {
   difficulty: number
 }
 
+export interface EscapeShot {
+  target: Ball
+  aimPoint: Vector3
+  power: number
+  cushionCount: number
+}
+
+interface CushionLine {
+  axis: "x" | "y"
+  value: number
+  min: number
+  max: number
+  middlePocket: boolean
+}
+
 /**
  * AimCalculator provides logic for the bot to calculate shot angles and power.
  * It uses a "ghost ball" method to determine where the cue ball should hit the target ball
@@ -189,6 +204,168 @@ export class AimCalculator {
       angle: direction * ((maxDegrees * magnitude * Math.PI) / 180),
       difficulty,
     }
+  }
+
+  public pathBlocked(
+    table: Table,
+    from: Vector3,
+    to: Vector3,
+    ignored: Ball[] = []
+  ): boolean {
+    const line = to.clone().sub(from)
+    const lengthSquared = line.lengthSq()
+    if (lengthSquared === 0) return true
+    return table.balls.some((ball) => {
+      if (!ball.onTable() || ignored.includes(ball)) return false
+      const projection = ball.pos.clone().sub(from).dot(line) / lengthSquared
+      if (projection <= 0 || projection >= 1) return false
+      const closest = from.clone().addScaledVector(line, projection)
+      return closest.distanceTo(ball.pos) < 2.12 * R
+    })
+  }
+
+  /** Find a legal thin contact or one-cushion escape instead of fouling an obstacle. */
+  public findLegalEscape(context: BotShotContext): EscapeShot | undefined {
+    const diagonal = Math.hypot(
+      TableGeometry.tableX * 2,
+      TableGeometry.tableY * 2
+    )
+    const railX = TableGeometry.tableX - 1.05 * R
+    const railY = TableGeometry.tableY - 1.05 * R
+    const cornerClearance = 4.2 * R
+    const rails: CushionLine[] = [
+      {
+        axis: "x",
+        value: -railX,
+        min: -railY + cornerClearance,
+        max: railY - cornerClearance,
+        middlePocket: false,
+      },
+      {
+        axis: "x",
+        value: railX,
+        min: -railY + cornerClearance,
+        max: railY - cornerClearance,
+        middlePocket: false,
+      },
+      {
+        axis: "y",
+        value: -railY,
+        min: -railX + cornerClearance,
+        max: railX - cornerClearance,
+        middlePocket: TableGeometry.hasPockets,
+      },
+      {
+        axis: "y",
+        value: railY,
+        min: -railX + cornerClearance,
+        max: railX - cornerClearance,
+        middlePocket: TableGeometry.hasPockets,
+      },
+    ]
+    const candidates: (EscapeShot & { score: number })[] = []
+    const ignoredFor = (target: Ball) => [context.cueBall, target]
+    const powerFor = (distance: number, cushions: number) =>
+      Math.min(
+        AimCalculator.MAX_SHOT_POWER,
+        Math.max(
+          58 * R,
+          (58 + Math.min(1, distance / diagonal) * 30 + cushions * 8) * R
+        )
+      )
+
+    context.validTargetBalls.forEach((target) => {
+      const baseAngle = Math.atan2(
+        context.cueBall.pos.y - target.pos.y,
+        context.cueBall.pos.x - target.pos.x
+      )
+      const offsets =
+        context.level >= 6
+          ? [0, -0.12, 0.12, -0.24, 0.24, -0.38, 0.38, -0.54, 0.54]
+          : [0, -0.24, 0.24, -0.48, 0.48]
+      offsets.forEach((offset) => {
+        const aimPoint = target.pos
+          .clone()
+          .add(
+            new Vector3(
+              Math.cos(baseAngle + offset),
+              Math.sin(baseAngle + offset),
+              0
+            ).multiplyScalar(2.001 * R)
+          )
+        const inside =
+          Math.abs(aimPoint.x) <= railX && Math.abs(aimPoint.y) <= railY
+        if (
+          !inside ||
+          this.pathBlocked(
+            context.table,
+            context.cueBall.pos,
+            aimPoint,
+            ignoredFor(target)
+          )
+        ) {
+          return
+        }
+        const distance = context.cueBall.pos.distanceTo(aimPoint)
+        candidates.push({
+          target,
+          aimPoint,
+          power: powerFor(distance, 0),
+          cushionCount: 0,
+          score: distance + Math.abs(offset) * diagonal * 0.18,
+        })
+      })
+
+      rails.forEach((rail) => {
+        const mirrored = target.pos.clone()
+        mirrored[rail.axis] = rail.value * 2 - mirrored[rail.axis]
+        const delta = mirrored[rail.axis] - context.cueBall.pos[rail.axis]
+        if (Math.abs(delta) < 0.000001) return
+        const t = (rail.value - context.cueBall.pos[rail.axis]) / delta
+        if (t <= 0.001 || t >= 0.999) return
+        const bank = context.cueBall.pos.clone().lerp(mirrored, t)
+        const along = rail.axis === "x" ? bank.y : bank.x
+        if (
+          along < rail.min ||
+          along > rail.max ||
+          (rail.middlePocket && Math.abs(along) <= cornerClearance)
+        ) {
+          return
+        }
+        const ignored = ignoredFor(target)
+        const bankOccupied = context.table.balls.some(
+          (ball) =>
+            ball.onTable() &&
+            !ignored.includes(ball) &&
+            ball.pos.distanceTo(bank) < 2.12 * R
+        )
+        if (
+          bankOccupied ||
+          this.pathBlocked(context.table, context.cueBall.pos, bank, ignored) ||
+          this.pathBlocked(context.table, bank, target.pos, ignored)
+        ) {
+          return
+        }
+        const distance =
+          context.cueBall.pos.distanceTo(bank) + bank.distanceTo(target.pos)
+        candidates.push({
+          target,
+          aimPoint: bank,
+          power: powerFor(distance, 1),
+          cushionCount: 1,
+          score: distance + diagonal * 0.22,
+        })
+      })
+    })
+
+    return candidates.sort(
+      (a, b) =>
+        a.cushionCount - b.cushionCount ||
+        a.score - b.score ||
+        a.target.id - b.target.id ||
+        a.aimPoint.x - b.aimPoint.x ||
+        a.aimPoint.y - b.aimPoint.y
+    )[0]
   }
 
   private deterministicUnit(
