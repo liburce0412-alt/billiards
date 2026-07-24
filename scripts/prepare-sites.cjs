@@ -9,6 +9,7 @@ const clientDirectory = path.join(distDirectory, "client")
 const serverDirectory = path.join(distDirectory, "server")
 const hostingSource = path.join(projectRoot, ".openai", "hosting.json")
 const hostingDirectory = path.join(distDirectory, ".openai")
+const workerSource = path.join(projectRoot, "worker", "index.js")
 
 const generatedDirectories = new Set(["client", "server", ".openai"])
 
@@ -27,35 +28,7 @@ for (const entry of fs.readdirSync(distDirectory, { withFileTypes: true })) {
 }
 
 fs.mkdirSync(serverDirectory, { recursive: true })
-fs.writeFileSync(
-  path.join(serverDirectory, "index.js"),
-  `const getAsset = (request, env, pathname) => {
-  const url = new URL(request.url)
-  url.pathname = pathname
-  return env.ASSETS.fetch(new Request(url, request))
-}
-
-export default {
-  async fetch(request, env) {
-    if (!env.ASSETS) {
-      return new Response("Static asset binding is unavailable", { status: 500 })
-    }
-
-    const url = new URL(request.url)
-    const pathname = url.pathname === "/" ? "/index.html" : url.pathname
-    const response = await getAsset(request, env, pathname)
-    if (response.status !== 404) return response
-
-    const acceptsHtml = request.headers.get("accept")?.includes("text/html")
-    if ((request.method === "GET" || request.method === "HEAD") && acceptsHtml) {
-      return getAsset(request, env, "/index.html")
-    }
-
-    return response
-  },
-}
-`
-)
+fs.copyFileSync(workerSource, path.join(serverDirectory, "index.js"))
 
 fs.mkdirSync(hostingDirectory, { recursive: true })
 fs.copyFileSync(hostingSource, path.join(hostingDirectory, "hosting.json"))
