@@ -1,5 +1,4 @@
 import {
-  Mesh,
   TextureLoader,
   RepeatWrapping,
   Float32BufferAttribute,
@@ -35,7 +34,6 @@ export class Assets {
 
   ready
   rules: Rules
-  background: Mesh
   table: Object3D
   tableStyleId = savedTableStyleId()
 
@@ -55,10 +53,6 @@ export class Assets {
     this.ready = ready
     this.sound = new Sound(true)
     this.table = new Group()
-    importGltf("models/background.gltf", (m) => {
-      this.background = m.scene
-      this.done()
-    })
     this.loadTableVariant(this.tableStyleId, () => {
       this.tableReady = true
       this.done()
@@ -240,7 +234,7 @@ export class Assets {
   }
 
   private done() {
-    if (this.background && this.table && this.tableReady) {
+    if (this.table && this.tableReady) {
       this.ready()
     }
   }

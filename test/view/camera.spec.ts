@@ -44,6 +44,36 @@ describe("Camera", () => {
     expect(camera.mode).to.equal(camera.topView)
   })
 
+  it("keeps a manually orbited view during AI and shot camera suggestions", () => {
+    const camera = new Camera(1)
+    const aim = new AimEvent()
+    camera.topView(aim)
+
+    camera.orbitByPixels(80, -30)
+    camera.update(1 / 60, aim)
+    expect(camera.mode).to.equal(camera.freeView)
+
+    const position = camera.camera.position.clone()
+    camera.suggestMode(camera.topView)
+    camera.update(1 / 60, aim)
+
+    expect(camera.mode).to.equal(camera.freeView)
+    expect(camera.camera.position.distanceTo(position)).to.be.closeTo(0, 1e-12)
+  })
+
+  it("zooms the free camera with the mouse wheel direction", () => {
+    const camera = new Camera(1)
+    const aim = new AimEvent()
+    camera.topView(aim)
+    camera.zoomByWheel(-120)
+    camera.update(1 / 60, aim)
+    const near = camera.camera.position.length()
+
+    camera.zoomByWheel(240)
+    camera.update(1 / 60, aim)
+    expect(camera.camera.position.length()).to.be.greaterThan(near)
+  })
+
   it("orbitView sets target correctly", () => {
     const camera = new Camera(1)
     const aim = new AimEvent()

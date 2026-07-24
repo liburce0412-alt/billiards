@@ -33,6 +33,7 @@ export class AimInputs {
   readonly cueTiltElement: AngleInput
   /** Shared button for both "Hit" and "Place Ball" actions. */
   readonly cueHitElement
+  readonly repositionCueBallElement
   readonly objectBallStyle: CSSStyleDeclaration | undefined
   readonly objectBallOverlap: HTMLElement | null
   readonly container: Container
@@ -58,6 +59,9 @@ export class AimInputs {
     this.openElevationElement = id("openElevation") as HTMLButtonElement
     this.cueTiltElement = id("cueTilt") as AngleInput
     this.cueHitElement = id("cueHit") as HTMLButtonElement
+    this.repositionCueBallElement = id(
+      "repositionCueBall"
+    ) as HTMLButtonElement
     if (this.cueHitElement) {
       this.timeoutButton = new TimeoutButton(this.cueHitElement, {
         duration: shotClockDuration(location.search),
@@ -101,6 +105,18 @@ export class AimInputs {
 
   setButtonText(text) {
     this.cueHitElement && (this.cueHitElement.innerText = localizeText(text))
+  }
+
+  showRepositionCueBall(handler: () => void) {
+    if (!this.repositionCueBallElement) return
+    this.repositionCueBallElement.onclick = handler
+    this.repositionCueBallElement.hidden = false
+  }
+
+  hideRepositionCueBall() {
+    if (!this.repositionCueBallElement) return
+    this.repositionCueBallElement.hidden = true
+    this.repositionCueBallElement.onclick = null
   }
 
   setDisabled(disabled: boolean) {

@@ -60,4 +60,19 @@ describe("Auto Aim", () => {
     expect(container.table.cue.aim.angle).to.be.closeTo(0, 0.1)
     done()
   })
+
+  it("allows a placed cue ball to return to placement before the shot", () => {
+    container.controller = new PlaceBall(container)
+    container.inputQueue.push(new Input(0, "SpaceUp"))
+    container.processEvents()
+
+    const reposition = document.getElementById(
+      "repositionCueBall"
+    ) as HTMLButtonElement
+    expect(reposition.hidden).to.be.false
+
+    reposition.click()
+    expect(container.controller).to.be.an.instanceof(PlaceBall)
+    expect(reposition.hidden).to.be.true
+  })
 })

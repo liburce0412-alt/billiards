@@ -32,6 +32,12 @@ describe("View", () => {
     done()
   })
 
+  it("uses a dark starfield instead of the white room background", () => {
+    const view = new View(canvas3d, table, Assets.localAssets())
+    expect((view.scene.background as any).getHex()).to.equal(0x02040c)
+    expect(view.scene.getObjectByName("starfield")).to.not.be.undefined
+  })
+
   it("ball not in view", (done) => {
     table.hasPockets = false
     const ball = table.balls[3]

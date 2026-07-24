@@ -1,9 +1,14 @@
 import {
+  BufferGeometry,
+  Color,
   DirectionalLight,
+  Float32BufferAttribute,
   Frustum,
   HemisphereLight,
   Matrix4,
   PMREMGenerator,
+  Points,
+  PointsMaterial,
   Scene,
   WebGLRenderer,
   WebGLRenderTarget,
@@ -36,6 +41,11 @@ export class View {
   assets: Assets
   drawing: Drawing
   private environmentTarget?: WebGLRenderTarget
+  private primaryCameraOrbit = false
+  private orbitPointerId?: number
+  private orbitPointerX = 0
+  private orbitPointerY = 0
+  onCameraInteraction?: () => void
 
   // Reuse objects to reduce garbage collection pressure in high-frequency rendering
   private readonly frustum = new Frustum()
@@ -70,6 +80,7 @@ export class View {
       this.element as HTMLCanvasElement,
       () => this.camera.camera
     )
+    this.addCameraControls()
     this.initialiseScene()
   }
 
@@ -91,6 +102,60 @@ export class View {
 
   update(elapsed, aim: AimEvent) {
     this.camera.update(elapsed, aim)
+  }
+
+  setPrimaryCameraOrbit(enabled: boolean) {
+    this.primaryCameraOrbit = enabled
+  }
+
+  private addCameraControls() {
+    const canvas = this.renderer?.domElement
+    if (!canvas) return
+
+    canvas.addEventListener("contextmenu", (event) => event.preventDefault())
+    canvas.addEventListener("pointerdown", (event) => {
+      const isOrbitButton =
+        event.button === 1 ||
+        event.button === 2 ||
+        (event.button === 0 && this.primaryCameraOrbit)
+      if (!isOrbitButton) return
+      event.preventDefault()
+      event.stopPropagation()
+      this.orbitPointerId = event.pointerId
+      this.orbitPointerX = event.clientX
+      this.orbitPointerY = event.clientY
+      canvas.setPointerCapture?.(event.pointerId)
+      this.element?.classList.add("is-camera-orbiting")
+    })
+    canvas.addEventListener("pointermove", (event) => {
+      if (event.pointerId !== this.orbitPointerId) return
+      event.preventDefault()
+      event.stopPropagation()
+      const deltaX = event.clientX - this.orbitPointerX
+      const deltaY = event.clientY - this.orbitPointerY
+      this.orbitPointerX = event.clientX
+      this.orbitPointerY = event.clientY
+      this.camera.orbitByPixels(deltaX, deltaY)
+      this.onCameraInteraction?.()
+    })
+    const stopOrbit = (event: PointerEvent) => {
+      if (event.pointerId !== this.orbitPointerId) return
+      this.orbitPointerId = undefined
+      canvas.releasePointerCapture?.(event.pointerId)
+      this.element?.classList.remove("is-camera-orbiting")
+    }
+    canvas.addEventListener("pointerup", stopOrbit)
+    canvas.addEventListener("pointercancel", stopOrbit)
+    canvas.addEventListener(
+      "wheel",
+      (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        this.camera.zoomByWheel(event.deltaY)
+        this.onCameraInteraction?.()
+      },
+      { passive: false }
+    )
   }
 
   sizeChanged() {
@@ -187,6 +252,8 @@ export class View {
 
   private initialiseScene() {
     const quality = getRenderQuality()
+    this.scene.background = new Color(0x02040c)
+    this.scene.add(this.createStarfield(quality.name === "low" ? 420 : 1200))
     this.scene.add(new HemisphereLight(0xfff4df, 0x18202c, 0.45))
 
     const keyLight = new DirectionalLight(0xfff1d6, 1.6)
@@ -218,9 +285,6 @@ export class View {
       )
     }
 
-    if (this.assets.background) {
-      this.scene.add(this.assets.background)
-    }
     this.scene.add(this.assets.table)
     if (this.assets.sound?.listener) {
       this.camera.camera.add(this.assets.sound.listener)
@@ -234,6 +298,47 @@ export class View {
     if (this.assets.rules.asset !== Snooker.tablemodel && showGrid) {
       this.scene.add(new Grid().generateLineSegments())
     }
+  }
+
+  private createStarfield(count: number): Points {
+    const positions = new Float32Array(count * 3)
+    const colors = new Float32Array(count * 3)
+    let seed = 0x51f15e
+    const random = () => {
+      seed = (seed * 1664525 + 1013904223) >>> 0
+      return seed / 0x100000000
+    }
+
+    for (let i = 0; i < count; i++) {
+      const azimuth = random() * Math.PI * 2
+      const z = random() * 2 - 1
+      const radius = R * (360 + random() * 430)
+      const horizontal = Math.sqrt(1 - z * z)
+      positions[i * 3] = Math.cos(azimuth) * horizontal * radius
+      positions[i * 3 + 1] = Math.sin(azimuth) * horizontal * radius
+      positions[i * 3 + 2] = z * radius
+
+      const warmth = random()
+      colors[i * 3] = 0.72 + warmth * 0.28
+      colors[i * 3 + 1] = 0.78 + warmth * 0.18
+      colors[i * 3 + 2] = 1
+    }
+
+    const geometry = new BufferGeometry()
+    geometry.setAttribute("position", new Float32BufferAttribute(positions, 3))
+    geometry.setAttribute("color", new Float32BufferAttribute(colors, 3))
+    const material = new PointsMaterial({
+      size: R * 0.5,
+      sizeAttenuation: true,
+      transparent: true,
+      opacity: 0.9,
+      depthWrite: false,
+      vertexColors: true,
+    })
+    const stars = new Points(geometry, material)
+    stars.name = "starfield"
+    stars.frustumCulled = false
+    return stars
   }
 
   ballToCheck = 0

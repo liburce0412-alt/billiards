@@ -131,6 +131,9 @@ export class Container {
     this.rules = RuleFactory.create(ruletype, this)
     this.table = this.rules.table()
     this.view = new View(element, this.table, assets)
+    this.view.onCameraInteraction = () => {
+      this.lastEventTime = performance.now()
+    }
     this.table.cue.aimInputs = new AimInputs(this)
     if (keyboard) {
       this.keyboard = keyboard
@@ -260,6 +263,13 @@ export class Container {
         subtext: "请将设备交给下一位玩家",
       },
       1800
+    )
+  }
+
+  repositionCueBall() {
+    this.inputQueue.length = 0
+    this.updateController(
+      new PlaceBall(this, this.table.cueball.pos.clone())
     )
   }
 
@@ -559,6 +569,9 @@ export class Container {
       // a     const playerName = Session.getInstance().playername
       // b     this.log(`${playerName}: Transition to ${controller.name}`)
       this.controller = controller
+      this.view.setPrimaryCameraOrbit(
+        !(controller instanceof Aim || controller instanceof PlaceBall)
+      )
       const active = this.inferActivePlayer(controller)
       if (
         active !== 0 ||

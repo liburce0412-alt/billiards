@@ -13,11 +13,14 @@ import { Session } from "../network/client/session"
  *
  */
 export class Aim extends ControllerBase {
+  private readonly canRepositionCueBall: boolean
+
   override get name(): string {
     return "Aim"
   }
-  constructor(container) {
+  constructor(container, canRepositionCueBall = false) {
     super(container)
+    this.canRepositionCueBall = canRepositionCueBall
     const table = this.container.table
 
     table.cue.aimMode()
@@ -60,6 +63,13 @@ export class Aim extends ControllerBase {
     this.container.view.clearLines()
     this.container.table.cue.aimInputs.setDisabled(false)
     this.container.table.cue.aimInputs.setButtonText("Hit")
+    if (this.canRepositionCueBall) {
+      this.container.table.cue.aimInputs.showRepositionCueBall(() => {
+        this.container.repositionCueBall()
+      })
+    } else {
+      this.container.table.cue.aimInputs.hideRepositionCueBall()
+    }
     this.offerLetStroke()
   }
 
@@ -144,6 +154,7 @@ export class Aim extends ControllerBase {
 
   playShot() {
     this.container.inputQueue.length = 0
+    this.container.table.cue.aimInputs.hideRepositionCueBall()
     this.container.table.cue.aimInputs.setDisabled(true)
     const hitEvent = new HitEvent(this.container.table.serialiseHit())
     this.container.sendEvent(hitEvent)

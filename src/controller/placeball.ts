@@ -44,6 +44,7 @@ export class PlaceBall extends ControllerBase {
     this.container.table.cue.moveTo(this.container.table.cueball.pos)
     this.container.table.cue.aimInputs.setButtonText("Place\nBall")
     this.container.table.cue.aimInputs.setDisabled(false)
+    this.container.table.cue.aimInputs.hideRepositionCueBall()
     this.showPlacementLine()
     if (!this.container.rules.allowsPlaceBall()) {
       this.container.inputQueue.push(new Input(1, "SpaceUp"))
@@ -108,7 +109,7 @@ export class PlaceBall extends ControllerBase {
       new BreakEvent(this.container.table.shortSerialise())
     )
     this.container.view.camera.forceMode(this.container.view.camera.aimView)
-    return new Aim(this.container)
+    return new Aim(this.container, this.container.rules.allowsPlaceBall())
   }
 
   private showPlacementLine() {

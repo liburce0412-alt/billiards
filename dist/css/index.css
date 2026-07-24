@@ -1226,6 +1226,57 @@ body.analysis-mode #commentMenu {
 .view3d {
   z-index: 0;
   overflow: hidden;
+  cursor: grab;
+}
+
+.view3d.is-camera-orbiting {
+  cursor: grabbing;
+}
+
+.view3d > canvas {
+  cursor: inherit;
+}
+
+.camera-control-hint {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 20;
+  padding: 7px 10px;
+  color: rgb(236 240 249 / 72%);
+  background: rgb(3 8 20 / 58%);
+  border: 1px solid rgb(142 174 226 / 18%);
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 24%);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+}
+
+.reposition-cue-ball {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 25;
+  min-height: 40px;
+  padding: 0 16px;
+  color: #f7e7b7;
+  background: linear-gradient(180deg, rgb(35 52 70 / 94%), rgb(11 21 35 / 94%));
+  border: 1px solid rgb(229 194 112 / 48%);
+  border-radius: 999px;
+  box-shadow:
+    0 12px 30px rgb(0 0 0 / 32%),
+    inset 0 1px rgb(255 255 255 / 10%);
+  cursor: pointer;
+  transform: translateX(-50%);
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+}
+
+.reposition-cue-ball:hover {
+  border-color: rgb(239 205 126 / 78%);
+  background: linear-gradient(180deg, rgb(46 68 91 / 98%), rgb(15 29 47 / 98%));
 }
 
 .aimControlColumn {

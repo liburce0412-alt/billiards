@@ -55,6 +55,10 @@ export class Camera {
   private distance = Camera.defaultDistance
   private fovOffset = Camera.defaultFovOffset
   savedDistance?: number
+  private orbitAzimuth = Math.PI
+  private orbitElevation = MathUtils.degToRad(48)
+  private orbitDistance = R * 65
+  private orbitInitialised = false
 
   elapsed: number = 1 / 60
   private t = 0
@@ -174,6 +178,60 @@ export class Camera {
     this.camera.up = up
     this.lookTarget.copy(aim.pos).addScaledVector(up, h / 2)
     this.camera.lookAt(this.lookTarget)
+  }
+
+  freeView(_: AimEvent) {
+    const horizontalDistance =
+      Math.cos(this.orbitElevation) * this.orbitDistance
+    this.camera.fov = 45 + this.fovOffset
+    this.camera.position.set(
+      Math.sin(this.orbitAzimuth) * horizontalDistance,
+      Math.cos(this.orbitAzimuth) * horizontalDistance,
+      Math.sin(this.orbitElevation) * this.orbitDistance
+    )
+    this.camera.up.copy(up)
+    this.camera.lookAt(zero)
+  }
+
+  private beginFreeOrbit() {
+    if (!this.orbitInitialised) {
+      const offset = this.tempVec.copy(this.camera.position)
+      const currentDistance = offset.length()
+      if (currentDistance >= R * 4) {
+        this.orbitDistance = MathUtils.clamp(
+          currentDistance,
+          R * 14,
+          R * 180
+        )
+        this.orbitAzimuth = Math.atan2(offset.x, offset.y)
+        this.orbitElevation = MathUtils.clamp(
+          Math.asin(offset.z / currentDistance),
+          MathUtils.degToRad(8),
+          MathUtils.degToRad(88)
+        )
+      }
+      this.orbitInitialised = true
+    }
+    this.selectMode(this.freeView)
+  }
+
+  orbitByPixels(deltaX: number, deltaY: number) {
+    this.beginFreeOrbit()
+    this.orbitAzimuth -= deltaX * 0.006
+    this.orbitElevation = MathUtils.clamp(
+      this.orbitElevation - deltaY * 0.005,
+      MathUtils.degToRad(8),
+      MathUtils.degToRad(88)
+    )
+  }
+
+  zoomByWheel(deltaY: number) {
+    this.beginFreeOrbit()
+    this.orbitDistance = MathUtils.clamp(
+      this.orbitDistance * Math.exp(deltaY * 0.0012),
+      R * 14,
+      R * 180
+    )
   }
 
   adjustHeight(delta) {

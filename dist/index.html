@@ -112,6 +112,17 @@
     <div id="gameLauncher" hidden></div>
     <h1 hidden>在线 3D 台球、斯诺克与三库</h1>
     <div id="viewP1" class="view3d">
+      <div class="camera-control-hint" aria-hidden="true">
+        右键拖动旋转 · 滚轮缩放
+      </div>
+      <button
+        id="repositionCueBall"
+        class="reposition-cue-ball"
+        type="button"
+        hidden
+      >
+        ↺ 重新摆放自由球
+      </button>
       <div id="snookerScoreOverlay">
         <div id="snookerScore" aria-live="polite">
           <div id="breakScore" class="breakScore"></div>
@@ -404,7 +415,7 @@
         </button>
         <button
           class="menuButton"
-          title="视角：点击切换；在球桌上纵向拖动调节俯仰"
+          title="点击切换俯视；右键拖动自由旋转；滚轮缩放"
           id="camera"
           type="submit"
           aria-label="切换相机视角"
