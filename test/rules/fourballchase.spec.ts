@@ -77,6 +77,65 @@ describe("FourBallChase Rules", () => {
     expect(rules.foulReason(outcome)).to.be.null
   })
 
+  it("awards 7 for a non-opening 1-to-9 clearance", () => {
+    const { container, rules } = initFourBall()
+    const cueball = container.table.cueball
+    const one = container.table.balls.find((ball) => ball.label === 1)!
+    rules.update([
+      Outcome.collision(cueball, one, 1, 1),
+      Outcome.cushion(one, 1, 2),
+    ])
+
+    const objects = container.table.balls.filter((ball) => ball !== cueball)
+    objects.forEach((ball) => {
+      ball.state = State.InPocket
+    })
+    const clearance = [
+      Outcome.collision(cueball, one, 1, 1),
+      ...objects.map((ball, index) => Outcome.pot(ball, 1, index + 2)),
+    ]
+
+    expect(rules.getAmountScored(clearance)).to.equal(7)
+  })
+
+  it("does not call a partial-table clearance a small gold", () => {
+    const { container, rules } = initFourBall()
+    const cueball = container.table.cueball
+    const one = container.table.balls.find((ball) => ball.label === 1)!
+    const two = container.table.balls.find((ball) => ball.label === 2)!
+
+    one.state = State.InPocket
+    rules.update([
+      Outcome.collision(cueball, one, 1, 1),
+      Outcome.pot(one, 1, 2),
+    ])
+    rules.update([
+      Outcome.collision(cueball, two, 1, 1),
+      Outcome.cushion(two, 1, 2),
+    ])
+
+    const remaining = container.table.balls.filter(
+      (ball) => ball !== cueball && ball.onTable()
+    )
+    remaining.forEach((ball) => {
+      ball.state = State.InPocket
+    })
+    const clearance = [
+      Outcome.collision(cueball, two, 1, 1),
+      ...remaining.map((ball, index) => Outcome.pot(ball, 1, index + 2)),
+    ]
+
+    expect(rules.getAmountScored(clearance)).to.equal(4)
+  })
+
+  it("allows a foul to take the score below zero", () => {
+    const { container, rules } = initFourBall()
+    rules.update([])
+
+    expect(Session.getInstance().myScore()).to.equal(-1)
+    expect(container.controller).to.not.be.undefined
+  })
+
   it("allows opening placement anywhere behind the head string", () => {
     const { rules } = initFourBall()
     expect(rules.placementLineX()).to.equal(Rack.spot.x)

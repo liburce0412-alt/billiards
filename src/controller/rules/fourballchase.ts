@@ -25,8 +25,9 @@ import { NineBall } from "./nineball"
 import { Rules } from "./rules"
 
 interface ChaseState {
-  visitsWithoutClearance: number
   openingPlacement: boolean
+  openingVisit: boolean
+  smallGoldEligible: boolean
   letStrokeAvailable: boolean
 }
 
@@ -34,9 +35,9 @@ type FourBallContainer = Container & { isBotRules?: boolean }
 
 /**
  * A deterministic two-player adaptation of the common Chinese four-ball
- * pursuit game. Public competitions use several score schedules, so this mode
- * deliberately documents and implements one project profile: foul -1, normal
- * win / golden 9 +4, one-miss clearance +7, break-and-run +10.
+ * pursuit game. This project uses the 1/4/7/10 score profile: foul -1, normal
+ * win or a legal combination on the 9 +4, a non-opening 1-to-9 clearance +7,
+ * and an opening break-and-run +10.
  */
 export class FourBallChase implements Rules {
   readonly container: FourBallContainer
@@ -56,13 +57,27 @@ export class FourBallChase implements Rules {
     let state = FourBallChase.stateByTable.get(this.container.table)
     if (!state) {
       state = {
-        visitsWithoutClearance: 0,
         openingPlacement: true,
+        openingVisit: true,
+        smallGoldEligible: false,
         letStrokeAvailable: false,
       }
       FourBallChase.stateByTable.set(this.container.table, state)
     }
     return state
+  }
+
+  serialiseState(): ChaseState {
+    return { ...this.state() }
+  }
+
+  restoreState(state: Partial<ChaseState>) {
+    FourBallChase.stateByTable.set(this.container.table, {
+      openingPlacement: state?.openingPlacement ?? false,
+      openingVisit: state?.openingVisit ?? false,
+      smallGoldEligible: state?.smallGoldEligible ?? false,
+      letStrokeAvailable: state?.letStrokeAvailable ?? false,
+    })
   }
 
   private raceTo(): number {
@@ -75,7 +90,12 @@ export class FourBallChase implements Rules {
   startTurn(allowLetStroke = true): void {
     this.previousBreak = this.currentBreak
     this.currentBreak = 0
-    this.state().letStrokeAvailable = allowLetStroke
+    const state = this.state()
+    state.letStrokeAvailable = allowLetStroke
+    if (!state.openingPlacement) {
+      state.openingVisit = false
+      state.smallGoldEligible = this.allTargetsOnTable()
+    }
   }
 
   tableGeometry(): void {
@@ -86,8 +106,9 @@ export class FourBallChase implements Rules {
     const table = new Table(this.rack())
     this.cueball = table.cueball
     FourBallChase.stateByTable.set(table, {
-      visitsWithoutClearance: 0,
       openingPlacement: true,
+      openingVisit: true,
+      smallGoldEligible: false,
       letStrokeAvailable: false,
     })
     return table
@@ -145,7 +166,6 @@ export class FourBallChase implements Rules {
     this.state().openingPlacement = false
     const reason = this.foulReason(outcome)
     if (reason) {
-      this.advanceState(outcome)
       return this.handleFoul(outcome, reason)
     }
 
@@ -160,11 +180,11 @@ export class FourBallChase implements Rules {
       return new Aim(this.container)
     }
 
-    this.advanceState(outcome)
     this.startTurn()
     this.container.sendEvent(new StartAimEvent())
     if (this.container.isSinglePlayer) {
       this.container.sendEvent(new WatchEvent(this.container.table.serialise()))
+      this.container.switchLocalPlayer()
       return new Aim(this.container)
     }
     return new WatchAim(this.container)
@@ -202,9 +222,9 @@ export class FourBallChase implements Rules {
     )
     if (nonNineRemaining) return 4
 
-    const visits = this.state().visitsWithoutClearance
-    if (visits === 0) return 10
-    if (visits === 1) return 7
+    const state = this.state()
+    if (state.openingVisit) return 10
+    if (state.smallGoldEligible) return 7
     return 4
   }
 
@@ -223,12 +243,6 @@ export class FourBallChase implements Rules {
       ? session.opponentScore()
       : session.myScore()
     return score + award >= this.raceTo()
-  }
-
-  advanceState(outcome: Outcome[]): void {
-    if (this.foulReason(outcome) || !this.isPartOfBreak(outcome)) {
-      this.state().visitsWithoutClearance++
-    }
   }
 
   respot(outcome: Outcome[]): Ball[] {
@@ -257,10 +271,20 @@ export class FourBallChase implements Rules {
       ball.state = State.Stationary
       ball.fround()
     })
-    this.state().visitsWithoutClearance = 0
-    this.state().openingPlacement = true
-    this.state().letStrokeAvailable = false
+    const state = this.state()
+    state.openingPlacement = true
+    state.openingVisit = true
+    state.smallGoldEligible = false
+    state.letStrokeAvailable = false
     return balls
+  }
+
+  private allTargetsOnTable(): boolean {
+    return [1, 2, 3, 9].every((label) =>
+      this.container.table.balls.some(
+        (ball) => ball.label === label && ball.onTable()
+      )
+    )
   }
 
   private isWinningShot(outcome: Outcome[]): boolean {
@@ -303,7 +327,7 @@ export class FourBallChase implements Rules {
 
   private handleFoul(outcome: Outcome[], reason: string): Controller {
     const session = Session.getInstance()
-    session.setMyScore(Math.max(0, session.myScore() - 1))
+    session.addMyScore(-1)
     this.sendScore()
     this.startTurn()
     this.container.notify({
@@ -321,9 +345,11 @@ export class FourBallChase implements Rules {
       ? { id: respotted[0].id, pos: respotted[0].pos.clone() }
       : undefined
     this.container.sendEvent(new PlaceBallEvent(startPos, respot, true))
-    return this.container.isSinglePlayer
-      ? new PlaceBall(this.container, startPos)
-      : new WatchAim(this.container)
+    if (this.container.isSinglePlayer) {
+      this.container.switchLocalPlayer()
+      return new PlaceBall(this.container, startPos)
+    }
+    return new WatchAim(this.container)
   }
 
   private sendScore() {

@@ -6,6 +6,7 @@ import { Replay } from "./replay"
 import { gameOverButtons } from "../utils/gameover"
 import { StartAimEvent } from "../events/startaimevent"
 import { WatchAim } from "./watchaim"
+import { Session } from "../network/client/session"
 
 /**
  * Aim using input events.
@@ -82,6 +83,12 @@ export class Aim extends ControllerBase {
           this.container.notification.clear()
           this.container.table.cue.aimInputs.setDisabled(true)
           this.container.sendEvent(new StartAimEvent(false))
+          if (Session.isLocalVersusMode()) {
+            this.container.rules.startTurn(false)
+            this.container.switchLocalPlayer()
+            this.container.updateController(new Aim(this.container))
+            return
+          }
           this.container.updateController(new WatchAim(this.container))
         },
         "play-on": () => this.container.notification.clear(),

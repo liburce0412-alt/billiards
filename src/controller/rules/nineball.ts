@@ -72,6 +72,16 @@ export class NineBall implements Rules {
     )
   }
 
+  serialiseState() {
+    return { openingPlacement: this.isOpeningPlacement() }
+  }
+
+  restoreState(state: { openingPlacement?: boolean }) {
+    NineBall.placementState.set(this.container.table, {
+      openingPlacement: state?.openingPlacement ?? false,
+    })
+  }
+
   readonly asset = "models/p8.min.gltf"
 
   tableGeometry(): void {
@@ -131,6 +141,7 @@ export class NineBall implements Rules {
     this.container.sendEvent(placeBallEvent)
 
     if (this.container.isSinglePlayer) {
+      this.container.switchLocalPlayer()
       return new PlaceBall(this.container, startPos)
     }
     return new WatchAim(this.container)
@@ -167,6 +178,7 @@ export class NineBall implements Rules {
     if (this.container.isSinglePlayer) {
       this.container.sendEvent(new WatchEvent(table.serialise()))
       this.startTurn()
+      this.container.switchLocalPlayer()
       return new Aim(this.container)
     }
     return new WatchAim(this.container)
@@ -314,9 +326,7 @@ export class NineBall implements Rules {
       outcome
         .filter(
           (o) =>
-            o.type === OutcomeType.Cushion &&
-            o.ballA &&
-            o.ballA !== cueball
+            o.type === OutcomeType.Cushion && o.ballA && o.ballA !== cueball
         )
         .map((o) => o.ballA)
     )

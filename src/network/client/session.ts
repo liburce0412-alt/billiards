@@ -1,5 +1,11 @@
 import { ThreeCushionConfig } from "../../utils/threecushionconfig"
 
+interface LocalPlayer {
+  id: string
+  name: string
+  cueStyleId: string
+}
+
 export class Session {
   constructor(
     public playername: string,
@@ -23,6 +29,7 @@ export class Session {
   private scoreByClientId: Record<string, number> = {}
   currentBreak: number = 0
   p1type: number = 0
+  private localPlayers?: [LocalPlayer, LocalPlayer]
 
   private static instance: Session | undefined
   private static readonly fallbackOpponentClientId = "opponent"
@@ -54,6 +61,10 @@ export class Session {
 
   static isSpeedrunMode(): boolean {
     return Session.getInstance().speedrunMode
+  }
+
+  static isLocalVersusMode(): boolean {
+    return !!Session.getInstance().localPlayers
   }
 
   static getLod(): number {
@@ -114,7 +125,65 @@ export class Session {
     }
   }
 
+  enableLocalVersus(
+    player1Name: string,
+    player2Name: string,
+    player1Cue: string,
+    player2Cue: string
+  ): void {
+    const player2Id = `${this.clientId}-local-2`
+    this.localPlayers = [
+      {
+        id: this.clientId,
+        name: player1Name.trim() || "玩家一",
+        cueStyleId: player1Cue,
+      },
+      {
+        id: player2Id,
+        name: player2Name.trim() || "玩家二",
+        cueStyleId: player2Cue,
+      },
+    ]
+    this.playerIndex = 0
+    this.playername = this.localPlayers[0].name
+    this.opponentName = this.localPlayers[1].name
+    this.opponentClientId = player2Id
+    this.scoreByClientId = {
+      [this.localPlayers[0].id]: 0,
+      [this.localPlayers[1].id]: 0,
+    }
+  }
+
+  switchLocalPlayer(): void {
+    if (!this.localPlayers) return
+    this.playerIndex = this.playerIndex === 0 ? 1 : 0
+    const active = this.localPlayers[this.playerIndex]
+    const opponent = this.localPlayers[this.playerIndex === 0 ? 1 : 0]
+    this.playername = active.name
+    this.opponentName = opponent.name
+    if (this.p1type === 1) {
+      this.p1type = 2
+    } else if (this.p1type === 2) {
+      this.p1type = 1
+    }
+  }
+
+  activeLocalPlayerName(): string {
+    return this.localPlayers?.[this.playerIndex]?.name ?? this.playername
+  }
+
+  activeLocalCueStyle(): string | undefined {
+    return this.localPlayers?.[this.playerIndex]?.cueStyleId
+  }
+
+  private activeScoreKey(): string {
+    return this.localPlayers?.[this.playerIndex]?.id ?? this.clientId
+  }
+
   private opponentKey(): string {
+    if (this.localPlayers) {
+      return this.localPlayers[this.playerIndex === 0 ? 1 : 0].id
+    }
     return this.opponentClientId ?? Session.fallbackOpponentClientId
   }
 
@@ -134,7 +203,7 @@ export class Session {
   }
 
   myScore(): number {
-    return this.getScoreByClientId(this.clientId)
+    return this.getScoreByClientId(this.activeScoreKey())
   }
 
   opponentScore(): number {
@@ -142,7 +211,7 @@ export class Session {
   }
 
   setMyScore(score: number): void {
-    this.setScoreByClientId(this.clientId, score)
+    this.setScoreByClientId(this.activeScoreKey(), score)
   }
 
   setOpponentScore(score: number): void {
@@ -166,6 +235,12 @@ export class Session {
   }
 
   orderedScoresForHud(): { p1: number; p2: number } {
+    if (this.localPlayers) {
+      return {
+        p1: this.getScoreByClientId(this.localPlayers[0].id),
+        p2: this.getScoreByClientId(this.localPlayers[1].id),
+      }
+    }
     if (this.playerIndex === 0) {
       return { p1: this.myScore(), p2: this.opponentScore() }
     }
@@ -173,6 +248,12 @@ export class Session {
   }
 
   orderedNamesForHud(): { p1Name?: string; p2Name?: string } {
+    if (this.localPlayers) {
+      return {
+        p1Name: this.localPlayers[0].name,
+        p2Name: this.localPlayers[1].name,
+      }
+    }
     if (this.spectator) {
       console.log(
         `[Session] orderedNamesForHud spectator mode: spectatedP1Name=${this.spectatedP1Name}, spectatedP2Name=${this.spectatedP2Name}`
@@ -209,7 +290,26 @@ export class Session {
     return names
   }
 
+  orderedClientIdsForHud(): { p1: string; p2: string } {
+    if (this.localPlayers) {
+      return {
+        p1: this.localPlayers[0].id,
+        p2: this.localPlayers[1].id,
+      }
+    }
+    const opponent = this.opponentClientId ?? Session.fallbackOpponentClientId
+    return this.playerIndex === 0
+      ? { p1: this.clientId, p2: opponent }
+      : { p1: opponent, p2: this.clientId }
+  }
+
   updateScoresFromNetwork(p1: number, p2: number, breakScore: number): void {
+    if (this.localPlayers) {
+      this.setScoreByClientId(this.localPlayers[0].id, p1)
+      this.setScoreByClientId(this.localPlayers[1].id, p2)
+      this.currentBreak = breakScore
+      return
+    }
     if (this.playerIndex === 1) {
       this.setMyScore(p2)
       this.setOpponentScore(p1)

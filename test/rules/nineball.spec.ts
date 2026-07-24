@@ -100,6 +100,26 @@ describe("NineBall Rules", () => {
     expect(nextController).to.be.an.instanceof(Aim)
   })
 
+  it("switches identity and fixed score slot after a local-versus miss", () => {
+    ;({ container, nineball } = initNineBall(true))
+    const session = Session.getInstance()
+    session.enableLocalVersus("玩家一", "玩家二", "heritage", "jade")
+    container.initialiseLocalMatch()
+    session.setMyScore(2)
+
+    const ball1 = container.table.balls.find((b) => b.label === 1)!
+    const nextController = nineball.update([
+      Outcome.collision(container.table.cueball, ball1, 1),
+      Outcome.cushion(ball1, 1),
+    ])
+
+    expect(nextController).to.be.an.instanceof(Aim)
+    expect(session.playerIndex).to.equal(1)
+    expect(session.playername).to.equal("玩家二")
+    expect(session.orderedScoresForHud()).to.deep.equal({ p1: 2, p2: 0 })
+    expect(container.table.cue.styleId).to.equal("jade")
+  })
+
   it("should end game if 9-ball is potted legally", () => {
     setupEndGameTable(container)
     const outcome = getEndGameOutcome(container)
@@ -141,8 +161,8 @@ describe("NineBall Rules", () => {
   })
 
   it("should accept a dry opening break when four object balls reach a cushion", () => {
-    const objectBalls = [1, 2, 3, 4].map(
-      (label) => container.table.balls.find((b) => b.label === label)!
+    const objectBalls = [1, 2, 3, 4].map((label) =>
+      container.table.balls.find((b) => b.label === label)!
     )
     const outcome = [
       Outcome.collision(container.table.cueball, objectBalls[0], 1),

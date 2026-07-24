@@ -84,6 +84,23 @@ export class MatchResultHelper {
     amIWinner: boolean,
     subtext: string
   ): void {
+    if (Session.isLocalVersusMode()) {
+      const session = Session.getInstance()
+      const winnerName = amIWinner
+        ? session.activeLocalPlayerName()
+        : session.opponentName || "对手"
+      container.notifyLocal({
+        type: "GameOver",
+        title: `${winnerName} 获胜`,
+        subtext,
+        highBreaks: this.getHighBreaks(container),
+        icon: "🏆",
+        extraClass: "is-winner",
+        extra: this.getGameOverButtons(container, rulename),
+        duration: 0,
+      })
+      return
+    }
     if (amIWinner) {
       this.notifyWin(container, rulename, subtext)
       this.sendLossNotification(container, rulename)
@@ -244,6 +261,14 @@ export class MatchResultHelper {
     container: Container,
     rulename: string
   ): string {
+    if (Session.isLocalVersusMode()) {
+      const session = Session.getInstance()
+      const { p1, p2 } = session.orderedScoresForHud()
+      const names = session.orderedNamesForHud()
+      return `${names.p1Name || "玩家一"} ${p1} - ${p2} ${
+        names.p2Name || "玩家二"
+      }`
+    }
     if (rulename === "threecushion" || rulename === "sagu") {
       const stats = this.calculateInningsStats(container)
       if (container.isSinglePlayer) {

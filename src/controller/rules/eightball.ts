@@ -238,6 +238,19 @@ export class EightBall implements Rules {
     return reason
   }
 
+  serialiseState() {
+    return {
+      behindLine:
+        EightBall.placementState.get(this.container.table)?.behindLine ?? false,
+    }
+  }
+
+  restoreState(state: { behindLine?: boolean }) {
+    EightBall.placementState.set(this.container.table, {
+      behindLine: state?.behindLine ?? false,
+    })
+  }
+
   update(outcome: Outcome[]): Controller {
     const reason = this.foulReason(outcome)
 
@@ -279,6 +292,7 @@ export class EightBall implements Rules {
     this.container.sendEvent(placeBallEvent)
 
     if (this.container.isSinglePlayer) {
+      this.container.switchLocalPlayer()
       return new PlaceBall(this.container, startPos)
     }
     return new WatchAim(this.container)
@@ -444,6 +458,7 @@ export class EightBall implements Rules {
     if (this.container.isSinglePlayer) {
       this.container.sendEvent(new WatchEvent(table.serialise()))
       this.startTurn()
+      this.container.switchLocalPlayer()
       return new Aim(this.container)
     }
     return new WatchAim(this.container)

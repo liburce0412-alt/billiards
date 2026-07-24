@@ -55,6 +55,36 @@ describe("Session", () => {
     expect(session.opponentScore()).to.equal(0)
   })
 
+  it("keeps fixed player slots while switching a local versus turn", () => {
+    Session.init("c1", "Host", "t1", false)
+    const session = Session.getInstance()
+    session.enableLocalVersus("小明", "小红", "classic-maple", "jade-dragon")
+
+    session.setMyScore(3)
+    expect(Session.isLocalVersusMode()).to.equal(true)
+    expect(session.orderedNamesForHud()).to.deep.equal({
+      p1Name: "小明",
+      p2Name: "小红",
+    })
+    expect(session.orderedScoresForHud()).to.deep.equal({ p1: 3, p2: 0 })
+    expect(session.activeLocalCueStyle()).to.equal("classic-maple")
+
+    session.p1type = 1
+    session.switchLocalPlayer()
+    session.setMyScore(5)
+
+    expect(session.playerIndex).to.equal(1)
+    expect(session.playername).to.equal("小红")
+    expect(session.opponentName).to.equal("小明")
+    expect(session.p1type).to.equal(2)
+    expect(session.activeLocalCueStyle()).to.equal("jade-dragon")
+    expect(session.orderedScoresForHud()).to.deep.equal({ p1: 3, p2: 5 })
+    expect(session.orderedClientIdsForHud()).to.deep.equal({
+      p1: "c1",
+      p2: "c1-local-2",
+    })
+  })
+
   describe("getRaceTargetForPlayer", () => {
     afterEach(() => {
       jest.restoreAllMocks()

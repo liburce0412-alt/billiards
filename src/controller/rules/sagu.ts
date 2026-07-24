@@ -182,6 +182,7 @@ export class Sagu extends ThreeCushion {
     }
 
     if (this.container.isSinglePlayer) {
+      this.container.switchLocalPlayer()
       this.cueball = this.otherPlayersCueBall()
       const cue = this.container.table.cue
       if (cue) {

@@ -1,13 +1,19 @@
 import {
   buildGameUrl,
+  buildInviteUrl,
+  generateRoomCode,
   LauncherOpponent,
+  LauncherOnlineAction,
   LauncherQuality,
   LauncherRule,
   LauncherSelection,
+  normaliseRoomCode,
   shouldShowLauncher,
 } from "./launcherconfig"
+import { CUE_STYLES } from "./view/cuestyle"
 
 const storageKey = "billiards-launcher-selection"
+const onlineUserIdKey = "billiards-online-user-id"
 
 const ruleDetails: Record<
   LauncherRule,
@@ -48,6 +54,8 @@ const ruleDetails: Record<
 const opponentNames: Record<LauncherOpponent, string> = {
   practice: "自由练习",
   ai: "AI 对战",
+  local: "同设备双人",
+  online: "两台设备联机",
   ClawBreak: "基础 AI",
   TheFarJaw: "进阶 AI",
 }
@@ -77,6 +85,13 @@ const defaultSelection: LauncherSelection = {
   opponent: "ai",
   botLevel: 4,
   quality: "high",
+  player1Name: "玩家一",
+  player2Name: "玩家二",
+  player1Cue: "heritage",
+  player2Cue: "jade",
+  onlineAction: "create",
+  roomCode: "",
+  onlinePlayerName: "玩家",
 }
 
 function isRule(value: unknown): value is LauncherRule {
@@ -99,28 +114,79 @@ function normalizeLevel(value: unknown): number {
     : defaultSelection.botLevel
 }
 
-function readSelection(params: URLSearchParams): LauncherSelection {
-  let stored: Partial<LauncherSelection>
+function storedSelection(): Partial<LauncherSelection> {
   try {
-    stored = JSON.parse(localStorage.getItem(storageKey) ?? "{}")
+    return JSON.parse(localStorage.getItem(storageKey) ?? "{}")
   } catch {
-    stored = {}
+    return {}
   }
+}
 
-  const requestedQuality = params.get("quality")
+function selectedQuality(
+  params: URLSearchParams,
+  stored: Partial<LauncherSelection>
+): LauncherQuality {
   let quality = defaultSelection.quality
   if (isQuality(stored.quality)) quality = stored.quality
-  if (isQuality(requestedQuality)) quality = requestedQuality
+  const requested = params.get("quality")
+  if (isQuality(requested)) quality = requested
+  return quality
+}
+
+function selectedOpponent(
+  stored: Partial<LauncherSelection>,
+  joinCode: string
+): LauncherOpponent {
+  if (joinCode) return "online"
   let opponent = defaultSelection.opponent
   if (isOpponent(stored.opponent)) {
-    opponent = stored.opponent === "practice" ? "practice" : "ai"
+    opponent = stored.opponent
   }
+  if (opponent === "ClawBreak" || opponent === "TheFarJaw") return "ai"
+  return opponent
+}
+
+function selectedRule(
+  params: URLSearchParams,
+  stored: Partial<LauncherSelection>
+): LauncherRule {
+  const requested = params.get("rule")
+  if (isRule(requested)) return requested
+  return isRule(stored.rule) ? stored.rule : defaultSelection.rule
+}
+
+function storedString(value: unknown, fallback: string | undefined): string {
+  return typeof value === "string" ? value : fallback || ""
+}
+
+function readSelection(params: URLSearchParams): LauncherSelection {
+  const stored = storedSelection()
+  const joinCode = normaliseRoomCode(params.get("join") ?? "")
   return {
-    rule: isRule(stored.rule) ? stored.rule : defaultSelection.rule,
-    opponent,
+    rule: selectedRule(params, stored),
+    opponent: selectedOpponent(stored, joinCode),
     botLevel: normalizeLevel(stored.botLevel),
-    quality,
+    quality: selectedQuality(params, stored),
+    player1Name: storedString(stored.player1Name, defaultSelection.player1Name),
+    player2Name: storedString(stored.player2Name, defaultSelection.player2Name),
+    player1Cue: storedString(stored.player1Cue, defaultSelection.player1Cue),
+    player2Cue: storedString(stored.player2Cue, defaultSelection.player2Cue),
+    onlineAction:
+      joinCode || stored.onlineAction === "join" ? "join" : "create",
+    roomCode: joinCode || "",
+    onlinePlayerName: storedString(
+      stored.onlinePlayerName,
+      defaultSelection.onlinePlayerName
+    ),
   }
+}
+
+function escapeAttribute(value: string | undefined): string {
+  return (value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
 }
 
 function checked(name: string, value: string, selected: string) {
@@ -151,6 +217,15 @@ function ruleOptions(selection: LauncherSelection) {
     .join("")
 }
 
+function cueOptions(selected: string | undefined) {
+  return CUE_STYLES.map(
+    (style) =>
+      `<option value="${style.id}" ${
+        selected === style.id ? "selected" : ""
+      }>${style.name} · ${style.description}</option>`
+  ).join("")
+}
+
 function launcherMarkup(selection: LauncherSelection) {
   const levelOptions = levelNames
     .map(
@@ -177,11 +252,11 @@ function launcherMarkup(selection: LauncherSelection) {
           <p class="launcher-kicker">浏览器台球模拟器</p>
           <h1 id="launcherTitle">选一张球桌<br />打好下一杆</h1>
           <p class="launcher-lede">
-            五种规则、11 档本地 AI，以及针对当前设备的渲染画质。物理结果不随画质改变。
+            五种规则、11 档本地 AI、同屏双人与房间联机。物理结果不随画质改变。
           </p>
           <dl class="launcher-facts">
             <div><dt>物理</dt><dd>固定 1/512 秒</dd></div>
-            <div><dt>对手</dt><dd>浏览器本地运行</dd></div>
+            <div><dt>对战</dt><dd>本地 / 双人 / 联机</dd></div>
             <div><dt>平台</dt><dd>桌面与移动端</dd></div>
           </dl>
         </section>
@@ -195,9 +270,11 @@ function launcherMarkup(selection: LauncherSelection) {
           <div class="launcher-controls">
             <fieldset class="launcher-fieldset">
               <legend>对手</legend>
-              <div class="segment-control segment-control--two">
+              <div class="segment-control segment-control--four">
                 <label>${checked("opponent", "practice", selection.opponent)}<span>自由练习</span></label>
                 <label>${checked("opponent", "ai", selection.opponent)}<span>AI 对战</span></label>
+                <label>${checked("opponent", "local", selection.opponent)}<span>同屏双人</span></label>
+                <label>${checked("opponent", "online", selection.opponent)}<span>房间联机</span></label>
               </div>
             </fieldset>
 
@@ -218,6 +295,49 @@ function launcherMarkup(selection: LauncherSelection) {
               </div>
             </fieldset>
           </div>
+
+          <fieldset id="localSettings" class="launcher-fieldset launcher-detail-panel" hidden>
+            <legend>同屏双方</legend>
+            <div class="player-config-grid">
+              <label>
+                <span>玩家一</span>
+                <input name="player1Name" maxlength="16" value="${escapeAttribute(selection.player1Name)}" />
+                <select name="player1Cue" aria-label="玩家一球杆">${cueOptions(selection.player1Cue)}</select>
+              </label>
+              <label>
+                <span>玩家二</span>
+                <input name="player2Name" maxlength="16" value="${escapeAttribute(selection.player2Name)}" />
+                <select name="player2Cue" aria-label="玩家二球杆">${cueOptions(selection.player2Cue)}</select>
+              </label>
+            </div>
+            <p class="launcher-detail-note">每次换人会同步切换姓名、计分高亮和各自球杆。</p>
+          </fieldset>
+
+          <fieldset id="onlineSettings" class="launcher-fieldset launcher-detail-panel" hidden>
+            <legend>联机房间</legend>
+            <div class="online-config-grid">
+              <div class="segment-control segment-control--two">
+                <label>${checked("onlineAction", "create", selection.onlineAction ?? "create")}<span>创建房间</span></label>
+                <label>${checked("onlineAction", "join", selection.onlineAction ?? "create")}<span>加入房间</span></label>
+              </div>
+              <label class="launcher-input">
+                <span>你的名字</span>
+                <input name="onlinePlayerName" maxlength="16" value="${escapeAttribute(selection.onlinePlayerName)}" />
+              </label>
+              <label class="launcher-input">
+                <span>房间码</span>
+                <input id="roomCode" name="roomCode" maxlength="8" autocomplete="off" value="${escapeAttribute(selection.roomCode)}" />
+              </label>
+            </div>
+            <div id="inviteRow" class="invite-row" hidden>
+              <label class="launcher-input">
+                <span>邀请链接</span>
+                <input id="inviteUrl" readonly />
+              </label>
+              <button id="copyInvite" type="button">复制邀请</button>
+            </div>
+            <p class="launcher-detail-note">房主先进入球桌，再把邀请链接发给另一台设备。</p>
+          </fieldset>
 
           <div class="launcher-status" id="launcherStatus" aria-live="polite"></div>
           <div class="launcher-action">
@@ -243,6 +363,13 @@ function selectionFromForm(form: HTMLFormElement): LauncherSelection {
     opponent: data.get("opponent") as LauncherOpponent,
     botLevel: normalizeLevel(data.get("botLevel")),
     quality: data.get("quality") as LauncherQuality,
+    player1Name: String(data.get("player1Name") ?? ""),
+    player2Name: String(data.get("player2Name") ?? ""),
+    player1Cue: String(data.get("player1Cue") ?? "heritage"),
+    player2Cue: String(data.get("player2Cue") ?? "jade"),
+    onlineAction: data.get("onlineAction") as LauncherOnlineAction,
+    roomCode: normaliseRoomCode(String(data.get("roomCode") ?? "")),
+    onlinePlayerName: String(data.get("onlinePlayerName") ?? ""),
   }
 }
 
@@ -258,11 +385,65 @@ function updateSummary(form: HTMLFormElement) {
   const selection = selectionFromForm(form)
   const summary = document.querySelector<HTMLElement>("#launcherSummary")!
   const opponent =
-    selection.opponent === "practice"
-      ? opponentNames.practice
-      : levelNames[selection.botLevel - 1]
+    selection.opponent === "ai"
+      ? levelNames[selection.botLevel - 1]
+      : opponentNames[selection.opponent]
   summary.textContent = `${ruleDetails[selection.rule].name} · ${opponent} · ${qualityNames[selection.quality]}`
   saveSelection(selection)
+}
+
+function persistentOnlineUserId(): string {
+  try {
+    const saved = localStorage.getItem(onlineUserIdKey)
+    if (saved) return saved
+    const id = `P_${globalThis.crypto?.randomUUID?.() ?? generateRoomCode()}`
+    localStorage.setItem(onlineUserIdKey, id)
+    return id
+  } catch {
+    return `P_${generateRoomCode()}`
+  }
+}
+
+function syncOpponentSettings(
+  form: HTMLFormElement,
+  selection = selectionFromForm(form)
+) {
+  const aiSettings = document
+    .querySelector<HTMLElement>("#botLevel")
+    ?.closest<HTMLElement>(".launcher-fieldset")
+  const localSettings = document.querySelector<HTMLElement>("#localSettings")!
+  const onlineSettings = document.querySelector<HTMLElement>("#onlineSettings")!
+  const botLevel = document.querySelector<HTMLSelectElement>("#botLevel")!
+
+  const isAi = selection.opponent === "ai"
+  const isLocal = selection.opponent === "local"
+  const isOnline = selection.opponent === "online"
+  if (aiSettings) aiSettings.hidden = !isAi
+  localSettings.hidden = !isLocal
+  onlineSettings.hidden = !isOnline
+  botLevel.disabled = !isAi
+
+  if (isOnline) {
+    const roomCode = document.querySelector<HTMLInputElement>("#roomCode")!
+    if (
+      selection.onlineAction === "create" &&
+      normaliseRoomCode(roomCode.value).length < 4
+    ) {
+      roomCode.value = generateRoomCode()
+    }
+    roomCode.value = normaliseRoomCode(roomCode.value)
+    const inviteRow = document.querySelector<HTMLElement>("#inviteRow")!
+    const inviteUrl = document.querySelector<HTMLInputElement>("#inviteUrl")!
+    const creating = selection.onlineAction !== "join"
+    inviteRow.hidden = !creating
+    if (creating) {
+      inviteUrl.value = buildInviteUrl(
+        roomCode.value,
+        selection,
+        globalThis.location.href
+      )
+    }
+  }
 }
 
 function initialiseLauncher(params: URLSearchParams) {
@@ -275,8 +456,32 @@ function initialiseLauncher(params: URLSearchParams) {
 
   const form = document.querySelector<HTMLFormElement>("#launcherForm")!
   const start = document.querySelector<HTMLButtonElement>("#launcherStart")!
+  const roomCode = document.querySelector<HTMLInputElement>("#roomCode")!
+  const copyInvite = document.querySelector<HTMLButtonElement>("#copyInvite")!
+  syncOpponentSettings(form)
   updateSummary(form)
-  form.addEventListener("change", () => updateSummary(form))
+  form.addEventListener("change", () => {
+    syncOpponentSettings(form)
+    updateSummary(form)
+  })
+  roomCode.addEventListener("input", () => {
+    roomCode.value = normaliseRoomCode(roomCode.value)
+    syncOpponentSettings(form)
+  })
+  copyInvite.addEventListener("click", async () => {
+    const inviteUrl = document.querySelector<HTMLInputElement>("#inviteUrl")!
+    try {
+      await navigator.clipboard.writeText(inviteUrl.value)
+      copyInvite.textContent = "已复制"
+    } catch {
+      inviteUrl.select()
+      document.execCommand("copy")
+      copyInvite.textContent = "已复制"
+    }
+    setTimeout(() => {
+      copyInvite.textContent = "复制邀请"
+    }, 1600)
+  })
   form.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && event.target instanceof HTMLInputElement) {
       event.preventDefault()
@@ -286,12 +491,32 @@ function initialiseLauncher(params: URLSearchParams) {
   form.addEventListener("submit", (event) => {
     event.preventDefault()
     const current = selectionFromForm(form)
+    if (
+      current.opponent === "online" &&
+      normaliseRoomCode(current.roomCode ?? "").length < 4
+    ) {
+      document.querySelector<HTMLElement>("#launcherStatus")!.textContent =
+        "请输入至少 4 位房间码"
+      roomCode.focus()
+      return
+    }
+    current.onlineUserId = persistentOnlineUserId()
     start.dataset.state = "loading"
     start.disabled = true
     start.querySelector("span")!.textContent = "正在装台…"
     document.querySelector<HTMLElement>("#launcherStatus")!.textContent =
       "正在加载 3D 球桌"
-    globalThis.location.assign(buildGameUrl(current, globalThis.location.href))
+    try {
+      globalThis.location.assign(
+        buildGameUrl(current, globalThis.location.href)
+      )
+    } catch (error) {
+      start.dataset.state = "error"
+      start.disabled = false
+      start.querySelector("span")!.textContent = "开始比赛"
+      document.querySelector<HTMLElement>("#launcherStatus")!.textContent =
+        error instanceof Error ? error.message : "无法创建比赛"
+    }
   })
 }
 

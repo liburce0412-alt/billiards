@@ -97,6 +97,7 @@ export class ThreeCushion implements Rules {
     this.startTurn()
 
     if (this.container.isSinglePlayer) {
+      this.container.switchLocalPlayer()
       this.cueball = this.otherPlayersCueBall()
       const cue = this.container.table.cue
       if (cue) {
@@ -120,17 +121,10 @@ export class ThreeCushion implements Rules {
 
   isEndOfGame(_: Outcome[]): boolean {
     const session = Session.getInstance()
-    const p1ClientId =
-      session.playerIndex === 0
-        ? session.clientId
-        : (session.opponentClientId ?? "opponent")
-    const p2ClientId =
-      session.playerIndex === 0
-        ? (session.opponentClientId ?? "opponent")
-        : session.clientId
+    const clientIds = session.orderedClientIdsForHud()
 
-    const p1Target = session.getRaceTargetForPlayer(p1ClientId)
-    const p2Target = session.getRaceTargetForPlayer(p2ClientId)
+    const p1Target = session.getRaceTargetForPlayer(clientIds.p1)
+    const p2Target = session.getRaceTargetForPlayer(clientIds.p2)
 
     const { p1: s1, p2: s2 } = session.orderedScoresForHud()
 

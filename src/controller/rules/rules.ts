@@ -32,4 +32,6 @@ export interface Rules {
   scaleTableModel?(scene: any): void
   placementLineX?(): number | undefined
   canLetStroke?(): boolean
+  serialiseState?(): unknown
+  restoreState?(state: any): void
 }

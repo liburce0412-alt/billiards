@@ -3,6 +3,10 @@ import { Camera, frameRateIndependentLerp } from "../../src/view/camera"
 import { AimEvent } from "../../src/events/aimevent"
 
 describe("Camera", () => {
+  beforeEach(() => {
+    globalThis.localStorage?.removeItem("billiards-camera-mode")
+  })
+
   it("keeps damping equivalent across refresh rates", () => {
     const at30 = frameRateIndependentLerp(0.1, 1 / 30)
     const twoFramesAt60 = 1 - Math.pow(1 - 0.1, 2)
@@ -15,6 +19,29 @@ describe("Camera", () => {
     expect((camera as any).t).to.be.closeTo(0.1, 0.001)
     camera.update(0.2, aim)
     expect((camera as any).t).to.be.closeTo(0.3, 0.001)
+  })
+
+  it("keeps the manually selected view across controller suggestions", () => {
+    const camera = new Camera(1)
+
+    expect(camera.mode).to.equal(camera.topView)
+    camera.suggestMode(camera.aimView)
+    expect(camera.mode).to.equal(camera.topView)
+
+    camera.toggleMode()
+    expect(camera.mode).to.equal(camera.aimView)
+    camera.suggestMode(camera.topView)
+    expect(camera.mode).to.equal(camera.aimView)
+  })
+
+  it("does not overwrite the selected view with a temporary forced view", () => {
+    const camera = new Camera(1)
+
+    camera.forceMode(camera.aimView)
+    expect(camera.mode).to.equal(camera.aimView)
+
+    camera.suggestMode(camera.aimView)
+    expect(camera.mode).to.equal(camera.topView)
   })
 
   it("orbitView sets target correctly", () => {

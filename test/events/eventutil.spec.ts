@@ -14,6 +14,7 @@ import { BeginEvent } from "../../src/events/beginevent"
 import { HitEvent } from "../../src/events/hitevent"
 import { ScoreEvent } from "../../src/events/scoreevent"
 import { ConcedeEvent } from "../../src/events/concedeevent"
+import { RejoinEvent } from "../../src/events/rejoinevent"
 
 describe("EventUtil", () => {
   it("Serialise and deserialise AimEvent", (done) => {
@@ -134,5 +135,37 @@ describe("EventUtil", () => {
     const deserialised = EventUtil.fromSerialised(serialised)
     expect(deserialised.playername).to.be.undefined
     done()
+  })
+
+  it("serialises reconnect state with sequence metadata", () => {
+    const event = new RejoinEvent("stream-a", "", {
+      table: { balls: [] },
+      scores: { p1: 4, p2: 7, breakScore: 0 },
+      p1ClientId: "p1",
+      p1Name: "玩家一",
+      p2Name: "玩家二",
+      activeClientId: "p2",
+      phase: "aim",
+      p1type: 1,
+      currentBreak: 0,
+      previousBreak: 2,
+      ruleState: { openingPlacement: false },
+    })
+    event.sequence = "stream-a:3"
+
+    const restored = EventUtil.fromSerialised(
+      EventUtil.serialise(event)
+    ) as RejoinEvent
+
+    expect(restored.sequence).to.equal("stream-a:3")
+    expect(restored.snapshot?.scores).to.deep.equal({
+      p1: 4,
+      p2: 7,
+      breakScore: 0,
+    })
+    expect(restored.snapshot?.activeClientId).to.equal("p2")
+    expect(restored.snapshot?.ruleState).to.deep.equal({
+      openingPlacement: false,
+    })
   })
 })

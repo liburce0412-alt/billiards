@@ -28,6 +28,8 @@ import { applyPhysicsParams } from "../utils/physicsparams"
 import { TableConfig } from "../view/tableconfig"
 import { applyPhysicsProfileForRule } from "../model/physics/profile"
 import { Camera } from "../view/camera"
+import { RejoinEvent } from "../events/rejoinevent"
+import { EventType } from "../events/eventtype"
 
 /**
  * Integrate game container into HTML page
@@ -69,7 +71,13 @@ export class BrowserContainer {
   examMode: boolean = false
   speedrun: boolean = false
   localMesh: boolean = false
+  localVersus: boolean = false
   readonly botDelay: number = 500
+  private readonly connectionStream = `E_${getUID()}`
+  private outgoingSequence = 0
+  private readonly seenSequences = new Set<string>()
+  private readonly sequenceOrder: string[] = []
+  private pendingStateSyncResponse = false
   constructor(canvas3d, params) {
     this.now = Date.now()
     this.playername =
@@ -102,6 +110,7 @@ export class BrowserContainer {
     this.examMode = params.has("exam")
     this.speedrun = params.has("speedrun")
     this.localMesh = params.has("localmesh")
+    this.localVersus = params.get("local") === "true" || params.has("hotseat")
     SnookerConfig.reds = Number.parseInt(params.get("reds") ?? "15") || 15
     ThreeCushionConfig.raceTo =
       Number.parseInt(params.get("raceTo") ?? "7") || 7
@@ -120,6 +129,14 @@ export class BrowserContainer {
       this.first,
       this.speedrun
     )
+    if (this.localVersus) {
+      Session.getInstance().enableLocalVersus(
+        params.get("p1Name") ?? this.playername,
+        params.get("p2Name") ?? "玩家二",
+        params.get("p1Cue") ?? "heritage",
+        params.get("p2Cue") ?? "jade"
+      )
+    }
     console.log(Session.getInstance())
     applyPhysicsParams(params)
   }
@@ -233,6 +250,8 @@ export class BrowserContainer {
       this.broadcast(e)
     }
     this.container.table.cushionModel = this.cushionModel
+    this.container.initialiseLocalMatch()
+    this.container.onStableState = () => this.flushStateSyncResponse()
     if (this.analysisMode) {
       new AnalysisPanel(this.container)
     } else if (this.drillMode) {
@@ -258,6 +277,7 @@ export class BrowserContainer {
       this.messageRelay?.subscribe(this.tableId, (e) => {
         this.netEvent(e)
       })
+      this.broadcast(new RejoinEvent(this.connectionStream))
       if (!this.first) {
         this.broadcast(new BeginEvent())
       }
@@ -270,52 +290,121 @@ export class BrowserContainer {
     }
   }
 
-  netEvent(e: string) {
-    const event = EventUtil.fromSerialised(e)
-    if (event.clientId === Session.getInstance().clientId) {
-      return
+  private parseNetworkEvent(message: string): GameEvent | undefined {
+    try {
+      return EventUtil.fromSerialised(message)
+    } catch (error) {
+      console.warn("Ignored malformed room message", error)
+      return undefined
     }
+  }
 
-    if (!Session.getInstance().vsNotificationShown) {
-      this.container.notification.clear()
+  private shouldIgnoreNetworkEvent(event: GameEvent, session: Session) {
+    if (event.clientId === session.clientId) return true
+    if (
+      !this.spectator &&
+      event.clientId &&
+      session.opponentClientId &&
+      session.opponentClientId !== event.clientId
+    ) {
+      console.warn("Ignored message from an extra room participant")
+      return true
     }
+    if (event.sequence && !this.rememberSequence(event.sequence)) {
+      return true
+    }
+    if (this.isRemoteTurnViolation(event)) {
+      console.warn(`Ignored out-of-turn ${event.type} event`)
+      return true
+    }
+    return false
+  }
 
-    //    logNetEvent(this.playername, event, "receive")
+  private bindOpponent(event: GameEvent, session: Session) {
     if (event.clientId) {
-      Session.getInstance().setOpponentClientId(event.clientId)
+      session.setOpponentClientId(event.clientId)
     }
     if (event.playername) {
-      Session.getInstance().opponentName = event.playername
+      session.opponentName = event.playername
     }
+  }
 
-    const session = Session.getInstance()
+  private showVersusNotification(session: Session) {
     if (
-      !session.vsNotificationShown &&
-      !this.botMode &&
-      !this.spectator &&
-      session.playername &&
-      session.opponentName
+      session.vsNotificationShown ||
+      this.botMode ||
+      this.spectator ||
+      !session.playername ||
+      !session.opponentName
     ) {
-      const names = session.orderedNamesForHud()
-      if (names.p1Name && names.p2Name) {
-        this.container.notifyLocal({
-          type: "Info",
-          title: `${this.ruletype}, ${names.p1Name} vs ${names.p2Name}`,
-          extra:
-            this.ruletype === "threecushion"
-              ? `Race to: ${ThreeCushionConfig.raceTo}`
-              : undefined,
-        })
-        session.vsNotificationShown = true
-      }
+      return
+    }
+    const names = session.orderedNamesForHud()
+    if (!names.p1Name || !names.p2Name) return
+    this.container.notifyLocal({
+      type: "Info",
+      title: `${this.ruletype}, ${names.p1Name} vs ${names.p2Name}`,
+      extra:
+        this.ruletype === "threecushion"
+          ? `Race to: ${ThreeCushionConfig.raceTo}`
+          : undefined,
+    })
+    session.vsNotificationShown = true
+  }
+
+  netEvent(message: string) {
+    const event = this.parseNetworkEvent(message)
+    if (!event) return
+    const session = Session.getInstance()
+    if (this.shouldIgnoreNetworkEvent(event, session)) return
+
+    if (!session.vsNotificationShown) {
+      this.container.notification.clear()
+    }
+    this.bindOpponent(event, session)
+    this.showVersusNotification(session)
+
+    if (event instanceof RejoinEvent && !event.snapshot) {
+      this.pendingStateSyncResponse = true
+      this.flushStateSyncResponse()
+      return
     }
     this.container.eventQueue.push(event)
+  }
+
+  private rememberSequence(sequence: string): boolean {
+    if (this.seenSequences.has(sequence)) return false
+    this.seenSequences.add(sequence)
+    this.sequenceOrder.push(sequence)
+    if (this.sequenceOrder.length > 512) {
+      const oldest = this.sequenceOrder.shift()
+      if (oldest) this.seenSequences.delete(oldest)
+    }
+    return true
+  }
+
+  private isRemoteTurnViolation(event: GameEvent): boolean {
+    if (event.type !== EventType.AIM && event.type !== EventType.HIT) {
+      return false
+    }
+    return ["Aim", "PlaceBall", "PlayShot"].includes(
+      this.container.controller?.name
+    )
+  }
+
+  private flushStateSyncResponse() {
+    if (!this.pendingStateSyncResponse || !this.messageRelay) return
+    const snapshot = this.container.createRejoinSnapshot()
+    if (!snapshot) return
+    this.pendingStateSyncResponse = false
+    this.broadcast(new RejoinEvent(this.connectionStream, "", snapshot))
   }
 
   broadcast(event: GameEvent) {
     if (this.messageRelay) {
       event.clientId = Session.getInstance().clientId
       event.playername = Session.getInstance().playername
+      event.sequence = `${this.connectionStream}:${++this.outgoingSequence}`
       //      logNetEvent(this.playername, event, "broadcast")
       this.messageRelay.publish(this.tableId, EventUtil.serialise(event))
     }

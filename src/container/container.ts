@@ -43,8 +43,15 @@ import { WatchShot } from "../controller/watchshot"
 import { BallTray } from "../view/ball-tray"
 import { ExportUtils } from "../utils/export-utils"
 import { FixedStepAccumulator } from "../utils/fixedstep"
+import { RejoinSnapshot } from "../events/rejoinevent"
 
 type ActivePlayer = 0 | 1 | 2
+
+function flipPlayerType(type: number): number {
+  if (type === 1) return 2
+  if (type === 2) return 1
+  return 0
+}
 
 /**
  * Model, View, Controller container.
@@ -75,6 +82,7 @@ export class Container {
   examMode: boolean = false
   relay: MessageRelay | null = null
   scoreReporter: ScoreReporter | null = null
+  onStableState?: () => void
   frame: (timestamp: number) => void
   /** Multiplier applied to real elapsed time before it's converted to physics
    * steps in `advance()`. 1 everywhere except the shot-analysis view, which
@@ -208,50 +216,220 @@ export class Container {
     this.hud.setActivePlayer(active)
   }
 
+  initialiseLocalMatch() {
+    if (!Session.isLocalVersusMode()) return
+    const session = Session.getInstance()
+    const cueStyle = session.activeLocalCueStyle()
+    if (cueStyle) {
+      this.table.cue.setStyle(cueStyle, false)
+    }
+    const scores = session.orderedScoresForHud()
+    this.updateScoreHud(
+      scores.p1,
+      scores.p2,
+      session.currentBreak,
+      (session.playerIndex + 1) as 1 | 2
+    )
+    this.notifyLocal({
+      type: "Info",
+      title: `轮到 ${session.activeLocalPlayerName()}`,
+      subtext: "同一设备双人对战",
+      extra: "请确认球杆后击球",
+    })
+  }
+
+  switchLocalPlayer() {
+    if (!Session.isLocalVersusMode()) return
+    const session = Session.getInstance()
+    session.switchLocalPlayer()
+    const cueStyle = session.activeLocalCueStyle()
+    if (cueStyle) {
+      this.table.cue.setStyle(cueStyle, false)
+    }
+    const scores = session.orderedScoresForHud()
+    this.updateScoreHud(
+      scores.p1,
+      scores.p2,
+      session.currentBreak,
+      (session.playerIndex + 1) as 1 | 2
+    )
+    this.notifyLocal(
+      {
+        type: "Info",
+        title: `轮到 ${session.activeLocalPlayerName()}`,
+        subtext: "请将设备交给下一位玩家",
+      },
+      1800
+    )
+  }
+
+  private rejoinControllerState(
+    session: Session
+  ): { phase: RejoinSnapshot["phase"]; activeClientId?: string } | undefined {
+    if (this.controller instanceof PlaceBall) {
+      return { phase: "place-ball", activeClientId: session.clientId }
+    }
+    if (this.controller instanceof Aim) {
+      return { phase: "aim", activeClientId: session.clientId }
+    }
+    if (this.controller instanceof WatchAim) {
+      return { phase: "aim", activeClientId: session.opponentClientId }
+    }
+    if (this.controller instanceof End) {
+      return { phase: "end" }
+    }
+    return undefined
+  }
+
+  createRejoinSnapshot(): RejoinSnapshot | undefined {
+    const session = Session.getInstance()
+    const controllerState = this.rejoinControllerState(session)
+    if (!controllerState) return undefined
+
+    const scores = session.orderedScoresForHud()
+    const names = session.orderedNamesForHud()
+    const p1ClientId =
+      session.playerIndex === 0
+        ? session.clientId
+        : session.opponentClientId || "opponent"
+    const p1type =
+      session.playerIndex === 0
+        ? session.p1type
+        : flipPlayerType(session.p1type)
+
+    return {
+      table: this.table.serialise(),
+      scores: {
+        p1: scores.p1,
+        p2: scores.p2,
+        breakScore: session.currentBreak,
+      },
+      p1ClientId,
+      p1Name: names.p1Name,
+      p2Name: names.p2Name,
+      activeClientId: controllerState.activeClientId,
+      phase: controllerState.phase,
+      p1type,
+      currentBreak: this.rules.currentBreak,
+      previousBreak: this.rules.previousBreak,
+      ruleState: this.rules.serialiseState?.(),
+    }
+  }
+
+  private restoreRejoinSession(
+    session: Session,
+    snapshot: RejoinSnapshot
+  ): void {
+    session.playerIndex = snapshot.p1ClientId === session.clientId ? 0 : 1
+    if (session.playerIndex === 0) {
+      session.playername = snapshot.p1Name || session.playername
+      session.opponentName = snapshot.p2Name || session.opponentName
+    } else {
+      session.playername = snapshot.p2Name || session.playername
+      session.opponentName = snapshot.p1Name || session.opponentName
+    }
+    session.p1type =
+      session.playerIndex === 0
+        ? snapshot.p1type
+        : flipPlayerType(snapshot.p1type)
+  }
+
+  private restoreRejoinCueBall(session: Session): void {
+    this.rules.cueball = this.table.balls[0]
+    const separateCueBalls =
+      this.rules.rulename === "threecushion" || this.rules.rulename === "sagu"
+    if (separateCueBalls && session.playerIndex === 1) {
+      this.rules.secondToPlay()
+    }
+    this.table.cueball = this.rules.cueball
+  }
+
+  private rejoinActivePlayer(snapshot: RejoinSnapshot): ActivePlayer {
+    if (!snapshot.activeClientId) return 0
+    return snapshot.activeClientId === snapshot.p1ClientId ? 1 : 2
+  }
+
+  private controllerForRejoin(
+    session: Session,
+    snapshot: RejoinSnapshot
+  ): Controller {
+    if (snapshot.phase === "end") return new End(this)
+    if (snapshot.activeClientId !== session.clientId) {
+      return new WatchAim(this)
+    }
+    return snapshot.phase === "place-ball"
+      ? new PlaceBall(this, this.table.cueball.pos.clone())
+      : new Aim(this)
+  }
+
+  applyRejoinSnapshot(snapshot: RejoinSnapshot): Controller {
+    const session = Session.getInstance()
+    this.restoreRejoinSession(session, snapshot)
+    this.table.updateFromSerialised(snapshot.table)
+    this.rules.currentBreak = snapshot.currentBreak
+    this.rules.previousBreak = snapshot.previousBreak
+    this.rules.restoreState?.(snapshot.ruleState)
+
+    this.restoreRejoinCueBall(session)
+
+    this.updateScoreHud(
+      snapshot.scores.p1,
+      snapshot.scores.p2,
+      snapshot.scores.breakScore,
+      this.rejoinActivePlayer(snapshot)
+    )
+    this.notifyLocal(
+      {
+        type: "Info",
+        title: "连接已恢复",
+        subtext: "球台、比分与当前轮次已同步",
+      },
+      1800
+    )
+
+    return this.controllerForRejoin(session, snapshot)
+  }
+
+  private addHandicapLabels(
+    session: Session,
+    names: { p1Name?: string; p2Name?: string }
+  ): { p1Target: number; p2Target: number } {
+    let p1Target = ThreeCushionConfig.raceTo
+    let p2Target = ThreeCushionConfig.raceTo
+    const isHandicapRule =
+      this.rules.rulename === "sagu" || this.rules.rulename === "threecushion"
+    if (!isHandicapRule || Object.keys(session.getHandicaps()).length === 0) {
+      return { p1Target, p2Target }
+    }
+
+    const clientIds = session.orderedClientIdsForHud()
+    p1Target = session.getRaceTargetForPlayer(clientIds.p1)
+    p2Target = session.getRaceTargetForPlayer(clientIds.p2)
+    if (names.p1Name) names.p1Name = `${names.p1Name}(${p1Target})`
+    if (names.p2Name) names.p2Name = `${names.p2Name}(${p2Target})`
+    return { p1Target, p2Target }
+  }
+
+  private addEightBallGroupLabel(
+    session: Session,
+    names: { p1Name?: string; p2Name?: string }
+  ): void {
+    if (this.rules.rulename !== "eightball" || session.p1type === 0) return
+    const typeLabel = session.p1type === 1 ? "solids" : "stripes"
+    const mySlot = session.playerIndex === 0 ? "p1Name" : "p2Name"
+    if (names[mySlot]) {
+      names[mySlot] = `${names[mySlot]}(${typeLabel})`
+    }
+  }
+
   updateScoreHud(p1: number, p2: number, b: number, active?: ActivePlayer) {
     const session = Session.getInstance()
     session.updateScoresFromNetwork(p1, p2, b)
     const orderedScores = session.orderedScoresForHud()
     this.hudScores = orderedScores
     const orderedNames = session.orderedNamesForHud()
-
-    // Format handicap append next to player names
-    const isHandicapRule =
-      this.rules.rulename === "sagu" || this.rules.rulename === "threecushion"
-    const handicaps = session.getHandicaps()
-    const hasHandicaps = isHandicapRule && Object.keys(handicaps).length > 0
-
-    let p1Target = ThreeCushionConfig.raceTo
-    let p2Target = ThreeCushionConfig.raceTo
-
-    if (hasHandicaps) {
-      const p1ClientId =
-        session.playerIndex === 0
-          ? session.clientId
-          : (session.opponentClientId ?? "opponent")
-      const p2ClientId =
-        session.playerIndex === 0
-          ? (session.opponentClientId ?? "opponent")
-          : session.clientId
-
-      p1Target = session.getRaceTargetForPlayer(p1ClientId)
-      p2Target = session.getRaceTargetForPlayer(p2ClientId)
-
-      if (orderedNames.p1Name) {
-        orderedNames.p1Name = `${orderedNames.p1Name}(${p1Target})`
-      }
-      if (orderedNames.p2Name) {
-        orderedNames.p2Name = `${orderedNames.p2Name}(${p2Target})`
-      }
-    }
-
-    if (this.rules.rulename === "eightball" && session.p1type !== 0) {
-      const typeLabel = session.p1type === 1 ? "solids" : "stripes"
-      const mySlot = session.playerIndex === 0 ? "p1Name" : "p2Name"
-      if (orderedNames[mySlot]) {
-        orderedNames[mySlot] = `${orderedNames[mySlot]}(${typeLabel})`
-      }
-    }
+    const { p1Target, p2Target } = this.addHandicapLabels(session, orderedNames)
+    this.addEightBallGroupLabel(session, orderedNames)
     const hideScore = this.rules.hideScoreHud?.() ?? false
     const isSagu = this.rules.rulename === "sagu"
     const p1Star = isSagu && orderedScores.p1 === p1Target - 1
@@ -337,6 +515,15 @@ export class Container {
         this.recorder.record(event)
         this.updateController(event.applyToController(this.controller))
       }
+    }
+    if (
+      this.table.allStationary() &&
+      (this.controller instanceof Aim ||
+        this.controller instanceof PlaceBall ||
+        this.controller instanceof WatchAim ||
+        this.controller instanceof End)
+    ) {
+      this.onStableState?.()
     }
   }
 

@@ -35,11 +35,16 @@ export class Camera {
 
   constructor(aspectRatio) {
     this.camera = new PerspectiveCamera(45, aspectRatio, R, R * 1000)
+    const savedMode = Camera.savedMode()
+    if (savedMode === "3d") {
+      this.mode = this.aimView
+      this.preferredMode = this.aimView
+    }
   }
 
   camera: PerspectiveCamera
   mode = this.topView
-  private mainMode = this.aimView
+  private preferredMode = this.topView
   private height = Camera.defaultHeight
 
   private readonly target = new Vector3()
@@ -53,6 +58,40 @@ export class Camera {
 
   elapsed: number = 1 / 60
   private t = 0
+
+  private static savedMode(): "2d" | "3d" {
+    if (typeof globalThis.location !== "undefined") {
+      const queryMode = new URLSearchParams(globalThis.location.search).get(
+        "camera"
+      )
+      if (queryMode === "2d" || queryMode === "top") return "2d"
+      if (queryMode === "3d" || queryMode === "aim") return "3d"
+    }
+    try {
+      return globalThis.localStorage?.getItem("billiards-camera-mode") === "3d"
+        ? "3d"
+        : "2d"
+    } catch {
+      return "2d"
+    }
+  }
+
+  private rememberMode(mode: "2d" | "3d") {
+    try {
+      globalThis.localStorage?.setItem("billiards-camera-mode", mode)
+    } catch {
+      // Storage can be unavailable in private browsing or embedded views.
+    }
+  }
+
+  private selectMode(mode) {
+    if (mode !== this.aimView) {
+      this.restoreSavedDistance()
+    }
+    this.mode = mode
+    this.preferredMode = mode
+    this.rememberMode(mode === this.topView ? "2d" : "3d")
+  }
 
   update(elapsed, aim: AimEvent) {
     this.elapsed = elapsed
@@ -141,10 +180,10 @@ export class Camera {
     delta = this.height < 10 * R ? delta / 8 : delta
     this.height = MathUtils.clamp(this.height + delta, R * 6, R * 120)
     if (this.height > R * 110) {
-      this.suggestMode(this.topView)
+      this.selectMode(this.topView)
     }
     if (this.height < R * 105) {
-      this.suggestMode(this.aimView)
+      this.selectMode(this.aimView)
     }
   }
 
@@ -167,9 +206,8 @@ export class Camera {
   private computeStepBackFov(h: number): number {
     const portrait = this.camera.aspect < 0.8
     const tempFov = (portrait ? 60 : 40) + this.fovOffset
-    return h < 10 * R
-      ? tempFov - 100 * (10 * R - h) * (portrait ? 3 : 1)
-      : tempFov
+    const closeViewFactor = portrait ? 3 : 1
+    return h < 10 * R ? tempFov - 100 * (10 * R - h) * closeViewFactor : tempFov
   }
 
   private areAllBallsInFrustum(frustum: Frustum, balls: any[]): boolean {
@@ -261,19 +299,11 @@ export class Camera {
     }
   }
 
-  suggestMode(mode) {
-    if (mode !== this.aimView) {
+  suggestMode(_mode) {
+    if (this.preferredMode !== this.aimView) {
       this.restoreSavedDistance()
     }
-    if (this.mainMode === this.aimView) {
-      this.mode = mode
-    }
-    if (
-      this.mainMode === this.spectatorView &&
-      (mode === this.topView || mode === this.spectatorView)
-    ) {
-      this.mode = mode
-    }
+    this.mode = this.preferredMode
   }
 
   forceMode(mode) {
@@ -281,7 +311,6 @@ export class Camera {
       this.restoreSavedDistance()
     }
     this.mode = mode
-    this.mainMode = mode
   }
 
   forceMove(aim: AimEvent) {
@@ -292,11 +321,10 @@ export class Camera {
 
   toggleMode() {
     this.restoreSavedDistance()
-    if (this.mode === this.topView) {
-      this.mode = this.aimView
+    if (this.preferredMode === this.topView) {
+      this.selectMode(this.aimView)
     } else {
-      this.mode = this.topView
+      this.selectMode(this.topView)
     }
-    this.mainMode = this.mode
   }
 }

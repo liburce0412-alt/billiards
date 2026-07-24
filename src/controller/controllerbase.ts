@@ -7,6 +7,7 @@ import { ConcedeEvent } from "../events/concedeevent"
 import { Outcome } from "../model/outcome"
 import { Vector3 } from "three"
 import { Session } from "../network/client/session"
+import { RejoinEvent } from "../events/rejoinevent"
 
 const flipP1type = (t: number) => (t === 1 ? 2 : 1)
 
@@ -74,6 +75,12 @@ export abstract class ControllerBase extends Controller {
     return this.container.rules.handleGameEnd(true, "opponent conceded")
   }
 
+  override handleRejoin(event: RejoinEvent): Controller {
+    return event.snapshot
+      ? this.container.applyRejoinSnapshot(event.snapshot)
+      : this
+  }
+
   hit() {
     this.container.sound.lastOutcomeTime = -1
     this.container.table.outcome = [
@@ -136,7 +143,7 @@ export abstract class ControllerBase extends Controller {
         this.container.view.camera.toggleMode()
         return true
       case "KeyZ":
-      case "KeyZUp":
+      case "KeyZUp": {
         const camera = this.container.view.camera
         if (camera.mode === camera.aimView) {
           camera.stepBackToFitAllBalls(
@@ -145,6 +152,7 @@ export abstract class ControllerBase extends Controller {
           )
         }
         return true
+      }
       case "KeyDUp":
         //this.togglePanel()
         return true

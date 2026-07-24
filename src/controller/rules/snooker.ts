@@ -190,6 +190,24 @@ export class Snooker implements Rules {
     this.currentBreak = 0
   }
 
+  serialiseState() {
+    return {
+      previousPotRed: this.previousPotRed,
+      targetIsRed: this.targetIsRed,
+      foulPoints: this.foulPoints,
+    }
+  }
+
+  restoreState(state: {
+    previousPotRed?: boolean
+    targetIsRed?: boolean
+    foulPoints?: number
+  }) {
+    this.previousPotRed = state?.previousPotRed ?? false
+    this.targetIsRed = state?.targetIsRed ?? true
+    this.foulPoints = state?.foulPoints ?? 0
+  }
+
   rack(): Ball[] {
     return Rack.fromInitParam(Rack.snooker())
   }
@@ -238,6 +256,7 @@ export class Snooker implements Rules {
     if (this.container.isSinglePlayer) {
       this.container.sendEvent(new WatchEvent(table.serialise()))
       this.startTurn()
+      this.container.switchLocalPlayer()
       return new Aim(this.container)
     }
     this.startTurn()
@@ -266,6 +285,7 @@ export class Snooker implements Rules {
   private whiteInHand(): Controller {
     this.startTurn()
     if (this.container.isSinglePlayer) {
+      this.container.switchLocalPlayer()
       return new PlaceBall(this.container)
     }
     this.container.sendEvent(new PlaceBallEvent(zero))
