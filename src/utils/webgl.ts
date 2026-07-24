@@ -1,6 +1,6 @@
 import {
   ACESFilmicToneMapping,
-  PCFSoftShadowMap,
+  PCFShadowMap,
   SRGBColorSpace,
   WebGLRenderer,
 } from "three"
@@ -21,7 +21,7 @@ export function renderer(element: HTMLElement) {
   })
 
   renderer.shadowMap.enabled = quality.dynamicShadows
-  renderer.shadowMap.type = PCFSoftShadowMap
+  renderer.shadowMap.type = PCFShadowMap
   renderer.autoClear = false
   renderer.outputColorSpace = SRGBColorSpace
   renderer.toneMapping = ACESFilmicToneMapping

@@ -539,22 +539,57 @@ export class Container {
 
   lastEventTime = performance.now()
 
-  animate(timestamp): void {
-    // A suspended tab can resume with seconds of wall time. Never try to
-    // simulate more than 100 ms of missed real time in one render frame.
-    this.advance(Math.min((timestamp - this.last) / 1000, 0.1))
-    this.last = timestamp
-    this.processEvents()
-    const needsRender =
-      timestamp < this.lastEventTime + 60000 ||
-      !this.table.allStationary() ||
-      this.view.sizeChanged()
-    if (needsRender) {
-      this.view.render()
+  private recoverPhysicsStep(error: unknown): void {
+    const detail = error instanceof Error ? error.message : String(error)
+    console.error("Physics step recovered without stopping rendering:", error)
+    this.log?.(`Physics recovery: ${detail}`)
+
+    const wasMoving = !this.table.allStationary()
+    this.table.halt()
+    this.fixedStep.reset()
+    this.table.cue.hittingAnimation = false
+    if (
+      wasMoving &&
+      !this.eventQueue.some((event) => event instanceof StationaryEvent)
+    ) {
+      this.eventQueue.push(new StationaryEvent())
     }
-    requestAnimationFrame((t) => {
-      this.animate(t)
-    })
+    this.notifyLocal(
+      {
+        type: "Info",
+        title: "物理状态已自动恢复",
+        subtext: "检测到异常碰撞，比赛画面已继续运行",
+      },
+      3200
+    )
+  }
+
+  animate(timestamp): void {
+    try {
+      // A suspended tab can resume with seconds of wall time. Never try to
+      // simulate more than 100 ms of missed real time in one render frame.
+      try {
+        this.advance(Math.min((timestamp - this.last) / 1000, 0.1))
+      } catch (error) {
+        this.recoverPhysicsStep(error)
+      }
+      this.last = timestamp
+      this.processEvents()
+      const needsRender =
+        timestamp < this.lastEventTime + 60000 ||
+        !this.table.allStationary() ||
+        this.view.sizeChanged()
+      if (needsRender) {
+        this.view.render()
+      }
+    } finally {
+      // Keep the browser responsive even if a renderer/DOM integration throws.
+      // Physics failures are handled above; other failures remain visible in
+      // the console while the next frame still gets a chance to render.
+      requestAnimationFrame((t) => {
+        this.animate(t)
+      })
+    }
   }
 
   updateLastShot() {

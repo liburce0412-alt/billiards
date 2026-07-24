@@ -1,15 +1,21 @@
 import {
+  AdditiveBlending,
   BufferGeometry,
   Color,
   DirectionalLight,
+  EquirectangularReflectionMapping,
   Float32BufferAttribute,
   Frustum,
   HemisphereLight,
+  Line,
+  LineBasicMaterial,
   Matrix4,
   PMREMGenerator,
   Points,
   PointsMaterial,
   Scene,
+  SRGBColorSpace,
+  TextureLoader,
   WebGLRenderer,
   WebGLRenderTarget,
 } from "three"
@@ -45,6 +51,9 @@ export class View {
   private orbitPointerId?: number
   private orbitPointerX = 0
   private orbitPointerY = 0
+  private spaceTime = 0
+  private meteor?: Line
+  private meteorMaterial?: LineBasicMaterial
   onCameraInteraction?: () => void
 
   // Reuse objects to reduce garbage collection pressure in high-frequency rendering
@@ -102,6 +111,7 @@ export class View {
 
   update(elapsed, aim: AimEvent) {
     this.camera.update(elapsed, aim)
+    this.updateMeteor(elapsed)
   }
 
   setPrimaryCameraOrbit(enabled: boolean) {
@@ -253,7 +263,15 @@ export class View {
   private initialiseScene() {
     const quality = getRenderQuality()
     this.scene.background = new Color(0x02040c)
-    this.scene.add(this.createStarfield(quality.name === "low" ? 420 : 1200))
+    let starCount = 900
+    if (quality.name === "low") starCount = 480
+    if (quality.name === "high") starCount = 1500
+    this.scene.add(this.createStarfield(starCount))
+    if (quality.name !== "low" && this.renderer) {
+      this.loadGalaxyBackdrop()
+      this.meteor = this.createMeteor()
+      this.scene.add(this.meteor)
+    }
     this.scene.add(new HemisphereLight(0xfff4df, 0x18202c, 0.45))
 
     const keyLight = new DirectionalLight(0xfff1d6, 1.6)
@@ -298,6 +316,77 @@ export class View {
     if (this.assets.rules.asset !== Snooker.tablemodel && showGrid) {
       this.scene.add(new Grid().generateLineSegments())
     }
+  }
+
+  private loadGalaxyBackdrop(): void {
+    new TextureLoader().load(
+      "assets/cosmic-galaxy-v1.png",
+      (texture) => {
+        texture.mapping = EquirectangularReflectionMapping
+        texture.colorSpace = SRGBColorSpace
+        texture.anisotropy = Math.min(
+          this.renderer?.capabilities.getMaxAnisotropy() ?? 1,
+          4
+        )
+        this.scene.background = texture
+        this.scene.backgroundIntensity = 0.92
+        this.warmup()
+        this.render()
+      },
+      undefined,
+      (error) => {
+        console.warn("Galaxy backdrop could not be loaded; using stars.", error)
+      }
+    )
+  }
+
+  private createMeteor(): Line {
+    const geometry = new BufferGeometry()
+    geometry.setAttribute(
+      "position",
+      new Float32BufferAttribute(
+        [0, 0, 0, -R * 42, -R * 13, R * 3],
+        3
+      )
+    )
+    this.meteorMaterial = new LineBasicMaterial({
+      color: 0xbfeaff,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      depthTest: false,
+      blending: AdditiveBlending,
+      toneMapped: false,
+    })
+    const meteor = new Line(geometry, this.meteorMaterial)
+    meteor.name = "shooting-star"
+    meteor.frustumCulled = false
+    meteor.renderOrder = -1
+    return meteor
+  }
+
+  private updateMeteor(elapsed: number): void {
+    if (!this.meteor || !this.meteorMaterial) return
+    this.spaceTime += elapsed
+    const cycleSeconds = 13
+    const activeSeconds = 1.15
+    const phase = this.spaceTime % cycleSeconds
+    const progress = phase / activeSeconds
+    if (progress >= 1) {
+      this.meteorMaterial.opacity = 0
+      return
+    }
+
+    const cycle = Math.floor(this.spaceTime / cycleSeconds)
+    const angle = (cycle * 2.3999632297 + 0.55) % (Math.PI * 2)
+    const radius = R * 285
+    this.meteor.position.set(
+      Math.cos(angle) * radius + Math.cos(angle + 0.7) * R * 52 * progress,
+      Math.sin(angle) * radius + Math.sin(angle + 0.7) * R * 52 * progress,
+      R * (125 - 24 * progress)
+    )
+    this.meteor.rotation.z = angle + 0.7
+    this.meteorMaterial.opacity = Math.sin(progress * Math.PI) * 0.78
   }
 
   private createStarfield(count: number): Points {

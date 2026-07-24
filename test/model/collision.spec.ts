@@ -55,4 +55,15 @@ describe("Collision", () => {
     expect(b.vel.x).to.be.approximately(v, 0.1)
     done()
   })
+
+  it("does not collide an overlapping pair that is separating", () => {
+    const a = new Ball(zero)
+    const b = new Ball(new Vector3(1.8 * R, 0, 0))
+    a.vel.x = -v
+    b.vel.x = v
+    a.state = State.Sliding
+    b.state = State.Sliding
+
+    expect(Collision.willCollide(a, b, t)).to.be.false
+  })
 })

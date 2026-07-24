@@ -3,6 +3,7 @@ import { Vector3 } from "three"
 import { Ball, State } from "../../../src/model/ball"
 import { Collision } from "../../../src/model/physics/collision"
 import {
+  cueStrike,
   cueToSpin,
   mathavanAdapter,
   rollingFull,
@@ -77,5 +78,53 @@ describe("Pool-standard realism benchmarks", () => {
         (ball, index) => ball.pos.distanceTo(initialPositions[index + 1]) > R
       )
     expect(displacedObjectBalls.length).to.be.at.least(8)
+  })
+
+  it("settles repeated high-energy breaks without non-finite ball states", () => {
+    TableConfig.apply("eightball")
+    let seed = 0x8b411a
+    const random = () => {
+      seed = (seed * 1664525 + 1013904223) >>> 0
+      return seed / 0x100000000
+    }
+
+    for (let shot = 0; shot < 6; shot++) {
+      Ball.id = 0
+      const table = new Table(Rack.eightBall())
+      const strike = cueStrike(
+        (random() - 0.5) * 0.18,
+        maxPower * (0.72 + random() * 0.28),
+        new Vector3((random() - 0.5) * 0.45, (random() - 0.5) * 0.45, 0),
+        random() * 0.08
+      )
+      table.cueball.vel.copy(strike.vel)
+      table.cueball.rvel.copy(strike.rvel)
+      table.cueball.state = State.Sliding
+
+      let step = 0
+      const maxSteps = 35 * 512
+      while (!table.allStationary() && step++ < maxSteps) {
+        table.advance(1 / 512)
+        if (step % 32 === 0) {
+          for (const ball of table.balls) {
+            expect(
+              [
+                ball.pos.x,
+                ball.pos.y,
+                ball.pos.z,
+                ball.vel.x,
+                ball.vel.y,
+                ball.vel.z,
+                ball.rvel.x,
+                ball.rvel.y,
+                ball.rvel.z,
+              ].every(Number.isFinite)
+            ).to.be.true
+          }
+        }
+      }
+
+      expect(table.allStationary()).to.be.true
+    }
   })
 })

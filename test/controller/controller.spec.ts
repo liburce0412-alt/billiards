@@ -57,6 +57,31 @@ describe("Controller", () => {
     done()
   })
 
+  it("keeps the animation loop alive after a physics failure", () => {
+    const rafSpy = jest
+      .spyOn(globalThis, "requestAnimationFrame")
+      .mockImplementation(() => 0)
+    const errorSpy = jest.spyOn(console, "error").mockImplementation(() => {})
+    const advanceSpy = jest
+      .spyOn(container.table, "advance")
+      .mockImplementationOnce(() => {
+        throw new Error("test physics failure")
+      })
+    container.table.cueball.vel.set(1, 0, 0)
+    container.table.cueball.state = State.Sliding
+
+    try {
+      container.animate(container.last + 16)
+      chaiExpect(container.table.allStationary()).to.be.true
+      expect(rafSpy).toHaveBeenCalledTimes(1)
+      expect(errorSpy).toHaveBeenCalled()
+    } finally {
+      advanceSpy.mockRestore()
+      errorSpy.mockRestore()
+      rafSpy.mockRestore()
+    }
+  })
+
   it("Container chat enques message", (done) => {
     container.chat.sendClicked({})
     chaiExpect(broadcastEvents).to.be.lengthOf(1)

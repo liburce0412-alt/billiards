@@ -44,22 +44,14 @@ describe("Table", () => {
     done()
   })
 
-  it("overlap balls thows exception", (done) => {
+  it("resolves overlapping moving balls without exhausting collision depth", (done) => {
     const a = new Ball(zero)
     a.vel.x = 1
     a.state = State.Sliding
     const b = new Ball(new Vector3(R * 0.9, 0, 0))
     const table = new Table([a, b])
-    // advance() now calls reportDepthExceeded() (console.error) before the
-    // throw; silence it so non-silent test runs stay clean.
-    const spy = jest.spyOn(console, "error").mockImplementation(() => {})
-    try {
-      expect(() => {
-        table.advance(t)
-      }).to.throw("Depth exceeded resolving collisions")
-    } finally {
-      spy.mockRestore()
-    }
+    expect(() => table.advance(t)).not.to.throw()
+    expect(a.pos.distanceTo(b.pos)).to.be.greaterThan(R * 0.9)
     done()
   })
 
@@ -224,6 +216,9 @@ describe("Table", () => {
       power: 1,
     })
     const spy = jest.spyOn(console, "error").mockImplementation(() => {})
+    const collisionSpy = jest
+      .spyOn(Collision, "collide")
+      .mockImplementation(() => 1)
     try {
       expect(() => {
         table.advance(t)
@@ -232,6 +227,7 @@ describe("Table", () => {
       const msg = spy.mock.calls[0][0] as string
       expect(msg).to.contain("Recreation link")
     } finally {
+      collisionSpy.mockRestore()
       spy.mockRestore()
     }
     done()

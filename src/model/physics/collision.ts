@@ -4,13 +4,27 @@ import { CollisionThrow } from "./collisionthrow"
 import { R } from "./constants"
 
 export class Collision {
+  private static readonly separation = new Vector3()
+  private static readonly relativeVelocity = new Vector3()
+
   static willCollide(a: Ball, b: Ball, t: number): boolean {
-    return (
-      (a.inMotion() || b.inMotion()) &&
-      a.onTable() &&
-      b.onTable() &&
-      a.futurePosition(t).distanceToSquared(b.futurePosition(t)) < 4 * R * R
-    )
+    if (!(a.inMotion() || b.inMotion()) || !a.onTable() || !b.onTable()) {
+      return false
+    }
+
+    const futureDistanceSq = a
+      .futurePosition(t)
+      .distanceToSquared(b.futurePosition(t))
+    if (futureDistanceSq >= 4 * R * R) return false
+
+    // A collision response does not move the balls to their contact points.
+    // They can therefore remain microscopically overlapped until this fixed
+    // step advances. Only resolve the pair while it is approaching; otherwise
+    // the same pair can be "collided" repeatedly until Table.advance() hits
+    // its depth guard and kills the browser animation callback.
+    const separation = this.separation.subVectors(b.pos, a.pos)
+    const relativeVelocity = this.relativeVelocity.subVectors(b.vel, a.vel)
+    return separation.dot(relativeVelocity) < 0
   }
 
   static collide(a: Ball, b: Ball) {
