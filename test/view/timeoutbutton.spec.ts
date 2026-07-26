@@ -7,6 +7,7 @@ describe("TimeoutButton", () => {
   let completed = false
 
   beforeEach(() => {
+    jest.useFakeTimers()
     button = document.createElement("button")
     completed = false
     timeoutButton = new TimeoutButton(button, {
@@ -27,52 +28,36 @@ describe("TimeoutButton", () => {
     }
   })
 
-  it("should start the timer and keep the button enabled", (done) => {
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
+  it("should start the timer and keep the button enabled", () => {
     timeoutButton.startTimer()
     expect(button.disabled).to.be.false
     expect(button.style.getPropertyValue("--timer-color")).to.equal("#10b981")
 
-    setTimeout(() => {
-      try {
-        expect(completed).to.be.true
-        done()
-      } catch (e) {
-        done(e)
-      }
-    }, 150)
+    jest.advanceTimersByTime(150)
+    expect(completed).to.be.true
   })
 
-  it("should cancel the timer when the button is clicked", (done) => {
+  it("should cancel the timer when the button is clicked", () => {
     timeoutButton.startTimer()
     button.click()
 
-    setTimeout(() => {
-      try {
-        expect(completed).to.be.false
-        expect(button.style.getPropertyValue("--sweep")).to.equal("0deg")
-        done()
-      } catch (e) {
-        done(e)
-      }
-    }, 150)
+    jest.advanceTimersByTime(150)
+    expect(completed).to.be.false
+    expect(button.style.getPropertyValue("--sweep")).to.equal("0deg")
   })
 
-  it("should transition to critical color", (done) => {
+  it("should transition to critical color", () => {
     timeoutButton = new TimeoutButton(button, {
       duration: 100,
       criticalMs: 50,
     })
     timeoutButton.startTimer()
 
-    setTimeout(() => {
-      try {
-        expect(button.style.getPropertyValue("--timer-color")).to.equal(
-          "#ef4444"
-        )
-        done()
-      } catch (e) {
-        done(e)
-      }
-    }, 130)
+    jest.advanceTimersByTime(130)
+    expect(button.style.getPropertyValue("--timer-color")).to.equal("#ef4444")
   })
 })
