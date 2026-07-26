@@ -23,6 +23,14 @@ import { ClawBreak } from "./strategies/clawbreak"
 import { TheFarJaw } from "./strategies/thefarjaw"
 import { R } from "../../model/physics/constants"
 import { eightBallGroupAfterShot } from "../../controller/rules/eightballgroup"
+import { AimEvent } from "../../events/aimevent"
+import { HitEvent } from "../../events/hitevent"
+import {
+  botDifficultyProfile,
+  BotPlanRequest,
+  ShotCandidate,
+} from "./shotplanner"
+import { ShotPlannerClient } from "./shotplannerclient"
 
 class BotContainer {
   table
@@ -50,11 +58,13 @@ export class BotEventHandler {
   private readonly calculator: AimCalculator
   private readonly strategy: BotStrategy
   private readonly level: number
+  private readonly shotPlanner = new ShotPlannerClient()
   protected readonly botRules: Rules
   private shouldStartTurnOnNextControl = false
   private queuedOwnStartAim = false
   private allowLetStrokeOnNextTurn = true
   private ballInHandForNextShot = false
+  private planning = false
 
   constructor(
     logs: Logger,
@@ -519,7 +529,7 @@ export class BotEventHandler {
     this.startTurnIfNeeded()
     this.logs.show()
     this.container.table.cue.aim.elevation = 0
-    this.publishSequenceToPlayer(this.aim(), this.shotPacingMs())
+    this.planAndPublishShot()
   }
 
   private handlePlaceBall(event: PlaceBallEvent): void {
@@ -545,11 +555,14 @@ export class BotEventHandler {
     cueball.fround()
     this.ballInHandForNextShot = true
     this.container.table.cue.aim.elevation = 0
-    this.publishSequenceToPlayer(this.aim(), this.shotPacingMs())
+    this.publishSequenceToPlayer([
+      new PlaceBallEvent(cueball.pos.clone(), event.respot, true),
+    ])
+    this.planAndPublishShot()
   }
 
   private shotPacingMs(): number {
-    return 700 + this.level * 40
+    return 900 + this.level * 45
   }
 
   private startTurnIfNeeded(): void {
@@ -561,10 +574,210 @@ export class BotEventHandler {
     this.allowLetStrokeOnNextTurn = true
   }
 
-  private aim() {
+  private aim(): GameEvent[] {
     const events = this.strategy.aim(this.buildShotContext(), this.calculator)
     this.ballInHandForNextShot = false
     return events
+  }
+
+  private planAndPublishShot(): void {
+    if (this.planning) return
+    const fallbackEvents = this.aim()
+    if (!this.shotPlanner.available()) {
+      this.publishSequenceToPlayer(fallbackEvents, this.shotPacingMs())
+      return
+    }
+
+    const candidates = this.buildShotCandidates(fallbackEvents)
+    if (candidates.length === 0) {
+      this.publishSequenceToPlayer(fallbackEvents, this.shotPacingMs())
+      return
+    }
+
+    this.planning = true
+    this.logs.info(
+      `AI 正在思考 · ${Math.min(
+        candidates.length,
+        botDifficultyProfile(this.level).candidateBudget
+      )} 条物理线路`
+    )
+    this.container.notifyLocal(
+      {
+        type: "Info",
+        title: "AI 正在思考",
+        subtext: "正在试打并评估进球、解球与下一杆",
+      },
+      1400
+    )
+
+    const request = this.buildPlanRequest(candidates)
+    void this.shotPlanner
+      .plan(request)
+      .then((result) => {
+        const selected = candidates[result.candidateIndex]
+        this.logs.info(
+          `AI 物理试打完成 · ${result.simulations} 条 · ${Math.round(
+            result.elapsedMs
+          )}ms`
+        )
+        this.publishSequenceToPlayer(
+          selected?.events ?? fallbackEvents,
+          this.shotPacingMs()
+        )
+      })
+      .catch((error) => {
+        this.logs.info(`AI 物理试打回退: ${error.message}`)
+        this.publishSequenceToPlayer(fallbackEvents, this.shotPacingMs())
+      })
+      .finally(() => {
+        this.planning = false
+      })
+  }
+
+  private buildPlanRequest(
+    candidates: { candidate: ShotCandidate; events: GameEvent[] }[]
+  ): BotPlanRequest {
+    const context = this.buildShotContext()
+    return {
+      type: "BOT_PLAN",
+      id: `bot-plan-${context.shotIndex}-${this.level}`,
+      ruleType: context.ruleName,
+      cueBallId: context.cueBall.id,
+      balls: context.table.balls.map((ball) => ({
+        id: ball.id,
+        pos: { x: ball.pos.x, y: ball.pos.y },
+        onTable: ball.onTable(),
+      })),
+      candidates: candidates.map((entry) => entry.candidate),
+      level: this.level,
+      cushionModel: this.container.table.cushionModel.name.includes("mathavan")
+        ? "mathavan"
+        : "stronge",
+    }
+  }
+
+  private buildShotCandidates(
+    fallbackEvents: GameEvent[]
+  ): { candidate: ShotCandidate; events: GameEvent[] }[] {
+    const context = this.buildShotContext()
+    const budget = botDifficultyProfile(this.level).candidateBudget
+    const entries: { candidate: ShotCandidate; events: GameEvent[] }[] = []
+    const fallbackHit = fallbackEvents.find(
+      (event) => event instanceof HitEvent
+    ) as HitEvent | undefined
+    const firstTarget = context.validTargetBalls[0]
+    if (fallbackHit && firstTarget) {
+      entries.push(
+        this.candidateEntry(
+          "fallback",
+          firstTarget,
+          fallbackHit,
+          this.isPathBlocked(context.cueBall.pos, firstTarget.pos, firstTarget)
+            ? "escape"
+            : "pot",
+          0
+        )
+      )
+    }
+
+    const pockets =
+      this.calculator.pockets.length > 0 ? this.calculator.pockets : [undefined]
+    const powerScales = [0.86, 1, 1.14]
+    const spinValues = this.candidateSpinValues()
+    let variant = 0
+    while (entries.length < budget && context.validTargetBalls.length > 0) {
+      const target =
+        context.validTargetBalls[variant % context.validTargetBalls.length]
+      const pocket =
+        pockets[
+          Math.floor(variant / context.validTargetBalls.length) % pockets.length
+        ]
+      const powerScale =
+        powerScales[
+          Math.floor(
+            variant /
+              Math.max(1, context.validTargetBalls.length * pockets.length)
+          ) % powerScales.length
+        ]
+      const spinY =
+        spinValues[
+          Math.floor(
+            variant /
+              Math.max(
+                1,
+                context.validTargetBalls.length *
+                  pockets.length *
+                  powerScales.length
+              )
+          ) % spinValues.length
+        ]
+      const destination = pocket ?? target.pos
+      const aimPoint = pocket
+        ? this.calculator.getAimPoint(context.cueBall.pos, target.pos, [pocket])
+        : target.pos
+      const distance =
+        context.cueBall.pos.distanceTo(target.pos) +
+        target.pos.distanceTo(destination)
+      const basePower = Math.min(
+        AimCalculator.MAX_SHOT_POWER,
+        Math.max(48 * R, (54 * R + distance * 0.42) * powerScale)
+      )
+      const skill = this.calculator.skillError(context, target, destination)
+      const hit = this.calculator.generateShot(
+        context.table,
+        skill.angle,
+        basePower,
+        aimPoint,
+        new Vector3(0, spinY, 0)
+      )
+      entries.push(
+        this.candidateEntry(
+          `candidate-${variant}`,
+          target,
+          hit,
+          pocket ? "pot" : "carom",
+          skill.difficulty + Math.abs(powerScale - 1) * 0.08
+        )
+      )
+      variant++
+    }
+    return entries.slice(0, budget)
+  }
+
+  private candidateSpinValues(): number[] {
+    if (this.level < 6) return [0]
+    if (this.level < 9) return [0, -0.12, 0.12]
+    return [0, -0.2, 0.2]
+  }
+
+  private candidateEntry(
+    id: string,
+    target: Ball,
+    hit: HitEvent,
+    kind: ShotCandidate["kind"],
+    geometryScore: number
+  ): { candidate: ShotCandidate; events: GameEvent[] } {
+    const aim = hit.tablejson.aim
+    const nextTargetIds = this.validTargetBalls()
+      .filter((ball) => ball !== target)
+      .map((ball) => ball.id)
+    const candidate: ShotCandidate = {
+      id,
+      targetId: target.id,
+      kind,
+      aim: {
+        angle: aim.angle,
+        power: aim.power,
+        offset: { x: aim.offset.x, y: aim.offset.y },
+        elevation: aim.elevation ?? 0,
+      },
+      nextTargetIds,
+      geometryScore,
+    }
+    return {
+      candidate,
+      events: [AimEvent.fromJson(aim), hit],
+    }
   }
 
   private chooseBallInHandPosition(fallback: Vector3): Vector3 {

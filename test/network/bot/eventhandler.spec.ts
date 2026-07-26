@@ -354,6 +354,20 @@ describe("BotEventHandler Respot Logic", () => {
     expect(ball.pos.x).toBe(1)
   })
 
+  it("publishes the chosen free-ball position before aiming and hitting", () => {
+    const eventHandler = createBotEventHandler(container, publishedEvents)
+    eventHandler.handle(new PlaceBallEvent(new Vector3(-0.4, 0, 0)))
+
+    const placementIndex = publishedEvents.findIndex(
+      (event) => event instanceof PlaceBallEvent
+    )
+    const hitIndex = publishedEvents.findIndex(
+      (event) => event instanceof HitEvent
+    )
+    expect(placementIndex).toBeGreaterThanOrEqual(0)
+    expect(hitIndex).toBeGreaterThan(placementIndex)
+  })
+
   it("should handle pot success and continue turn", () => {
     const eventHandler = createBotEventHandler(container, publishedEvents)
     jest.spyOn(eventHandler.botRules, "foulReason").mockReturnValue(null)
