@@ -18,7 +18,7 @@ export function exportGltf(scene) {
 }
 
 /* istanbul ignore next */
-export function importGltf(path, ready) {
+export function importGltf(path, ready, failed = onError) {
   const loader = new GLTFLoader()
   loader.load(
     path,
@@ -31,7 +31,7 @@ export function importGltf(path, ready) {
       ready(gltf)
     },
     (xhr) => console.log(path + " " + xhr.loaded + " bytes loaded"),
-    onError
+    failed
   )
 }
 

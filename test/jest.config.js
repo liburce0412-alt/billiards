@@ -34,6 +34,7 @@ module.exports = {
     "shorten.ts",
     "assets.ts",
   ],
+  testPathIgnorePatterns: ["/e2e/"],
   coverageReporters: ["text", "json"],
   testEnvironment: "jsdom",
   moduleNameMapper: {

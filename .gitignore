@@ -29,6 +29,8 @@ lib-cov
 
 # Coverage directory used by tools like istanbul
 coverage
+test-results/
+playwright-report/
 
 # ts-node for heroku
 server/node_modules

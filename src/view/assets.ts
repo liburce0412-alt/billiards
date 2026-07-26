@@ -106,17 +106,29 @@ export class Assets {
       return
     }
 
-    importGltf(asset, (m) => {
-      this.rules.scaleTableModel?.(m.scene)
-      if (this.isTableSize5()) {
-        this.customizeTableScene(m.scene)
+    importGltf(
+      asset,
+      (m) => {
+        this.rules.scaleTableModel?.(m.scene)
+        if (this.isTableSize5()) {
+          this.customizeTableScene(m.scene)
+        }
+        enhanceTableMaterials(m.scene, getRenderQuality(), this.rules.rulename)
+        this.tableVariants.set(asset, m.scene)
+        if (token !== this.tableLoadToken) return
+        this.activateTableVariant(m.scene, normalizedStyleId)
+        ready()
+      },
+      (error) => {
+        console.warn(`Failed to load ${asset}; using procedural table`, error)
+        if (token !== this.tableLoadToken) return
+        const fallback = new TableMesh().generateTable(TableGeometry.hasPockets)
+        enhanceTableMaterials(fallback, getRenderQuality(), this.rules.rulename)
+        this.tableVariants.set(asset, fallback)
+        this.activateTableVariant(fallback, normalizedStyleId)
+        ready()
       }
-      enhanceTableMaterials(m.scene, getRenderQuality(), this.rules.rulename)
-      this.tableVariants.set(asset, m.scene)
-      if (token !== this.tableLoadToken) return
-      this.activateTableVariant(m.scene, normalizedStyleId)
-      ready()
-    })
+    )
   }
 
   private activateTableVariant(scene: Object3D, styleId: string) {

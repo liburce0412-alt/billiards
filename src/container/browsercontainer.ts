@@ -30,6 +30,7 @@ import { applyPhysicsProfileForRule } from "../model/physics/profile"
 import { Camera } from "../view/camera"
 import { RejoinEvent } from "../events/rejoinevent"
 import { EventType } from "../events/eventtype"
+import { EventSequenceWindow } from "../network/client/eventsequence"
 
 /**
  * Integrate game container into HTML page
@@ -75,9 +76,10 @@ export class BrowserContainer {
   readonly botDelay: number = 500
   private readonly connectionStream = `E_${getUID()}`
   private outgoingSequence = 0
-  private readonly seenSequences = new Set<string>()
-  private readonly sequenceOrder: string[] = []
+  private readonly receivedSequences = new EventSequenceWindow()
   private pendingStateSyncResponse = false
+  private connectionState: "connected" | "offline" | "reconnecting" =
+    "connected"
   constructor(canvas3d, params) {
     this.now = Date.now()
     this.playername =
@@ -252,6 +254,7 @@ export class BrowserContainer {
     this.container.table.cushionModel = this.cushionModel
     this.container.initialiseLocalMatch()
     this.container.onStableState = () => this.flushStateSyncResponse()
+    this.installConnectionMonitoring()
     if (this.analysisMode) {
       new AnalysisPanel(this.container)
     } else if (this.drillMode) {
@@ -270,13 +273,13 @@ export class BrowserContainer {
 
     // Expose container for debugging/playwright verification
     globalThis.container = this.container
+    ;(globalThis as any).breakBuilderDiagnostics = () =>
+      this.container.diagnostics.snapshot()
   }
 
   private initGameLoop() {
     if (this.wss) {
-      this.messageRelay?.subscribe(this.tableId, (e) => {
-        this.netEvent(e)
-      })
+      this.subscribeNetwork()
       this.broadcast(new RejoinEvent(this.connectionStream))
       if (!this.first) {
         this.broadcast(new BeginEvent())
@@ -288,6 +291,38 @@ export class BrowserContainer {
     } else if (this.container.isSinglePlayer) {
       this.container.eventQueue.push(new BreakEvent())
     }
+  }
+
+  private subscribeNetwork() {
+    this.messageRelay?.subscribe(this.tableId, (event) => this.netEvent(event))
+  }
+
+  private installConnectionMonitoring() {
+    if (!this.wss || typeof globalThis.addEventListener !== "function") return
+    globalThis.addEventListener("offline", () => {
+      this.connectionState = "offline"
+      this.container.notifyLocal(
+        {
+          type: "Info",
+          title: "网络已断开",
+          subtext: "比赛已保留，恢复网络后会自动同步球台",
+        },
+        0
+      )
+    })
+    globalThis.addEventListener("online", () => {
+      this.connectionState = "reconnecting"
+      this.container.notifyLocal(
+        {
+          type: "Info",
+          title: "正在重新连接",
+          subtext: "等待对手返回最新球位、比分与轮次",
+        },
+        0
+      )
+      this.subscribeNetwork()
+      this.broadcast(new RejoinEvent(this.connectionStream))
+    })
   }
 
   private parseNetworkEvent(message: string): GameEvent | undefined {
@@ -310,7 +345,7 @@ export class BrowserContainer {
       console.warn("Ignored message from an extra room participant")
       return true
     }
-    if (event.sequence && !this.rememberSequence(event.sequence)) {
+    if (!this.receivedSequences.accept(event.sequence)) {
       return true
     }
     if (this.isRemoteTurnViolation(event)) {
@@ -357,6 +392,17 @@ export class BrowserContainer {
     if (!event) return
     const session = Session.getInstance()
     if (this.shouldIgnoreNetworkEvent(event, session)) return
+    if (this.connectionState === "reconnecting") {
+      this.connectionState = "connected"
+      this.container.notifyLocal(
+        {
+          type: "Info",
+          title: "连接已恢复",
+          subtext: "正在核对双方局面",
+        },
+        1800
+      )
+    }
 
     if (!session.vsNotificationShown) {
       this.container.notification.clear()
@@ -370,17 +416,6 @@ export class BrowserContainer {
       return
     }
     this.container.eventQueue.push(event)
-  }
-
-  private rememberSequence(sequence: string): boolean {
-    if (this.seenSequences.has(sequence)) return false
-    this.seenSequences.add(sequence)
-    this.sequenceOrder.push(sequence)
-    if (this.sequenceOrder.length > 512) {
-      const oldest = this.sequenceOrder.shift()
-      if (oldest) this.seenSequences.delete(oldest)
-    }
-    return true
   }
 
   private isRemoteTurnViolation(event: GameEvent): boolean {

@@ -64,6 +64,9 @@ export class View {
   private environmentLoadToken = 0
   environmentStyleId = savedEnvironmentStyleId()
   onCameraInteraction?: () => void
+  onContextLost?: () => void
+  onContextRestored?: () => void
+  private contextLost = false
 
   // Reuse objects to reduce garbage collection pressure in high-frequency rendering
   private readonly frustum = new Frustum()
@@ -132,6 +135,17 @@ export class View {
     if (!canvas) return
 
     canvas.addEventListener("contextmenu", (event) => event.preventDefault())
+    canvas.addEventListener("webglcontextlost", (event) => {
+      event.preventDefault()
+      this.contextLost = true
+      this.onContextLost?.()
+    })
+    canvas.addEventListener("webglcontextrestored", () => {
+      this.contextLost = false
+      this.warmup()
+      this.onContextRestored?.()
+      this.render()
+    })
     canvas.addEventListener("pointerdown", (event) => {
       const isOrbitButton =
         event.button === 1 ||
@@ -214,6 +228,7 @@ export class View {
   }
 
   renderCamera(cam) {
+    if (this.contextLost) return
     const sizeChanged = this.updateSize()
     if (sizeChanged) {
       const width = this.windowWidth

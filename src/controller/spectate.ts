@@ -9,6 +9,7 @@ import { RerackEvent } from "../events/rerackevent"
 import { BreakEvent } from "../events/breakevent"
 import { Session } from "../network/client/session"
 import { EventType } from "../events/eventtype"
+import { EventSequenceWindow } from "../network/client/eventsequence"
 
 export class Spectate extends ControllerBase {
   override get name() {
@@ -17,12 +18,14 @@ export class Spectate extends ControllerBase {
   messageRelay: MessageRelay
   tableId: string
   messages: GameEvent[] = []
+  private readonly receivedSequences = new EventSequenceWindow()
   constructor(container, messageRelay, tableId) {
     super(container)
     this.messageRelay = messageRelay
     this.tableId = tableId
     this.messageRelay.subscribe(this.tableId, (message) => {
       const event = EventUtil.fromSerialised(message)
+      if (!this.receivedSequences.accept(event.sequence)) return
       this.messages.push(event)
       if (!(event instanceof AimEvent)) {
         console.log("Spectate event: ", message)

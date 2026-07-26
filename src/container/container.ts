@@ -44,6 +44,7 @@ import { BallTray } from "../view/ball-tray"
 import { ExportUtils } from "../utils/export-utils"
 import { FixedStepAccumulator } from "../utils/fixedstep"
 import { RejoinSnapshot } from "../events/rejoinevent"
+import { MotionWatchdog, RuntimeDiagnostics } from "../utils/runtimediagnostics"
 
 type ActivePlayer = 0 | 1 | 2
 
@@ -97,6 +98,8 @@ export class Container {
   }
   private hudActivePlayer: ActivePlayer = 0
   private wasReplay: boolean = false
+  private readonly motionWatchdog = new MotionWatchdog()
+  readonly diagnostics = new RuntimeDiagnostics()
 
   lastShotInit?: string
   lastShotData?: string
@@ -159,6 +162,27 @@ export class Container {
     this.particles = new ParticleSystem({ tableSize })
     this.hud = new Hud()
     this.notification = new Notification()
+    this.view.onContextLost = () => {
+      this.diagnostics.recordContextLoss()
+      this.notifyLocal(
+        {
+          type: "Info",
+          title: "3D 画面正在恢复",
+          subtext: "显卡上下文已暂停，比赛状态不会丢失",
+        },
+        0
+      )
+    }
+    this.view.onContextRestored = () => {
+      this.notifyLocal(
+        {
+          type: "Info",
+          title: "3D 画面已恢复",
+          subtext: "材质与阴影已重新预热",
+        },
+        2200
+      )
+    }
     this.relay = relay
     this.scoreReporter = scoreReporter
     this.lobbyIndicator = new LobbyIndicator(
@@ -268,9 +292,7 @@ export class Container {
 
   repositionCueBall() {
     this.inputQueue.length = 0
-    this.updateController(
-      new PlaceBall(this, this.table.cueball.pos.clone())
-    )
+    this.updateController(new PlaceBall(this, this.table.cueball.pos.clone()))
   }
 
   private rejoinControllerState(
@@ -503,6 +525,15 @@ export class Container {
       this.table.cue.hittingAnimation = false
     }
     this.sound.processOutcomes(this.table.outcome)
+    if (
+      this.motionWatchdog.update(!this.table.allStationary(), performance.now())
+    ) {
+      this.recoverPhysicsStep(
+        new Error(
+          "Motion watchdog stopped a non-settling shot after 45 seconds"
+        )
+      )
+    }
   }
 
   processEvents() {
@@ -542,6 +573,7 @@ export class Container {
   private recoverPhysicsStep(error: unknown): void {
     const detail = error instanceof Error ? error.message : String(error)
     console.error("Physics step recovered without stopping rendering:", error)
+    this.diagnostics.recordPhysicsRecovery()
     this.log?.(`Physics recovery: ${detail}`)
 
     const wasMoving = !this.table.allStationary()
@@ -566,6 +598,7 @@ export class Container {
 
   animate(timestamp): void {
     try {
+      this.diagnostics.recordFrame(timestamp)
       // A suspended tab can resume with seconds of wall time. Never try to
       // simulate more than 100 ms of missed real time in one render frame.
       try {

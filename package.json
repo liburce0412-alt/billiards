@@ -16,6 +16,8 @@
   "packageManager": "yarn@4.9.1",
   "scripts": {
     "test": "jest --config ./test/jest.config.js --verbose --silent",
+    "test:e2e": "playwright test",
+    "test:e2e:update": "playwright test --update-snapshots",
     "coverage": "jest --config ./test/jest.config.js --coverage --silent",
     "version-gen": "node -e \"const d=new Date();const v=d.getFullYear().toString().slice(-2)+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.'+('0'+d.getHours()).slice(-2);require('fs').writeFileSync('src/utils/version.ts', 'export const VERSION = \\'' + v + '\\';\\n')\"",
     "sitemap:cf": "sed -i 's|tailuge.github.io/billiards/dist|billiards.tailuge.workers.dev|g' dist/sitemap.xml && sed -i '/xhtml:link/d' dist/sitemap.xml && sed -i \"s|<lastmod>.*</lastmod>|<lastmod>$(date +%Y-%m-%d)</lastmod>|g\" dist/sitemap.xml",
@@ -40,6 +42,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@playwright/test": "^1.62.0",
     "@swc/core": "1.15.46",
     "@swc/jest": "0.2.39",
     "@testing-library/dom": "10.4.1",
