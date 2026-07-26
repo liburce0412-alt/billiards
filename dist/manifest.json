@@ -1,6 +1,6 @@
 {
-  "short_name": "Billiards",
-  "name": "Multiplayer Billiards Lobby",
+  "short_name": "Break Builder",
+  "name": "Break Builder 3D｜拟真台球",
   "icons": [
     {
       "src": "assets/icon-192.png",
@@ -21,15 +21,15 @@
       "purpose": "maskable"
     }
   ],
-  "start_url": "./lobby.html",
-  "background_color": "#1a1a1a",
+  "start_url": "./",
+  "background_color": "#082f35",
   "display": "standalone",
   "scope": "./",
-  "theme_color": "#1a1a1a",
+  "theme_color": "#0c454b",
   "categories": [
     "games",
     "sports",
     "entertainment"
   ],
-  "description": "Free multiplayer lobby for Billiards. Find matches, challenge players, and play realistic pool online."
+  "description": "支持五种规则、11 档本地 AI、同屏与在线对战的拟真 3D 台球游戏。"
 }

@@ -1,336 +1,164 @@
-# billiards
-
-[![codecov](https://codecov.io/gh/tailuge/billiards/branch/master/graph/badge.svg?token=BH11KRAEL0)](https://codecov.io/gh/tailuge/billiards)
-[![CodeFactor](https://www.codefactor.io/repository/github/tailuge/billiards/badge)](https://www.codefactor.io/repository/github/tailuge/billiards)
-[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=tailuge_billiards&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=tailuge_billiards)
-[![Tests](https://github.com/tailuge/billiards/actions/workflows/main.yml/badge.svg)](https://github.com/tailuge/billiards/actions/workflows/main.yml)
-[![Open in Gitpod](https://img.shields.io/badge/Gitpod-Open%20in%20Gitpod-%230092CF.svg)](https://gitpod.io/#https://github.com/tailuge/billiards)
-![GitHub](https://img.shields.io/github/license/tailuge/billiards.svg)
-
-[![Demo and Screenshot](https://raw.githubusercontent.com/tailuge/billiards/master/dist/images/promo.png)](https://billiards.tailuge.workers.dev/?bot=TheFarJaw)
-
-This is an open-source project bringing unsophisticated billiards physics written in TypeScript to the browser.
-
-## Online Demo
-
-Demos run in all major desktop and mobile browsers and use WebGL
-
-* [Nine ball ⬀](https://billiards.tailuge.workers.dev/?practice=true) make a break and share replay link with friends
-* [Three cushion billiards ⬀](https://billiards.tailuge.workers.dev/?ruletype=threecushion&lod=4) the ultimate test of physics and player (average on both counts). You need the [beginner mode ⬀](https://billiards.tailuge.workers.dev/?ruletype=threecushion&practice=true). Try the [practice mode ⬀](https://velikodimov.github.io/billiards/dist/index.html?ruletype=threecushion&practice&drill) to drill specific shots.
-* [Sagu ⬀](https://billiards.tailuge.workers.dev/?ruletype=sagu) Korean four-ball carom game. Try [sagu on a 5ft table ⬀](https://billiards.tailuge.workers.dev/?ruletype=sagu&tableSize=5).
-* [Snooker ⬀](https://billiards.tailuge.workers.dev/?ruletype=snooker) we await the first 147 submission to the leaderboard.
-* [8-Ball ⬀](https://billiards.tailuge.workers.dev/?ruletype=eightball&lod=4) try it in Hi-Res mode!
-* Play vs the [Claw ⬀](https://billiards.tailuge.workers.dev/?bot=ClawBreak) and [TheFarJaw ⬀](https://billiards.tailuge.workers.dev/?bot=TheFarJaw).
-* Try [two player](https://billiards.tailuge.workers.dev/lobby.html) online lobby using nchan
-* Try to get on the leaderboard of highest [breaks](https://scoreboard-tailuge.vercel.app/leaderboard) hosted on Vercel.
-* Inspect physics and tweak constants using [diagrams](https://tailuge.github.io/billiards/dist/diagrams/diagrams.html).
-* Set up trick shots and [practice ⬀](https://billiards.tailuge.workers.dev/practice.html).
-* Tune three cushion [physics ⬀](https://tailuge.github.io/billiards/dist/diagrams/three.html) and [optimise ⬀](https://tailuge.github.io/billiards/dist/fit/viewer.html) parameters
-* Parallel [parameter ⬀](https://tailuge.github.io/billiards/dist/fit/common.html) tuning using [Web Workers ⬀](https://tailuge.github.io/billiards/dist/ww.html).
-* Three cushion trainer and [sensitivity analysis ⬀](https://velikodimov.github.io/billiards/dist/index.html?ruletype=threecushion&practice&drill) from an excellent [fork ⬀](https://github.com/velikodimov/billiards) of this project.
-
-### Render quality
-
-Use `quality=low|balanced|high` to select a render profile. `quality` takes
-precedence over the legacy `lod` parameter; when it is omitted, existing `lod`
-links continue to select the closest quality profile. Low quality uses lightweight
-blob shadows, while balanced and high enable PBR environment lighting and dynamic
-shadows with device-appropriate resolution and pixel-ratio limits.
-
-## Features
-
-* Backspin, sidespin and cushion bounces well modeled.
-* Presentation using WebGL in any modern browser on mobile, linux, mac or windows.
-* Record and playback breaks.
-* Two player online mode with nchan nginx server.
-* Nine ball, snooker, three cushion and Sagu billiards rules.
-* Deploys to GitHub Pages, Vercel and Render with GitHub Actions.
-* Runs on and was developed mostly on a potato e.g. Raspberry Pi 4.
-
-## Reference material
-
-* Papers on ball mechanics [Han 2005](https://billiards.colostate.edu/physics_articles/Han_paper.pdf)
-with important corrections by [Kiefl](https://ekiefl.github.io/2020/04/24/pooltool-theory/#3-han-2005).
-* [cushions](https://billiards.colostate.edu/physics_articles/Mathavan_IMechE_2010.pdf), [max spin](https://billiards.colostate.edu/technical_proofs/new/TP_B-17.pdf),
-simulation and constants [1](https://savoirs.usherbrooke.ca/bitstream/handle/11143/6598/MR91690.pdf?sequence=1)
-[2](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.89.4627&rep=rep1&type=pdf)
-[3](https://www.researchgate.net/publication/228634093_Bounce_of_a_spinning_ball_near_normal_incidence)
-[4](https://billiards.colostate.edu/technical_proofs/new/TP_B-6.pdf)
-[5](https://billiards.colostate.edu/faq/physics/physical-properties/)
-* 3D graphics uses [three.js](https://threejs.org/docs/index.html#api/math/Vector3)
-* Inline [LaTeX](https://www.codecogs.com/eqnedit.php?latex=\dot{a}) editor
-for equations in README.md
-
-### Key equations
-
-Based on [Han 2005](https://billiards.colostate.edu/physics_articles/Han_paper.pdf) paper
-
-#### surface velocity
-
-$$\vec{v}_a = \vec{v} + (\vec{up} \times R\vec{\omega})$$
-
-#### sliding motion
-
-$$\dot{v} = -\mu g \frac{\vec{v}_a}{|\vec{v}_a|}$$
-
-$$\dot{\omega} = -\frac{5}{2}\frac{\mu g}{R} \frac{\vec{v}_a}{|\vec{v}_a|}$$
-
-$$\dot{\omega}_z = -\frac{5}{2}\frac{M_z}{mR^2} \text{sgn}(\omega_z)$$
-
-#### rolling motion
-
-$$\dot{v} = -\frac{5}{7}\frac{M_{xy}}{mR} \frac{\vec{up} \times \vec{\omega}}{|\vec{\omega}|}$$
-
-$$\dot{\omega} = -\frac{5}{7}\frac{M_{xy}}{mR^2} \frac{\vec{\omega}}{|\vec{\omega}|}$$
-
-where
-
-$M_{xy} = \frac{7}{5\sqrt{2}} R \mu m g$ , $M_z = \frac{2}{3} \mu m g \rho$
-
-#### collisions
-
-Based on paper by [Alciatore](https://billiards.colostate.edu/technical_proofs/new/TP_A-14.pdf) incorporating throw effect due to the small amount of friction between balls. Figures to prove consistency between the [code](./src/model/physics/collisionthrow.ts) and paper [here](https://tailuge.github.io/billiards/dist/diagrams/mathavan.html).
-
-For ball $a$:
-
-$$\vec{v}_a \leftarrow \vec{v}_a + \frac{J_{\text{normal}}}{m}\hat{n} + \frac{J_{\text{tangential}}}{m}\hat{t}$$
-
-$$\vec{\omega}_a \leftarrow \vec{\omega}_a + \frac{1}{I} (\vec{r}_a \times \vec{J}_{\text{tangential}})$$
-
-For ball $b$:
-
-$$\vec{v}_b \leftarrow \vec{v}_b - \frac{J_{\text{normal}}}{m}\hat{n} - \frac{J_{\text{tangential}}}{m}\hat{t}$$
-
-$$\vec{\omega}_b \leftarrow \vec{\omega}_b + \frac{1}{I} (\vec{r}_b \times \vec{J}_{\text{tangential}})$$
-
-Where:
-
-The relative velocity at the point of contact is computed as:
-
-$$\vec{v}_{\text{rel}} = (\vec{v}_a - \vec{v}_b) + \vec{r}_a \times \vec{\omega}_a - \vec{r}_b \times \vec{\omega}_b$$
-
-$$\vec{v}_{\text{slip}} = \vec{v}_{\text{rel}} - (\vec{v}_{\text{rel}} \cdot \hat{n}) \hat{n}$$
-
-$\vec{r}_a = -R \cdot \hat{n}$ and $\vec{r}_b = R \cdot \hat{n}$
-
-$J_{\text{normal}} = \frac{-(1 + e)v_{\text{rel,normal}}}{(2/m)}$
-
-$J_{\text{tangential}} = \min\left( \frac{\mu J_{\text{normal}}}{v_{\text{rel}}}, \frac{1}{7} \right)(-v_{\text{rel,tangential}})$
-
-$\hat{n}$: normal unit vector along the line of centers.
-
-$\hat{t}$: tangential unit vector perpendicular to $\hat{n}$.
-
-#### cushion bounce
-
-This is based on a paper by [Mathavan](https://billiards.colostate.edu/physics_articles/Mathavan_IMechE_2010.pdf). Many of the [figures](https://tailuge.github.io/billiards/dist/diagrams/mathavan.html) from the paper are recreated to confirm correctness.
-
-Slip velocity at cushion contact point I
-
-$$
-ẋ_I = \dot{v_x} + \dot{\omega_y} R \sin \theta - \dot{\omega_z} R \cos \theta \qquad
-ẏ'_I = -\dot{v_y} \sin \theta + \dot{\omega_x} R
-$$
-
-$$
-\phi = \arctan\left(\frac{ẏ'_I}{ẋ_I}\right) \qquad
-s = \sqrt{(ẋ_I)^2 + (ẏ'_I)^2}
-$$
-
-Slip velocity at table contact point C
-
-$$
-ẋ_C = \dot{v_x} - \dot{\omega_y} R \qquad
-ẏ_C = \dot{v_y} + \dot{\omega_x} R
-$$
-
-$$
-\phi' = \arctan\left(\frac{ẏ_C}{ẋ_C}\right) \qquad
-s' = \sqrt{(ẋ_C)^2 + (ẏ_C)^2}
-$$
-
-Numerical solutions for the centroid velocity of the ball during compression and restitution phases.
-
-$$
-(\dot{v_x})_{n+1} - (\dot{v_x})_n = - \frac{1}{M} \left[\mu_w \cos(\phi) + \mu_s \cos(\phi') \cdot (\sin \theta + \mu_w \sin(\phi) \cos \theta)\right] \Delta P_I
-$$
-
-$$
-(\dot{v_y})_{n+1} - (\dot{v_y})_n  = - \frac{1}{M} \left[ \cos \theta - \mu_w \sin \theta \sin \phi + \mu_s \sin \phi' \cdot \left( \sin \theta + \mu_w \sin \phi \cos \theta \right) \right] \Delta P_I
-$$
-
-Numerical solutions for angular velocity of ball
-
-$$
-(\dot{\omega_x})_{n+1}−(\dot{\omega_x})_n = -\frac{5}{2MR}[\mu_w \sin(\phi) + \mu_s \sin(\phi') \times (\sin(\theta) + \mu_w \sin(\phi)\cos(\theta))]\Delta P_I
-$$
-
-$$
-(\dot{\omega_y})_{n+1}−(\dot{\omega_y})_n = -\frac{5}{2MR}[\mu_w \cos(\phi)\sin(\theta) - \mu_s \cos(\phi') \times (\sin(\theta) + \mu_w \sin(\phi)\cos(\theta))]\Delta P_I
-$$
-
-$$
-(\dot{\omega_z})_{n+1}−(\dot{\omega_z})_n = \frac{5}{2MR}(\mu_w \cos(\phi)\cos(\theta))\Delta P_I
-$$
-
-$\theta$ is a constant of the angle of cushion contact above ball centre with $\sin(\theta) = 2/5$. $\mu_s$ is the coefficient of sliding friction between the ball and table surface. $\mu_w$ is the coefficient of sliding friction between the ball and the cushion.
-
-Work done by the normal force at contact point $I$ along the $Z'$-axis which is aligned from the ball centre to I
-
-$$
-W_{Z'}^I(P_I^{(n+1)}) = W_{Z'}^I(P_I^{(n)}) + \frac{\Delta P_I}{2} \left( z'_I(P_I^{(n+1)}) + z'_I(P_I^{(n)}) \right)
-$$
-
-The ball is assumed to be bouncing in the +y cushion. Compression phase iterates until
-
-$$\dot{v}_y \le 0$$
-
-For the restitution phase the iteration continues until the work done is
-
-$$W_{Z'}^I \ge e_e^2 W_{\text{compression}}$$
-
-Some of the Mathavan equations not supplied by the paper were inferred to bridge gaps for a complete numerical solution.
-
-#### Stronge compliant cushion model
-
-Based on the book *Impact Mechanics* by [Stronge](https://doi.org/10.1017/9781139050227). This analytical model accounts for the compliant nature of cushion deformation and resolves the collision across three slip regimes.
-
-Contact velocity at the cushion contact point:
-
-$$\vec{V}_c = \vec{v} - (\vec{\omega} \times R \hat{n})$$
-
-Regime classification is determined by the ratio $v_{\text{ratio}} = v_{t0} / v_{n0}$ and thresholds involving the friction coefficient $\mu$, restitution $e_n$, and mass-matrix coefficients $\beta$:
-
-| Regime | Condition |
-| :--- | :--- |
-| Gross slip | $v_{\text{ratio}} > \mu \left( (1 + e_n) \beta_{\text{ratio}} - \frac{\eta^2}{e_n} \right)$ |
-| Initial stick | $v_{\text{ratio}} < \mu \eta^2$ |
-| Slip-stick-slip | neither of the above |
-
-where $\eta^2$ is derived from the frequency ratio $\omega_t/\omega_n$.
-
-Velocity reconstruction from scalar solver results $v_{nf}$ and $v_{tf}$:
-
-$$\Delta v_n = \frac{v_{nf} - v_{n0}}{\beta_n} , \quad \Delta v_t = \frac{v_{tf} - v_{t0}}{\beta_t}$$
-
-Final updates:
-
-$$\vec{v} \leftarrow \vec{v} + \Delta v_n \hat{n} + \Delta v_t \hat{t}$$
-$$\vec{\omega} \leftarrow \vec{\omega} + \frac{mR}{I} (-\hat{n} \times \Delta v_t \hat{t})$$
-
-## Useful commands
-
-### Install
-
-```shell
-nvm use v24.11.0
+# Break Builder 3D
+
+> 在浏览器里还原击球、走位与解球，而不只是让球“看起来会滚”。
+
+[![Build](https://github.com/liburce0412-alt/billiards/actions/workflows/main.yml/badge.svg)](https://github.com/liburce0412-alt/billiards/actions/workflows/main.yml)
+[![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-2ea44f.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178c6.svg)](https://www.typescriptlang.org/)
+[![Three.js](https://img.shields.io/badge/Three.js-WebGL-000000.svg)](https://threejs.org/)
+
+Break Builder 3D 是一个基于 TypeScript、Three.js 和自研台球物理内核的开源浏览器
+台球项目。它支持中式八球、美式九球、四球追分、斯诺克和三库，并提供练习、11 档
+本地 AI、同屏双人、在线房间、录像与回放。
+
+[在线试玩](https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/) ·
+[规则对照](https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/rules.html) ·
+[提交问题](https://github.com/liburce0412-alt/billiards/issues)
+
+| 首页 | 高画质对局 |
+| --- | --- |
+| ![Break Builder 3D 首页](e2e/visual.spec.ts-snapshots/launcher-desktop.png) | ![Break Builder 3D 高画质对局](e2e/visual.spec.ts-snapshots/game-high.png) |
+
+## 核心能力
+
+- **稳定物理**：使用固定 `1/512 s` 物理步长和时间累加器；画质与显示帧率不改变比赛结果。
+- **五套规则**：通过版本化 `RuleProfile` 和共享判定层实现中八、九球、四球追分、斯诺克和三库。
+- **11 档 AI**：AI 在 Web Worker 中调用正式物理内核试打，评估进球、犯规、母球落点、下一杆、安全球和解球。
+- **可自由观察**：玩家击球后和 AI 思考/击球时均可旋转、俯仰、缩放，不再强制在 2D 与 3D 间闪切。
+- **分档渲染**：`low`、`balanced`、`high` 三档画质，包含 PBR 球体、真实阴影、台呢微法线和移动端降级。
+- **个性化外观**：可选择球杆前节、前把纹理、握把、环饰、镶嵌、球台样式及银河、星云、俱乐部环境。
+- **有层次的声音**：击球、球撞球、碰库与落袋均有多采样音频池；AI 和玩家共用同一音效链。
+- **本地与在线对战**：支持同屏轮流击球和双浏览器在线房间，带事件去重、重连提示及局面恢复。
+
+## 玩法与规则
+
+| 玩法 | 当前实现基线 | 特色 |
+| --- | --- | --- |
+| 中式八球 | 中式台球协会公开规则基线 | 开球后开放球组、混合传球不分组、线后自由球 |
+| 美式九球 | WPA 9-Ball | 必须先碰最低号球、合法开球、组合球与轮转 |
+| 四球追分 | 项目 1/4/7/10 规则集 | 目标顺序与 1/4/7/10 得分、小金/大金、传九、让杆 |
+| 斯诺克 | WPBSA 基线 | 红彩交替、彩球复位、犯规罚分与清彩 |
+| 三库 | UMB 基线 | 母球碰第二目标球前至少三次碰库 |
+
+规则来源、版本、复核日期和项目差异均列在
+[规则对照页](https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/rules.html)。
+规则情景库目前覆盖 208 个可序列化固定场景，人类、AI、本地双人和在线模式共用同一
+判定入口。
+
+## 11 档 AI
+
+AI 不依赖云端模型，完全在浏览器本地运行。每次规划会生成合法目标、袋口、力量、杆法、解球、安全球与自由球摆位候选，再用 `1/512 s` 的正式物理配置试打。
+
+| 档位 | 定位 | 主要差异 |
+| --- | --- | --- |
+| 1–3 | 入门到熟练爱好者 | 较大的瞄准和力量误差，搜索候选较少 |
+| 4–5 | 偶尔清台到稳定进球 | 开始考虑下一杆和简单走位 |
+| 6–8 | 县级强手到高水平选手 | 常规球准度接近，主要比较走位、解球和安全球 |
+| 9–11 | 顶尖本地 AI | 更深候选预算与两层线路评估，但困难球仍保留非零误差 |
+
+各档固定候选预算为 `3 / 4 / 6 / 8 / 10 / 14 / 18 / 24 / 30 / 40 / 48`。
+相同局面、档位和输入会产生可重复的选择；Worker 不可用时会回退到几何规划，不会
+故意直打障碍球。
+
+## 操作
+
+| 操作 | 鼠标 / 键盘 |
+| --- | --- |
+| 调整击球方向 | 移动鼠标或使用瞄准控制 |
+| 环绕观察 | 按住鼠标右键拖动 |
+| 缩放视角 | 鼠标滚轮 |
+| 调整俯仰 | 局内视角控制或环绕拖动 |
+| 调整击球点 / 杆法 | 点击母球击球点面板 |
+| 蓄力与击球 | 底部力度条 |
+| 自由球摆位 | 拖动母球；确认前可反复调整 |
+| 打开设置 | 右下角菜单按钮 |
+
+第一次进入比赛会显示一次操作提示。设置抽屉中可以调整视角、音量、画质、球杆、球台与环境。
+
+## 快速开始
+
+### 环境要求
+
+- Node.js 22 或更高版本
+- Corepack
+- 支持 WebGL 2 的现代浏览器
+
+### 本地运行
+
+```bash
+git clone https://github.com/liburce0412-alt/billiards.git
+cd billiards
 corepack enable
-yarn set version 4.9.1
-yarn install
-yarn build
-yarn gltfpack
-```
-
-This generates artefacts in /dist for prod deployment (e.g. on github static pages)
-
-### Run
-
-```shell
+yarn install --immutable
 yarn serve
 ```
 
-Then open <http://localhost:8080/> in your browser to play
+打开 <http://localhost:8080/>。开发服务器会监听源码变化并自动重新构建。
 
-### Test
+### 常用 URL 参数
 
-```shell
-yarn test
-yarn coverage
+| 参数 | 示例 | 说明 |
+| --- | --- | --- |
+| `ruletype` | `eightball`、`nineball`、`fourball`、`snooker`、`threecushion` | 玩法 |
+| `quality` | `low`、`balanced`、`high` | 渲染质量，优先级高于旧 `lod` |
+| `bot` | `TheFarJaw` | 开启本地 AI |
+| `botLevel` | `1`–`11` | AI 档位 |
+| `practice` | `true` / `false` | 练习模式 |
+| `environment` | `galaxy`、`nebula`、`club` | 场景环境 |
+
+示例：[高画质八球 AI 对局](https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/?play=1&ruletype=eightball&quality=high&bot=TheFarJaw&botLevel=8&practice=false)。
+
+## 开发命令
+
+| 命令 | 用途 |
+| --- | --- |
+| `yarn serve` | 启动开发构建和本地静态服务器 |
+| `yarn build` | 生成生产构建并准备 Sites 发布包 |
+| `yarn test` | 运行 Jest 单元与情景测试 |
+| `yarn coverage` | 生成覆盖率报告 |
+| `yarn lint` | TypeScript 类型检查与 ESLint |
+| `yarn lint:css` | 检查 HTML/CSS |
+| `yarn test:e2e` | 运行 Playwright 视觉与浏览器测试 |
+| `RUN_ONLINE_E2E=1 yarn test:e2e e2e/online.spec.ts` | 使用两个浏览器上下文验证在线房间 |
+
+当前回归基线为 **96 个 Jest 套件、725 项测试**。Playwright 覆盖 `360×800`、
+`768×1024`、`1200×750`、`1920×1080` 四种视口，并保留低/高画质固定截图。
+
+## 项目结构
+
+```text
+.
+├─ src/
+│  ├─ controller/       # 比赛流程、规则、AI 与输入
+│  ├─ model/            # 球、球桌、碰撞与固定步长物理
+│  ├─ view/             # Three.js 场景、材质、相机和 UI
+│  └─ worker/           # AI 无界面试打与规划
+├─ dist/                # 浏览器入口、样式、模型、纹理与音频资源
+├─ test/                # Jest 单元、规则情景和确定性测试
+├─ e2e/                 # Playwright 多视口、截图和在线对战测试
+├─ scripts/             # 构建与 Sites 发布准备
+└─ docs/                # 架构与测试说明
 ```
 
-### Maintain
+更多细节见[架构说明](docs/ARCHITECTURE.md)和[测试指南](docs/TESTING.md)。
 
-```shell
-yarn deps
-yarn upgrade -L
-yarn prettify
-```
+## 资源与许可证
 
-### Two player
+- 源代码按 [GNU GPL-3.0](LICENSE) 发布。
+- 新增模型与程序化资产的说明见 [`dist/models/MODEL_ASSETS.md`](dist/models/MODEL_ASSETS.md)。
+- 音频来源、处理方式与许可证见 [`dist/sounds/LICENSES.md`](dist/sounds/LICENSES.md)。
+- 项目基于 [tailuge/billiards](https://github.com/tailuge/billiards) 持续开发，保留原作者及贡献者署名。
 
-```shell
-yarn serve
-```
+提交代码前请阅读[贡献指南](.github/CONTRIBUTING.md)。安全问题请按[安全策略](SECURITY.md)中的非公开方式报告。
 
-then open <http://localhost:8080/multi.html> to see options, message server is public nchan.
+## 路线图
 
-## Controls
+- 扩展规则情景库与赛事规则版本跟踪
+- 提升高档 AI 的多杆走位、安全球和复杂解球
+- 完善在线房间的断线恢复与移动端网络测试
+- 持续校准球、库边、袋口和台呢参数
+- 增加更多轻量球杆、球台和环境组合
 
-Use mouse, touch screen or keyboard:
+---
 
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">⇦</kbd>
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">⇨</kbd> Aim
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">Control</kbd>
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">⇦</kbd>
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">⇨</kbd> Fine aim
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">⇧</kbd>
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">⇩</kbd> Topspin and backspin
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">Shift</kbd>
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">⇦</kbd>
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">⇨</kbd> Side spin
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">Space</kbd> Hit - hold for more power
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">A</kbd> Toggle aim helper
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">M</kbd> Masse angle
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">O</kbd> Camera view
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">F</kbd> Full screen
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">C</kbd> Chat
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">H</kbd> Help
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">+</kbd>
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">-</kbd> Camera height
-
-### Mouse
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">scroll</kbd> Shot power
-
-<kbd style="border: 1px solid #aaa; border-radius: 0.2em; padding: 0.1em 0.3em; font-size: 0.85em;">dbl click</kbd> Hit
-
-## Progress snapshots
-
-July 2018
-
-![2018](https://raw.githubusercontent.com/tailuge/billiards/master/dist/images/t1.png)
-
-July 2019
-
-![2019](https://raw.githubusercontent.com/tailuge/billiards/master/dist/images/t2.png)
-
-March 2021
-
-![2021](https://raw.githubusercontent.com/tailuge/billiards/master/dist/images/t3.png)
-
-August 2023 (mobile)
-
-top | aim  
-:--:|:--:
-<kbd>![2023](https://raw.githubusercontent.com/tailuge/billiards/master/dist/images/mobile1.jpg)</kbd> | <kbd>![2023](https://raw.githubusercontent.com/tailuge/billiards/master/dist/images/mobile2.jpg)</kbd>
-
-[![2026](https://img.youtube.com/vi/jGNB_XLTjnU/0.jpg)](https://www.youtube.com/watch?v=jGNB_XLTjnU)
-
-Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=tailuge/billiards&type=Date)](https://star-history.com/#tailuge/billiards&Date)
-
-## Licence
-
-This project is open source and licensed under the GNU General Public License - see the [LICENSE](LICENSE) file for details. Contributions welcome.
+如果你关心台球物理、规则、AI 走位或 WebGL 表现，欢迎发起 Issue 或 Pull Request。

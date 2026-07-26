@@ -1,15 +1,25 @@
 {
   "name": "billiards",
-  "description": "Billiards",
+  "description": "Break Builder 3D - a deterministic browser billiards simulation with five rulesets and 11-level local AI",
   "version": "0.3.1",
-  "author": "tailuge",
-  "homepage": "https://github.com/tailuge",
+  "author": "tailuge and Break Builder contributors",
+  "homepage": "https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liburce0412-alt/billiards.git"
+  },
+  "bugs": {
+    "url": "https://github.com/liburce0412-alt/billiards/issues"
+  },
   "keywords": [
     "billiards",
     "snooker",
     "threejs",
     "swc",
-    "physics"
+    "physics",
+    "webgl",
+    "pool-game",
+    "browser-game"
   ],
   "license": "GPL-3.0",
   "sideEffects": false,
@@ -20,14 +30,12 @@
     "test:e2e:update": "playwright test --update-snapshots",
     "coverage": "jest --config ./test/jest.config.js --coverage --silent",
     "version-gen": "node -e \"const d=new Date();const v=d.getFullYear().toString().slice(-2)+('0'+(d.getMonth()+1)).slice(-2)+('0'+d.getDate()).slice(-2)+'.'+('0'+d.getHours()).slice(-2);require('fs').writeFileSync('src/utils/version.ts', 'export const VERSION = \\'' + v + '\\';\\n')\"",
-    "sitemap:cf": "sed -i 's|tailuge.github.io/billiards/dist|billiards.tailuge.workers.dev|g' dist/sitemap.xml && sed -i '/xhtml:link/d' dist/sitemap.xml && sed -i \"s|<lastmod>.*</lastmod>|<lastmod>$(date +%Y-%m-%d)</lastmod>|g\" dist/sitemap.xml",
     "dev": "webpack",
     "build": "npm run version-gen && webpack && node scripts/prepare-sites.cjs",
-    "build:cf": "npm run version-gen && webpack && npm run sitemap:cf",
     "lint": "tsc --noEmit && eslint .",
     "lint:css": "stylelint \"dist/**/*.{css,html}\"",
     "prettify": "prettier --cache true --write --trailing-comma es5 --no-semi {src,test}/**/*.[jt]s dist/**/*.{css,html} *.[jt]s *.json",
-    "markdownlint": "npx markdownlint-cli2 README.md --fix",
+    "markdownlint": "npx markdownlint-cli2 README.md CHANGELOG.md SECURITY.md \"docs/*.md\" .github/CONTRIBUTING.md",
     "serve": "concurrently \"npm run watch\" \"npm run start-server\"",
     "start-server": "http-server dist -p 8080 -c-1",
     "watch": "webpack --watch",
