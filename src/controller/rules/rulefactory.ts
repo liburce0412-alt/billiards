@@ -6,8 +6,13 @@ import { ThreeCushion } from "./threecushion"
 import { Drill } from "./drill"
 import { Sagu } from "./sagu"
 import { FourBallChase } from "./fourballchase"
+import { RuleProfile, ruleProfileFor } from "./ruleprofile"
 
 export class RuleFactory {
+  static profile(ruletype: string): RuleProfile {
+    return ruleProfileFor(ruletype)
+  }
+
   static create(ruletype, container): Rules {
     switch (ruletype) {
       case "threecushion":

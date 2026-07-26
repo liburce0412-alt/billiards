@@ -20,9 +20,11 @@ import { MatchResultHelper } from "../../network/client/matchresult"
 import { Session } from "../../network/client/session"
 import { isFirstShot } from "../../utils/utils"
 import { roundVec } from "../../utils/three-utils"
+import { RULE_PROFILES } from "./ruleprofile"
 
 export class NineBall implements Rules {
   readonly container: Container
+  readonly profile = RULE_PROFILES.nineball
 
   cueball: Ball
   currentBreak = 0

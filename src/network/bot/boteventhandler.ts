@@ -22,6 +22,7 @@ import { BotShotContext, BotStrategy } from "./botstrategy"
 import { ClawBreak } from "./strategies/clawbreak"
 import { TheFarJaw } from "./strategies/thefarjaw"
 import { R } from "../../model/physics/constants"
+import { eightBallGroupAfterShot } from "../../controller/rules/eightballgroup"
 
 class BotContainer {
   table
@@ -506,18 +507,12 @@ export class BotEventHandler {
     ) {
       return
     }
-    const pottedBalls = Outcome.pots(outcome)
-    const hasSolid = pottedBalls.some(
-      (b) => (b.label ?? 0) >= 1 && (b.label ?? 0) <= 7
+    const botGroup = eightBallGroupAfterShot(
+      this.container.table.cueball,
+      outcome,
+      false
     )
-    const hasStripe = pottedBalls.some(
-      (b) => (b.label ?? 0) >= 9 && (b.label ?? 0) <= 15
-    )
-    if (hasSolid && !hasStripe) {
-      session.p1type = 2
-    } else if (hasStripe && !hasSolid) {
-      session.p1type = 1
-    }
+    if (botGroup !== 0) session.p1type = botGroup === 1 ? 2 : 1
   }
 
   private handleStartAim(): void {

@@ -3,8 +3,10 @@ import { Controller } from "../../controller/controller"
 import { Ball } from "../../model/ball"
 import { Outcome } from "../../model/outcome"
 import { Table } from "../../model/table"
+import { RuleProfile } from "./ruleprofile"
 
 export interface Rules {
+  readonly profile: RuleProfile
   cueball: Ball
   currentBreak: number
   previousBreak: number

@@ -5,8 +5,10 @@ import { Table } from "../../model/table"
 import { TableGeometry } from "../../view/tablegeometry"
 import { ThreeCushion } from "./threecushion"
 import { Aim } from "../aim"
+import { RULE_PROFILES } from "./ruleprofile"
 
 export class Drill extends ThreeCushion {
+  override readonly profile = RULE_PROFILES["threecushion-drill"]
   preShotState: number[] = []
 
   override table(): Table {

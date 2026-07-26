@@ -23,6 +23,7 @@ import { TableConfig } from "../../view/tableconfig"
 import { TableGeometry } from "../../view/tablegeometry"
 import { NineBall } from "./nineball"
 import { Rules } from "./rules"
+import { RULE_PROFILES } from "./ruleprofile"
 
 interface ChaseState {
   openingPlacement: boolean
@@ -41,6 +42,7 @@ type FourBallContainer = Container & { isBotRules?: boolean }
  */
 export class FourBallChase implements Rules {
   readonly container: FourBallContainer
+  readonly profile = RULE_PROFILES.fourball
   readonly asset = "models/p8.min.gltf"
   readonly rulename = "fourball"
   cueball: Ball

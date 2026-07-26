@@ -10,8 +10,10 @@ import { Session } from "../../network/client/session"
 import { Rack } from "../../utils/rack"
 import { Table } from "../../model/table"
 import { Camera } from "../../view/camera"
+import { RULE_PROFILES } from "./ruleprofile"
 
 export class Sagu extends ThreeCushion {
+  override readonly profile = RULE_PROFILES.sagu
   override rulename = "sagu"
 
   override rack(): Ball[] {

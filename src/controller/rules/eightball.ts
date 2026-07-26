@@ -21,6 +21,8 @@ import { ScoreEvent } from "../../events/scoreevent"
 import { roundVec } from "../../utils/three-utils"
 import { Respot } from "../../utils/respot"
 import { RerackEvent } from "../../events/rerackevent"
+import { RULE_PROFILES } from "./ruleprofile"
+import { eightBallGroupAfterShot } from "./eightballgroup"
 
 const flipType = (t: number) => {
   if (t === 1) return 2
@@ -30,6 +32,7 @@ const flipType = (t: number) => {
 
 export class EightBall implements Rules {
   readonly container: Container
+  readonly profile = RULE_PROFILES.eightball
 
   cueball: Ball
   currentBreak = 0
@@ -357,31 +360,16 @@ export class EightBall implements Rules {
   private assignGroupAfterOpenTable(
     session: Session,
     outcome: Outcome[],
-    pots: Ball[]
+    _pots: Ball[]
   ) {
     if (session.p1type !== 0 || isOpeningShot(this.container.recorder)) {
       return
     }
-    const firstContact = Outcome.firstCollision(
-      Outcome.cueBallFirst(this.container.table.cueball, outcome)
-    )?.ballB
-    const solids = pots.filter((ball) => ball.label! >= 1 && ball.label! <= 7)
-    const stripes = pots.filter((ball) => ball.label! >= 9 && ball.label! <= 15)
-    if (
-      solids.length > 0 &&
-      stripes.length === 0 &&
-      firstContact &&
-      this.isMyType(firstContact, 1)
-    ) {
-      session.p1type = 1
-    } else if (
-      stripes.length > 0 &&
-      solids.length === 0 &&
-      firstContact &&
-      this.isMyType(firstContact, 2)
-    ) {
-      session.p1type = 2
-    }
+    session.p1type = eightBallGroupAfterShot(
+      this.container.table.cueball,
+      outcome,
+      false
+    )
   }
 
   private handleEightOnBreak(pots: Ball[]): Controller {

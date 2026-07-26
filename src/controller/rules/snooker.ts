@@ -21,8 +21,10 @@ import { SnookerUtils, ShotInfo } from "./snookerutils"
 import { SnookerScoring } from "./snookerscoring"
 import { StartAimEvent } from "../../events/startaimevent"
 import { RerackEvent } from "../../events/rerackevent"
+import { RULE_PROFILES } from "./ruleprofile"
 
 export class Snooker implements Rules {
+  readonly profile = RULE_PROFILES.snooker
   cueball: Ball
   previousPotRed = false
   targetIsRed = true

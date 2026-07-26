@@ -17,9 +17,11 @@ import { Respot } from "../../utils/respot"
 import { StartAimEvent } from "../../events/startaimevent"
 import { MatchResultHelper } from "../../network/client/matchresult"
 import { Session } from "../../network/client/session"
+import { RULE_PROFILES } from "./ruleprofile"
 
 export class ThreeCushion implements Rules {
   readonly container: Container
+  readonly profile = RULE_PROFILES.threecushion
 
   cueball: Ball
   currentBreak = 0
