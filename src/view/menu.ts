@@ -8,10 +8,12 @@ import {
   CUSTOM_CUE_STYLE_ID,
   CustomCueColours,
   cueColourHex,
-  customCueColours,
-  saveCustomCueColours,
+  customCueDetails,
+  CustomCueDetails,
+  saveCustomCueDetails,
 } from "./cuestyle"
 import { TABLE_STYLES } from "./tablestyle"
+import { ENVIRONMENT_STYLES } from "./environmentstyle"
 
 export class Menu {
   private static readonly settingsStorageVersion =
@@ -213,6 +215,20 @@ export class Menu {
       this.toggleSettingsDrawer(false)
       this.tableStyle?.click()
     })
+    const environment = document.getElementById(
+      "settingsEnvironment"
+    ) as HTMLSelectElement | null
+    if (environment) {
+      environment.innerHTML = ENVIRONMENT_STYLES.map(
+        (style) =>
+          `<option value="${style.id}">${style.name} · ${style.description}</option>`
+      ).join("")
+      environment.value = this.container.view.environmentStyleId
+      environment.addEventListener("change", () => {
+        this.container.view.setEnvironmentStyle(environment.value)
+        this.container.lastEventTime = performance.now()
+      })
+    }
 
     const volume = document.getElementById(
       "settingsVolume"
@@ -305,7 +321,7 @@ export class Menu {
         </button>
       `
     ).join("")
-    const custom = customCueColours()
+    const custom = customCueDetails()
     options.innerHTML = `${presetMarkup}
       <section class="cue-customizer" aria-labelledby="cueCustomizerTitle">
         <div class="cue-customizer__heading">
@@ -337,6 +353,41 @@ export class Menu {
                 </label>`
             )
             .join("")}
+        </div>
+        <div class="cue-customizer__patterns">
+          <label>
+            <span>前节纹理</span>
+            <select data-custom-cue-detail="shaftPattern">
+              <option value="maple" ${custom.shaftPattern === "maple" ? "selected" : ""}>直纹枫木</option>
+              <option value="ash" ${custom.shaftPattern === "ash" ? "selected" : ""}>山纹白蜡木</option>
+              <option value="carbon" ${custom.shaftPattern === "carbon" ? "selected" : ""}>斜织碳纤</option>
+            </select>
+          </label>
+          <label>
+            <span>前把木纹</span>
+            <select data-custom-cue-detail="forearmPattern">
+              <option value="straight" ${custom.forearmPattern === "straight" ? "selected" : ""}>顺直木纹</option>
+              <option value="burl" ${custom.forearmPattern === "burl" ? "selected" : ""}>瘿木旋纹</option>
+              <option value="flame" ${custom.forearmPattern === "flame" ? "selected" : ""}>火焰枫纹</option>
+            </select>
+          </label>
+          <label>
+            <span>握把质感</span>
+            <select data-custom-cue-detail="wrapPattern">
+              <option value="linen" ${custom.wrapPattern === "linen" ? "selected" : ""}>爱尔兰亚麻</option>
+              <option value="leather" ${custom.wrapPattern === "leather" ? "selected" : ""}>细纹皮革</option>
+              <option value="braid" ${custom.wrapPattern === "braid" ? "selected" : ""}>交错编织</option>
+            </select>
+          </label>
+          <label>
+            <span>镶嵌造型</span>
+            <select data-custom-cue-detail="inlayPattern">
+              <option value="spear" ${custom.inlayPattern === "spear" ? "selected" : ""}>长矛拼花</option>
+              <option value="diamond" ${custom.inlayPattern === "diamond" ? "selected" : ""}>钻石镶嵌</option>
+              <option value="chevron" ${custom.inlayPattern === "chevron" ? "selected" : ""}>V 形箭羽</option>
+              <option value="feather" ${custom.inlayPattern === "feather" ? "selected" : ""}>孔雀羽片</option>
+            </select>
+          </label>
         </div>
         <div class="cue-customizer__actions">
           <button type="button" data-custom-cue-action="shuffle">换一组灵感</button>
@@ -391,17 +442,36 @@ export class Menu {
             .forEach((input, index) => {
               input.value = palette[index]
             })
+          const patternSets = [
+            ["maple", "burl", "linen", "diamond"],
+            ["carbon", "straight", "leather", "chevron"],
+            ["ash", "flame", "braid", "feather"],
+          ]
+          const patterns =
+            patternSets[Math.floor(Math.random() * patternSets.length)]
+          options
+            .querySelectorAll<HTMLSelectElement>("[data-custom-cue-detail]")
+            .forEach((input, index) => {
+              input.value = patterns[index]
+            })
           return
         }
-        const colours: Partial<Record<keyof CustomCueColours, string>> = {}
+        const details: Partial<Record<keyof CustomCueDetails, string>> = {}
         options
           .querySelectorAll<HTMLInputElement>("[data-custom-cue-colour]")
           .forEach((input) => {
             const key = input.dataset.customCueColour as
               keyof CustomCueColours | undefined
-            if (key) colours[key] = input.value
+            if (key) details[key] = input.value
           })
-        saveCustomCueColours(colours)
+        options
+          .querySelectorAll<HTMLSelectElement>("[data-custom-cue-detail]")
+          .forEach((input) => {
+            const key = input.dataset.customCueDetail as
+              keyof CustomCueDetails | undefined
+            if (key) details[key] = input.value
+          })
+        saveCustomCueDetails(details)
         this.container.table.cue.setStyle(CUSTOM_CUE_STYLE_ID)
         this.container.lastEventTime = performance.now()
         updateSelected()

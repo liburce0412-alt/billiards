@@ -15,7 +15,7 @@ describe("TableStyle", () => {
   it("uses the rounded-pocket model for Chinese pool tables", () => {
     expect(
       tableAssetForStyle("eightball", "models/p8.min.gltf", "chinese-ebony")
-    ).to.equal("models/snooker.min.gltf")
+    ).to.equal("models/chinese-pool.min.gltf")
     expect(
       tableAssetForStyle("eightball", "models/p8.min.gltf", "american-walnut")
     ).to.equal("models/p8.min.gltf")

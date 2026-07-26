@@ -1,4 +1,7 @@
 export type CueInlayPattern = "spear" | "diamond" | "chevron" | "feather"
+export type CueShaftPattern = "maple" | "ash" | "carbon"
+export type CueForearmPattern = "straight" | "burl" | "flame"
+export type CueWrapPattern = "linen" | "leather" | "braid"
 
 export interface CueStyle {
   id: string
@@ -13,6 +16,10 @@ export interface CueStyle {
   tip: number
   shaftMetalness?: number
   inlayPattern: CueInlayPattern
+  shaftPattern?: CueShaftPattern
+  forearmPattern?: CueForearmPattern
+  wrapPattern?: CueWrapPattern
+  ringCount?: 3 | 4 | 6
   swatches: string[]
 }
 
@@ -27,11 +34,28 @@ export interface CustomCueColours {
   accent: number
 }
 
+export interface CustomCueDetails extends CustomCueColours {
+  shaftPattern: CueShaftPattern
+  forearmPattern: CueForearmPattern
+  wrapPattern: CueWrapPattern
+  inlayPattern: CueInlayPattern
+}
+
 const DEFAULT_CUSTOM_CUE_COLOURS: CustomCueColours = {
   forearm: 0x0c5d53,
   sleeve: 0x171b22,
   wrap: 0x4c1f2a,
   accent: 0xe8c66a,
+}
+
+const DEFAULT_CUSTOM_CUE_DETAILS: Omit<
+  CustomCueDetails,
+  keyof CustomCueColours
+> = {
+  shaftPattern: "maple",
+  forearmPattern: "burl",
+  wrapPattern: "linen",
+  inlayPattern: "diamond",
 }
 
 export const CUE_STYLES: readonly CueStyle[] = [
@@ -47,6 +71,10 @@ export const CUE_STYLES: readonly CueStyle[] = [
     ferrule: 0xf2ead8,
     tip: 0x2e7190,
     inlayPattern: "spear",
+    shaftPattern: "maple",
+    forearmPattern: "straight",
+    wrapPattern: "linen",
+    ringCount: 4,
     swatches: ["#d8bd91", "#8b4b26", "#174735", "#d8b25c"],
   },
   {
@@ -62,6 +90,10 @@ export const CUE_STYLES: readonly CueStyle[] = [
     tip: 0x315f7a,
     shaftMetalness: 0.34,
     inlayPattern: "chevron",
+    shaftPattern: "carbon",
+    forearmPattern: "straight",
+    wrapPattern: "leather",
+    ringCount: 6,
     swatches: ["#24282d", "#050607", "#5d151b", "#aeb7c2"],
   },
   {
@@ -76,6 +108,10 @@ export const CUE_STYLES: readonly CueStyle[] = [
     ferrule: 0xf4edda,
     tip: 0x2f7794,
     inlayPattern: "diamond",
+    shaftPattern: "ash",
+    forearmPattern: "burl",
+    wrapPattern: "braid",
+    ringCount: 6,
     swatches: ["#d6b98a", "#0e665a", "#073a34", "#e5c56f"],
   },
   {
@@ -90,6 +126,10 @@ export const CUE_STYLES: readonly CueStyle[] = [
     ferrule: 0xeee5d1,
     tip: 0x3d7190,
     inlayPattern: "spear",
+    shaftPattern: "ash",
+    forearmPattern: "flame",
+    wrapPattern: "leather",
+    ringCount: 4,
     swatches: ["#d1ae78", "#672a47", "#281122", "#d9a94d"],
   },
   {
@@ -104,6 +144,10 @@ export const CUE_STYLES: readonly CueStyle[] = [
     ferrule: 0xf0f4f5,
     tip: 0x367e9c,
     inlayPattern: "chevron",
+    shaftPattern: "maple",
+    forearmPattern: "straight",
+    wrapPattern: "linen",
+    ringCount: 3,
     swatches: ["#e1c89f", "#174f78", "#0a243c", "#77d4e8"],
   },
   {
@@ -118,6 +162,10 @@ export const CUE_STYLES: readonly CueStyle[] = [
     ferrule: 0xf6f0e4,
     tip: 0x34728e,
     inlayPattern: "feather",
+    shaftPattern: "ash",
+    forearmPattern: "burl",
+    wrapPattern: "braid",
+    ringCount: 6,
     swatches: ["#ddc49a", "#e7dfcc", "#8b5c3d", "#167c87"],
   },
 ]
@@ -138,8 +186,26 @@ function validColour(value: unknown, fallback: number): number {
 }
 
 export function customCueColours(): CustomCueColours {
+  const details = customCueDetails()
+  return {
+    forearm: details.forearm,
+    sleeve: details.sleeve,
+    wrap: details.wrap,
+    accent: details.accent,
+  }
+}
+
+function validChoice<T extends string>(
+  value: unknown,
+  choices: readonly T[],
+  fallback: T
+): T {
+  return choices.includes(value as T) ? (value as T) : fallback
+}
+
+export function customCueDetails(): CustomCueDetails {
   if (typeof globalThis.localStorage === "undefined") {
-    return { ...DEFAULT_CUSTOM_CUE_COLOURS }
+    return { ...DEFAULT_CUSTOM_CUE_COLOURS, ...DEFAULT_CUSTOM_CUE_DETAILS }
   }
   try {
     const stored = JSON.parse(
@@ -150,21 +216,67 @@ export function customCueColours(): CustomCueColours {
       sleeve: validColour(stored.sleeve, DEFAULT_CUSTOM_CUE_COLOURS.sleeve),
       wrap: validColour(stored.wrap, DEFAULT_CUSTOM_CUE_COLOURS.wrap),
       accent: validColour(stored.accent, DEFAULT_CUSTOM_CUE_COLOURS.accent),
+      shaftPattern: validChoice(
+        stored.shaftPattern,
+        ["maple", "ash", "carbon"],
+        DEFAULT_CUSTOM_CUE_DETAILS.shaftPattern
+      ),
+      forearmPattern: validChoice(
+        stored.forearmPattern,
+        ["straight", "burl", "flame"],
+        DEFAULT_CUSTOM_CUE_DETAILS.forearmPattern
+      ),
+      wrapPattern: validChoice(
+        stored.wrapPattern,
+        ["linen", "leather", "braid"],
+        DEFAULT_CUSTOM_CUE_DETAILS.wrapPattern
+      ),
+      inlayPattern: validChoice(
+        stored.inlayPattern,
+        ["spear", "diamond", "chevron", "feather"],
+        DEFAULT_CUSTOM_CUE_DETAILS.inlayPattern
+      ),
     }
   } catch {
-    return { ...DEFAULT_CUSTOM_CUE_COLOURS }
+    return { ...DEFAULT_CUSTOM_CUE_COLOURS, ...DEFAULT_CUSTOM_CUE_DETAILS }
   }
 }
 
 export function saveCustomCueColours(
   colours: Partial<Record<keyof CustomCueColours, number | string>>
 ): CueStyle {
-  const current = customCueColours()
-  const next: CustomCueColours = {
-    forearm: validColour(colours.forearm, current.forearm),
-    sleeve: validColour(colours.sleeve, current.sleeve),
-    wrap: validColour(colours.wrap, current.wrap),
-    accent: validColour(colours.accent, current.accent),
+  return saveCustomCueDetails(colours)
+}
+
+export function saveCustomCueDetails(
+  values: Partial<Record<keyof CustomCueDetails, number | string>>
+): CueStyle {
+  const current = customCueDetails()
+  const next: CustomCueDetails = {
+    forearm: validColour(values.forearm, current.forearm),
+    sleeve: validColour(values.sleeve, current.sleeve),
+    wrap: validColour(values.wrap, current.wrap),
+    accent: validColour(values.accent, current.accent),
+    shaftPattern: validChoice(
+      values.shaftPattern,
+      ["maple", "ash", "carbon"],
+      current.shaftPattern
+    ),
+    forearmPattern: validChoice(
+      values.forearmPattern,
+      ["straight", "burl", "flame"],
+      current.forearmPattern
+    ),
+    wrapPattern: validChoice(
+      values.wrapPattern,
+      ["linen", "leather", "braid"],
+      current.wrapPattern
+    ),
+    inlayPattern: validChoice(
+      values.inlayPattern,
+      ["spear", "diamond", "chevron", "feather"],
+      current.inlayPattern
+    ),
   }
   if (typeof globalThis.localStorage !== "undefined") {
     try {
@@ -183,24 +295,28 @@ export function cueColourHex(colour: number): string {
   return `#${colour.toString(16).padStart(6, "0")}`
 }
 
-function customCueStyle(colours = customCueColours()): CueStyle {
+function customCueStyle(details = customCueDetails()): CueStyle {
   return {
     id: CUSTOM_CUE_STYLE_ID,
     name: "我的定制杆",
     description: "自由组合前把、后把、握把与金属嵌花",
     shaft: 0xd8bf96,
-    forearm: colours.forearm,
-    sleeve: colours.sleeve,
-    wrap: colours.wrap,
-    accent: colours.accent,
+    forearm: details.forearm,
+    sleeve: details.sleeve,
+    wrap: details.wrap,
+    accent: details.accent,
     ferrule: 0xf4eee2,
     tip: 0x2e7190,
-    inlayPattern: "diamond",
+    inlayPattern: details.inlayPattern,
+    shaftPattern: details.shaftPattern,
+    forearmPattern: details.forearmPattern,
+    wrapPattern: details.wrapPattern,
+    ringCount: 6,
     swatches: [
-      cueColourHex(colours.forearm),
-      cueColourHex(colours.sleeve),
-      cueColourHex(colours.wrap),
-      cueColourHex(colours.accent),
+      cueColourHex(details.forearm),
+      cueColourHex(details.sleeve),
+      cueColourHex(details.wrap),
+      cueColourHex(details.accent),
     ],
   }
 }

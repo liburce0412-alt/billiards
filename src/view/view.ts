@@ -31,6 +31,12 @@ import { Snooker } from "../controller/rules/snooker"
 import { getRenderQuality } from "./renderquality"
 import { R } from "../model/physics/constants"
 import { TableGeometry } from "./tablegeometry"
+import {
+  EnvironmentStyle,
+  environmentStyleById,
+  saveEnvironmentStyleId,
+  savedEnvironmentStyleId,
+} from "./environmentstyle"
 
 export class View {
   readonly scene = new Scene()
@@ -54,6 +60,9 @@ export class View {
   private spaceTime = 0
   private meteor?: Line
   private meteorMaterial?: LineBasicMaterial
+  private starfield?: Points
+  private environmentLoadToken = 0
+  environmentStyleId = savedEnvironmentStyleId()
   onCameraInteraction?: () => void
 
   // Reuse objects to reduce garbage collection pressure in high-frequency rendering
@@ -262,16 +271,13 @@ export class View {
 
   private initialiseScene() {
     const quality = getRenderQuality()
-    this.scene.background = new Color(0x02040c)
-    let starCount = 900
-    if (quality.name === "low") starCount = 480
-    if (quality.name === "high") starCount = 1500
-    this.scene.add(this.createStarfield(starCount))
-    if (quality.name !== "low" && this.renderer) {
-      this.loadGalaxyBackdrop()
-      this.meteor = this.createMeteor()
-      this.scene.add(this.meteor)
-    }
+    const requestedEnvironment = new URLSearchParams(
+      globalThis.location?.search ?? ""
+    ).get("environment")
+    this.setEnvironmentStyle(
+      requestedEnvironment ?? this.environmentStyleId,
+      false
+    )
     this.scene.add(new HemisphereLight(0xfff4df, 0x18202c, 0.45))
 
     const keyLight = new DirectionalLight(0xfff1d6, 1.6)
@@ -318,10 +324,55 @@ export class View {
     }
   }
 
-  private loadGalaxyBackdrop(): void {
+  setEnvironmentStyle(id: string, persist = true): string {
+    const style = environmentStyleById(id)
+    this.environmentStyleId = persist
+      ? saveEnvironmentStyleId(style.id)
+      : style.id
+    const quality = getRenderQuality()
+    const token = ++this.environmentLoadToken
+
+    if (this.starfield) {
+      this.scene.remove(this.starfield)
+      this.starfield.geometry.dispose()
+      ;(this.starfield.material as PointsMaterial).dispose()
+    }
+    let starCount = style.id === "club" ? 180 : 900
+    if (quality.name === "low") starCount = Math.ceil(starCount * 0.52)
+    if (quality.name === "high") starCount = Math.ceil(starCount * 1.66)
+    this.starfield = this.createStarfield(starCount, style.starTint)
+    this.scene.add(this.starfield)
+
+    this.scene.background = new Color(style.background)
+    this.scene.backgroundIntensity = style.intensity
+    if (style.backdrop && quality.name !== "low" && this.renderer) {
+      this.loadEnvironmentBackdrop(style, token)
+    }
+
+    if (style.meteor && quality.name !== "low") {
+      if (!this.meteor) {
+        this.meteor = this.createMeteor()
+        this.scene.add(this.meteor)
+      }
+      this.meteor.visible = true
+    } else if (this.meteor) {
+      this.meteor.visible = false
+    }
+    this.render()
+    return this.environmentStyleId
+  }
+
+  private loadEnvironmentBackdrop(
+    style: EnvironmentStyle,
+    token: number
+  ): void {
     new TextureLoader().load(
-      "assets/cosmic-galaxy-v1.png",
+      style.backdrop!,
       (texture) => {
+        if (token !== this.environmentLoadToken) {
+          texture.dispose()
+          return
+        }
         texture.mapping = EquirectangularReflectionMapping
         texture.colorSpace = SRGBColorSpace
         texture.anisotropy = Math.min(
@@ -329,13 +380,17 @@ export class View {
           4
         )
         this.scene.background = texture
-        this.scene.backgroundIntensity = 0.92
+        this.scene.backgroundIntensity = style.intensity
+        this.scene.backgroundRotation.z = style.id === "nebula" ? 1.12 : 0
         this.warmup()
         this.render()
       },
       undefined,
       (error) => {
-        console.warn("Galaxy backdrop could not be loaded; using stars.", error)
+        console.warn(
+          "Environment backdrop could not be loaded; using stars.",
+          error
+        )
       }
     )
   }
@@ -344,10 +399,7 @@ export class View {
     const geometry = new BufferGeometry()
     geometry.setAttribute(
       "position",
-      new Float32BufferAttribute(
-        [0, 0, 0, -R * 42, -R * 13, R * 3],
-        3
-      )
+      new Float32BufferAttribute([0, 0, 0, -R * 42, -R * 13, R * 3], 3)
     )
     this.meteorMaterial = new LineBasicMaterial({
       color: 0xbfeaff,
@@ -389,7 +441,10 @@ export class View {
     this.meteorMaterial.opacity = Math.sin(progress * Math.PI) * 0.78
   }
 
-  private createStarfield(count: number): Points {
+  private createStarfield(
+    count: number,
+    tint: [number, number, number]
+  ): Points {
     const positions = new Float32Array(count * 3)
     const colors = new Float32Array(count * 3)
     let seed = 0x51f15e
@@ -408,9 +463,9 @@ export class View {
       positions[i * 3 + 2] = z * radius
 
       const warmth = random()
-      colors[i * 3] = 0.72 + warmth * 0.28
-      colors[i * 3 + 1] = 0.78 + warmth * 0.18
-      colors[i * 3 + 2] = 1
+      colors[i * 3] = Math.min(1, tint[0] * (0.82 + warmth * 0.22))
+      colors[i * 3 + 1] = Math.min(1, tint[1] * (0.84 + warmth * 0.18))
+      colors[i * 3 + 2] = Math.min(1, tint[2] * (0.9 + warmth * 0.1))
     }
 
     const geometry = new BufferGeometry()

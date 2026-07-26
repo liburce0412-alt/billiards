@@ -17,6 +17,7 @@ export interface LauncherSelection {
   player2Cue?: string
   cueStyle?: string
   tableStyle?: string
+  environmentStyle?: string
   onlineAction?: LauncherOnlineAction
   roomCode?: string
   onlinePlayerName?: string
@@ -42,7 +43,7 @@ export function generateRoomCode(random: () => number = Math.random): string {
 
 export function buildInviteUrl(
   roomCode: string,
-  selection: Pick<LauncherSelection, "rule" | "quality">,
+  selection: Pick<LauncherSelection, "rule" | "quality" | "environmentStyle">,
   baseHref: string
 ): string {
   const url = new URL(baseHref)
@@ -51,6 +52,9 @@ export function buildInviteUrl(
   url.searchParams.set("join", normaliseRoomCode(roomCode))
   url.searchParams.set("rule", selection.rule)
   url.searchParams.set("quality", selection.quality)
+  if (selection.environmentStyle) {
+    url.searchParams.set("environment", selection.environmentStyle)
+  }
   return url.toString()
 }
 
@@ -77,6 +81,9 @@ export function buildGameUrl(selection: LauncherSelection, baseHref: string) {
   url.searchParams.set("play", "1")
   url.searchParams.set("ruletype", selection.rule)
   url.searchParams.set("quality", selection.quality)
+  if (selection.environmentStyle) {
+    url.searchParams.set("environment", selection.environmentStyle)
+  }
 
   if (selection.opponent === "practice") {
     url.searchParams.set("practice", "true")

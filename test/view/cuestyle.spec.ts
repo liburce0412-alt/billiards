@@ -4,8 +4,10 @@ import {
   CUSTOM_CUE_STYLE_STORAGE_KEY,
   cueStyleById,
   customCueColours,
+  customCueDetails,
   saveCueStyleId,
   saveCustomCueColours,
+  saveCustomCueDetails,
   savedCueStyleId,
 } from "../../src/view/cuestyle"
 
@@ -37,6 +39,20 @@ describe("cue customisation", () => {
 
     expect(savedCueStyleId()).toBe(CUSTOM_CUE_STYLE_ID)
     expect(cueStyleById(savedCueStyleId()).forearm).toBe(0x315a48)
+  })
+
+  it("persists shaft, forearm, wrap and inlay patterns", () => {
+    const style = saveCustomCueDetails({
+      shaftPattern: "carbon",
+      forearmPattern: "flame",
+      wrapPattern: "braid",
+      inlayPattern: "feather",
+    })
+
+    expect(style.shaftPattern).toBe("carbon")
+    expect(style.forearmPattern).toBe("flame")
+    expect(customCueDetails().wrapPattern).toBe("braid")
+    expect(customCueDetails().inlayPattern).toBe("feather")
   })
 
   it("ignores invalid stored colour values", () => {

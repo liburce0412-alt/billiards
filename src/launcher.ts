@@ -16,6 +16,11 @@ import {
   savedTableStyleId,
   TABLE_STYLES,
 } from "./view/tablestyle"
+import {
+  ENVIRONMENT_STYLES,
+  saveEnvironmentStyleId,
+  savedEnvironmentStyleId,
+} from "./view/environmentstyle"
 
 const storageKey = "billiards-launcher-selection"
 const onlineUserIdKey = "billiards-online-user-id"
@@ -96,6 +101,7 @@ const defaultSelection: LauncherSelection = {
   player2Cue: "jade",
   cueStyle: "heritage",
   tableStyle: "american-walnut",
+  environmentStyle: "galaxy",
   onlineAction: "create",
   roomCode: "",
   onlinePlayerName: "玩家",
@@ -180,6 +186,10 @@ function readSelection(params: URLSearchParams): LauncherSelection {
     player2Cue: storedString(stored.player2Cue, defaultSelection.player2Cue),
     cueStyle: storedString(stored.cueStyle, savedCueStyleId()),
     tableStyle: storedString(stored.tableStyle, savedTableStyleId()),
+    environmentStyle: storedString(
+      stored.environmentStyle,
+      savedEnvironmentStyleId()
+    ),
     onlineAction:
       joinCode || stored.onlineAction === "join" ? "join" : "create",
     roomCode: joinCode || "",
@@ -244,6 +254,15 @@ function tableOptions(selected: string | undefined) {
   ).join("")
 }
 
+function environmentOptions(selected: string | undefined) {
+  return ENVIRONMENT_STYLES.map(
+    (style) =>
+      `<option value="${style.id}" ${
+        selected === style.id ? "selected" : ""
+      }>${style.name} · ${style.description}</option>`
+  ).join("")
+}
+
 function launcherMarkup(selection: LauncherSelection) {
   const levelOptions = levelNames
     .map(
@@ -299,7 +318,7 @@ function launcherMarkup(selection: LauncherSelection) {
           </div>
 
           <details id="launcherAdvanced" class="launcher-advanced">
-            <summary>比赛设置 <span>AI、画质、球杆与球台</span></summary>
+            <summary>比赛设置 <span>AI、画质、装备与环境</span></summary>
             <div class="launcher-advanced__content">
               <div class="launcher-controls">
                 <fieldset id="aiSettings" class="launcher-fieldset">
@@ -324,6 +343,10 @@ function launcherMarkup(selection: LauncherSelection) {
                 <label class="launcher-input">
                   <span>球台样式</span>
                   <select name="tableStyle">${tableOptions(selection.tableStyle)}</select>
+                </label>
+                <label class="launcher-input">
+                  <span>周围环境</span>
+                  <select name="environmentStyle">${environmentOptions(selection.environmentStyle)}</select>
                 </label>
               </div>
 
@@ -402,6 +425,7 @@ function selectionFromForm(form: HTMLFormElement): LauncherSelection {
     player2Cue: String(data.get("player2Cue") ?? "jade"),
     cueStyle: String(data.get("cueStyle") ?? "heritage"),
     tableStyle: String(data.get("tableStyle") ?? "american-walnut"),
+    environmentStyle: String(data.get("environmentStyle") ?? "galaxy"),
     onlineAction: data.get("onlineAction") as LauncherOnlineAction,
     roomCode: normaliseRoomCode(String(data.get("roomCode") ?? "")),
     onlinePlayerName: String(data.get("onlinePlayerName") ?? ""),
@@ -541,6 +565,7 @@ function initialiseLauncher(params: URLSearchParams) {
     current.onlineUserId = persistentOnlineUserId()
     saveCueStyleId(current.cueStyle ?? "heritage")
     saveTableStyleId(current.tableStyle ?? "american-walnut")
+    saveEnvironmentStyleId(current.environmentStyle ?? "galaxy")
     start.dataset.state = "loading"
     start.disabled = true
     start.querySelector("span")!.textContent = "正在装台…"

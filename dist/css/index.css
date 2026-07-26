@@ -1388,6 +1388,30 @@ body.analysis-mode #commentMenu {
   cursor: pointer;
 }
 
+.cue-customizer__patterns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.cue-customizer__patterns label {
+  display: grid;
+  gap: 5px;
+  color: #aaa8a1;
+  font-size: 10px;
+}
+
+.cue-customizer__patterns select {
+  min-width: 0;
+  height: 36px;
+  padding: 0 8px;
+  color: #ece6dc;
+  background: #18262a;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 8px;
+}
+
 .cue-customizer__actions {
   display: grid;
   grid-template-columns: 1fr 1fr;

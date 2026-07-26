@@ -16,6 +16,10 @@ import {
   Shape,
   ShapeGeometry,
   TorusGeometry,
+  DataTexture,
+  RGBAFormat,
+  RepeatWrapping,
+  UnsignedByteType,
 } from "three"
 import { CueStyle, cueStyleById } from "./cuestyle"
 
@@ -128,6 +132,7 @@ export class CueMesh {
     string,
     Record<string, MeshPhysicalMaterial>
   >()
+  private static readonly patternTextures = new Map<string, DataTexture>()
 
   static createCue(tip, but, length, styleId?: string): CueMeshes {
     const cueBody = this.cueGeometry(tip, but, length)
@@ -192,6 +197,8 @@ export class CueMesh {
     const ringPositions = [
       -length / 2 + capLength,
       -length / 2 + capLength + sleeveLength,
+      -length / 2 + capLength + sleeveLength + wrapLength * 0.08,
+      -length / 2 + capLength + sleeveLength + wrapLength * 0.92,
       -length / 2 + capLength + sleeveLength + wrapLength,
       -length / 2 + buttLength,
     ]
@@ -205,6 +212,7 @@ export class CueMesh {
         ),
         placeholder
       )
+      ring.userData.cueRingRank = index + 1
       addPart(ring, "accent", positionY)
     })
 
@@ -366,6 +374,10 @@ export class CueMesh {
       if (pattern) {
         object.visible = pattern === style.inlayPattern
       }
+      const ringRank = object.userData.cueRingRank
+      if (ringRank) {
+        object.visible = ringRank <= (style.ringCount ?? 4)
+      }
       const role = object.userData.cueRole
       if (role && materials[role]) {
         object.material = materials[role]
@@ -387,6 +399,11 @@ export class CueMesh {
       style.accent,
       style.ferrule,
       style.tip,
+      style.shaftPattern,
+      style.forearmPattern,
+      style.wrapPattern,
+      style.inlayPattern,
+      style.ringCount,
     ].join(":")
     const cached = this.styleMaterials.get(cacheKey)
     if (cached) return cached
@@ -421,7 +438,93 @@ export class CueMesh {
       ferrule: material(style.ferrule, 0.2, 0.02, 0.5),
       tip: material(style.tip, 0.82, 0, 0),
     }
+    materials.shaft.map = this.patternTexture(style.shaftPattern ?? "maple")
+    materials.forearm.map = this.patternTexture(
+      style.forearmPattern ?? "straight"
+    )
+    materials.sleeve.map = materials.forearm.map
+    materials.wrap.map = this.patternTexture(style.wrapPattern ?? "linen")
+    materials.wrapThread.map = materials.wrap.map
+    for (const textured of [
+      materials.shaft,
+      materials.forearm,
+      materials.sleeve,
+      materials.wrap,
+      materials.wrapThread,
+    ]) {
+      textured.needsUpdate = true
+    }
     this.styleMaterials.set(cacheKey, materials)
     return materials
+  }
+
+  private static patternTexture(pattern: string): DataTexture {
+    const cached = this.patternTextures.get(pattern)
+    if (cached) return cached
+    const width = 64
+    const height = 128
+    const data = new Uint8Array(width * height * 4)
+    let seed = [...pattern].reduce(
+      (total, char) => total + char.charCodeAt(0),
+      0
+    )
+    const random = () => {
+      seed = (seed * 1664525 + 1013904223) >>> 0
+      return seed / 0x100000000
+    }
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const value = this.patternChannel(pattern, x, y, random)
+        const index = (y * width + x) * 4
+        const channel = Math.max(112, Math.min(255, value))
+        data[index] = channel
+        data[index + 1] = channel
+        data[index + 2] = channel
+        data[index + 3] = 255
+      }
+    }
+    const texture = new DataTexture(
+      data,
+      width,
+      height,
+      RGBAFormat,
+      UnsignedByteType
+    )
+    texture.wrapS = texture.wrapT = RepeatWrapping
+    texture.repeat.set(
+      pattern === "carbon" ? 4 : 2,
+      pattern === "linen" ? 6 : 2
+    )
+    texture.needsUpdate = true
+    this.patternTextures.set(pattern, texture)
+    return texture
+  }
+
+  private static patternChannel(
+    pattern: string,
+    x: number,
+    y: number,
+    random: () => number
+  ): number {
+    switch (pattern) {
+      case "carbon":
+        return (Math.floor((x + y) / 5) % 2) * 30 + 168
+      case "linen":
+        return x % 5 === 0 || y % 9 === 0 ? 184 : 226
+      case "leather":
+        return 205 + Math.floor(random() * 30)
+      case "braid":
+        return (x + y * 2) % 12 < 4 ? 178 : 228
+      case "burl":
+        return (
+          194 + Math.floor(34 * Math.sin(x * 0.28 + Math.sin(y * 0.16) * 2))
+        )
+      case "flame":
+        return 205 + Math.floor(30 * Math.sin(x * 0.18 + y * 0.08))
+      case "ash":
+        return 214 + Math.floor(22 * Math.sin(x * 0.24 + y * 0.03))
+      default:
+        return 224 + Math.floor(18 * Math.sin(x * 0.12 + y * 0.025))
+    }
   }
 }

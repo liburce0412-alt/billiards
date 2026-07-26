@@ -1,4 +1,14 @@
-import { MeshStandardMaterial, Object3D } from "three"
+import {
+  BoxGeometry,
+  Group,
+  Mesh,
+  MeshPhysicalMaterial,
+  MeshStandardMaterial,
+  Object3D,
+  TorusGeometry,
+} from "three"
+import { R } from "../model/physics/constants"
+import { TableGeometry } from "./tablegeometry"
 
 export type TableProfile = "american" | "chinese"
 
@@ -143,12 +153,13 @@ export function tableAssetForStyle(
   const poolRule = ["eightball", "nineball", "fourball"].includes(ruleName)
   const style = tableStyleById(styleId)
   return poolRule && style.profile === "chinese"
-    ? "models/snooker.min.gltf"
+    ? "models/chinese-pool.min.gltf"
     : defaultAsset
 }
 
 export function applyTableStyle(root: Object3D, styleId: string): TableStyle {
   const style = tableStyleById(styleId)
+  if (style.profile === "chinese") addChineseTableDetails(root, style)
   root.traverse((object: any) => {
     if (!object.isMesh) return
     const objectName = object.name?.toLowerCase() ?? ""
@@ -183,6 +194,67 @@ export function applyTableStyle(root: Object3D, styleId: string): TableStyle {
     }
   })
   return style
+}
+
+function addChineseTableDetails(root: Object3D, style: TableStyle) {
+  let details = root.getObjectByName("chinese-steel-cushion-details") as
+    Group | undefined
+  if (!details) {
+    details = new Group()
+    details.name = "chinese-steel-cushion-details"
+    const material = new MeshPhysicalMaterial({
+      color: style.accent,
+      metalness: 0.82,
+      roughness: 0.22,
+      clearcoat: 0.5,
+    })
+    material.name = "chinese-steel-trim"
+    const railWidth = R * 0.16
+    const railHeight = R * 0.12
+    const horizontal = new BoxGeometry(
+      TableGeometry.X * 2 + R * 5,
+      railWidth,
+      railHeight
+    )
+    const vertical = new BoxGeometry(
+      railWidth,
+      TableGeometry.Y * 2 + R * 5,
+      railHeight
+    )
+    for (const y of [-TableGeometry.Y - R * 1.45, TableGeometry.Y + R * 1.45]) {
+      const rail = new Mesh(horizontal, material)
+      rail.position.set(0, y, R * 0.44)
+      details.add(rail)
+    }
+    for (const x of [-TableGeometry.X - R * 1.45, TableGeometry.X + R * 1.45]) {
+      const rail = new Mesh(vertical, material)
+      rail.position.set(x, 0, R * 0.44)
+      details.add(rail)
+    }
+    const pocketPositions = [
+      [-TableGeometry.X, -TableGeometry.Y],
+      [-TableGeometry.X, TableGeometry.Y],
+      [TableGeometry.X, -TableGeometry.Y],
+      [TableGeometry.X, TableGeometry.Y],
+      [0, -TableGeometry.Y],
+      [0, TableGeometry.Y],
+    ]
+    for (const [x, y] of pocketPositions) {
+      const collar = new Mesh(
+        new TorusGeometry(R * 1.28, R * 0.1, 8, 28),
+        material
+      )
+      collar.position.set(x, y, -R * 0.08)
+      details.add(collar)
+    }
+    root.add(details)
+  }
+  details.traverse((object: any) => {
+    if (object.material?.name === "chinese-steel-trim") {
+      object.material.color.setHex(style.accent)
+      object.material.needsUpdate = true
+    }
+  })
 }
 
 function configure(
