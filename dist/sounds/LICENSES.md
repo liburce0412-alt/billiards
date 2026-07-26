@@ -30,3 +30,9 @@ Retrieved: 2026-07-23
 The original `cue.ogg`, `cushion.ogg`, `pot.ogg`, `success.ogg` and
 `ballcollision.ogg` files predate this sound refresh and remain covered by the
 repository's existing licensing history.
+
+The `cue-02/03.ogg`, `cushion-02/03.ogg`, `pot-mouth-02/03.ogg`,
+`pot-roll-01/02/03.ogg` and `pot-drop-01/02/03.ogg` variants are mechanical
+filter, timing and pitch derivatives of those existing project recordings.
+They are distributed under the repository's GPL-3.0 license. The variants were
+created locally with FFmpeg 8.1.2; no external sound was added.

@@ -11,17 +11,8 @@ import { Outcome, OutcomeType } from "../model/outcome"
 import { R } from "../model/physics/constants"
 import { getRenderQuality } from "./renderquality"
 import { gainForImpact } from "../utils/impactgain"
-
-type SoundKey = "collision" | "cue" | "cushion" | "pot" | "success"
+import { AUDIO_BANKS, AudioBankDefinition, SoundKey } from "./audiobank"
 type Voice = ThreeAudio | PositionalAudio
-
-const definitions: Record<SoundKey, { paths: string[]; spatial: boolean }> = {
-  collision: { paths: ["sounds/ballcollision.ogg"], spatial: true },
-  cue: { paths: ["sounds/cue.ogg"], spatial: true },
-  cushion: { paths: ["sounds/cushion.ogg"], spatial: true },
-  pot: { paths: ["sounds/pot.ogg"], spatial: true },
-  success: { paths: ["sounds/success.ogg"], spatial: false },
-}
 
 export class Sound {
   listener: AudioListener
@@ -29,7 +20,9 @@ export class Sound {
   readonly root = new Group()
   private readonly pools = new Map<SoundKey, Voice[]>()
   private readonly cursors = new Map<SoundKey, number>()
+  private readonly voiceStartedAt = new WeakMap<Voice, number>()
   private readonly contactPosition = new Vector3()
+  private readonly maxConcurrentVoices = 18
   lastOutcomeTime = 0
   lastOutcomeIndex = 0
   lastOutcomesRef: Outcome[] | null = null
@@ -39,20 +32,40 @@ export class Sound {
 
     this.listener = new AudioListener()
     this.audioLoader = new AudioLoader()
-    for (const [key, definition] of Object.entries(definitions)) {
-      this.loadPool(key as SoundKey, definition.paths, definition.spatial)
+    this.configureMasterMixer()
+    for (const [key, definition] of Object.entries(AUDIO_BANKS)) {
+      this.loadPool(key as SoundKey, definition)
     }
   }
 
-  private loadPool(key: SoundKey, paths: string[], spatial: boolean) {
-    const voicesPerBuffer = Math.max(2, Math.ceil(4 / paths.length))
-    paths.forEach((path) => {
+  private configureMasterMixer() {
+    const compressor = this.listener.context.createDynamicsCompressor()
+    compressor.threshold.value = -12
+    compressor.knee.value = 18
+    compressor.ratio.value = 5
+    compressor.attack.value = 0.003
+    compressor.release.value = 0.18
+    this.listener.setFilter(compressor)
+
+    try {
+      const stored = Number.parseFloat(
+        globalThis.localStorage?.getItem("break-builder.master-volume") ?? "0.8"
+      )
+      this.listener.setMasterVolume(Number.isFinite(stored) ? stored : 0.8)
+    } catch {
+      this.listener.setMasterVolume(0.8)
+    }
+  }
+
+  private loadPool(key: SoundKey, definition: AudioBankDefinition) {
+    definition.paths.forEach((path) => {
       this.audioLoader.load(
         path,
         (buffer) => {
-          const useSpatial = spatial && getRenderQuality().name !== "low"
+          const useSpatial =
+            definition.spatial && getRenderQuality().name !== "low"
           const voices = this.pools.get(key) ?? []
-          for (let i = 0; i < voicesPerBuffer; i++) {
+          for (let i = 0; i < definition.voicesPerSample; i++) {
             const voice = useSpatial
               ? new PositionalAudio(this.listener)
               : new ThreeAudio(this.listener)
@@ -100,6 +113,19 @@ export class Sound {
 
     const voices = this.pools.get(key)
     if (!voices?.length) return
+    const activeVoices = [...this.pools.values()]
+      .flat()
+      .filter((voice) => voice.isPlaying)
+    if (activeVoices.length >= this.maxConcurrentVoices) {
+      const oldest = activeVoices.reduce((candidate, voice) =>
+        (this.voiceStartedAt.get(voice) ?? 0) <
+        (this.voiceStartedAt.get(candidate) ?? 0)
+          ? voice
+          : candidate
+      )
+      oldest.stop()
+    }
+
     const cursor = this.cursors.get(key) ?? 0
     const orderedVoices = voices.map(
       (_, index) => voices[(cursor + index) % voices.length]
@@ -110,11 +136,12 @@ export class Sound {
     if (voice.isPlaying) voice.stop()
 
     voice.setVolume(MathUtils.clamp(volume, 0, 1))
-    voice.setDetune(detune + MathUtils.randFloat(-22, 22))
+    voice.setDetune(detune + MathUtils.randFloat(-12, 12))
     if (position && voice instanceof PositionalAudio) {
       voice.position.copy(position)
       voice.updateMatrixWorld(true)
     }
+    this.voiceStartedAt.set(voice, context.currentTime + delay)
     voice.play(delay)
   }
 
@@ -139,8 +166,9 @@ export class Sound {
       )
     } else if (outcome.type === OutcomeType.Pot) {
       const gain = gainForImpact(outcome.incidentSpeed, 3, 0.85)
-      this.play("pot", gain, -180, position)
-      this.play("pot", gain * 0.45, -720, position, 0.055)
+      this.play("potMouth", gain, -80, position)
+      this.play("potRoll", gain * 0.38, -160, position, 0.045)
+      this.play("potDrop", gain * 0.58, -240, position, 0.13)
     } else if (outcome.type === OutcomeType.Cushion) {
       this.play(
         "cushion",
@@ -159,13 +187,15 @@ export class Sound {
   }
 
   processOutcomes(outcomes: Outcome[]) {
-    if (
+    if (outcomes !== this.lastOutcomesRef) {
+      this.lastOutcomeTime = -1
+      this.lastOutcomeIndex = 0
+      this.lastOutcomesRef = outcomes
+    } else if (
       this.lastOutcomeTime === -1 ||
-      outcomes !== this.lastOutcomesRef ||
       this.lastOutcomeIndex > outcomes.length
     ) {
       this.lastOutcomeIndex = 0
-      this.lastOutcomesRef = outcomes
     }
 
     for (let i = this.lastOutcomeIndex; i < outcomes.length; i++) {
@@ -180,7 +210,7 @@ export class Sound {
   }
 
   playNotify() {
-    this.play("pot", 0.7)
+    this.play("potMouth", 0.7)
   }
 
   playSuccess(pitch) {
