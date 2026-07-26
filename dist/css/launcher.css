@@ -236,6 +236,35 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   gap: var(--space-xs);
 }
 
+.launcher-advanced {
+  border: var(--rule-hair) solid rgb(164 225 213 / 14%);
+  border-radius: var(--radius-md);
+  background: rgb(18 55 62 / 58%);
+}
+
+.launcher-advanced summary {
+  min-height: 3rem;
+  padding-inline: var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.launcher-advanced summary span {
+  color: var(--color-neutral);
+  font-size: var(--text-xs);
+}
+
+.launcher-advanced__content {
+  padding: var(--space-md);
+  display: grid;
+  gap: var(--space-lg);
+  border-top: var(--rule-hair) solid var(--color-rule);
+}
+
 .mode-option {
   width: 100%;
   min-width: 0;
@@ -450,6 +479,17 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   min-width: 0;
   min-height: 3rem;
   padding: 0 var(--space-sm);
+  border: var(--rule-hair) solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-paper-2);
+  color: var(--color-ink);
+  font: inherit;
+}
+
+.launcher-input select {
+  width: 100%;
+  min-height: 3rem;
+  padding-inline: var(--space-sm);
   border: var(--rule-hair) solid var(--color-rule);
   border-radius: var(--radius-sm);
   background-color: var(--color-paper-2);
@@ -730,30 +770,60 @@ html.launcher-mode body > :not(#gameLauncher, script) {
     top: var(--space-2xl);
     align-self: start;
   }
-}
 
-@media (width >= 60rem) and (height < 52rem) {
-  .launcher-layout {
-    padding-block: var(--space-xl);
-  }
-
-  .launcher-form {
-    gap: var(--space-lg);
+  .mode-index {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .mode-option {
     min-height: 4.5rem;
     padding-block: var(--space-sm);
   }
+
+  .mode-option:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (width >= 60rem) and (height < 52rem) {
+  .launcher-layout {
+    padding-block: var(--space-md);
+  }
+
+  .launcher-form {
+    gap: var(--space-md);
+  }
+
+  .mode-option {
+    min-height: 4rem;
+  }
+
+  .launcher-intro h1 {
+    font-size: clamp(3rem, 5.2vw, 5.4rem);
+  }
+
+  .launcher-lede {
+    margin-top: var(--space-md);
+  }
+
+  .launcher-facts {
+    margin-top: var(--space-lg);
+  }
 }
 
 @media (width < 40rem) {
+  .launcher-form {
+    animation: none;
+    transform: none;
+  }
+
   .launcher-nav__links .launcher-lobby:first-child {
     display: none;
   }
 
   .launcher-shell {
     padding-inline: max(var(--space-md), env(safe-area-inset-left));
+    padding-bottom: 7rem;
   }
 
   .launcher-intro h1 {
@@ -773,7 +843,10 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   }
 
   .launcher-action {
-    bottom: var(--space-xs);
+    position: fixed;
+    right: var(--space-sm);
+    bottom: max(var(--space-xs), env(safe-area-inset-bottom));
+    left: var(--space-sm);
   }
 
   .launcher-action p {

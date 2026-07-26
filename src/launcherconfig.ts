@@ -15,6 +15,8 @@ export interface LauncherSelection {
   player2Name?: string
   player1Cue?: string
   player2Cue?: string
+  cueStyle?: string
+  tableStyle?: string
   onlineAction?: LauncherOnlineAction
   roomCode?: string
   onlinePlayerName?: string

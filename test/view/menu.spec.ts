@@ -20,6 +20,7 @@ beforeEach(function (done) {
   globalThis.localStorage.removeItem(CUE_STYLE_STORAGE_KEY)
   globalThis.localStorage.removeItem(CUSTOM_CUE_STYLE_STORAGE_KEY)
   globalThis.localStorage.removeItem(TABLE_STYLE_STORAGE_KEY)
+  globalThis.localStorage.removeItem("break-builder.controls-seen.v2")
   container = new Container({
     element: document.getElementById("viewP1"),
     log: (_) => {},
@@ -73,9 +74,7 @@ describe("Menu", () => {
   })
 
   it("applies a personalised cue colour combination", () => {
-    fireEvent.click(
-      document.getElementById("cueStyle") as HTMLButtonElement
-    )
+    fireEvent.click(document.getElementById("cueStyle") as HTMLButtonElement)
     const selector = document.getElementById("cueSelector")!
     const forearm = selector.querySelector(
       "[data-custom-cue-colour='forearm']"
@@ -113,6 +112,30 @@ describe("Menu", () => {
       container.view.camera.aimView
     )
     done()
+  })
+
+  it("opens the unified settings drawer and remembers the tutorial", () => {
+    const tutorial = document.getElementById("controlTutorial")!
+    expect(tutorial.hasAttribute("hidden")).to.be.false
+    fireEvent.click(
+      document.getElementById("controlTutorialClose") as HTMLButtonElement
+    )
+    expect(tutorial.hasAttribute("hidden")).to.be.true
+    expect(
+      globalThis.localStorage.getItem("break-builder.controls-seen.v2")
+    ).to.equal("acknowledged")
+
+    const menu = document.getElementById("menu") as HTMLButtonElement
+    fireEvent.click(menu)
+    const drawer = document.getElementById("gameSettingsDrawer")!
+    expect(drawer.hasAttribute("hidden")).to.be.false
+    expect(menu.getAttribute("aria-expanded")).to.equal("true")
+
+    fireEvent.click(
+      document.getElementById("gameSettingsClose") as HTMLButtonElement
+    )
+    expect(drawer.hasAttribute("hidden")).to.be.true
+    expect(menu.getAttribute("aria-expanded")).to.equal("false")
   })
 
   it("concede notification buttons clear the notification", (done) => {

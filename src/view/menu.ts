@@ -14,6 +14,8 @@ import {
 import { TABLE_STYLES } from "./tablestyle"
 
 export class Menu {
+  private static readonly settingsStorageVersion =
+    "break-builder.controls-seen.v2"
   container: Container
   share: HTMLButtonElement
   diagram: HTMLButtonElement
@@ -55,9 +57,11 @@ export class Menu {
     }
     if (this.menu) {
       this.menu.onclick = (_) => {
-        this.toggleHelpOverlay()
+        this.toggleSettingsDrawer()
       }
     }
+    this.initSettingsDrawer()
+    this.initControlTutorial()
     this.initCueSelector()
     this.initTableSelector()
     const closeBtn = document.getElementById("helpClose")
@@ -169,6 +173,107 @@ export class Menu {
         overlay.setAttribute("hidden", "true")
       }
     }
+  }
+
+  private toggleSettingsDrawer(forceOpen?: boolean) {
+    const drawer = document.getElementById("gameSettingsDrawer")
+    if (!drawer) return
+    const opening = forceOpen ?? drawer.hasAttribute("hidden")
+    drawer.toggleAttribute("hidden", !opening)
+    drawer.setAttribute("aria-hidden", String(!opening))
+    this.menu?.setAttribute("aria-expanded", String(opening))
+    if (opening) {
+      document.getElementById("cueSelector")?.setAttribute("hidden", "true")
+      document.getElementById("tableSelector")?.setAttribute("hidden", "true")
+      document.getElementById("gameSettingsClose")?.focus()
+    }
+  }
+
+  private initSettingsDrawer() {
+    this.menu?.setAttribute("aria-controls", "gameSettingsDrawer")
+    this.menu?.setAttribute("aria-expanded", "false")
+    document
+      .getElementById("gameSettingsClose")
+      ?.addEventListener("click", () => {
+        this.toggleSettingsDrawer(false)
+        this.menu?.focus()
+      })
+    document.getElementById("settingsCamera")?.addEventListener("click", () => {
+      this.adjustCamera()
+    })
+    document.getElementById("settingsHelp")?.addEventListener("click", () => {
+      this.toggleSettingsDrawer(false)
+      this.showOverlay("help.html")
+    })
+    document.getElementById("settingsCue")?.addEventListener("click", () => {
+      this.toggleSettingsDrawer(false)
+      this.cueStyle?.click()
+    })
+    document.getElementById("settingsTable")?.addEventListener("click", () => {
+      this.toggleSettingsDrawer(false)
+      this.tableStyle?.click()
+    })
+
+    const volume = document.getElementById(
+      "settingsVolume"
+    ) as HTMLInputElement | null
+    if (volume) {
+      const stored = Number.parseFloat(
+        globalThis.localStorage?.getItem("break-builder.master-volume") ?? "0.8"
+      )
+      volume.value = String(Number.isFinite(stored) ? stored : 0.8)
+      this.container.sound.listener?.setMasterVolume(Number(volume.value))
+      volume.addEventListener("input", () => {
+        const value = Number(volume.value)
+        this.container.sound.listener?.setMasterVolume(value)
+        globalThis.localStorage?.setItem(
+          "break-builder.master-volume",
+          String(value)
+        )
+      })
+    }
+
+    const quality = document.getElementById(
+      "settingsQuality"
+    ) as HTMLSelectElement | null
+    if (quality) {
+      const params = new URLSearchParams(globalThis.location.search)
+      quality.value = params.get("quality") ?? "balanced"
+      quality.addEventListener("change", () => {
+        const next = new URL(globalThis.location.href)
+        next.searchParams.set("quality", quality.value)
+        globalThis.location.assign(next)
+      })
+    }
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") this.toggleSettingsDrawer(false)
+    })
+  }
+
+  private initControlTutorial() {
+    const tutorial = document.getElementById("controlTutorial")
+    const close = document.getElementById("controlTutorialClose")
+    if (!tutorial || !close) return
+    let seen = false
+    try {
+      seen =
+        localStorage.getItem(Menu.settingsStorageVersion) === "acknowledged"
+    } catch {
+      // Treat unavailable storage as a first visit.
+    }
+    if (!seen) {
+      tutorial.removeAttribute("hidden")
+      close.focus()
+    }
+    close.addEventListener("click", () => {
+      tutorial.setAttribute("hidden", "true")
+      try {
+        localStorage.setItem(Menu.settingsStorageVersion, "acknowledged")
+      } catch {
+        // Tutorial still closes when storage is unavailable.
+      }
+    })
   }
 
   private initCueSelector() {
@@ -288,15 +393,12 @@ export class Menu {
             })
           return
         }
-        const colours: Partial<
-          Record<keyof CustomCueColours, string>
-        > = {}
+        const colours: Partial<Record<keyof CustomCueColours, string>> = {}
         options
           .querySelectorAll<HTMLInputElement>("[data-custom-cue-colour]")
           .forEach((input) => {
             const key = input.dataset.customCueColour as
-              | keyof CustomCueColours
-              | undefined
+              keyof CustomCueColours | undefined
             if (key) colours[key] = input.value
           })
         saveCustomCueColours(colours)
@@ -306,9 +408,7 @@ export class Menu {
         return
       }
 
-      const button = target?.closest(
-        "[data-cue-style]"
-      ) as HTMLElement | null
+      const button = target?.closest("[data-cue-style]") as HTMLElement | null
       const styleId = button?.dataset.cueStyle
       if (!styleId) return
       this.container.table.cue.setStyle(styleId)

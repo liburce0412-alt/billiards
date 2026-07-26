@@ -10,7 +10,12 @@ import {
   normaliseRoomCode,
   shouldShowLauncher,
 } from "./launcherconfig"
-import { CUE_STYLES } from "./view/cuestyle"
+import { CUE_STYLES, saveCueStyleId, savedCueStyleId } from "./view/cuestyle"
+import {
+  saveTableStyleId,
+  savedTableStyleId,
+  TABLE_STYLES,
+} from "./view/tablestyle"
 
 const storageKey = "billiards-launcher-selection"
 const onlineUserIdKey = "billiards-online-user-id"
@@ -89,6 +94,8 @@ const defaultSelection: LauncherSelection = {
   player2Name: "玩家二",
   player1Cue: "heritage",
   player2Cue: "jade",
+  cueStyle: "heritage",
+  tableStyle: "american-walnut",
   onlineAction: "create",
   roomCode: "",
   onlinePlayerName: "玩家",
@@ -171,6 +178,8 @@ function readSelection(params: URLSearchParams): LauncherSelection {
     player2Name: storedString(stored.player2Name, defaultSelection.player2Name),
     player1Cue: storedString(stored.player1Cue, defaultSelection.player1Cue),
     player2Cue: storedString(stored.player2Cue, defaultSelection.player2Cue),
+    cueStyle: storedString(stored.cueStyle, savedCueStyleId()),
+    tableStyle: storedString(stored.tableStyle, savedTableStyleId()),
     onlineAction:
       joinCode || stored.onlineAction === "join" ? "join" : "create",
     roomCode: joinCode || "",
@@ -226,6 +235,15 @@ function cueOptions(selected: string | undefined) {
   ).join("")
 }
 
+function tableOptions(selected: string | undefined) {
+  return TABLE_STYLES.map(
+    (style) =>
+      `<option value="${style.id}" ${
+        selected === style.id ? "selected" : ""
+      }>${style.name} · ${style.description}</option>`
+  ).join("")
+}
+
 function launcherMarkup(selection: LauncherSelection) {
   const levelOptions = levelNames
     .map(
@@ -267,7 +285,7 @@ function launcherMarkup(selection: LauncherSelection) {
             <div class="mode-index">${ruleOptions(selection)}</div>
           </fieldset>
 
-          <div class="launcher-controls">
+          <div class="launcher-controls launcher-controls--primary">
             <fieldset class="launcher-fieldset">
               <legend>对手</legend>
               <div class="segment-control segment-control--four">
@@ -278,66 +296,81 @@ function launcherMarkup(selection: LauncherSelection) {
               </div>
             </fieldset>
 
-            <fieldset class="launcher-fieldset">
-              <legend>AI 能力（1 弱 → 11 强）</legend>
-              <label class="level-select">
-                <span class="sr-only">AI 能力档位</span>
-                <select id="botLevel" name="botLevel">${levelOptions}</select>
-              </label>
-            </fieldset>
-
-            <fieldset class="launcher-fieldset">
-              <legend>画质</legend>
-              <div class="segment-control">
-                <label>${checked("quality", "low", selection.quality)}<span>省电</span></label>
-                <label>${checked("quality", "balanced", selection.quality)}<span>均衡</span></label>
-                <label>${checked("quality", "high", selection.quality)}<span>高画质</span></label>
-              </div>
-            </fieldset>
           </div>
 
-          <fieldset id="localSettings" class="launcher-fieldset launcher-detail-panel" hidden>
-            <legend>同屏双方</legend>
-            <div class="player-config-grid">
-              <label>
-                <span>玩家一</span>
-                <input name="player1Name" maxlength="16" value="${escapeAttribute(selection.player1Name)}" />
-                <select name="player1Cue" aria-label="玩家一球杆">${cueOptions(selection.player1Cue)}</select>
-              </label>
-              <label>
-                <span>玩家二</span>
-                <input name="player2Name" maxlength="16" value="${escapeAttribute(selection.player2Name)}" />
-                <select name="player2Cue" aria-label="玩家二球杆">${cueOptions(selection.player2Cue)}</select>
-              </label>
-            </div>
-            <p class="launcher-detail-note">每次换人会同步切换姓名、计分高亮和各自球杆。</p>
-          </fieldset>
-
-          <fieldset id="onlineSettings" class="launcher-fieldset launcher-detail-panel" hidden>
-            <legend>联机房间</legend>
-            <div class="online-config-grid">
-              <div class="segment-control segment-control--two">
-                <label>${checked("onlineAction", "create", selection.onlineAction ?? "create")}<span>创建房间</span></label>
-                <label>${checked("onlineAction", "join", selection.onlineAction ?? "create")}<span>加入房间</span></label>
+          <details id="launcherAdvanced" class="launcher-advanced">
+            <summary>比赛设置 <span>AI、画质、球杆与球台</span></summary>
+            <div class="launcher-advanced__content">
+              <div class="launcher-controls">
+                <fieldset id="aiSettings" class="launcher-fieldset">
+                  <legend>AI 能力（1 弱 → 11 强）</legend>
+                  <label class="level-select">
+                    <span class="sr-only">AI 能力档位</span>
+                    <select id="botLevel" name="botLevel">${levelOptions}</select>
+                  </label>
+                </fieldset>
+                <fieldset class="launcher-fieldset">
+                  <legend>画质</legend>
+                  <div class="segment-control">
+                    <label>${checked("quality", "low", selection.quality)}<span>省电</span></label>
+                    <label>${checked("quality", "balanced", selection.quality)}<span>均衡</span></label>
+                    <label>${checked("quality", "high", selection.quality)}<span>高画质</span></label>
+                  </div>
+                </fieldset>
+                <label class="launcher-input">
+                  <span>局内球杆</span>
+                  <select name="cueStyle">${cueOptions(selection.cueStyle)}</select>
+                </label>
+                <label class="launcher-input">
+                  <span>球台样式</span>
+                  <select name="tableStyle">${tableOptions(selection.tableStyle)}</select>
+                </label>
               </div>
-              <label class="launcher-input">
-                <span>你的名字</span>
-                <input name="onlinePlayerName" maxlength="16" value="${escapeAttribute(selection.onlinePlayerName)}" />
-              </label>
-              <label class="launcher-input">
-                <span>房间码</span>
-                <input id="roomCode" name="roomCode" maxlength="8" autocomplete="off" value="${escapeAttribute(selection.roomCode)}" />
-              </label>
+
+              <fieldset id="localSettings" class="launcher-fieldset launcher-detail-panel" hidden>
+                <legend>同屏双方</legend>
+                <div class="player-config-grid">
+                  <label>
+                    <span>玩家一</span>
+                    <input name="player1Name" maxlength="16" value="${escapeAttribute(selection.player1Name)}" />
+                    <select name="player1Cue" aria-label="玩家一球杆">${cueOptions(selection.player1Cue)}</select>
+                  </label>
+                  <label>
+                    <span>玩家二</span>
+                    <input name="player2Name" maxlength="16" value="${escapeAttribute(selection.player2Name)}" />
+                    <select name="player2Cue" aria-label="玩家二球杆">${cueOptions(selection.player2Cue)}</select>
+                  </label>
+                </div>
+                <p class="launcher-detail-note">每次换人会同步切换姓名、计分高亮和各自球杆。</p>
+              </fieldset>
+
+              <fieldset id="onlineSettings" class="launcher-fieldset launcher-detail-panel" hidden>
+                <legend>联机房间</legend>
+                <div class="online-config-grid">
+                  <div class="segment-control segment-control--two">
+                    <label>${checked("onlineAction", "create", selection.onlineAction ?? "create")}<span>创建房间</span></label>
+                    <label>${checked("onlineAction", "join", selection.onlineAction ?? "create")}<span>加入房间</span></label>
+                  </div>
+                  <label class="launcher-input">
+                    <span>你的名字</span>
+                    <input name="onlinePlayerName" maxlength="16" value="${escapeAttribute(selection.onlinePlayerName)}" />
+                  </label>
+                  <label class="launcher-input">
+                    <span>房间码</span>
+                    <input id="roomCode" name="roomCode" maxlength="8" autocomplete="off" value="${escapeAttribute(selection.roomCode)}" />
+                  </label>
+                </div>
+                <div id="inviteRow" class="invite-row" hidden>
+                  <label class="launcher-input">
+                    <span>邀请链接</span>
+                    <input id="inviteUrl" readonly />
+                  </label>
+                  <button id="copyInvite" type="button">复制邀请</button>
+                </div>
+                <p class="launcher-detail-note">房主先进入球桌，再把邀请链接发给另一台设备。</p>
+              </fieldset>
             </div>
-            <div id="inviteRow" class="invite-row" hidden>
-              <label class="launcher-input">
-                <span>邀请链接</span>
-                <input id="inviteUrl" readonly />
-              </label>
-              <button id="copyInvite" type="button">复制邀请</button>
-            </div>
-            <p class="launcher-detail-note">房主先进入球桌，再把邀请链接发给另一台设备。</p>
-          </fieldset>
+          </details>
 
           <div class="launcher-status" id="launcherStatus" aria-live="polite"></div>
           <div class="launcher-action">
@@ -367,6 +400,8 @@ function selectionFromForm(form: HTMLFormElement): LauncherSelection {
     player2Name: String(data.get("player2Name") ?? ""),
     player1Cue: String(data.get("player1Cue") ?? "heritage"),
     player2Cue: String(data.get("player2Cue") ?? "jade"),
+    cueStyle: String(data.get("cueStyle") ?? "heritage"),
+    tableStyle: String(data.get("tableStyle") ?? "american-walnut"),
     onlineAction: data.get("onlineAction") as LauncherOnlineAction,
     roomCode: normaliseRoomCode(String(data.get("roomCode") ?? "")),
     onlinePlayerName: String(data.get("onlinePlayerName") ?? ""),
@@ -408,9 +443,7 @@ function syncOpponentSettings(
   form: HTMLFormElement,
   selection = selectionFromForm(form)
 ) {
-  const aiSettings = document
-    .querySelector<HTMLElement>("#botLevel")
-    ?.closest<HTMLElement>(".launcher-fieldset")
+  const aiSettings = document.querySelector<HTMLElement>("#aiSettings")
   const localSettings = document.querySelector<HTMLElement>("#localSettings")!
   const onlineSettings = document.querySelector<HTMLElement>("#onlineSettings")!
   const botLevel = document.querySelector<HTMLSelectElement>("#botLevel")!
@@ -422,6 +455,11 @@ function syncOpponentSettings(
   localSettings.hidden = !isLocal
   onlineSettings.hidden = !isOnline
   botLevel.disabled = !isAi
+  if (isLocal || isOnline) {
+    document
+      .querySelector<HTMLDetailsElement>("#launcherAdvanced")
+      ?.setAttribute("open", "")
+  }
 
   if (isOnline) {
     const roomCode = document.querySelector<HTMLInputElement>("#roomCode")!
@@ -501,6 +539,8 @@ function initialiseLauncher(params: URLSearchParams) {
       return
     }
     current.onlineUserId = persistentOnlineUserId()
+    saveCueStyleId(current.cueStyle ?? "heritage")
+    saveTableStyleId(current.tableStyle ?? "american-walnut")
     start.dataset.state = "loading"
     start.disabled = true
     start.querySelector("span")!.textContent = "正在装台…"

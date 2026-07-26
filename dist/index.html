@@ -141,6 +141,84 @@
           <button id="helpClose">关闭</button>
         </div>
       </div>
+      <aside
+        id="gameSettingsDrawer"
+        class="game-settings"
+        aria-labelledby="gameSettingsTitle"
+        aria-hidden="true"
+        hidden
+      >
+        <header class="game-settings__header">
+          <div>
+            <span>比赛设置</span>
+            <h2 id="gameSettingsTitle">球桌控制</h2>
+          </div>
+          <button
+            id="gameSettingsClose"
+            type="button"
+            aria-label="关闭比赛设置"
+          >
+            ×
+          </button>
+        </header>
+        <div class="game-settings__body">
+          <section>
+            <h3>视角与操作</h3>
+            <button id="settingsCamera" type="button">切换 2D / 3D 视角</button>
+            <button id="settingsHelp" type="button">查看操作帮助</button>
+          </section>
+          <section>
+            <h3>声音与画质</h3>
+            <label class="game-settings__field">
+              <span>主音量</span>
+              <input
+                id="settingsVolume"
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value="0.8"
+              />
+            </label>
+            <label class="game-settings__field">
+              <span>画质（切换后重载）</span>
+              <select id="settingsQuality">
+                <option value="low">省电</option>
+                <option value="balanced">均衡</option>
+                <option value="high">高画质</option>
+              </select>
+            </label>
+          </section>
+          <section>
+            <h3>外观</h3>
+            <button id="settingsCue" type="button">选择球杆</button>
+            <button id="settingsTable" type="button">选择球台</button>
+          </section>
+        </div>
+        <a class="game-settings__home" href="/">返回首页</a>
+      </aside>
+      <section
+        id="controlTutorial"
+        class="control-tutorial"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="controlTutorialTitle"
+        hidden
+      >
+        <div class="control-tutorial__card">
+          <span>首次操作提示</span>
+          <h2 id="controlTutorialTitle">自由观察每一杆</h2>
+          <ul>
+            <li><strong>右键拖动</strong>：旋转方位并改变俯仰</li>
+            <li><strong>鼠标滚轮</strong>：自由放大和缩小球台</li>
+            <li><strong>摆自由球</strong>：确认前可拖动，击球后不能重摆</li>
+            <li><strong>AI 击球时</strong>：仍可旋转和缩放视角</li>
+          </ul>
+          <button id="controlTutorialClose" type="button">
+            知道了，开始比赛
+          </button>
+        </div>
+      </section>
       <section
         id="cueSelector"
         class="cue-selector"
