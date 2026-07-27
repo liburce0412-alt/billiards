@@ -12,6 +12,7 @@ describe("Sound", () => {
   it("provides at least three variants for every gameplay sound", () => {
     for (const key of [
       "collision",
+      "collisionBody",
       "cue",
       "cushion",
       "potMouth",

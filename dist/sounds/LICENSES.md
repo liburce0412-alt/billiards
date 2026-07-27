@@ -1,5 +1,26 @@
 # Sound asset licenses
 
+## Dry pool-ball collision transient
+
+Files:
+
+- `ballcollision-dry-01.ogg`
+- `ballcollision-dry-02.ogg`
+- `ballcollision-dry-03.ogg`
+
+Source: [billiard ball clack](https://freesound.org/people/Za-Games/sounds/539854/)
+
+Creator: Za-Games
+
+License: [Creative Commons Zero 1.0](https://creativecommons.org/publicdomain/zero/1.0/)
+
+Changes: The mono preview was high/low-pass filtered, given small EQ and timing
+variations, faded, peak-limited and encoded as Ogg Vorbis. It is used as the
+short dry transient; the lower-volume room recordings below provide body only
+for medium and strong collisions.
+
+Retrieved: 2026-07-27
+
 ## Recorded pool-ball collision variations
 
 Files:

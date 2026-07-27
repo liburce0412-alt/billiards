@@ -1,5 +1,6 @@
 export type SoundKey =
   | "collision"
+  | "collisionBody"
   | "cue"
   | "cushion"
   | "potMouth"
@@ -11,10 +12,21 @@ export interface AudioBankDefinition {
   paths: string[]
   spatial: boolean
   voicesPerSample: number
+  detuneJitterCents?: number
 }
 
 export const AUDIO_BANKS: Record<SoundKey, AudioBankDefinition> = {
   collision: {
+    paths: [
+      "sounds/ballcollision-dry-01.ogg",
+      "sounds/ballcollision-dry-02.ogg",
+      "sounds/ballcollision-dry-03.ogg",
+    ],
+    spatial: true,
+    voicesPerSample: 3,
+    detuneJitterCents: 5,
+  },
+  collisionBody: {
     paths: [
       "sounds/ballcollision-room-01.ogg",
       "sounds/ballcollision-room-02.ogg",
@@ -22,12 +34,14 @@ export const AUDIO_BANKS: Record<SoundKey, AudioBankDefinition> = {
       "sounds/ballcollision-room-04.ogg",
     ],
     spatial: true,
-    voicesPerSample: 2,
+    voicesPerSample: 1,
+    detuneJitterCents: 8,
   },
   cue: {
     paths: ["sounds/cue.ogg", "sounds/cue-02.ogg", "sounds/cue-03.ogg"],
     spatial: true,
     voicesPerSample: 2,
+    detuneJitterCents: 6,
   },
   cushion: {
     paths: [
@@ -37,6 +51,7 @@ export const AUDIO_BANKS: Record<SoundKey, AudioBankDefinition> = {
     ],
     spatial: true,
     voicesPerSample: 2,
+    detuneJitterCents: 8,
   },
   potMouth: {
     paths: [
@@ -46,6 +61,7 @@ export const AUDIO_BANKS: Record<SoundKey, AudioBankDefinition> = {
     ],
     spatial: true,
     voicesPerSample: 2,
+    detuneJitterCents: 8,
   },
   potRoll: {
     paths: [
@@ -55,6 +71,7 @@ export const AUDIO_BANKS: Record<SoundKey, AudioBankDefinition> = {
     ],
     spatial: true,
     voicesPerSample: 1,
+    detuneJitterCents: 10,
   },
   potDrop: {
     paths: [
@@ -64,6 +81,7 @@ export const AUDIO_BANKS: Record<SoundKey, AudioBankDefinition> = {
     ],
     spatial: true,
     voicesPerSample: 1,
+    detuneJitterCents: 10,
   },
   success: {
     paths: ["sounds/success.ogg"],

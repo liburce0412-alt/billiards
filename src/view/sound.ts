@@ -22,7 +22,7 @@ export class Sound {
   private readonly cursors = new Map<SoundKey, number>()
   private readonly voiceStartedAt = new WeakMap<Voice, number>()
   private readonly contactPosition = new Vector3()
-  private readonly maxConcurrentVoices = 18
+  private readonly maxConcurrentVoices = 24
   lastOutcomeTime = 0
   lastOutcomeIndex = 0
   lastOutcomesRef: Outcome[] | null = null
@@ -40,11 +40,11 @@ export class Sound {
 
   private configureMasterMixer() {
     const compressor = this.listener.context.createDynamicsCompressor()
-    compressor.threshold.value = -12
-    compressor.knee.value = 18
-    compressor.ratio.value = 5
-    compressor.attack.value = 0.003
-    compressor.release.value = 0.18
+    compressor.threshold.value = -8
+    compressor.knee.value = 10
+    compressor.ratio.value = 3
+    compressor.attack.value = 0.014
+    compressor.release.value = 0.14
     this.listener.setFilter(compressor)
 
     try {
@@ -136,7 +136,8 @@ export class Sound {
     if (voice.isPlaying) voice.stop()
 
     voice.setVolume(MathUtils.clamp(volume, 0, 1))
-    voice.setDetune(detune + MathUtils.randFloat(-12, 12))
+    const jitter = AUDIO_BANKS[key].detuneJitterCents ?? 12
+    voice.setDetune(detune + MathUtils.randFloat(-jitter, jitter))
     if (position && voice instanceof PositionalAudio) {
       voice.position.copy(position)
       voice.updateMatrixWorld(true)
@@ -158,12 +159,12 @@ export class Sound {
   outcomeToSound(outcome: Outcome) {
     const position = this.outcomePosition(outcome)
     if (outcome.type === OutcomeType.Collision) {
-      this.play(
-        "collision",
-        gainForImpact(outcome.incidentSpeed, 3.6, 1),
-        Math.min(35, outcome.incidentSpeed * 5),
-        position
-      )
+      const gain = gainForImpact(outcome.incidentSpeed, 3.6, 0.94)
+      this.play("collision", gain, 0, position)
+      const bodyGain = MathUtils.smoothstep(gain, 0.18, 0.94) * 0.27
+      if (bodyGain > 0) {
+        this.play("collisionBody", bodyGain, -18, position, 0.008)
+      }
     } else if (outcome.type === OutcomeType.Pot) {
       const gain = gainForImpact(outcome.incidentSpeed, 3, 0.85)
       this.play("potMouth", gain, -80, position)
