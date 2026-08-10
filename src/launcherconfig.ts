@@ -1,3 +1,9 @@
+import {
+  deriveRoomIdentity,
+  normaliseDisplayRoomCode,
+  ROOM_PROTOCOL_VERSION,
+} from "./network/client/roomidentity"
+
 export type LauncherRule =
   "nineball" | "eightball" | "fourball" | "snooker" | "threecushion"
 
@@ -22,15 +28,17 @@ export interface LauncherSelection {
   roomCode?: string
   onlinePlayerName?: string
   onlineUserId?: string
+  roomInstanceId?: string
 }
 
 export const DEFAULT_WEBSOCKET_SERVER = "wss://billiards-network.onrender.com"
 
 export function normaliseRoomCode(value: string): string {
-  return value
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, "")
-    .slice(0, 8)
+  try {
+    return normaliseDisplayRoomCode(value)
+  } catch {
+    return value.normalize("NFKC").trim().replace(/\s+/gu, " ")
+  }
 }
 
 export function generateRoomCode(random: () => number = Math.random): string {
@@ -50,6 +58,7 @@ export function buildInviteUrl(
   url.search = ""
   url.hash = ""
   url.searchParams.set("join", normaliseRoomCode(roomCode))
+  url.searchParams.set("roomVersion", String(ROOM_PROTOCOL_VERSION))
   url.searchParams.set("rule", selection.rule)
   url.searchParams.set("quality", selection.quality)
   if (selection.environmentStyle) {
@@ -74,7 +83,10 @@ export function shouldShowLauncher(params: URLSearchParams) {
   return !directStartKeys.some((key) => params.has(key))
 }
 
-export function buildGameUrl(selection: LauncherSelection, baseHref: string) {
+export async function buildGameUrl(
+  selection: LauncherSelection,
+  baseHref: string
+): Promise<string> {
   const url = new URL(baseHref)
   url.search = ""
   url.hash = ""
@@ -95,13 +107,15 @@ export function buildGameUrl(selection: LauncherSelection, baseHref: string) {
     url.searchParams.set("p1Cue", selection.player1Cue || "heritage")
     url.searchParams.set("p2Cue", selection.player2Cue || "jade")
   } else if (selection.opponent === "online") {
-    const roomCode = normaliseRoomCode(selection.roomCode ?? "")
-    if (roomCode.length < 4) {
-      throw new Error("房间码至少需要 4 位")
-    }
+    const room = await deriveRoomIdentity(selection.roomCode ?? "")
     url.searchParams.set("practice", "false")
     url.searchParams.set("websocketserver", DEFAULT_WEBSOCKET_SERVER)
-    url.searchParams.set("tableId", roomCode)
+    url.searchParams.set("tableId", room.channelId)
+    url.searchParams.set("roomCode", room.displayCode)
+    url.searchParams.set("roomVersion", String(room.protocolVersion))
+    if (selection.roomInstanceId) {
+      url.searchParams.set("roomInstance", selection.roomInstanceId)
+    }
     url.searchParams.set(
       "userName",
       selection.onlinePlayerName?.trim() || "玩家"
@@ -111,6 +125,17 @@ export function buildGameUrl(selection: LauncherSelection, baseHref: string) {
     }
     if (selection.onlineAction !== "join") {
       url.searchParams.set("first", "true")
+      url.searchParams.set(
+        "roomInstance",
+        selection.roomInstanceId ||
+          globalThis.crypto?.randomUUID?.() ||
+          `room-${Date.now().toString(36)}-${generateRoomCode()}`
+      )
+      url.searchParams.set(
+        "matchId",
+        globalThis.crypto?.randomUUID?.() || `match-${generateRoomCode()}`
+      )
+      url.searchParams.set("rack", "1")
     }
   } else {
     const level = Math.max(1, Math.min(11, Math.round(selection.botLevel)))

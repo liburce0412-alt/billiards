@@ -1,4 +1,6 @@
 import { expect } from "chai"
+import { webcrypto } from "node:crypto"
+import { TextEncoder } from "node:util"
 import {
   buildGameUrl,
   buildInviteUrl,
@@ -6,6 +8,16 @@ import {
   normaliseRoomCode,
   shouldShowLauncher,
 } from "../../src/launcherconfig"
+import { normaliseDisplayRoomCode } from "../../src/network/client/roomidentity"
+
+Object.defineProperty(globalThis, "crypto", {
+  configurable: true,
+  value: webcrypto,
+})
+Object.defineProperty(globalThis, "TextEncoder", {
+  configurable: true,
+  value: TextEncoder,
+})
 
 describe("Launcher configuration", () => {
   it("shows the launcher at the bare site root", () => {
@@ -20,9 +32,9 @@ describe("Launcher configuration", () => {
     expect(shouldShowLauncher(new URLSearchParams("state=replay"))).to.be.false
   })
 
-  it("builds a local AI game URL", () => {
+  it("builds a local AI game URL", async () => {
     const url = new URL(
-      buildGameUrl(
+      await buildGameUrl(
         {
           rule: "eightball",
           opponent: "ai",
@@ -42,9 +54,9 @@ describe("Launcher configuration", () => {
     expect(url.hash).to.equal("")
   })
 
-  it("builds a practice URL without a bot", () => {
+  it("builds a practice URL without a bot", async () => {
     const url = new URL(
-      buildGameUrl(
+      await buildGameUrl(
         {
           rule: "snooker",
           opponent: "practice",
@@ -58,9 +70,9 @@ describe("Launcher configuration", () => {
     expect(url.searchParams.has("bot")).to.be.false
   })
 
-  it("builds a local two-player URL with both names and cue styles", () => {
+  it("builds a local two-player URL with both names and cue styles", async () => {
     const url = new URL(
-      buildGameUrl(
+      await buildGameUrl(
         {
           rule: "eightball",
           opponent: "local",
@@ -82,37 +94,38 @@ describe("Launcher configuration", () => {
     expect(url.searchParams.has("bot")).to.equal(false)
   })
 
-  it("builds host and guest URLs for the same online room", () => {
+  it("builds host and guest URLs for the same online room", async () => {
     const host = new URL(
-      buildGameUrl(
+      await buildGameUrl(
         {
           rule: "fourball",
           opponent: "online",
           botLevel: 4,
           quality: "balanced",
           onlineAction: "create",
-          roomCode: "ab-23 cd",
+          roomCode: "银河 房间🎱",
           onlinePlayerName: "房主",
           onlineUserId: "host-id",
         },
         "https://example.test/"
       )
     )
-    expect(host.searchParams.get("tableId")).to.equal("AB23CD")
+    expect(host.searchParams.get("tableId")).to.match(/^bb3d-v2-[0-9a-f]{32}$/)
+    expect(host.searchParams.get("roomCode")).to.equal("银河 房间🎱")
     expect(host.searchParams.get("userName")).to.equal("房主")
     expect(host.searchParams.get("userId")).to.equal("host-id")
     expect(host.searchParams.get("first")).to.equal("true")
     expect(host.searchParams.has("websocketserver")).to.equal(true)
 
     const guest = new URL(
-      buildGameUrl(
+      await buildGameUrl(
         {
           rule: "fourball",
           opponent: "online",
           botLevel: 4,
           quality: "balanced",
           onlineAction: "join",
-          roomCode: "AB23CD",
+          roomCode: "银河　房间🎱",
           onlinePlayerName: "访客",
         },
         "https://example.test/"
@@ -124,19 +137,29 @@ describe("Launcher configuration", () => {
     expect(guest.searchParams.has("first")).to.equal(false)
   })
 
-  it("normalises room codes and creates launcher invite links", () => {
-    expect(normaliseRoomCode(" ab-12_中cd ")).to.equal("AB12CD")
+  it("normalises Unicode room codes and creates launcher invite links", () => {
+    expect(normaliseRoomCode("  银河　房间🎱  ")).to.equal("银河 房间🎱")
     expect(generateRoomCode(() => 0)).to.equal("AAAAAA")
     const invite = new URL(
       buildInviteUrl(
-        "ab12cd",
+        "银河 房间🎱",
         { rule: "nineball", quality: "high" },
         "https://example.test/index.html?play=1"
       )
     )
-    expect(invite.searchParams.get("join")).to.equal("AB12CD")
+    expect(invite.searchParams.get("join")).to.equal("银河 房间🎱")
+    expect(invite.searchParams.get("roomVersion")).to.equal("2")
     expect(invite.searchParams.get("rule")).to.equal("nineball")
     expect(invite.searchParams.get("quality")).to.equal("high")
     expect(invite.searchParams.has("play")).to.equal(false)
+  })
+
+  it("validates visible Unicode room codes without changing letter case", () => {
+    expect(normaliseDisplayRoomCode("Ａbc/桌🎱")).to.equal("Abc/桌🎱")
+    expect(normaliseDisplayRoomCode("👨‍👩‍👧‍👦".repeat(24))).to.equal("👨‍👩‍👧‍👦".repeat(24))
+    expect(() => normaliseDisplayRoomCode("A".repeat(25))).to.throw("最多 24")
+    expect(() => normaliseDisplayRoomCode("房间\u0001")).to.throw("控制字符")
+    expect(() => normaliseDisplayRoomCode("房间\u202eABC")).to.throw("方向字符")
+    expect(() => normaliseDisplayRoomCode("房间\u200bABC")).to.throw("控制字符")
   })
 })

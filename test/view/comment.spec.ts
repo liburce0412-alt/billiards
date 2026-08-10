@@ -12,8 +12,7 @@ let container: Container
 function addMenu() {
   const menu = document.createElement("div")
   menu.id = "commentMenu"
-  menu.className = "comment-menu"
-  menu.style.display = "none"
+  menu.className = "comment-menu comment-menu--hidden"
   menu.innerHTML = `
     <button class="comment-emoji" data-angle="0"></button>
     <button class="comment-emoji">🍀</button>
@@ -58,9 +57,9 @@ describe("Comment", () => {
     const commentBtn = document.getElementById("comment") as HTMLButtonElement
     const menu = document.getElementById("commentMenu") as HTMLDivElement
 
-    expect(menu.style.display).to.equal("none")
+    expect(menu.classList.contains("comment-menu--hidden")).to.equal(true)
     fireEvent.click(commentBtn)
-    expect(menu.style.display).to.equal("grid")
+    expect(menu.classList.contains("comment-menu--hidden")).to.equal(false)
     done()
   })
 
@@ -73,7 +72,7 @@ describe("Comment", () => {
     const firstEmoji = emojiBtns[0] as HTMLButtonElement
     fireEvent.click(firstEmoji)
 
-    expect(menu.style.display).to.equal("none")
+    expect(menu.classList.contains("comment-menu--hidden")).to.equal(true)
     done()
   })
 })

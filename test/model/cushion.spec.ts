@@ -102,25 +102,14 @@ describe("Cushion", () => {
     done()
   })
 
-  it("bounces off X cushion with rolling spin", (done) => {
-    const ball = bounceInXWithSpin(new Vector3(0, 1, 0))
+  it.each([
+    ["rolling", 1],
+    ["top", 2],
+    ["back", -2],
+  ])("bounces off X cushion with %s spin", (_name, spinY) => {
+    const ball = bounceInXWithSpin(new Vector3(0, spinY, 0))
     expect(ball.vel.x).to.be.below(0)
     expect(ball.vel.y).to.be.approximately(0, 0.01)
-    done()
-  })
-
-  it("bounces off X cushion with top spin", (done) => {
-    const ball = bounceInXWithSpin(new Vector3(0, 2, 0))
-    expect(ball.vel.x).to.be.below(0)
-    expect(ball.vel.y).to.be.approximately(0, 0.01)
-    done()
-  })
-
-  it("bounces off X cushion with back spin", (done) => {
-    const ball = bounceInXWithSpin(new Vector3(0, -2, 0))
-    expect(ball.vel.x).to.be.below(0)
-    expect(ball.vel.y).to.be.approximately(0, 0.01)
-    done()
   })
 
   it("bounces off X cushion with top and rhs", (done) => {
@@ -169,7 +158,7 @@ describe("Cushion", () => {
     const pos = new Vector3(
       PocketGeometry.middleKnuckleInset - 0.1 * R,
       -TableGeometry.tableY,
-      0
+      0,
     )
     const ball = new Ball(pos)
     ball.vel.y = -10 * R
@@ -204,7 +193,7 @@ describe("Cushion", () => {
       const deltaB = model(bv, bw)
       expect(deltaB.v.x).to.be.equal(deltaA.v.x)
       expect(deltaB.v.y).to.be.equal(-deltaA.v.y)
-    }
+    },
   )
 
   it.each([
@@ -221,7 +210,7 @@ describe("Cushion", () => {
       const deltaB = model(bv, bw)
       expect(deltaB.v.x).to.be.equal(deltaA.v.x)
       expect(deltaB.v.y).to.be.equal(-deltaA.v.y)
-    }
+    },
   )
 
   it("expect abs(x) velocity to be reduced after bounce", (done) => {

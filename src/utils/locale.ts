@@ -14,6 +14,8 @@ const ZH_TEXT: Record<string, string> = {
   "No cushion after contact": "碰球后没有球触库或落袋",
   "Illegal break: fewer than four object balls reached a cushion":
     "开球犯规：干开时少于四颗目标球触库",
+  "Illegal break: three-ball rule not met": "开球犯规：未满足三球线规则",
+  "Cue ball potted during push-out": "Push-out 时母球落袋",
   "Hitting the 8-ball first is a foul": "过早先击中 8 号球",
   "Must hit 8-ball first": "必须先击中 8 号球",
   "8-ball pocketed early": "过早打进 8 号球",

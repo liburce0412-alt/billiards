@@ -1,6 +1,7 @@
-export type CueInlayPattern = "spear" | "diamond" | "chevron" | "feather"
-export type CueShaftPattern = "maple" | "ash" | "carbon"
-export type CueForearmPattern = "straight" | "burl" | "flame"
+export type CueInlayPattern =
+  "spear" | "diamond" | "chevron" | "feather" | "constellation"
+export type CueShaftPattern = "maple" | "ash" | "carbon" | "radial"
+export type CueForearmPattern = "straight" | "burl" | "flame" | "marble"
 export type CueWrapPattern = "linen" | "leather" | "braid"
 
 export interface CueStyle {
@@ -218,12 +219,12 @@ export function customCueDetails(): CustomCueDetails {
       accent: validColour(stored.accent, DEFAULT_CUSTOM_CUE_COLOURS.accent),
       shaftPattern: validChoice(
         stored.shaftPattern,
-        ["maple", "ash", "carbon"],
+        ["maple", "ash", "carbon", "radial"],
         DEFAULT_CUSTOM_CUE_DETAILS.shaftPattern
       ),
       forearmPattern: validChoice(
         stored.forearmPattern,
-        ["straight", "burl", "flame"],
+        ["straight", "burl", "flame", "marble"],
         DEFAULT_CUSTOM_CUE_DETAILS.forearmPattern
       ),
       wrapPattern: validChoice(
@@ -233,7 +234,7 @@ export function customCueDetails(): CustomCueDetails {
       ),
       inlayPattern: validChoice(
         stored.inlayPattern,
-        ["spear", "diamond", "chevron", "feather"],
+        ["spear", "diamond", "chevron", "feather", "constellation"],
         DEFAULT_CUSTOM_CUE_DETAILS.inlayPattern
       ),
     }
@@ -259,12 +260,12 @@ export function saveCustomCueDetails(
     accent: validColour(values.accent, current.accent),
     shaftPattern: validChoice(
       values.shaftPattern,
-      ["maple", "ash", "carbon"],
+      ["maple", "ash", "carbon", "radial"],
       current.shaftPattern
     ),
     forearmPattern: validChoice(
       values.forearmPattern,
-      ["straight", "burl", "flame"],
+      ["straight", "burl", "flame", "marble"],
       current.forearmPattern
     ),
     wrapPattern: validChoice(
@@ -274,7 +275,7 @@ export function saveCustomCueDetails(
     ),
     inlayPattern: validChoice(
       values.inlayPattern,
-      ["spear", "diamond", "chevron", "feather"],
+      ["spear", "diamond", "chevron", "feather", "constellation"],
       current.inlayPattern
     ),
   }

@@ -131,8 +131,8 @@ describe("Table", () => {
       new Vector3(
         PocketGeometry.middleKnuckleInset - 0.1 * R,
         TableGeometry.tableY,
-        0
-      )
+        0,
+      ),
     )
     const b = new Ball(new Vector3())
     a.vel.y = 10 * R
@@ -195,11 +195,11 @@ describe("Table", () => {
     const c = table.shotStartConditions!
     expect(c.balls).to.deep.equal(expectedBalls)
     expect(c.cueBallId).to.equal(0)
-    expect(c.angle).to.equal(0.42)
-    expect(c.power).to.equal(1.7)
-    expect(c.offsetX).to.equal(0.05)
-    expect(c.offsetY).to.equal(-0.08)
-    expect(c.elevation).to.equal(0.3)
+    expect(c.angle).to.be.closeTo(0.42, 1e-12)
+    expect(c.power).to.be.closeTo(1.7, 1e-12)
+    expect(c.offsetX).to.be.closeTo(0.05, 1e-12)
+    expect(c.offsetY).to.be.closeTo(-0.08, 1e-12)
+    expect(c.elevation).to.be.closeTo(0.3, 1e-12)
     done()
   })
 

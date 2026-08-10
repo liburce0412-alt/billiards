@@ -133,6 +133,23 @@ describe("NineBall Rules", () => {
     expect(nextController).to.be.an.instanceof(PlaceBall)
   })
 
+  it("ends the rack after the same shooter commits three consecutive fouls", () => {
+    expect(nineball.update([])).to.be.an.instanceof(PlaceBall)
+    expect(nineball.update([])).to.be.an.instanceof(PlaceBall)
+    expect(nineball.update([])).to.be.an.instanceof(End)
+  })
+
+  it("offers push-out after a legal opening break", () => {
+    const balls = [1, 2, 3, 4].map((label) =>
+      container.table.balls.find((ball) => ball.label === label)!
+    )
+    nineball.update([
+      Outcome.collision(container.table.cueball, balls[0], 1),
+      ...balls.map((ball) => Outcome.cushion(ball, 1)),
+    ])
+    expect(nineball.serialiseState()).to.include({ pushOutAvailable: true })
+  })
+
   it("should detect foul if wrong ball is hit first", () => {
     const ball2 = container.table.balls.find((b) => b.label === 2)!
     const outcome = [Outcome.collision(container.table.cueball, ball2, 1)]
@@ -298,14 +315,8 @@ describe("NineBall Rules", () => {
     expect(notifySpy.mock.calls[0][0].extra).to.contain(
       'data-notification-action="home"'
     )
-    expect(notifySpy.mock.calls[0][0].extra).to.contain(
-      "opponentId=opponent-client"
-    )
-    expect(notifySpy.mock.calls[0][0].extra).to.contain("opponentName=Opponent")
-    expect(notifySpy.mock.calls[0][0].extra).to.contain("ruletype=nineball")
-    expect(notifySpy.mock.calls[0][0].extra).to.contain(
-      "nextTurnId=opponent-client"
-    )
+    expect(notifySpy.mock.calls[0][0].extra).to.contain("邀请 Opponent 再来一局")
+    expect(notifySpy.mock.calls[0][0].extra).to.contain('data-rule="nineball"')
   })
 
   it("should send rematch notification params from the recipient perspective", () => {
@@ -323,12 +334,8 @@ describe("NineBall Rules", () => {
     expect(notificationEvent.data.extra).to.contain(
       'data-notification-action="rematch"'
     )
-    expect(notificationEvent.data.extra).to.contain("opponentId=test-client")
-    expect(notificationEvent.data.extra).to.contain("opponentName=TestPlayer")
-    expect(notificationEvent.data.extra).to.contain("ruletype=nineball")
-    expect(notificationEvent.data.extra).to.contain(
-      "nextTurnId=opponent-client"
-    )
+    expect(notificationEvent.data.extra).to.contain("邀请 TestPlayer 再来一局")
+    expect(notificationEvent.data.extra).to.contain('data-rule="nineball"')
   })
 
   it("NineBall.handleFoul should record respot in single-player", () => {

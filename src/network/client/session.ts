@@ -28,6 +28,7 @@ export class Session {
   playerIndex: number = 0
   private scoreByClientId: Record<string, number> = {}
   currentBreak: number = 0
+  lastWinnerClientId?: string
   p1type: number = 0
   private localPlayers?: [LocalPlayer, LocalPlayer]
 

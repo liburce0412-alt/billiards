@@ -78,7 +78,7 @@ export class DrillPanel {
       this.container.updateController(
         new DrillReplay(this.container, drill.preShotState, [
           recorder.entries[last].event,
-        ])
+        ]),
       )
     })
 
@@ -219,25 +219,64 @@ export class DrillPanel {
     }
   }
 
-  private update(t: number) {
-    // When the elevation panel is open the Hit button shifts up; lift the drill
-    // buttons so their bottom edge sits just above the Hit button's top. The Hit
-    // button's raised position depends on --ball-size-base (smaller on mobile),
-    // so measure it at runtime instead of hard-coding an offset.
+  private updateElevationOffset() {
     const tilt = document.getElementById("tiltSliderContainer")
     const elevationOpen =
       !!tilt && !(tilt as HTMLElement & { hidden: boolean }).hidden
     this.centerPanel.classList.toggle("elevation-open", elevationOpen)
     const hit = document.getElementById("cueHit")
     const offsetParent = this.centerPanel.offsetParent as HTMLElement | null
-    if (elevationOpen && hit && offsetParent) {
-      const hitRect = hit.getBoundingClientRect()
-      const parentRect = offsetParent.getBoundingClientRect()
-      const bottom = parentRect.bottom - hitRect.top + 12
-      this.centerPanel.style.bottom = `${Math.max(bottom, 0)}px`
-    } else {
+    if (!elevationOpen || !hit || !offsetParent) {
       this.centerPanel.style.bottom = ""
+      return
     }
+    const hitRect = hit.getBoundingClientRect()
+    const parentRect = offsetParent.getBoundingClientRect()
+    const bottom = parentRect.bottom - hitRect.top + 12
+    this.centerPanel.style.bottom = `${Math.max(bottom, 0)}px`
+  }
+
+  private updatePreview(t: number, isAiming: boolean) {
+    if (!this.previewActive) return
+    if (!isAiming) {
+      this.hidePreview()
+      return
+    }
+
+    const a = this.container.table.cue.aim
+    const s = this.previewAimSnapshot!
+    const aimChanged =
+      a.angle !== s.angle ||
+      a.power !== s.power ||
+      a.offset.x !== s.ox ||
+      a.offset.y !== s.oy ||
+      a.elevation !== s.elevation
+
+    if (aimChanged) {
+      this.container.table.showTraces(false)
+      this.container.table.proximityIndicator.hide()
+      this.previewAimSnapshot = {
+        angle: a.angle,
+        power: a.power,
+        ox: a.offset.x,
+        oy: a.offset.y,
+        elevation: a.elevation,
+      }
+      this.pendingPreview = true
+      this.aimStableTime = 0
+      return
+    }
+    if (!this.pendingPreview) return
+    this.aimStableTime += t
+    if (this.aimStableTime >= PREVIEW_DEBOUNCE) this.runPendingPreview()
+  }
+
+  private update(t: number) {
+    // When the elevation panel is open the Hit button shifts up; lift the drill
+    // buttons so their bottom edge sits just above the Hit button's top. The Hit
+    // button's raised position depends on --ball-size-base (smaller on mobile),
+    // so measure it at runtime instead of hard-coding an offset.
+    this.updateElevationOffset()
 
     const stationary = this.container.table.allStationary()
     const ctrl = this.container.controller
@@ -264,39 +303,6 @@ export class DrillPanel {
     // just scoring ones (it scans the same range and shows where it would score).
     this.analyseBtn.disabled = !isAiming || !hasLastShot
 
-    if (this.previewActive) {
-      if (!isAiming) {
-        this.hidePreview()
-        return
-      }
-
-      const a = this.container.table.cue.aim
-      const s = this.previewAimSnapshot!
-      const aimChanged =
-        a.angle !== s.angle ||
-        a.power !== s.power ||
-        a.offset.x !== s.ox ||
-        a.offset.y !== s.oy ||
-        a.elevation !== s.elevation
-
-      if (aimChanged) {
-        this.container.table.showTraces(false)
-        this.container.table.proximityIndicator.hide()
-        this.previewAimSnapshot = {
-          angle: a.angle,
-          power: a.power,
-          ox: a.offset.x,
-          oy: a.offset.y,
-          elevation: a.elevation,
-        }
-        this.pendingPreview = true
-        this.aimStableTime = 0
-      } else if (this.pendingPreview) {
-        this.aimStableTime += t
-        if (this.aimStableTime >= PREVIEW_DEBOUNCE) {
-          this.runPendingPreview()
-        }
-      }
-    }
+    this.updatePreview(t, isAiming)
   }
 }

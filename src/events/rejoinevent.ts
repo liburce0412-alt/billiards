@@ -3,6 +3,14 @@ import { EventType } from "./eventtype"
 import { Controller } from "../controller/controller"
 
 export interface RejoinSnapshot {
+  version?: 2
+  roomInstanceId?: string
+  matchId?: string
+  rackNumber?: number
+  revision?: number
+  winnerClientId?: string
+  breakerClientId?: string
+  stateHash?: string
   table: any
   scores: { p1: number; p2: number; breakScore: number }
   p1ClientId: string

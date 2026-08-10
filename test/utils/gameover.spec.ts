@@ -14,7 +14,7 @@ describe("gameOverButtons", () => {
   })
 
   describe("rematch", () => {
-    it("should include standard rematch parameters", () => {
+    it("keeps rematches inside the current room", () => {
       if (globalThis.history) {
         globalThis.history.replaceState({}, "", "?")
       }
@@ -25,13 +25,13 @@ describe("gameOverButtons", () => {
         "sagu",
         "turn-123"
       )
-      expect(html).toContain("opponentId=opponent-123")
-      expect(html).toContain("opponentName=Alice")
-      expect(html).toContain("ruletype=sagu")
-      expect(html).toContain("nextTurnId=turn-123")
+      expect(html).toContain('data-notification-action="rematch"')
+      expect(html).toContain("邀请 Alice 再来一局")
+      expect(html).toContain('data-rule="sagu"')
+      expect(html).not.toContain("http")
     })
 
-    it("should carry over custom parameters like tableSize and raceTo", () => {
+    it("does not redirect through a lobby URL", () => {
       if (globalThis.history) {
         globalThis.history.replaceState(
           {},
@@ -46,16 +46,9 @@ describe("gameOverButtons", () => {
         "sagu",
         "turn-123"
       )
-      expect(html).toContain("opponentId=opponent-123")
-      expect(html).toContain("opponentName=Alice")
-      expect(html).toContain("ruletype=sagu")
-      expect(html).toContain("nextTurnId=turn-123")
-
-      // Custom params must be carried over
-      expect(html).toContain("tableSize=5")
-      expect(html).toContain("raceTo=5")
-
-      // System params must be excluded
+      expect(html).toContain('data-notification-action="rematch"')
+      expect(html).not.toContain("tableSize=5")
+      expect(html).not.toContain("raceTo=5")
       expect(html).not.toContain("userId=me")
       expect(html).not.toContain("userName=Me")
       expect(html).not.toContain("tableId=t123")

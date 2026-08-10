@@ -324,6 +324,17 @@ export class CueMesh {
         "inlayLight"
       )
     )
+    ;[-0.32, -0.1, 0.13, 0.34].forEach((offset, index) =>
+      addSurfaceInlay(
+        "constellation",
+        diamondGeometry(
+          buttRadius * (index % 2 === 0 ? 0.18 : 0.27),
+          forearmLength * (index % 2 === 0 ? 0.07 : 0.1)
+        ),
+        forearm.position.y + forearmLength * offset,
+        index % 2 === 0 ? "inlayLight" : "accent"
+      )
+    )
 
     const wrapCenter = -length / 2 + capLength + sleeveLength + wrapLength / 2
     for (let i = -6; i <= 6; i++) {
@@ -509,6 +520,8 @@ export class CueMesh {
     switch (pattern) {
       case "carbon":
         return (Math.floor((x + y) / 5) % 2) * 30 + 168
+      case "radial":
+        return 202 + Math.floor(28 * Math.sin(x * 0.42 + y * 0.018))
       case "linen":
         return x % 5 === 0 || y % 9 === 0 ? 184 : 226
       case "leather":
@@ -521,6 +534,14 @@ export class CueMesh {
         )
       case "flame":
         return 205 + Math.floor(30 * Math.sin(x * 0.18 + y * 0.08))
+      case "marble":
+        return (
+          196 +
+          Math.floor(
+            36 * Math.sin(x * 0.19 + Math.sin(y * 0.11) * 2.4) +
+              10 * Math.sin(y * 0.31)
+          )
+        )
       case "ash":
         return 214 + Math.floor(22 * Math.sin(x * 0.24 + y * 0.03))
       default:

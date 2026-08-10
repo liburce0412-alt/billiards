@@ -597,87 +597,50 @@ describe("Snooker", () => {
     })
   })
 
-  it("handleGameEnd determines winner by score in 2 player mode", () => {
-    container.isSinglePlayer = false
-    Session.init("1", "Player A", "table", false)
-    const session = Session.getInstance()
-    session.playerIndex = 0
-    session.opponentName = "Player B"
+  it.each([
+    [10, 20, "YOU LOST", "10 - 20"],
+    [30, 20, "YOU WON", "30 - 20"],
+    [20, 20, "YOU WON", "20 - 20"],
+  ])(
+    "handleGameEnd resolves score %i-%i as %s",
+    (myScore, opponentScore, title, subtext) => {
+      container.isSinglePlayer = false
+      Session.init("1", "Player A", "table", false)
+      const session = Session.getInstance()
+      session.playerIndex = 0
+      session.opponentName = "Player B"
+      session.updateScoresFromNetwork(myScore, opponentScore, 0)
+      const notifySpy = jest.spyOn(container as any, "notifyLocal")
+      const nextController = snooker.handleGameEnd(false)
+      expect(nextController).to.be.instanceOf(End)
+      const call = notifySpy.mock.calls[0][0] as any
+      expect(call).to.deep.include({ title, subtext })
+      Session.reset()
+    }
+  )
 
-    Session.getInstance().updateScoresFromNetwork(10, 20, 0)
-
-    const notifySpy = jest.spyOn(container as any, "notifyLocal")
-
-    // Player A clears the table (isWinner=true in the parameter sense)
-    // But in the NEW logic, handleGameEnd parameter is respected or added to score logic.
-    // In snooker.ts: handleGameEnd(isWinner) -> SnookerScoring.presentGameEnd(..., isWinner, ...)
-    // In matchresult.ts: determineWinner(..., forcedAmIWinner) { return forcedAmIWinner || isWinnerByScore }
-    // If we pass true, it returns true (Player A wins).
-    // Wait, the user said: "2 player mode, player pots final ball in snooker, but should lose on score, sends win to opponent but sends wrong they see lose. fix bug."
-    // This means if player pots final ball BUT loses on score, they SHOULD lose.
-    // My change in determineWinner was: return forcedAmIWinner || isWinnerByScore;
-    // If they pot final ball, they call handleGameEnd(true). So forcedAmIWinner is true. So they win?
-    // THAT IS WRONG. Score should be king.
-
-    const nextController = snooker.handleGameEnd(false)
-
-    expect(nextController).to.be.instanceOf(End)
-    const call = notifySpy.mock.calls[0][0] as any
-    expect(call).to.deep.include({
-      title: "YOU LOST",
-      subtext: "10 - 20",
+  it("serialises referee choices needed for reconnect recovery", () => {
+    snooker.restoreState({
+      previousPotRed: false,
+      targetIsRed: true,
+      foulPoints: 4,
+      nominatedColourId: 6,
+      freeBallAvailable: true,
+      freeBallNomineeId: 4,
+      freeBallOnValue: 1,
+      touchingBallIds: [7],
+      foulAndMissPending: true,
+      respottedBlack: false,
+      pendingMissSnapshot: table.shortSerialise(),
     })
-
-    Session.reset()
-  })
-
-  it("handleGameEnd determines winner by score in 2 player mode (as winner)", () => {
-    container.isSinglePlayer = false
-    Session.init("1", "Player A", "table", false)
-    const session = Session.getInstance()
-    session.playerIndex = 0
-    session.opponentName = "Player B"
-
-    Session.getInstance().updateScoresFromNetwork(30, 20, 0)
-
-    const notifySpy = jest.spyOn(container as any, "notifyLocal")
-
-    // Player B cleared the table (so Player A receives isWinner=false)
-    const nextController = snooker.handleGameEnd(false)
-
-    expect(nextController).to.be.instanceOf(End)
-    // Player A won by score
-    const call = notifySpy.mock.calls[0][0] as any
-    expect(call).to.deep.include({
-      title: "YOU WON",
-      subtext: "30 - 20",
+    expect(snooker.serialiseState()).to.deep.include({
+      nominatedColourId: 6,
+      freeBallAvailable: true,
+      freeBallNomineeId: 4,
+      freeBallOnValue: 1,
+      touchingBallIds: [7],
+      foulAndMissPending: true,
     })
-
-    Session.reset()
-  })
-
-  it("handleGameEnd treats a draw as a win", () => {
-    container.isSinglePlayer = false
-    Session.init("1", "Player A", "table", false)
-    const session = Session.getInstance()
-    session.playerIndex = 0
-    session.opponentName = "Player B"
-
-    Session.getInstance().updateScoresFromNetwork(20, 20, 0)
-
-    const notifySpy = jest.spyOn(container as any, "notifyLocal")
-
-    const nextController = snooker.handleGameEnd(false)
-
-    expect(nextController).to.be.instanceOf(End)
-    // Player A wins on a draw per user request
-    const call = notifySpy.mock.calls[0][0] as any
-    expect(call).to.deep.include({
-      title: "YOU WON",
-      subtext: "20 - 20",
-    })
-
-    Session.reset()
   })
 
   it("nextCandidateBall logic", () => {

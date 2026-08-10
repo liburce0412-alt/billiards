@@ -12,6 +12,12 @@ describe("physical bot shot planner", () => {
     ).to.deep.equal([3, 4, 6, 8, 10, 14, 18, 24, 30, 40, 48])
     expect(BOT_DIFFICULTY_PROFILES[8].lookaheadDepth).to.equal(2)
     expect(BOT_DIFFICULTY_PROFILES[10].lookaheadDepth).to.equal(2)
+    expect(BOT_DIFFICULTY_PROFILES[10].positionWeight).to.be.greaterThan(
+      BOT_DIFFICULTY_PROFILES[5].positionWeight
+    )
+    expect(BOT_DIFFICULTY_PROFILES[10].escapeWeight).to.be.greaterThan(
+      BOT_DIFFICULTY_PROFILES[5].escapeWeight
+    )
   })
 
   it("repeatedly selects the physically legal first contact", () => {

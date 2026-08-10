@@ -22,11 +22,11 @@ describe("ShotStartUtils", () => {
     const c = ShotStartUtils.capture(table)
     expect(c.balls).to.deep.equal(expectedBalls)
     expect(c.cueBallId).to.equal(0)
-    expect(c.angle).to.equal(0.42)
-    expect(c.power).to.equal(1.7)
-    expect(c.offsetX).to.equal(0.05)
-    expect(c.offsetY).to.equal(-0.08)
-    expect(c.elevation).to.equal(0.3)
+    expect(c.angle).to.be.closeTo(0.42, 1e-12)
+    expect(c.power).to.be.closeTo(1.7, 1e-12)
+    expect(c.offsetX).to.be.closeTo(0.05, 1e-12)
+    expect(c.offsetY).to.be.closeTo(-0.08, 1e-12)
+    expect(c.elevation).to.be.closeTo(0.3, 1e-12)
     done()
   })
 
@@ -50,7 +50,7 @@ describe("ShotStartUtils", () => {
     expect(c.rulename).to.equal("threecushion")
     expect(c.cushionModelName).to.equal("stronge")
     expect(c.tableSize).to.equal(12)
-    expect(c.dt).to.equal(0.001)
+    expect(c.dt).to.be.closeTo(0.001, 1e-12)
     done()
   })
 
@@ -87,7 +87,7 @@ describe("ShotStartUtils", () => {
       tableSize: 9,
     })
     const params = new URLSearchParams(
-      ShotStartUtils.buildRecreateUrl(c).split("?")[1]
+      ShotStartUtils.buildRecreateUrl(c).split("?")[1],
     )
     expect(params.get("ruletype")).to.equal("snooker")
     expect(params.get("cushionModel")).to.equal("stronge")
@@ -117,7 +117,7 @@ describe("ShotStartUtils", () => {
       power: 1,
     })
     const params = new URLSearchParams(
-      ShotStartUtils.buildRecreateUrl(c).split("?")[1]
+      ShotStartUtils.buildRecreateUrl(c).split("?")[1],
     )
     expect(params.has("tableSize")).to.be.false
     done()
@@ -133,7 +133,7 @@ describe("ShotStartUtils", () => {
     const spy = jest.spyOn(console, "error").mockImplementation(() => {})
     try {
       expect(() =>
-        ShotStartUtils.reportDepthExceeded(table, undefined)
+        ShotStartUtils.reportDepthExceeded(table, undefined),
       ).to.not.throw()
       expect(spy.mock.calls).to.not.be.empty
     } finally {

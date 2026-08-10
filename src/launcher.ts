@@ -1,6 +1,7 @@
 import {
   buildGameUrl,
   buildInviteUrl,
+  DEFAULT_WEBSOCKET_SERVER,
   generateRoomCode,
   LauncherOpponent,
   LauncherOnlineAction,
@@ -21,6 +22,8 @@ import {
   saveEnvironmentStyleId,
   savedEnvironmentStyleId,
 } from "./view/environmentstyle"
+import { MessagingClient } from "@tailuge/messaging"
+import { deriveRoomIdentity } from "./network/client/roomidentity"
 
 const storageKey = "billiards-launcher-selection"
 const onlineUserIdKey = "billiards-online-user-id"
@@ -379,8 +382,11 @@ function launcherMarkup(selection: LauncherSelection) {
                     <input name="onlinePlayerName" maxlength="16" value="${escapeAttribute(selection.onlinePlayerName)}" />
                   </label>
                   <label class="launcher-input">
-                    <span>房间码</span>
-                    <input id="roomCode" name="roomCode" maxlength="8" autocomplete="off" value="${escapeAttribute(selection.roomCode)}" />
+                    <span>自定义房间码</span>
+                    <div class="room-code-entry">
+                      <input id="roomCode" name="roomCode" maxlength="96" autocomplete="off" placeholder="中文、表情和符号均可" value="${escapeAttribute(selection.roomCode)}" />
+                      <button id="randomRoomCode" type="button">随机</button>
+                    </div>
                   </label>
                 </div>
                 <div id="inviteRow" class="invite-row" hidden>
@@ -390,7 +396,7 @@ function launcherMarkup(selection: LauncherSelection) {
                   </label>
                   <button id="copyInvite" type="button">复制邀请</button>
                 </div>
-                <p class="launcher-detail-note">房主先进入球桌，再把邀请链接发给另一台设备。</p>
+                <p class="launcher-detail-note">最多 24 个可见字符。创建时会检查同名房间，进入后双方准备才会开球。</p>
               </fieldset>
             </div>
           </details>
@@ -487,18 +493,12 @@ function syncOpponentSettings(
 
   if (isOnline) {
     const roomCode = document.querySelector<HTMLInputElement>("#roomCode")!
-    if (
-      selection.onlineAction === "create" &&
-      normaliseRoomCode(roomCode.value).length < 4
-    ) {
-      roomCode.value = generateRoomCode()
-    }
     roomCode.value = normaliseRoomCode(roomCode.value)
     const inviteRow = document.querySelector<HTMLElement>("#inviteRow")!
     const inviteUrl = document.querySelector<HTMLInputElement>("#inviteUrl")!
     const creating = selection.onlineAction !== "join"
     inviteRow.hidden = !creating
-    if (creating) {
+    if (creating && roomCode.value) {
       inviteUrl.value = buildInviteUrl(
         roomCode.value,
         selection,
@@ -520,6 +520,8 @@ function initialiseLauncher(params: URLSearchParams) {
   const start = document.querySelector<HTMLButtonElement>("#launcherStart")!
   const roomCode = document.querySelector<HTMLInputElement>("#roomCode")!
   const copyInvite = document.querySelector<HTMLButtonElement>("#copyInvite")!
+  const randomRoomCode =
+    document.querySelector<HTMLButtonElement>("#randomRoomCode")!
   syncOpponentSettings(form)
   updateSummary(form)
   form.addEventListener("change", () => {
@@ -529,6 +531,11 @@ function initialiseLauncher(params: URLSearchParams) {
   roomCode.addEventListener("input", () => {
     roomCode.value = normaliseRoomCode(roomCode.value)
     syncOpponentSettings(form)
+  })
+  randomRoomCode.addEventListener("click", () => {
+    roomCode.value = generateRoomCode()
+    syncOpponentSettings(form)
+    roomCode.focus()
   })
   copyInvite.addEventListener("click", async () => {
     const inviteUrl = document.querySelector<HTMLInputElement>("#inviteUrl")!
@@ -550,18 +557,9 @@ function initialiseLauncher(params: URLSearchParams) {
       form.requestSubmit()
     }
   })
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault()
     const current = selectionFromForm(form)
-    if (
-      current.opponent === "online" &&
-      normaliseRoomCode(current.roomCode ?? "").length < 4
-    ) {
-      document.querySelector<HTMLElement>("#launcherStatus")!.textContent =
-        "请输入至少 4 位房间码"
-      roomCode.focus()
-      return
-    }
     current.onlineUserId = persistentOnlineUserId()
     saveCueStyleId(current.cueStyle ?? "heritage")
     saveTableStyleId(current.tableStyle ?? "american-walnut")
@@ -569,11 +567,24 @@ function initialiseLauncher(params: URLSearchParams) {
     start.dataset.state = "loading"
     start.disabled = true
     start.querySelector("span")!.textContent = "正在装台…"
-    document.querySelector<HTMLElement>("#launcherStatus")!.textContent =
-      "正在加载 3D 球桌"
+    const status = document.querySelector<HTMLElement>("#launcherStatus")!
+    status.textContent =
+      current.opponent === "online" ? "正在检查房间状态" : "正在加载 3D 球桌"
     try {
+      if (
+        current.opponent === "online" &&
+        current.onlineAction !== "join" &&
+        (await roomCodeIsOccupied(
+          current.roomCode ?? "",
+          current.onlineUserId,
+          current.rule
+        ))
+      ) {
+        throw new Error("这个房间码正在使用，请更换房间码或选择加入房间")
+      }
+      status.textContent = "正在加载 3D 球桌"
       globalThis.location.assign(
-        buildGameUrl(current, globalThis.location.href)
+        await buildGameUrl(current, globalThis.location.href)
       )
     } catch (error) {
       start.dataset.state = "error"
@@ -583,6 +594,50 @@ function initialiseLauncher(params: URLSearchParams) {
         error instanceof Error ? error.message : "无法创建比赛"
     }
   })
+}
+
+async function roomCodeIsOccupied(
+  roomCode: string,
+  userId: string,
+  ruleType: LauncherRule
+): Promise<boolean> {
+  const room = await deriveRoomIdentity(roomCode)
+  const baseUrl = DEFAULT_WEBSOCKET_SERVER.replace(/^wss:/, "https:").replace(
+    /^ws:/,
+    "http:"
+  )
+  const client = new MessagingClient({ baseUrl })
+  client.start()
+  try {
+    const probeId = `room-probe-${userId}`
+    const lobby = await client.joinLobby({
+      messageType: "presence",
+      type: "join",
+      userId: probeId,
+      userName: "房间检查",
+      ruleType,
+    })
+    await new Promise<void>((resolve, reject) => {
+      const timeout = globalThis.setTimeout(
+        () => reject(new Error("房间服务暂时无响应，请稍后重试")),
+        8000
+      )
+      lobby.onSettled(() => {
+        globalThis.clearTimeout(timeout)
+        resolve()
+      })
+    })
+    return lobby
+      .getUsers()
+      .some(
+        (user) =>
+          user.userId !== probeId &&
+          !user.isSpectator &&
+          user.tableId === room.channelId
+      )
+  } finally {
+    await client.stop()
+  }
 }
 
 function loadScript(source: string) {
@@ -600,7 +655,6 @@ async function loadGame() {
     "three_core.js",
     "three_module.js",
     "three_examples.js",
-    "messaging.js",
     "index.js",
   ]) {
     await loadScript(source)

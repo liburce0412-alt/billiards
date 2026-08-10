@@ -12,8 +12,12 @@ import {
   CustomCueDetails,
   saveCustomCueDetails,
 } from "./cuestyle"
+
 import { TABLE_STYLES } from "./tablestyle"
 import { ENVIRONMENT_STYLES } from "./environmentstyle"
+
+const selectedOption = (current: string | undefined, value: string) =>
+  current === value ? "selected" : ""
 
 export class Menu {
   private static readonly settingsStorageVersion =
@@ -358,34 +362,37 @@ export class Menu {
           <label>
             <span>前节纹理</span>
             <select data-custom-cue-detail="shaftPattern">
-              <option value="maple" ${custom.shaftPattern === "maple" ? "selected" : ""}>直纹枫木</option>
-              <option value="ash" ${custom.shaftPattern === "ash" ? "selected" : ""}>山纹白蜡木</option>
-              <option value="carbon" ${custom.shaftPattern === "carbon" ? "selected" : ""}>斜织碳纤</option>
+              <option value="maple" ${selectedOption(custom.shaftPattern, "maple")}>直纹枫木</option>
+              <option value="ash" ${selectedOption(custom.shaftPattern, "ash")}>山纹白蜡木</option>
+              <option value="carbon" ${selectedOption(custom.shaftPattern, "carbon")}>斜织碳纤</option>
+              <option value="radial" ${selectedOption(custom.shaftPattern, "radial")}>径向拼接前节</option>
             </select>
           </label>
           <label>
             <span>前把木纹</span>
             <select data-custom-cue-detail="forearmPattern">
-              <option value="straight" ${custom.forearmPattern === "straight" ? "selected" : ""}>顺直木纹</option>
-              <option value="burl" ${custom.forearmPattern === "burl" ? "selected" : ""}>瘿木旋纹</option>
-              <option value="flame" ${custom.forearmPattern === "flame" ? "selected" : ""}>火焰枫纹</option>
+              <option value="straight" ${selectedOption(custom.forearmPattern, "straight")}>顺直木纹</option>
+              <option value="burl" ${selectedOption(custom.forearmPattern, "burl")}>瘿木旋纹</option>
+              <option value="flame" ${selectedOption(custom.forearmPattern, "flame")}>火焰枫纹</option>
+              <option value="marble" ${selectedOption(custom.forearmPattern, "marble")}>云石瘿纹</option>
             </select>
           </label>
           <label>
             <span>握把质感</span>
             <select data-custom-cue-detail="wrapPattern">
-              <option value="linen" ${custom.wrapPattern === "linen" ? "selected" : ""}>爱尔兰亚麻</option>
-              <option value="leather" ${custom.wrapPattern === "leather" ? "selected" : ""}>细纹皮革</option>
-              <option value="braid" ${custom.wrapPattern === "braid" ? "selected" : ""}>交错编织</option>
+              <option value="linen" ${selectedOption(custom.wrapPattern, "linen")}>爱尔兰亚麻</option>
+              <option value="leather" ${selectedOption(custom.wrapPattern, "leather")}>细纹皮革</option>
+              <option value="braid" ${selectedOption(custom.wrapPattern, "braid")}>交错编织</option>
             </select>
           </label>
           <label>
             <span>镶嵌造型</span>
             <select data-custom-cue-detail="inlayPattern">
-              <option value="spear" ${custom.inlayPattern === "spear" ? "selected" : ""}>长矛拼花</option>
-              <option value="diamond" ${custom.inlayPattern === "diamond" ? "selected" : ""}>钻石镶嵌</option>
-              <option value="chevron" ${custom.inlayPattern === "chevron" ? "selected" : ""}>V 形箭羽</option>
-              <option value="feather" ${custom.inlayPattern === "feather" ? "selected" : ""}>孔雀羽片</option>
+              <option value="spear" ${selectedOption(custom.inlayPattern, "spear")}>长矛拼花</option>
+              <option value="diamond" ${selectedOption(custom.inlayPattern, "diamond")}>钻石镶嵌</option>
+              <option value="chevron" ${selectedOption(custom.inlayPattern, "chevron")}>V 形箭羽</option>
+              <option value="feather" ${selectedOption(custom.inlayPattern, "feather")}>孔雀羽片</option>
+              <option value="constellation" ${selectedOption(custom.inlayPattern, "constellation")}>星轨珍珠</option>
             </select>
           </label>
         </div>
@@ -446,6 +453,7 @@ export class Menu {
             ["maple", "burl", "linen", "diamond"],
             ["carbon", "straight", "leather", "chevron"],
             ["ash", "flame", "braid", "feather"],
+            ["radial", "marble", "linen", "constellation"],
           ]
           const patterns =
             patternSets[Math.floor(Math.random() * patternSets.length)]

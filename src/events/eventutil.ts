@@ -15,6 +15,8 @@ import { NotificationEvent } from "./notificationevent"
 import { ScoreEvent } from "./scoreevent"
 import { StationaryEvent } from "./stationaryevent"
 import { ConcedeEvent } from "./concedeevent"
+import { RoomControlEvent } from "./roomcontrolevent"
+import { RuleDecisionEvent } from "./ruledecisionevent"
 
 export class EventUtil {
   static serialise(event: GameEvent) {
@@ -53,6 +55,10 @@ export class EventUtil {
         return ScoreEvent.fromJson(parsed)
       case EventType.CONCEDE:
         return new ConcedeEvent()
+      case EventType.ROOM_CONTROL:
+        return RoomControlEvent.fromJson(parsed)
+      case EventType.RULE_DECISION:
+        return RuleDecisionEvent.fromJson(parsed)
       default:
         throw new Error(`Unknown GameEvent: ${EventUtil.safeStringify(parsed)}`)
     }

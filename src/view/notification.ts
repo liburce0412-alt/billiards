@@ -1,6 +1,22 @@
 import { id } from "../utils/dom"
 import { localizeText } from "../utils/locale"
 
+function escapeHtml(value: string): string {
+  return value.replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[character]!
+  )
+}
+
+const localisedText = (value?: string) => escapeHtml(localizeText(value))
+
 export interface NotificationHighBreak {
   score: number
   url: string
@@ -70,7 +86,7 @@ export class Notification {
     return `
       <div class="notification-banner">
         <div class="notification-text-group">
-          <div class="notification-subtext">${localizeText(message)}</div>
+          <div class="notification-subtext">${localisedText(message)}</div>
         </div>
       </div>
     `
@@ -90,12 +106,12 @@ export class Notification {
           <div class="notification-main">
             <div class="notification-icon">${icon}</div>
             <div class="notification-text-group">
-              <div class="notification-title">${localizeText(data.title)}</div>
+              <div class="notification-title">${localisedText(data.title)}</div>
               ${(() => {
                 if (!data.subtext) return ""
                 const subtextClass =
                   data.type === "GameOver" ? " notification-subtext-light" : ""
-                return `<div class="notification-subtext${subtextClass}">${localizeText(data.subtext)}</div>`
+                return `<div class="notification-subtext${subtextClass}">${localisedText(data.subtext)}</div>`
               })()}
             </div>
           </div>
@@ -234,10 +250,22 @@ export class Notification {
     })
   }
 
-  private handleAction(action: string, url?: string) {
+  private handleAction(action: string, _url?: string) {
     const handler = this.actionHandlers[action]
     if (handler) {
       handler()
+      return
+    }
+
+    if (action.startsWith("snooker-free-ball-")) {
+      globalThis.dispatchEvent(
+        new CustomEvent("break-builder-rule-decision", {
+          detail: {
+            decision: "snooker-free-ball",
+            value: action.slice("snooker-free-ball-".length),
+          },
+        })
+      )
       return
     }
 
@@ -253,9 +281,18 @@ export class Notification {
         globalThis.location.href = "/"
         break
       case "rematch":
-        if (url) {
-          globalThis.location.href = url
-        }
+        globalThis.dispatchEvent(new Event("break-builder-rematch"))
+        break
+      case "push-out":
+      case "accept-table":
+      case "pass-back":
+      case "snooker-play-on":
+      case "snooker-replay":
+        globalThis.dispatchEvent(
+          new CustomEvent("break-builder-rule-decision", {
+            detail: { decision: action },
+          })
+        )
         break
     }
   }

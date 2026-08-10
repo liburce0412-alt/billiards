@@ -36,4 +36,9 @@ export interface Rules {
   canLetStroke?(): boolean
   serialiseState?(): unknown
   restoreState?(state: any): void
+  handleDecision?(
+    decision: string,
+    value: string,
+    controller: Controller
+  ): Controller
 }

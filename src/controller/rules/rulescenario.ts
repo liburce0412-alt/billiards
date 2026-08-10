@@ -101,6 +101,42 @@ const coreScenarios: readonly RuleScenario[] = [
     },
   },
   {
+    id: "nineball-push-out-after-break",
+    profileId: "nineball",
+    title: "九球合法开球后可选择 Push-out",
+    opening: false,
+    player: 2,
+    balls: [],
+    action: {
+      potted: [],
+      cushions: 0,
+      cueBallPotted: false,
+    },
+    expected: {
+      legal: true,
+      ballInHand: "none",
+      note: "Push-out 无需碰最低号球或库边，母球落袋仍犯规",
+    },
+  },
+  {
+    id: "nineball-three-consecutive-fouls",
+    profileId: "nineball",
+    title: "九球连续三次犯规判负",
+    opening: false,
+    player: 1,
+    balls: [],
+    action: {
+      potted: [],
+      cushions: 0,
+      cueBallPotted: true,
+    },
+    expected: {
+      legal: false,
+      ballInHand: "anywhere",
+      note: "同一球员连续第三次犯规时输掉本局",
+    },
+  },
+  {
     id: "snooker-foul-minimum-four",
     profileId: "snooker",
     title: "斯诺克犯规最低罚四分",
@@ -223,7 +259,7 @@ function matrixScenario(profileId: RuleProfileId, index: number): RuleScenario {
 function matrixScenarios(): RuleScenario[] {
   const scenarios: RuleScenario[] = []
   for (const profileId of profileIds) {
-    for (let index = 0; index < 40; index++) {
+    for (let index = 0; index < 51; index++) {
       scenarios.push(matrixScenario(profileId, index))
     }
   }

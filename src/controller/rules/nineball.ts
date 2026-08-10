@@ -1,6 +1,7 @@
 import { Vector3 } from "three"
 import { Container } from "../../container/container"
 import { Aim } from "../../controller/aim"
+import { End } from "../../controller/end"
 import { Controller } from "../../controller/controller"
 import { PlaceBall } from "../../controller/placeball"
 import { WatchAim } from "../../controller/watchaim"
@@ -21,6 +22,7 @@ import { Session } from "../../network/client/session"
 import { isFirstShot } from "../../utils/utils"
 import { roundVec } from "../../utils/three-utils"
 import { RULE_PROFILES } from "./ruleprofile"
+import { NotificationEvent } from "../../events/notificationevent"
 
 export class NineBall implements Rules {
   readonly container: Container
@@ -32,7 +34,13 @@ export class NineBall implements Rules {
   rulename = "nineball"
   private static readonly placementState = new WeakMap<
     Table,
-    { openingPlacement: boolean }
+    {
+      openingPlacement: boolean
+      pushOutAvailable: boolean
+      pushOutDeclared: boolean
+      pushOutChoicePending: boolean
+      consecutiveFouls: Record<string, number>
+    }
   >()
 
   constructor(container: Container) {
@@ -75,12 +83,29 @@ export class NineBall implements Rules {
   }
 
   serialiseState() {
-    return { openingPlacement: this.isOpeningPlacement() }
+    const state = NineBall.placementState.get(this.container.table)
+    return {
+      openingPlacement: this.isOpeningPlacement(),
+      pushOutAvailable: state?.pushOutAvailable ?? false,
+      pushOutDeclared: state?.pushOutDeclared ?? false,
+      pushOutChoicePending: state?.pushOutChoicePending ?? false,
+      consecutiveFouls: state?.consecutiveFouls ?? {},
+    }
   }
 
-  restoreState(state: { openingPlacement?: boolean }) {
+  restoreState(state: {
+    openingPlacement?: boolean
+    pushOutAvailable?: boolean
+    pushOutDeclared?: boolean
+    pushOutChoicePending?: boolean
+    consecutiveFouls?: Record<string, number>
+  }) {
     NineBall.placementState.set(this.container.table, {
       openingPlacement: state?.openingPlacement ?? false,
+      pushOutAvailable: state?.pushOutAvailable ?? false,
+      pushOutDeclared: state?.pushOutDeclared ?? false,
+      pushOutChoicePending: state?.pushOutChoicePending ?? false,
+      consecutiveFouls: state?.consecutiveFouls ?? {},
     })
   }
 
@@ -93,7 +118,13 @@ export class NineBall implements Rules {
   table(): Table {
     const table = new Table(this.rack())
     this.cueball = table.cueball
-    NineBall.placementState.set(table, { openingPlacement: true })
+    NineBall.placementState.set(table, {
+      openingPlacement: true,
+      pushOutAvailable: false,
+      pushOutDeclared: false,
+      pushOutChoicePending: false,
+      consecutiveFouls: {},
+    })
     return table
   }
 
@@ -102,31 +133,68 @@ export class NineBall implements Rules {
   }
 
   update(outcome: Outcome[]): Controller {
-    const reason = NineBall.foulReason(
-      this.container.table,
-      outcome,
-      this.isOpeningPlacement() && !Session.isPracticeMode()
-    )
-    const state = NineBall.placementState.get(this.container.table)
+    const wasOpening = this.isOpeningPlacement() && !Session.isPracticeMode()
+    const state = NineBall.placementState.get(this.container.table)!
+    const reason = this.currentFoulReason(outcome, wasOpening)
     if (state) state.openingPlacement = false
 
     if (reason) {
       return this.handleFoul(outcome, reason)
     }
 
-    if (Outcome.potCount(outcome) > 0) {
-      return this.handlePot(outcome)
+    if (state.pushOutDeclared) {
+      return this.handlePushOut(outcome)
     }
 
-    return this.handleMiss()
+    this.resetShooterFouls()
+
+    let next: Controller
+    if (Outcome.potCount(outcome) > 0) {
+      next = this.handlePot(outcome)
+    } else {
+      next = this.handleMiss()
+    }
+    if (
+      wasOpening &&
+      !(next instanceof End) &&
+      this.tournamentOption("nineBallPushOut", true)
+    ) {
+      this.offerPushOut(next)
+    }
+    return next
+  }
+
+  private currentFoulReason(
+    outcome: Outcome[],
+    wasOpening: boolean
+  ): string | null {
+    if (!this.state().pushOutDeclared) {
+      return NineBall.foulReason(
+        this.container.table,
+        outcome,
+        wasOpening,
+        this.tournamentOption("nineBallBreakBox", false)
+      )
+    }
+    return Outcome.isCueBallPotted(this.container.table.cueball, outcome)
+      ? "Cue ball potted during push-out"
+      : null
   }
 
   private handleFoul(outcome: Outcome[], reason: string): Controller {
+    const threeFoulEnabled = this.tournamentOption("nineBallThreeFoul", true)
+    const foulCount = threeFoulEnabled ? this.recordShooterFoul() : 1
+    if (threeFoulEnabled && foulCount >= 3) {
+      return this.handleGameEnd(
+        !this.shooterIsLocal(),
+        "连续三次犯规，本局判负"
+      )
+    }
     this.container.notify({
       type: "Foul",
       title: "FOUL",
       subtext: reason,
-      extra: "Ball in hand",
+      extra: foulCount === 2 ? "Ball in hand · 已连续两次犯规" : "Ball in hand",
     })
     this.startTurn()
     const pots = Outcome.pots(outcome)
@@ -147,6 +215,149 @@ export class NineBall implements Rules {
       return new PlaceBall(this.container, startPos)
     }
     return new WatchAim(this.container)
+  }
+
+  private state() {
+    return NineBall.placementState.get(this.container.table)!
+  }
+
+  private shooterIsLocal(): boolean {
+    return this.container.controller?.name !== "WatchShot"
+  }
+
+  private shooterClientId(): string {
+    const session = Session.getInstance()
+    return this.shooterIsLocal()
+      ? session.clientId
+      : (session.opponentClientId ?? "opponent")
+  }
+
+  private recordShooterFoul(): number {
+    const state = this.state()
+    const shooter = this.shooterClientId()
+    state.consecutiveFouls[shooter] = (state.consecutiveFouls[shooter] ?? 0) + 1
+    return state.consecutiveFouls[shooter]
+  }
+
+  private resetShooterFouls(): void {
+    this.state().consecutiveFouls[this.shooterClientId()] = 0
+  }
+
+  private pushOutButtons(): string {
+    return (
+      '<button class="notification-btn" data-notification-action="push-out">选择 Push-out</button>' +
+      '<button class="notification-btn" data-notification-action="clear">正常击球</button>'
+    )
+  }
+
+  private offerPushOut(next: Controller): void {
+    this.state().pushOutAvailable = true
+    const data = {
+      type: "Info" as const,
+      title: "可选择 Push-out",
+      subtext: "本杆可以不碰最低号球或库边；出杆前确认",
+      extra: this.pushOutButtons(),
+      duration: 0,
+    }
+    if (next instanceof Aim) {
+      if (this.isOnlineMatch()) this.container.notifyLocal(data, 0)
+      else {
+        this.container.notifyLocal(data, 0, {
+          "push-out": () => this.declareLocalPushOut(),
+          clear: () => this.container.notification.clear(),
+        })
+      }
+    } else {
+      this.container.sendEvent(new NotificationEvent(data, 0))
+    }
+  }
+
+  private declareLocalPushOut(): void {
+    this.state().pushOutDeclared = true
+    this.state().pushOutAvailable = false
+    this.container.notification.clear()
+  }
+
+  private handlePushOut(outcome: Outcome[]): Controller {
+    const state = this.state()
+    state.pushOutDeclared = false
+    state.pushOutAvailable = false
+    state.pushOutChoicePending = true
+    const nineBall = this.container.table.balls[9]
+    if (Outcome.pots(outcome).includes(nineBall)) {
+      this.respotAndBroadcastNineBall(outcome)
+    }
+    const next = this.handleMiss()
+    const data = {
+      type: "Info" as const,
+      title: "对手完成 Push-out",
+      subtext: "可以接受当前球位，或让对手继续击球",
+      extra:
+        '<button class="notification-btn" data-notification-action="accept-table">接受球位</button>' +
+        '<button class="notification-btn" data-notification-action="pass-back">让对手打</button>',
+      duration: 0,
+    }
+    if (next instanceof Aim) {
+      if (this.isOnlineMatch()) this.container.notifyLocal(data, 0)
+      else {
+        this.container.notifyLocal(data, 0, {
+          "accept-table": () => this.acceptLocalPushOut(),
+          "pass-back": () => this.passBackLocalPushOut(),
+        })
+      }
+    } else {
+      this.container.sendEvent(new NotificationEvent(data, 0))
+    }
+    return next
+  }
+
+  private acceptLocalPushOut(): void {
+    this.state().pushOutChoicePending = false
+    this.container.notification.clear()
+  }
+
+  private passBackLocalPushOut(): void {
+    const next = this.handleDecision("pass-back", "", this.container.controller)
+    this.container.updateController(next)
+    this.container.notification.clear()
+  }
+
+  private isOnlineMatch(): boolean {
+    return !this.container.isSinglePlayer && !Session.isLocalVersusMode()
+  }
+
+  private tournamentOption(name: string, defaultValue: boolean): boolean {
+    if (typeof globalThis.location === "undefined") return defaultValue
+    const value = new URLSearchParams(globalThis.location.search).get(name)
+    return value === null ? defaultValue : value !== "false"
+  }
+
+  handleDecision(
+    decision: string,
+    _value: string,
+    controller: Controller
+  ): Controller {
+    const state = this.state()
+    if (decision === "push-out" && state.pushOutAvailable) {
+      state.pushOutDeclared = true
+      state.pushOutAvailable = false
+      return controller
+    }
+    if (decision === "accept-table" && state.pushOutChoicePending) {
+      state.pushOutChoicePending = false
+      return controller
+    }
+    if (decision !== "pass-back" || !state.pushOutChoicePending) {
+      return controller
+    }
+    state.pushOutChoicePending = false
+    if (Session.isLocalVersusMode()) {
+      this.container.switchLocalPlayer()
+      return new Aim(this.container)
+    }
+    return controller instanceof Aim
+      ? new WatchAim(this.container)
+      : new Aim(this.container)
   }
 
   private handlePot(outcome: Outcome[]): Controller {
@@ -243,7 +454,8 @@ export class NineBall implements Rules {
   public static foulReason(
     table: Table,
     outcome: Outcome[],
-    openingBreak = false
+    openingBreak = false,
+    threeBallRule = false
   ): string | null {
     const cueball = table.cueball
 
@@ -262,18 +474,12 @@ export class NineBall implements Rules {
       return "No ball hit"
     }
 
-    if (firstCollision.ballB !== lowestBall) {
-      if (Session.isPracticeMode()) {
-        if (
-          firstCollision.ballB === table.balls[9] &&
-          NineBall.hasOtherObjectBalls(table)
-        ) {
-          return "Wrong ball hit first"
-        }
-      } else {
-        return "Wrong ball hit first"
-      }
-    }
+    const wrongFirstBall = NineBall.wrongFirstBallReason(
+      table,
+      firstCollision.ballB,
+      lowestBall
+    )
+    if (wrongFirstBall) return wrongFirstBall
 
     // 3. On a dry opening break, at least four distinct object balls must
     // reach a cushion. This is the WPA break requirement.
@@ -283,6 +489,12 @@ export class NineBall implements Rules {
       openingBreak
     )
     if (openingBreakReason) return openingBreakReason
+    const threeBallReason = NineBall.threeBallRuleReason(
+      table,
+      outcome,
+      threeBallRule && openingBreak
+    )
+    if (threeBallReason) return threeBallReason
 
     // 4. No cushion after contact
     if (Outcome.potCount(outcome) === 0) {
@@ -297,6 +509,35 @@ export class NineBall implements Rules {
     }
 
     return null
+  }
+
+  private static wrongFirstBallReason(
+    table: Table,
+    firstBall: Ball | null,
+    lowestBall?: Ball
+  ): string | null {
+    if (firstBall === lowestBall) return null
+    if (!firstBall) return "Wrong ball hit first"
+    if (!Session.isPracticeMode()) return "Wrong ball hit first"
+    return firstBall === table.balls[9] && NineBall.hasOtherObjectBalls(table)
+      ? "Wrong ball hit first"
+      : null
+  }
+
+  private static threeBallRuleReason(
+    table: Table,
+    outcome: Outcome[],
+    enabled: boolean
+  ): string | null {
+    if (!enabled) return null
+    const cueball = table.cueball
+    const potted = Outcome.pots(outcome).filter((ball) => ball !== cueball)
+    const crossedHeadString = table.balls.filter(
+      (ball) => ball !== cueball && ball.onTable() && ball.pos.x < Rack.baulk
+    )
+    return new Set([...potted, ...crossedHeadString]).size < 3
+      ? "Illegal break: three-ball rule not met"
+      : null
   }
 
   public static getLowestBallAtStartOfShot(

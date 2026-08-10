@@ -562,7 +562,7 @@ export class BotEventHandler {
   }
 
   private shotPacingMs(): number {
-    return 900 + this.level * 45
+    return 1200 + this.level * 40
   }
 
   private startTurnIfNeeded(): void {
@@ -680,6 +680,8 @@ export class BotEventHandler {
       )
     }
 
+    this.addKickCandidates(entries, context, firstTarget, budget)
+
     const pockets =
       this.calculator.pockets.length > 0 ? this.calculator.pockets : [undefined]
     const powerScales = [0.86, 1, 1.14]
@@ -742,6 +744,71 @@ export class BotEventHandler {
       variant++
     }
     return entries.slice(0, budget)
+  }
+
+  private addKickCandidates(
+    entries: { candidate: ShotCandidate; events: GameEvent[] }[],
+    context: BotShotContext,
+    target: Ball | undefined,
+    budget: number
+  ): void {
+    if (
+      !target ||
+      !this.isPathBlocked(context.cueBall.pos, target.pos, target)
+    ) {
+      return
+    }
+    for (const [index, aimPoint] of this.kickAimPoints(
+      context.cueBall.pos,
+      target.pos
+    ).entries()) {
+      if (entries.length >= budget) break
+      const distance = context.cueBall.pos.distanceTo(aimPoint)
+      const hit = this.calculator.generateShot(
+        context.table,
+        0,
+        Math.min(AimCalculator.MAX_SHOT_POWER, 72 * R + distance * 0.6),
+        aimPoint,
+        new Vector3()
+      )
+      entries.push(
+        this.candidateEntry(
+          `kick-${index}`,
+          target,
+          hit,
+          "kick",
+          0.38 + index * 0.03
+        )
+      )
+    }
+  }
+
+  private kickAimPoints(cue: Vector3, target: Vector3): Vector3[] {
+    const inset = 1.6 * R
+    const walls = [
+      { axis: "x" as const, value: TableGeometry.tableX - inset },
+      { axis: "x" as const, value: -TableGeometry.tableX + inset },
+      { axis: "y" as const, value: TableGeometry.tableY - inset },
+      { axis: "y" as const, value: -TableGeometry.tableY + inset },
+    ]
+    const points: Vector3[] = []
+    for (const wall of walls) {
+      const mirrored = target.clone()
+      mirrored[wall.axis] = 2 * wall.value - mirrored[wall.axis]
+      const direction = mirrored.sub(cue)
+      const denominator = direction[wall.axis]
+      if (Math.abs(denominator) < 0.000001) continue
+      const t = (wall.value - cue[wall.axis]) / denominator
+      if (t <= 0 || t >= 1) continue
+      const point = cue.clone().addScaledVector(direction, t)
+      if (
+        Math.abs(point.x) <= TableGeometry.tableX - inset &&
+        Math.abs(point.y) <= TableGeometry.tableY - inset
+      ) {
+        points.push(point)
+      }
+    }
+    return points
   }
 
   private candidateSpinValues(): number[] {

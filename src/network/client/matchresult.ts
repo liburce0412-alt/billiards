@@ -37,6 +37,10 @@ export class MatchResultHelper {
     )
     const subtext = endSubtext ?? this.getScoreSubtext(container, rulename)
 
+    session.lastWinnerClientId = amIWinner
+      ? session.clientId
+      : session.opponentClientId
+
     this.notifyEndState(container, rulename, amIWinner, subtext)
 
     const result = this.createMatchResult(rulename, session, amIWinner)

@@ -142,4 +142,14 @@ describe("Notification", () => {
     const element = document.getElementById("notification")
     expect(element?.innerHTML).toBe("")
   })
+
+  it("escapes user-controlled room names in notification text", () => {
+    notification.show({
+      type: "Info",
+      title: '房间 <img src=x onerror="alert(1)">',
+    })
+    const element = document.getElementById("notification")!
+    expect(element.querySelector("img")).toBeNull()
+    expect(element.textContent).toContain('房间 <img src=x onerror="alert(1)">')
+  })
 })

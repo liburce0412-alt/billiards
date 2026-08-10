@@ -85,7 +85,7 @@ export class Comment {
 
   toggleMenu() {
     if (!this.menu) return
-    if (this.menu.style.display === "none") {
+    if (this.menu.classList.contains("comment-menu--hidden")) {
       this.showMenu()
     } else {
       this.hideMenu()
@@ -94,7 +94,7 @@ export class Comment {
 
   showMenu() {
     if (!this.menu) return
-    this.menu.style.display = "grid"
+    this.menu.classList.remove("comment-menu--hidden")
     this.menu
       .querySelectorAll<HTMLButtonElement>(".comment-random")
       .forEach((btn) => {
@@ -115,7 +115,7 @@ export class Comment {
 
   hideMenu() {
     if (this.menu) {
-      this.menu.style.display = "none"
+      this.menu.classList.add("comment-menu--hidden")
     }
   }
 }

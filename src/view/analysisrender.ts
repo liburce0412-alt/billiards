@@ -155,7 +155,7 @@ interface PlotGeom {
 export function runAnalysisInto(
   rootEl: HTMLElement,
   seed: AnalysisSeed,
-  opts: RunAnalysisOptions = {}
+  opts: RunAnalysisOptions = {},
 ): AnalysisHandle {
   const workerUrl = opts.workerUrl ?? "worker.js"
   rootEl.innerHTML = PANEL_HTML
@@ -288,7 +288,7 @@ export function runAnalysisInto(
   function nearestGridValue(range: ParamRange, value: number): number {
     const clamped = Math.max(
       range.scannedMin,
-      Math.min(range.scannedMax, value)
+      Math.min(range.scannedMax, value),
     )
     const k = Math.round((clamped - range.center) / range.step)
     return range.center + k * range.step
@@ -298,12 +298,12 @@ export function runAnalysisInto(
   function findAt(
     points: EvalPoint[],
     ox: number,
-    oy: number
+    oy: number,
   ): EvalPoint | undefined {
     const fx = round(ox)
     const fy = round(oy)
     return points.find(
-      (p) => round(p.shot.offsetX) === fx && round(p.shot.offsetY) === fy
+      (p) => round(p.shot.offsetX) === fx && round(p.shot.offsetY) === fy,
     )
   }
 
@@ -334,7 +334,7 @@ export function runAnalysisInto(
     }
     spinPoints.push(point)
     csvRows.push(
-      `spin,cell,${point.scored ? "success" : "fail"},${point.shot.angle},${point.shot.power},${point.shot.offsetX},${point.shot.offsetY},${point.shot.elevation}`
+      `spin,cell,${point.scored ? "success" : "fail"},${point.shot.angle},${point.shot.power},${point.shot.offsetX},${point.shot.offsetY},${point.shot.elevation}`,
     )
     const cached = spinCache.get(spinBaseSig(liveShot))
     if (cached) cached.points.push(point)
@@ -361,7 +361,7 @@ export function runAnalysisInto(
         seed.cueBallId,
         forShot,
         seed.ruleType,
-        seed.cushionModel
+        seed.cushionModel,
       )
       const result = await simulateShot(config, workerUrl)
       if (myGen !== markerGen) return
@@ -389,7 +389,7 @@ export function runAnalysisInto(
    * which display is currently "active" (user decision). */
   function updateBarLiveCellFill(key: ParamKey) {
     const cell = barsEl.querySelector(
-      `.bar-row[data-key="${key}"] .bar-live-cell`
+      `.bar-row[data-key="${key}"] .bar-live-cell`,
     ) as HTMLElement | null
     if (!cell) return
     cell.classList.remove("scored", "missed")
@@ -407,7 +407,7 @@ export function runAnalysisInto(
    * crosses into a new grid cell, not on every frame. */
   async function requestBarMarkerColor(
     key: ParamKey,
-    live: ShotParams
+    live: ShotParams,
   ): Promise<void> {
     const od = oneDResults.find((o) => o.range.key === key)
     if (!od) return
@@ -443,7 +443,7 @@ export function runAnalysisInto(
         seed.cueBallId,
         effective,
         seed.ruleType,
-        seed.cushionModel
+        seed.cushionModel,
       )
       const result = await simulateShot(config, workerUrl)
       if (barMarkerGen[key] !== myGen) return
@@ -485,8 +485,8 @@ export function runAnalysisInto(
           seed.cueBallId,
           shot,
           seed.ruleType,
-          seed.cushionModel
-        )
+          seed.cushionModel,
+        ),
       )
       return isThreeCushionScored(result.outcomes, seed.cueBallId)
     }
@@ -512,7 +512,7 @@ export function runAnalysisInto(
         spinHalfWindow: DEFAULT_SPIN_HALF_WINDOW,
         onEvaluate: (shot, scored) => {
           csvRows.push(
-            `spin,cell,${scored ? "success" : "fail"},${shot.angle},${shot.power},${shot.offsetX},${shot.offsetY},${shot.elevation}`
+            `spin,cell,${scored ? "success" : "fail"},${shot.angle},${shot.power},${shot.offsetX},${shot.offsetY},${shot.elevation}`,
           )
           spinPoints.push({ shot, scored })
         },
@@ -542,7 +542,7 @@ export function runAnalysisInto(
   /** Run (or reuse from cache) the 1-D sweep for `key` around `base`. */
   async function runOneDScan(
     key: ParamKey,
-    base: ShotParams
+    base: ShotParams,
   ): Promise<OneDResult> {
     const cacheKey = `${key}|${sig5(base)}`
     const hit = oneDCache.get(cacheKey)
@@ -563,7 +563,7 @@ export function runAnalysisInto(
         signal,
         onEvaluate: (shot, scored) => {
           csvRows.push(
-            `${key},cell,${scored ? "success" : "fail"},${shot.angle},${shot.power},${shot.offsetX},${shot.offsetY},${shot.elevation}`
+            `${key},cell,${scored ? "success" : "fail"},${shot.angle},${shot.power},${shot.offsetX},${shot.offsetY},${shot.elevation}`,
           )
           cells.push({ value: shot[key], scored })
         },
@@ -576,7 +576,7 @@ export function runAnalysisInto(
               contactDistance: firstContactDistance(
                 seed.balls,
                 seed.cueBallId,
-                base.angle
+                base.angle,
               ),
             }
           : {}),
@@ -600,7 +600,7 @@ export function runAnalysisInto(
             contactDistance: firstContactDistance(
               seed.balls,
               seed.cueBallId,
-              seed.shot.angle
+              seed.shot.angle,
             ),
           }
         : {}),
@@ -613,7 +613,7 @@ export function runAnalysisInto(
     oneDResults.length = 0
     for (const k of ONE_D_KEYS)
       oneDResults.push(
-        activeOneD && activeOneD.key === k ? activeOneD.od : emptyBars[k]
+        activeOneD && activeOneD.key === k ? activeOneD.od : emptyBars[k],
       )
     renderBars(barsEl, oneDResults)
     if (activeOneD)
@@ -651,7 +651,7 @@ export function runAnalysisInto(
     for (const od of oneDResults) {
       const key = od.range.key
       const row = barsEl.querySelector(
-        `.bar-row[data-key="${key}"]`
+        `.bar-row[data-key="${key}"]`,
       ) as HTMLElement | null
       if (!row) continue
       const marker = row.querySelector(".bar-marker") as HTMLElement | null
@@ -678,15 +678,15 @@ export function runAnalysisInto(
     for (const od of oneDResults) {
       const key = od.range.key
       const row = barsEl.querySelector(
-        `.bar-row[data-key="${key}"]`
+        `.bar-row[data-key="${key}"]`,
       ) as HTMLElement | null
       if (!row) continue
       const current = nearestGridValue(od.range, liveShot[key])
       const leftBtn = row.querySelector(
-        ".bar-step--left"
+        ".bar-step--left",
       ) as HTMLButtonElement | null
       const rightBtn = row.querySelector(
-        ".bar-step--right"
+        ".bar-step--right",
       ) as HTMLButtonElement | null
       // Mirrored (aim shift): screen-left is the MAX value, so the edge
       // tests flip too, matching the step buttons' own dir flip above.
@@ -821,11 +821,11 @@ export function runAnalysisInto(
       seed.shot,
       seed.ruleType,
       seed.cushionModel,
-      workerUrl
+      workerUrl,
     )
     csvRows[1] = csvRows[1].replace(
       "pending",
-      seedSig.scored ? "success" : "fail"
+      seedSig.scored ? "success" : "fail",
     )
 
     // Parity guard: when the caller knows the shot's actual outcome, the worker
@@ -888,7 +888,7 @@ export function runAnalysisInto(
       const py = ((e.clientY - rect.top) / rect.height) * g.H
       const snapped = snapSpin(
         ((g.cx - px) / g.r) * g.lim,
-        ((g.cy - py) / g.r) * g.lim
+        ((g.cy - py) / g.r) * g.lim,
       )
       opts.onPick!({ kind: "spin", x: snapped.x, y: snapped.y })
     })
@@ -924,7 +924,7 @@ export function runAnalysisInto(
         const current = nearestGridValue(od.range, liveShot[key])
         const next = Math.max(
           od.range.scannedMin,
-          Math.min(od.range.scannedMax, current + dir * od.range.step)
+          Math.min(od.range.scannedMax, current + dir * od.range.step),
         )
         opts.onPick!({ kind: key, value: next })
         return
@@ -1049,7 +1049,7 @@ function drawPlot(canvas: HTMLCanvasElement, points: EvalPoint[]): PlotGeom {
   // Domain covers the ball face (and any point that somehow lies beyond it).
   const spread = points.reduce(
     (m, p) => Math.max(m, Math.hypot(p.shot.offsetX, p.shot.offsetY)),
-    0
+    0,
   )
   const lim = Math.max(BALL_FACE, spread) * 1.1
   const pad = 30
@@ -1167,7 +1167,7 @@ export function barValueAtPct(m: BarModel, pct: number): number {
 function buildBarSegments(
   od: OneDResult,
   lo: number,
-  hi: number
+  hi: number,
 ): BarSegment[] {
   const segs: BarSegment[] = []
   if (hi <= lo) return segs
@@ -1225,10 +1225,16 @@ export function computeBarModel(od: OneDResult): BarModel {
 
   const markerPct = pctOf(r.center)
 
+  const alignTick = (pct: number): BarTick["align"] => {
+    if (pct === 0) return "start"
+    if (pct === 100) return "end"
+    return "center"
+  }
+
   const ruler: BarTick[] = [0, 25, 50, 75, 100].map((pct) => ({
     pct,
     label: formatAxisValue(od, valueAtPct(pct)),
-    align: pct === 0 ? "start" : pct === 100 ? "end" : "center",
+    align: alignTick(pct),
   }))
 
   const segments = buildBarSegments(od, lo, hi)
@@ -1257,7 +1263,7 @@ export function renderOneDBar(od: OneDResult): HTMLElement {
   const cellsHtml = m.segments
     .map(
       (s) =>
-        `<div class="bar-cell" style="flex:${span > 0 ? s.w / span : 1};background:${s.color}"></div>`
+        `<div class="bar-cell" style="flex:${span > 0 ? s.w / span : 1};background:${s.color}"></div>`,
     )
     .join("")
   const rulerHtml = m.ruler
@@ -1266,7 +1272,7 @@ export function renderOneDBar(od: OneDResult): HTMLElement {
         `<div class="bar-tick bar-tick--${t.align}" style="left:${t.pct}%">` +
         `<span class="bar-tick-mark"></span>` +
         `<span class="bar-tick-label">${t.label}</span>` +
-        `</div>`
+        `</div>`,
     )
     .join("")
 
