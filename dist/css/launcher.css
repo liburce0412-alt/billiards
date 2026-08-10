@@ -486,6 +486,30 @@ html.launcher-mode body > :not(#gameLauncher, script) {
   font: inherit;
 }
 
+.room-code-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+
+.room-code-entry button {
+  min-width: 64px;
+  padding: 0 14px;
+  color: #f4fbfa;
+  font: inherit;
+  font-weight: 700;
+  background: rgb(12 113 108 / 42%);
+  border: 1px solid rgb(115 220 203 / 35%);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.room-code-entry button:hover,
+.room-code-entry button:focus-visible {
+  background: rgb(19 145 136 / 58%);
+  outline: none;
+}
+
 .launcher-input select {
   width: 100%;
   min-height: 3rem;

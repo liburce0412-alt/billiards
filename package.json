@@ -1,7 +1,7 @@
 {
   "name": "billiards",
   "description": "Break Builder 3D - a deterministic browser billiards simulation with five rulesets and 11-level local AI",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "author": "tailuge and Break Builder contributors",
   "homepage": "https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/",
   "repository": {
@@ -33,7 +33,7 @@
     "dev": "webpack",
     "build": "npm run version-gen && webpack && node scripts/prepare-sites.cjs",
     "lint": "tsc --noEmit && eslint .",
-    "lint:css": "stylelint \"dist/**/*.{css,html}\"",
+    "lint:css": "stylelint \"dist/css/**/*.css\" \"dist/{index,rules}.html\"",
     "prettify": "prettier --cache true --write --trailing-comma es5 --no-semi {src,test}/**/*.[jt]s dist/**/*.{css,html} *.[jt]s *.json",
     "markdownlint": "npx markdownlint-cli2 README.md CHANGELOG.md SECURITY.md \"docs/*.md\" .github/CONTRIBUTING.md",
     "serve": "concurrently \"npm run watch\" \"npm run start-server\"",

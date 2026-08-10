@@ -29,6 +29,11 @@ Files:
 - `ballcollision-room-02.ogg`
 - `ballcollision-room-03.ogg`
 - `ballcollision-room-04.ogg`
+- `cue-live-01.ogg`
+- `cushion-live-01.ogg`
+- `pot-mouth-live-01.ogg`
+- `pot-roll-live-01.ogg`
+- `pot-drop-live-01.ogg`
 
 Source: [Pool Sounds.ogg](https://commons.wikimedia.org/wiki/File:Pool_Sounds.ogg)
 
@@ -38,13 +43,14 @@ License: Public domain (PD-self). The copyright holder released the recording
 into the public domain worldwide and otherwise granted unrestricted use where
 that dedication is not legally possible.
 
-Changes: Short impact regions were selected from the original 32-second
-binaural pool-table recording, folded down to mono for positional playback,
-high/low-pass filtered, lightly compressed, gain-matched, faded, limited and
-encoded as Ogg Vorbis. No attribution is required; the source is documented
-here for provenance.
+Changes: Distinct cue, cushion, pocket-mouth, roll, drop and ball-impact regions
+were selected from the original 32-second binaural pool-table recording. They
+were folded down to mono for positional playback, high/low-pass filtered,
+lightly compressed, peak-limited and encoded as Ogg Vorbis. These are separate
+recorded events rather than pitch-shifted copies. No attribution is required;
+the source is documented here for provenance.
 
-Retrieved: 2026-07-23
+Retrieved: 2026-08-11
 
 ## Existing project sounds
 

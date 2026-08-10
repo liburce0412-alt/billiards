@@ -13,7 +13,7 @@ export default defineConfig({
   retries: 0,
   reporter: "line",
   use: {
-    baseURL: "http://127.0.0.1:8080",
+    baseURL: "http://127.0.0.1:4173",
     colorScheme: "dark",
     locale: "zh-CN",
     launchOptions: {
@@ -22,9 +22,9 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   webServer: {
-    command: "node node_modules/http-server/bin/http-server dist -p 8080 -c-1",
-    url: "http://127.0.0.1:8080",
-    reuseExistingServer: true,
+    command: "node node_modules/http-server/bin/http-server dist -p 4173 -c-1",
+    url: "http://127.0.0.1:4173",
+    reuseExistingServer: false,
     timeout: 30_000,
   },
 })
