@@ -1,5 +1,4 @@
 import {
-  deriveRoomIdentity,
   normaliseDisplayRoomCode,
   ROOM_PROTOCOL_VERSION,
 } from "./network/client/roomidentity"
@@ -31,8 +30,6 @@ export interface LauncherSelection {
   roomInstanceId?: string
 }
 
-export const DEFAULT_WEBSOCKET_SERVER = "wss://billiards-network.onrender.com"
-
 export function normaliseRoomCode(value: string): string {
   try {
     return normaliseDisplayRoomCode(value)
@@ -61,6 +58,12 @@ export function buildInviteUrl(
   url.searchParams.set("roomVersion", String(ROOM_PROTOCOL_VERSION))
   url.searchParams.set("rule", selection.rule)
   url.searchParams.set("quality", selection.quality)
+  if (
+    new URL(baseHref).searchParams.get("platformDemo") === "1" &&
+    ["localhost", "127.0.0.1"].includes(url.hostname)
+  ) {
+    url.searchParams.set("platformDemo", "1")
+  }
   if (selection.environmentStyle) {
     url.searchParams.set("environment", selection.environmentStyle)
   }
@@ -93,6 +96,9 @@ export async function buildGameUrl(
   url.searchParams.set("play", "1")
   url.searchParams.set("ruletype", selection.rule)
   url.searchParams.set("quality", selection.quality)
+  if (selection.tableStyle) {
+    url.searchParams.set("tableStyle", selection.tableStyle)
+  }
   if (selection.environmentStyle) {
     url.searchParams.set("environment", selection.environmentStyle)
   }
@@ -107,15 +113,18 @@ export async function buildGameUrl(
     url.searchParams.set("p1Cue", selection.player1Cue || "heritage")
     url.searchParams.set("p2Cue", selection.player2Cue || "jade")
   } else if (selection.opponent === "online") {
-    const room = await deriveRoomIdentity(selection.roomCode ?? "")
-    url.searchParams.set("practice", "false")
-    url.searchParams.set("websocketserver", DEFAULT_WEBSOCKET_SERVER)
-    url.searchParams.set("tableId", room.channelId)
-    url.searchParams.set("roomCode", room.displayCode)
-    url.searchParams.set("roomVersion", String(room.protocolVersion))
-    if (selection.roomInstanceId) {
-      url.searchParams.set("roomInstance", selection.roomInstanceId)
+    if (!selection.roomInstanceId) {
+      throw new Error("在线房间尚未创建或加入")
     }
+    url.searchParams.set("practice", "false")
+    url.searchParams.set("roomId", selection.roomInstanceId)
+    url.searchParams.set("tableId", selection.roomInstanceId)
+    url.searchParams.set(
+      "roomCode",
+      normaliseRoomCode(selection.roomCode ?? "")
+    )
+    url.searchParams.set("roomVersion", String(ROOM_PROTOCOL_VERSION))
+    url.searchParams.set("roomInstance", selection.roomInstanceId)
     url.searchParams.set(
       "userName",
       selection.onlinePlayerName?.trim() || "玩家"

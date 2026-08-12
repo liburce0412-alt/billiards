@@ -13,6 +13,18 @@ export function ballSvg(angleDeg: number): string {
   return `<svg width="20" height="20" viewBox="0 0 20 20" style="vertical-align:middle"><circle cx="10" cy="10" r="7.2" fill="white" stroke="black" stroke-width="0.5"/><circle cx="${cx}" cy="${cy}" r="1.5" fill="blue"/></svg>`
 }
 
+export function ballChatToken(angleDeg: number): string {
+  const normalized = ((Math.round(angleDeg) % 360) + 360) % 360
+  return `[[ball:${normalized}]]`
+}
+
+function appendBallIcon(parent: HTMLElement, angleDeg: number) {
+  const template = document.createElement("template")
+  template.innerHTML = ballSvg(angleDeg)
+  const svg = template.content.firstElementChild
+  if (svg) parent.append(svg)
+}
+
 export class Chat {
   chatoutput: HTMLElement | null
   chatInput: HTMLElement | null
@@ -38,32 +50,14 @@ export class Chat {
       return
     }
 
-    if (msg.includes("<")) {
-      const template = document.createElement("template")
-      template.innerHTML = msg
-      const content = template.content
-
-      const allowedTags = ["svg", "circle", "a", "br"]
-
-      const sanitize = (node: Node) => {
-        if (node.nodeType === Node.ELEMENT_NODE) {
-          const el = node as HTMLElement
-          const tag = el.tagName.toLowerCase()
-          if (!allowedTags.includes(tag)) {
-            el.remove()
-            return
-          }
-        }
-        Array.from(node.childNodes).forEach(sanitize)
-      }
-
-      sanitize(content)
-      this.chatoutput.appendChild(content)
+    if (msg.length > 2 && this.chatoutput.childNodes.length) {
+      this.chatoutput.appendChild(document.createElement("br"))
+    }
+    const ball = /^\[\[ball:(\d{1,3})\]\]$/.exec(msg)
+    if (ball) {
+      appendBallIcon(this.chatoutput, Number(ball[1]))
     } else {
-      if (msg.length > 2) {
-        this.chatoutput.appendChild(document.createElement("br"))
-      }
-      this.chatoutput.appendChild(document.createTextNode(msg))
+      this.chatoutput.appendChild(document.createTextNode(msg.slice(0, 240)))
     }
     this.updateScroll()
   }

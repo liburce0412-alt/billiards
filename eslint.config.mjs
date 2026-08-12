@@ -1,20 +1,20 @@
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import html from 'eslint-plugin-html';
-import sonarjs from 'eslint-plugin-sonarjs';
+import eslint from "@eslint/js"
+import tseslint from "typescript-eslint"
+import html from "eslint-plugin-html"
+import sonarjs from "eslint-plugin-sonarjs"
 
 export default tseslint.config(
   {
-    name: 'eslint/recommended',
+    name: "eslint/recommended",
     ...eslint.configs.recommended,
   },
   ...tseslint.configs.recommended,
   {
-    name: 'sonarjs/recommended',
+    name: "sonarjs/recommended",
     ...sonarjs.configs.recommended,
   },
   {
-    name: 'billiards/parser-options',
+    name: "billiards/parser-options",
     languageOptions: {
       parserOptions: {
         warnOnUnsupportedTypeScriptVersion: false,
@@ -22,7 +22,7 @@ export default tseslint.config(
     },
   },
   {
-    name: 'billiards/ignores',
+    name: "billiards/ignores",
     ignores: [
       "dist/*",
       "!dist/picker.html",
@@ -31,14 +31,18 @@ export default tseslint.config(
       "jest.config.js",
       ".yarn/**",
       ".aider.tags.cache.v3/**",
-      ".vscode/**"
+      ".vscode/**",
+      "server/worker-configuration.d.ts",
     ],
   },
   {
-    name: 'billiards/rules',
+    name: "billiards/rules",
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_" },
+      ],
       "@typescript-eslint/no-unused-expressions": "off",
       "@typescript-eslint/no-require-imports": "off",
       "sonarjs/public-static-readonly": "off",
@@ -47,7 +51,7 @@ export default tseslint.config(
     },
   },
   {
-    name: 'billiards/html-files',
+    name: "billiards/html-files",
     files: ["dist/picker.html"],
     plugins: { html },
     languageOptions: {
@@ -69,7 +73,7 @@ export default tseslint.config(
     },
   },
   {
-    name: 'billiards/test-files',
+    name: "billiards/test-files",
     files: ["test/**/*.js", "test/**/*.ts"],
     languageOptions: {
       globals: {
@@ -80,6 +84,6 @@ export default tseslint.config(
     },
     rules: {
       "no-undef": "off",
-    }
-  },
-);
+    },
+  }
+)

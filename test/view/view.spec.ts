@@ -32,9 +32,9 @@ describe("View", () => {
     done()
   })
 
-  it("uses a dark starfield instead of the white room background", () => {
+  it("uses the light SPECTRA environment with a restrained starfield", () => {
     const view = new View(canvas3d, table, Assets.localAssets())
-    expect((view.scene.background as any).getHex()).to.equal(0x02040c)
+    expect((view.scene.background as any).getHex()).to.equal(0xf3f6fa)
     expect(view.scene.getObjectByName("starfield")).to.not.be.undefined
   })
 

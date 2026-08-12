@@ -33,6 +33,7 @@ import { EventType } from "../events/eventtype"
 import { EventSequenceWindow } from "../network/client/eventsequence"
 import { RoomControlEvent, RoomSettings } from "../events/roomcontrolevent"
 import { RuleDecisionEvent } from "../events/ruledecisionevent"
+import { tableStyleById } from "../view/tablestyle"
 import {
   appendRoomJournal,
   clearRoomState,
@@ -114,10 +115,8 @@ export class BrowserContainer {
     this.ruletype = params.get("ruletype") ?? "nineball"
     applyPhysicsProfileForRule(this.ruletype)
     Camera.configureForRule(this.ruletype)
-    const lobbyUrl = params.get("lobbyUrl")
-    const wss = params.get("websocketserver")
-    this.lobbyUrl = lobbyUrl
-    this.wss = wss
+    this.lobbyUrl = null
+    this.wss = params.get("roomId")
     this.canvas3d = canvas3d
     this.cushionModel = this.cushion(params.get("cushionModel"))
     this.spectator = params.has("spectator")
@@ -197,7 +196,7 @@ export class BrowserContainer {
       keyboard: new Keyboard(this.canvas3d, { disabled: this.analysisMode }),
       id: this.playername,
       relay: this.messageRelay,
-      messagingUrl: this.lobbyUrl ?? this.wss ?? undefined,
+      messagingUrl: undefined,
       scoreReporter: scoreReporter,
       replayMode: !!this.replay,
       botMode: this.botMode,
@@ -231,6 +230,12 @@ export class BrowserContainer {
     }
 
     this.assets = new Assets(this.ruletype)
+    const initialTableStyle = new URLSearchParams(
+      globalThis.location.search
+    ).get("tableStyle")
+    if (initialTableStyle) {
+      this.assets.tableStyleId = tableStyleById(initialTableStyle).id
+    }
     if (this.localMesh) {
       this.assets.createLocal()
       this.onAssetsReady()
@@ -1051,8 +1056,6 @@ export class BrowserContainer {
   }
 
   offerUpload() {
-    this.container.chat.showMessage(
-      `<a class="pill" target="_blank" href="https://scoreboard-tailuge.vercel.app/hiscore.html${location.search}"> upload high score 🏆</a`
-    )
+    this.container.chat.showMessage("本局成绩已保存在当前回放中")
   }
 }

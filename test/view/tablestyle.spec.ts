@@ -29,6 +29,6 @@ describe("TableStyle", () => {
         "american-walnut"
       )
     ).to.equal("models/d-snooker.min.gltf")
-    expect(tableStyleById("missing").id).to.equal("american-walnut")
+    expect(tableStyleById("missing").id).to.equal("american-ivory")
   })
 })

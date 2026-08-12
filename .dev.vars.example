@@ -1,0 +1,6 @@
+# Copy to .dev.vars for local Worker development. Never commit real values.
+BETTER_AUTH_SECRET=replace-with-at-least-32-random-characters
+RECOVERY_CODE_PEPPER=replace-with-an-independent-random-secret
+ADMIN_BOOTSTRAP_CODE=replace-with-a-one-time-admin-invite
+TURNSTILE_SECRET=
+TURNSTILE_SITE_KEY=

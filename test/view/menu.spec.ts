@@ -59,7 +59,7 @@ describe("Menu", () => {
 
     const selector = document.getElementById("tableSelector")!
     expect(selector.hasAttribute("hidden")).to.be.false
-    expect(selector.querySelectorAll("[data-table-style]")).to.have.lengthOf(6)
+    expect(selector.querySelectorAll("[data-table-style]")).to.have.lengthOf(8)
 
     const chineseTable = selector.querySelector(
       "[data-table-style='chinese-ebony']"

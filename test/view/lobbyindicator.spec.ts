@@ -1,268 +1,131 @@
-import { MessagingClient } from "@tailuge/messaging"
 import { LobbyIndicator } from "../../src/view/lobbyindicator"
 import { initDom } from "./dom"
 import { Session } from "../../src/network/client/session"
-import { LOBBY_URL } from "../../src/network/client/constants"
 
-// Mock the @tailuge/messaging module
-jest.mock("@tailuge/messaging", () => ({
-  MessagingClient: jest.fn().mockImplementation(() => ({
-    setVersion: jest.fn(),
-    start: jest.fn(),
-    joinLobby: jest.fn().mockResolvedValue({
-      onUsersChange: jest.fn(),
-      onChat: jest.fn(),
-      onChallenge: jest.fn(),
-      updatePresence: jest.fn(),
-      leave: jest.fn(),
-    }),
-    stop: jest.fn(),
-  })),
-  Lobby: jest.fn(),
-}))
+type SocketListener = (event: any) => void
+
+class FakeWebSocket {
+  static instances: FakeWebSocket[] = []
+  readonly listeners = new Map<string, SocketListener[]>()
+  closed = false
+
+  constructor(readonly url: string) {
+    FakeWebSocket.instances.push(this)
+  }
+
+  addEventListener(type: string, listener: SocketListener) {
+    const listeners = this.listeners.get(type) ?? []
+    listeners.push(listener)
+    this.listeners.set(type, listeners)
+  }
+
+  close() {
+    this.closed = true
+  }
+
+  message(payload: unknown) {
+    for (const listener of this.listeners.get("message") ?? []) {
+      listener({ data: JSON.stringify(payload) })
+    }
+  }
+}
 
 describe("LobbyIndicator", () => {
+  const originalWebSocket = globalThis.WebSocket
+
   beforeEach(() => {
     initDom()
-    Session.init("test-client", "TestPlayer", "test-table", false)
+    FakeWebSocket.instances = []
+    globalThis.WebSocket = FakeWebSocket as unknown as typeof WebSocket
+    ;(
+      globalThis as typeof globalThis & {
+        __BREAK_BUILDER_SESSION__?: unknown
+      }
+    ).__BREAK_BUILDER_SESSION__ = {
+      capabilities: { social: true },
+      user: {
+        id: "self",
+        displayName: "未来玩家",
+        visibility: "online",
+      },
+    }
+    Session.init("self", "未来玩家", "table-1", false)
   })
 
   afterEach(() => {
+    globalThis.WebSocket = originalWebSocket
+    delete (
+      globalThis as typeof globalThis & {
+        __BREAK_BUILDER_SESSION__?: unknown
+      }
+    ).__BREAK_BUILDER_SESSION__
     Session.reset()
   })
 
-  it("updates text content on init", async () => {
-    const mockRules = { rulename: "nineball" } as any
-    const indicator = new LobbyIndicator(false, false, mockRules)
+  it("uses the same-origin social socket and renders safe presence rows", async () => {
+    const indicator = new LobbyIndicator(false, false, {} as any)
     await indicator.init()
+    expect(FakeWebSocket.instances[0].url).toBe("ws://localhost/ws/social")
 
-    const element = document.getElementById("lobbyOverlay")
-    const countElement = element?.querySelector(".lobby-count")
-    expect(countElement?.textContent).toBe("TestPlayer 👥0 ⚪")
-    expect(countElement?.classList.contains("is-hidden")).toBe(false)
-  })
-
-  it("updates display when challenged", async () => {
-    const element = document.getElementById("lobbyOverlay")
-    const mockRules = { rulename: "nineball" } as any
-    const indicator = new LobbyIndicator(false, false, mockRules)
-    await indicator.init()
-
-    // Access the mock lobby to trigger challenge callback
-    const mockLobby = (indicator as any).lobby
-    const onChallengeCallback = mockLobby.onChallenge.mock.calls[0][0]
-
-    // Simulate receiving a challenge offer
-    onChallengeCallback({
-      type: "offer",
-      challengerId: "u2",
-      challengerName: "Bob",
-      challengeeId: "default",
-      ruleType: "nineball",
+    FakeWebSocket.instances[0].message({
+      type: "presence.snapshot",
+      visibleCount: 3,
+      users: [
+        { userId: "self", displayName: "未来玩家", visibility: "online" },
+        { userId: "alice", displayName: "<img onerror=1>", visibility: "away" },
+        { userId: "hidden", displayName: "隐身者", visibility: "invisible" },
+      ],
     })
 
-    const countElement = element?.querySelector(".lobby-count")
-    expect(countElement?.classList.contains("is-hidden")).toBe(false)
-    expect(document.getElementById("challengePill")?.textContent).toContain(
-      "Challenge of nineball from Bob"
+    expect(document.querySelector(".lobby-count")?.textContent).toBe("3 在线")
+    expect(document.getElementById("gameSocialUsers")?.textContent).toContain(
+      "<img onerror=1>"
     )
-    expect(element?.getAttribute("aria-label")).toContain("CHALLENGE FROM Bob")
-
-    const href = element?.getAttribute("href") ?? ""
-    expect(href).toContain("action=join")
-    expect(href).toContain("ruletype=nineball")
-    expect(href).toContain("opponentId=u2")
-    expect(href).toContain("opponentName=Bob")
-
-    // Simulate challenge decline/cancel
-    onChallengeCallback({
-      type: "decline",
-      challengerId: "u2",
-      challengerName: "Bob",
-      challengeeId: "default",
-      ruleType: "nineball",
-    })
-    expect(document.getElementById("challengePill")?.hidden).toBe(true)
-    expect(document.getElementById("challengeDecline")).not.toBeNull()
-    expect(countElement?.classList.contains("is-hidden")).toBe(false)
-    expect(element?.getAttribute("href")).toBe(LOBBY_URL)
-  })
-
-  it("handles non-anchor elements and click events", async () => {
-    // Create a div instead of a link
-    const div = document.createElement("div")
-    div.id = "lobbyOverlay-div"
-    document.body.appendChild(div)
-
-    // Mock id() to return our div
-    const originalGetElementById = document.getElementById
-    document.getElementById = (id: string) =>
-      id === "lobbyOverlay" ? div : originalGetElementById.call(document, id)
-
-    const mockRules = { rulename: "nineball" } as any
-    const indicator = new LobbyIndicator(false, false, mockRules)
-    await indicator.init()
-
-    let openedUrl = ""
-    const originalOpen = globalThis.open
-    globalThis.open = ((url: string) => {
-      openedUrl = url
-      return null
-    }) as any
-
-    div.click()
-    expect(openedUrl).toBe(LOBBY_URL)
-
-    await indicator.stop()
-    div.remove()
-    document.getElementById = originalGetElementById
-    globalThis.open = originalOpen
-  })
-
-  it("setTableId updates presence", async () => {
-    const mockRules = { rulename: "nineball" } as any
-    const indicator = new LobbyIndicator(false, false, mockRules)
-    await indicator.init()
-
-    const mockLobby = (indicator as any).lobby
-    const updatePresenceFn = mockLobby.updatePresence
-
-    indicator.setTableId("table-123")
-    expect(updatePresenceFn.mock.calls.length).toBeGreaterThan(0)
-
-    const firstCall = updatePresenceFn.mock.calls[0]
-    expect(firstCall[0]).toEqual({ tableId: "table-123" })
-
-    indicator.setTableId(null)
-    const secondCall = updatePresenceFn.mock.calls[1]
-    expect(secondCall[0]).toEqual({ tableId: undefined })
-
-    await indicator.stop()
-  })
-
-  it("updates opponent status emoji correctly", async () => {
-    Session.init("p1", "Player 1", "table-1", false)
-    Session.getInstance().setOpponentClientId("p2")
-
-    const mockRules = { rulename: "nineball" } as any
-    const indicator = new LobbyIndicator(false, false, mockRules)
-
-    const element = document.getElementById("lobbyOverlay")
-    const countElement = element?.querySelector(".lobby-count") as HTMLElement
-
-    await indicator.init()
-    expect(countElement.textContent).toBe("Player 1 👥0 ⚪")
-
-    // Access the mock lobby to trigger onUsersChange callback
-    const mockLobby = (indicator as any).lobby
-    const onUsersChangeCallback = mockLobby.onUsersChange.mock.calls[0][0]
-
-    // Simulate opponent connected at the same table
-    onUsersChangeCallback([
-      { userId: "p1", tableId: "table-1" },
-      { userId: "p2", tableId: "table-1" },
-    ])
-    expect(countElement.textContent).toBe("Player 1 👥2 🟢")
-
-    // Simulate opponent disconnected (not in list)
-    onUsersChangeCallback([{ userId: "p1", tableId: "table-1" }])
-    expect(countElement.textContent).toBe("Player 1 👥1 🔴")
-
-    // Simulate opponent at a different table
-    onUsersChangeCallback([
-      { userId: "p1", tableId: "table-1" },
-      { userId: "p2", tableId: "other-table" },
-    ])
-    expect(countElement.textContent).toBe("Player 1 👥2 🔴")
-
-    await indicator.stop()
-  })
-
-  it("hides opponent status emoji in non-multiplayer modes", async () => {
-    const mockRules = { rulename: "nineball" } as any
-
-    // Bot mode
-    Session.init("p1", "Player 1", "table-1", false, true)
-    const indicator = new LobbyIndicator(true, false, mockRules)
-    await indicator.init()
-
-    const element = document.getElementById("lobbyOverlay")
-    const countElement = element?.querySelector(".lobby-count") as HTMLElement
-    expect(countElement.textContent).toBe("Player 1 👥0 ⚪")
-    await indicator.stop()
-
-    // Replay mode
-    Session.reset()
-    Session.init("p1", "Player 1", "table-1", false)
-    const indicator2 = new LobbyIndicator(false, true, mockRules)
-    await indicator2.init()
-    const countElement2 = element?.querySelector(".lobby-count") as HTMLElement
-    expect(countElement2.textContent).toBe("Anon 👥0 ⚪")
-    await indicator2.stop()
-  })
-
-  it("uses custom messaging URL when provided", async () => {
-    const mockRules = { rulename: "nineball" } as any
-    const customUrl = "custom.server.com"
-    const indicator = new LobbyIndicator(
-      false,
-      false,
-      mockRules,
-      undefined,
-      customUrl
+    expect(document.getElementById("gameSocialUsers")?.innerHTML).not.toContain(
+      "<img onerror=1>"
     )
-    await indicator.init()
-
-    expect(MessagingClient).toHaveBeenCalledWith({
-      baseUrl: "https://custom.server.com",
-    })
-
-    await indicator.stop()
+    expect(
+      document.getElementById("gameSocialUsers")?.textContent
+    ).not.toContain("隐身者")
   })
 
-  it("handles protocol-prefixed custom messaging URL", async () => {
-    const mockRules = { rulename: "nineball" } as any
-    const customUrl = "wss://custom.server.com"
-    const indicator = new LobbyIndicator(
-      false,
-      false,
-      mockRules,
-      undefined,
-      customUrl
+  it("shows a live invite without accepting an injected destination", async () => {
+    const indicator = new LobbyIndicator(false, false, {} as any)
+    await indicator.init()
+    FakeWebSocket.instances[0].message({
+      type: "invite.created",
+      invite: { challengerName: "Alice", url: "javascript:alert(1)" },
+    })
+
+    const pill = document.getElementById("challengePill")!
+    expect(pill.hidden).toBe(false)
+    expect(pill.textContent).toContain("Alice 邀请你比赛")
+    expect(document.getElementById("lobbyOverlay")?.getAttribute("href")).toBe(
+      "/lobby"
     )
-    await indicator.init()
-
-    expect(MessagingClient).toHaveBeenCalledWith({
-      baseUrl: "https://custom.server.com",
-    })
-
-    await indicator.stop()
   })
 
-  it("updates title with other user names on users change", async () => {
-    const mockRules = { rulename: "nineball" } as any
-    const indicator = new LobbyIndicator(false, false, mockRules)
+  it("adds the active-game suffix and closes cleanly", async () => {
+    const indicator = new LobbyIndicator(false, false, {} as any)
     await indicator.init()
+    FakeWebSocket.instances[0].message({
+      type: "presence.snapshot",
+      visibleCount: 1,
+      users: [],
+    })
+    indicator.setTableId("table-1")
+    expect(document.querySelector(".lobby-count")?.textContent).toBe(
+      "1 在线 · 对局中"
+    )
 
-    const element = document.getElementById("lobbyOverlay")
-    const countElement = element?.querySelector(".lobby-count") as HTMLElement
+    await indicator.stop()
+    expect(FakeWebSocket.instances[0].closed).toBe(true)
+  })
 
-    // Access the mock lobby to trigger onUsersChange callback
-    const mockLobby = (indicator as any).lobby
-    const onUsersChangeCallback = mockLobby.onUsersChange.mock.calls[0][0]
-
-    // Simulate several users
-    onUsersChangeCallback([
-      { userId: "test-client", userName: "TestPlayer" },
-      { userId: "u2", userName: "Alice" },
-      { userId: "u3", userName: "Bob" },
-      { userId: "u2", userName: "Alice" }, // Duplicate session for Alice
-    ])
-
-    expect(countElement.getAttribute("title")).toBe("Online:\nAlice\nBob")
-
-    // Empty users (except self)
-    onUsersChangeCallback([{ userId: "test-client", userName: "TestPlayer" }])
-    expect(countElement.hasAttribute("title")).toBe(false)
+  it("does not open social sockets in offline modes", async () => {
+    const indicator = new LobbyIndicator(true, false, {} as any)
+    await indicator.init()
+    expect(FakeWebSocket.instances).toHaveLength(0)
+    expect(document.querySelector(".lobby-count")?.textContent).toBe("0 在线")
   })
 })

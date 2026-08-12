@@ -4,6 +4,8 @@ import { AimEvent } from "../events/aimevent"
 import { CameraTop } from "./cameratop"
 import { R } from "../model/physics/constants"
 
+type CameraModePreference = "2d" | "3d" | "free"
+
 /** Preserve the feel of an old per-frame lerp while making it refresh-rate independent. */
 export function frameRateIndependentLerp(
   fractionAt60Fps: number,
@@ -39,6 +41,10 @@ export class Camera {
     if (savedMode === "3d") {
       this.mode = this.aimView
       this.preferredMode = this.aimView
+    } else if (savedMode === "free") {
+      this.mode = this.freeView
+      this.preferredMode = this.freeView
+      this.orbitInitialised = true
     }
   }
 
@@ -63,24 +69,24 @@ export class Camera {
   elapsed: number = 1 / 60
   private t = 0
 
-  private static savedMode(): "2d" | "3d" {
+  private static savedMode(): CameraModePreference {
     if (typeof globalThis.location !== "undefined") {
       const queryMode = new URLSearchParams(globalThis.location.search).get(
         "camera"
       )
       if (queryMode === "2d" || queryMode === "top") return "2d"
       if (queryMode === "3d" || queryMode === "aim") return "3d"
+      if (queryMode === "free") return "free"
     }
     try {
-      return globalThis.localStorage?.getItem("billiards-camera-mode") === "3d"
-        ? "3d"
-        : "2d"
+      const saved = globalThis.localStorage?.getItem("billiards-camera-mode")
+      return saved === "3d" || saved === "free" ? saved : "2d"
     } catch {
       return "2d"
     }
   }
 
-  private rememberMode(mode: "2d" | "3d") {
+  private rememberMode(mode: CameraModePreference) {
     try {
       globalThis.localStorage?.setItem("billiards-camera-mode", mode)
     } catch {
@@ -94,7 +100,10 @@ export class Camera {
     }
     this.mode = mode
     this.preferredMode = mode
-    this.rememberMode(mode === this.topView ? "2d" : "3d")
+    let storedMode: CameraModePreference = "3d"
+    if (mode === this.topView) storedMode = "2d"
+    else if (mode === this.freeView) storedMode = "free"
+    this.rememberMode(storedMode)
   }
 
   update(elapsed, aim: AimEvent) {
@@ -198,11 +207,7 @@ export class Camera {
       const offset = this.tempVec.copy(this.camera.position)
       const currentDistance = offset.length()
       if (currentDistance >= R * 4) {
-        this.orbitDistance = MathUtils.clamp(
-          currentDistance,
-          R * 14,
-          R * 180
-        )
+        this.orbitDistance = MathUtils.clamp(currentDistance, R * 14, R * 180)
         this.orbitAzimuth = Math.atan2(offset.x, offset.y)
         this.orbitElevation = MathUtils.clamp(
           Math.asin(offset.z / currentDistance),

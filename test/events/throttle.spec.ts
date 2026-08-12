@@ -100,7 +100,7 @@ describe("Throttle", () => {
     expect(sentEvents[1]).to.equal(event2)
   })
 
-  it("should NOT send skipped AIM messages when a subsequent non-AIM message is sent", () => {
+  it("flushes the latest AIM snapshot before a non-AIM message", () => {
     const sentEvents: any[] = []
     const throttle = new Throttle(250, (event) => {
       sentEvents.push(event)
@@ -112,12 +112,13 @@ describe("Throttle", () => {
 
     throttle.send(event1)
     nowValue += 100
-    throttle.send(event2) // Should be skipped in new implementation, but pending in old
+    throttle.send(event2)
     nowValue += 50
-    throttle.send(event3) // Should be sent immediately
+    throttle.send(event3)
 
-    expect(sentEvents).to.have.lengthOf(2)
+    expect(sentEvents).to.have.lengthOf(3)
     expect(sentEvents[0]).to.equal(event1)
-    expect(sentEvents[1]).to.equal(event3)
+    expect(sentEvents[1]).to.equal(event2)
+    expect(sentEvents[2]).to.equal(event3)
   })
 })

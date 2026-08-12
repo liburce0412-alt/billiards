@@ -1,101 +1,137 @@
 import { MessagingMessageRelay } from "../../../src/network/client/messagingmessagerelay"
-import { NchanClient } from "@tailuge/messaging"
-import { Session } from "../../../src/network/client/session"
 
-jest.mock("@tailuge/messaging", () => {
-  return {
-    NchanClient: jest.fn().mockImplementation(() => {
-      return {
-        subscribeTable: jest.fn(),
-        publishTable: jest.fn().mockResolvedValue(undefined),
-      }
-    }),
+type SocketListener = (event: any) => void
+
+class FakeWebSocket {
+  static readonly CONNECTING = 0
+  static readonly OPEN = 1
+  static readonly CLOSED = 3
+  static instances: FakeWebSocket[] = []
+
+  readonly listeners = new Map<string, SocketListener[]>()
+  readonly sent: string[] = []
+  readyState = FakeWebSocket.CONNECTING
+  closeCode?: number
+
+  constructor(readonly url: string) {
+    FakeWebSocket.instances.push(this)
   }
-})
+
+  addEventListener(type: string, listener: SocketListener) {
+    const listeners = this.listeners.get(type) ?? []
+    listeners.push(listener)
+    this.listeners.set(type, listeners)
+  }
+
+  send(payload: string) {
+    this.sent.push(payload)
+  }
+
+  close(code = 1000) {
+    this.readyState = FakeWebSocket.CLOSED
+    this.closeCode = code
+  }
+
+  open() {
+    this.readyState = FakeWebSocket.OPEN
+    this.emit("open", {})
+  }
+
+  message(payload: unknown) {
+    this.emit("message", { data: payload })
+  }
+
+  private emit(type: string, event: unknown) {
+    for (const listener of this.listeners.get(type) ?? []) listener(event)
+  }
+}
 
 describe("MessagingMessageRelay", () => {
+  const originalWebSocket = globalThis.WebSocket
+
   beforeEach(() => {
-    Session.init("test-client", "TestPlayer", "test-table", false)
+    FakeWebSocket.instances = []
+    globalThis.WebSocket = FakeWebSocket as unknown as typeof WebSocket
   })
 
-  it("should initialize NchanClient with proper protocol and url format", () => {
-    new MessagingMessageRelay()
-    expect(NchanClient).toHaveBeenCalledWith(
-      "https://billiards-network.onrender.com"
-    )
-
-    new MessagingMessageRelay("ws://localhost:8080")
-    expect(NchanClient).toHaveBeenCalledWith("http://localhost:8080")
-
-    new MessagingMessageRelay("wss://my-server.com")
-    expect(NchanClient).toHaveBeenCalledWith("https://my-server.com")
+  afterEach(() => {
+    globalThis.WebSocket = originalWebSocket
   })
 
-  it("should subscribe to channel and unwrap TableMessage envelope", () => {
-    const relay = new MessagingMessageRelay()
-    const mockNchanInstance = (relay as any).nchan
+  it("connects only to the first-party authenticated game socket", () => {
+    const relay = new MessagingMessageRelay("room id")
+    relay.subscribe("ignored", jest.fn())
 
-    const mockSub = { stop: jest.fn() }
-    let recordedCallback: ((data: string) => void) | undefined
-    mockNchanInstance.subscribeTable.mockImplementation(
-      (channel: string, onMessage: (data: string) => void) => {
-        recordedCallback = onMessage
-        return mockSub
-      }
+    expect(FakeWebSocket.instances).toHaveLength(1)
+    expect(FakeWebSocket.instances[0].url).toBe(
+      "ws://localhost/ws/game/room%20id"
     )
-
-    const gameCallback = jest.fn()
-    relay.subscribe("test-chan", gameCallback)
-
-    expect(mockNchanInstance.subscribeTable).toHaveBeenCalledWith(
-      "test-chan",
-      expect.any(Function)
-    )
-
-    // Send a message envelope
-    const envelope = {
-      type: "test-type",
-      senderId: "other-client",
-      data: { key: "value" },
-    }
-    recordedCallback!(JSON.stringify(envelope))
-    expect(gameCallback).toHaveBeenCalledWith(JSON.stringify({ key: "value" }))
-
-    // Test non-JSON message passing through as-is
-    recordedCallback!("raw-string")
-    expect(gameCallback).toHaveBeenCalledWith("raw-string")
   })
 
-  it("should publish a message by wrapping it in TableMessage envelope", async () => {
-    const relay = new MessagingMessageRelay()
-    const mockNchanInstance = (relay as any).nchan
+  it("queues events until connected and stamps a monotonic client sequence", () => {
+    const relay = new MessagingMessageRelay("room-1")
+    relay.subscribe("ignored", jest.fn())
+    const socket = FakeWebSocket.instances[0]
 
-    const rawMessage = JSON.stringify({ type: "MyEvent", value: 123 })
-    relay.publish("test-chan", rawMessage)
+    relay.publish("ignored", JSON.stringify({ type: "AIM", angle: 1 }))
+    relay.publish("ignored", JSON.stringify({ type: "HIT", power: 0.7 }))
+    expect(socket.sent).toHaveLength(0)
 
-    expect(mockNchanInstance.publishTable).toHaveBeenCalledWith(
-      "test-chan",
+    socket.open()
+    expect(socket.sent.map((payload) => JSON.parse(payload))).toEqual([
       {
-        type: "MyEvent",
-        data: { type: "MyEvent", value: 123 },
+        type: "game.event",
+        clientSeq: 1,
+        event: { type: "AIM", angle: 1 },
       },
-      "test-client"
+      {
+        type: "game.event",
+        clientSeq: 2,
+        event: { type: "HIT", power: 0.7 },
+      },
+    ])
+  })
+
+  it("delivers ordered server events and ignores repeated resync entries", () => {
+    const callback = jest.fn()
+    const relay = new MessagingMessageRelay("room-1")
+    relay.subscribe("ignored", callback)
+    const socket = FakeWebSocket.instances[0]
+    socket.open()
+
+    socket.message(
+      JSON.stringify({
+        type: "game.event",
+        seq: 4,
+        event: { type: "AIM", angle: 0.5 },
+      })
+    )
+    socket.message(
+      JSON.stringify({
+        type: "game.resync",
+        events: [
+          { seq: 4, event: { type: "AIM", angle: 0.5 } },
+          { seq: 5, event: { type: "HIT", power: 0.8 } },
+        ],
+      })
+    )
+
+    expect(callback).toHaveBeenCalledTimes(2)
+    expect(callback).toHaveBeenNthCalledWith(
+      1,
+      JSON.stringify({ type: "AIM", angle: 0.5 })
+    )
+    expect(callback).toHaveBeenNthCalledWith(
+      2,
+      JSON.stringify({ type: "HIT", power: 0.8 })
     )
   })
 
-  it("should publish raw strings with 'unknown' type", async () => {
+  it("does nothing without a server-issued room id", () => {
     const relay = new MessagingMessageRelay()
-    const mockNchanInstance = (relay as any).nchan
+    relay.subscribe("ignored", jest.fn())
+    relay.publish("ignored", JSON.stringify({ type: "HIT" }))
 
-    relay.publish("test-chan", "raw-text")
-
-    expect(mockNchanInstance.publishTable).toHaveBeenCalledWith(
-      "test-chan",
-      {
-        type: "unknown",
-        data: "raw-text",
-      },
-      "test-client"
-    )
+    expect(FakeWebSocket.instances).toHaveLength(0)
   })
 })

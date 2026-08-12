@@ -216,6 +216,12 @@ export class Container {
     this.throttle.send(event)
   }
 
+  sendAimPreview() {
+    if (this.controller instanceof Aim) {
+      this.sendEvent(this.table.cue.aim.copy())
+    }
+  }
+
   private myHudSlot(): 1 | 2 {
     return Session.getInstance().playerIndex === 1 ? 2 : 1
   }

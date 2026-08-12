@@ -31,6 +31,20 @@ export const TABLE_STYLE_STORAGE_KEY = "break-builder.table-style"
 
 export const TABLE_STYLES: readonly TableStyle[] = [
   {
+    id: "american-ivory",
+    name: "美式·光谱象牙",
+    profile: "american",
+    description: "象牙白悬浮台框、冰川青台呢与冷银刻度",
+    cloth: 0x65c7da,
+    clothShade: 0x3fa7bc,
+    cushion: 0x2f9fb3,
+    frame: 0xf3f6f8,
+    accent: 0x9eb8c5,
+    pocket: 0x101820,
+    frameMetalness: 0.18,
+    swatches: ["#f3f6f8", "#65c7da", "#2f9fb3", "#9eb8c5"],
+  },
+  {
     id: "american-walnut",
     name: "美式·胡桃蓝",
     profile: "american",
@@ -85,6 +99,20 @@ export const TABLE_STYLES: readonly TableStyle[] = [
     pocket: 0x030405,
     frameMetalness: 0.46,
     swatches: ["#176b7a", "#124f59", "#111315", "#c69a4b"],
+  },
+  {
+    id: "chinese-ivory",
+    name: "中式·冰瓷光谱",
+    profile: "chinese",
+    description: "窄袋口中式台型、冰瓷白台框与流光银钢库",
+    cloth: 0x5fc3d3,
+    clothShade: 0x399dae,
+    cushion: 0x288fa2,
+    frame: 0xeff4f6,
+    accent: 0x9ab6c4,
+    pocket: 0x0d151c,
+    frameMetalness: 0.32,
+    swatches: ["#eff4f6", "#5fc3d3", "#288fa2", "#9ab6c4"],
   },
   {
     id: "chinese-jade",

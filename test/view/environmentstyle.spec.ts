@@ -9,8 +9,9 @@ import {
 describe("EnvironmentStyle", () => {
   beforeEach(() => localStorage.removeItem(ENVIRONMENT_STYLE_STORAGE_KEY))
 
-  it("offers galaxy, nebula and club environments", () => {
+  it("offers SPECTRA plus galaxy, nebula and club environments", () => {
     expect(ENVIRONMENT_STYLES.map((style) => style.id)).toEqual([
+      "spectra",
       "galaxy",
       "nebula",
       "club",
@@ -20,6 +21,6 @@ describe("EnvironmentStyle", () => {
   it("persists a valid selection and rejects unknown ids", () => {
     saveEnvironmentStyleId("nebula")
     expect(savedEnvironmentStyleId()).toBe("nebula")
-    expect(environmentStyleById("missing").id).toBe("galaxy")
+    expect(environmentStyleById("missing").id).toBe("spectra")
   })
 })

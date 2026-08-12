@@ -26,9 +26,7 @@ export class ExportUtils {
     shot: string,
     tableSize?: number
   ): string {
-    const base = isAnalysis
-      ? "https://velikodimov.github.io/billiards/dist/index.html"
-      : "diagrams/export.html"
+    const base = isAnalysis ? "/" : "/diagrams/export.html"
     const params = new URLSearchParams()
     params.set("ruletype", rulename)
     if (isAnalysis) {

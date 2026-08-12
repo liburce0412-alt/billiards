@@ -63,6 +63,8 @@ node_modules/
 .yarn-integrity
 .yarnrc
 .yarn/
+.wrangler/
+qa-artifacts/
 
 # dotenv environment variables file
 .env

@@ -1,0 +1,69 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "break-builder-prod",
+  "main": "server/index.ts",
+  "compatibility_date": "2026-08-12",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "routes": [
+    {
+      "pattern": "play.campus3ai.xyz",
+      "custom_domain": true,
+    },
+  ],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist",
+    "run_worker_first": true,
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "single-page-application",
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "break-builder-prod",
+      "database_id": "f18fdb66-ea7c-49d7-ab5c-ed8e3ce200ca",
+      "migrations_dir": "migrations",
+    },
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "AVATARS",
+      "id": "3240ae47831e4fc691de1d2803635ffe",
+    },
+  ],
+  "durable_objects": {
+    "bindings": [
+      { "name": "SOCIAL", "class_name": "SocialRoom" },
+      { "name": "GAME_ROOMS", "class_name": "GameRoom" },
+      { "name": "PASSWORD_KDF", "class_name": "PasswordKdf" },
+      { "name": "RATE_LIMITS", "class_name": "RateLimitBucket" },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": [
+        "SocialRoom",
+        "GameRoom",
+        "PasswordKdf",
+        "RateLimitBucket",
+      ],
+    },
+  ],
+  "vars": {
+    "APP_ORIGIN": "https://play.campus3ai.xyz",
+    "TURNSTILE_HOSTNAMES": "play.campus3ai.xyz",
+    "ENVIRONMENT": "production",
+    "CHAT_DM_RETENTION_DAYS": "30",
+    "CHAT_ROOM_RETENTION_DAYS": "7",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAEOZsVyM_4GsGaKe",
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+  },
+  "triggers": {
+    "crons": ["17 3 * * *"],
+  },
+}

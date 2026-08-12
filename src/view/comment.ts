@@ -1,7 +1,7 @@
 import { Container } from "../container/container"
 import { getButton } from "../utils/dom"
 import { randomEmoji } from "../utils/utils"
-import { ballSvg } from "./chat"
+import { ballChatToken, ballSvg } from "./chat"
 
 export class Comment {
   container: Container
@@ -23,7 +23,9 @@ export class Comment {
       .querySelectorAll<HTMLButtonElement>(".comment-emoji[data-angle]")
       .forEach((btn) => {
         const angle = parseInt(btn.dataset.angle ?? "0", 10)
-        btn.innerHTML = ballSvg(isNaN(angle) ? 0 : angle)
+        const safeAngle = Number.isNaN(angle) ? 0 : angle
+        btn.innerHTML = ballSvg(safeAngle)
+        btn.dataset.chatMessage = ballChatToken(safeAngle)
       })
 
     this.button.onclick = (_) => {
@@ -44,7 +46,8 @@ export class Comment {
       }
     }
 
-    const emojiButtons = this.menu.querySelectorAll(".comment-emoji")
+    const emojiButtons =
+      this.menu.querySelectorAll<HTMLButtonElement>(".comment-emoji")
     emojiButtons.forEach((btn) => {
       if (btn.id === "voice") return
       btn.addEventListener("click", (_) => {
@@ -52,7 +55,7 @@ export class Comment {
           this.openChat()
           return
         }
-        const text = btn.innerHTML ?? ""
+        const text = btn.dataset.chatMessage ?? btn.textContent ?? ""
         this.container.chat.showMessage(text)
         this.container.sendChat(text)
         this.hideMenu()
@@ -98,7 +101,7 @@ export class Comment {
     this.menu
       .querySelectorAll<HTMLButtonElement>(".comment-random")
       .forEach((btn) => {
-        btn.innerHTML = randomEmoji()
+        btn.textContent = randomEmoji()
       })
   }
 

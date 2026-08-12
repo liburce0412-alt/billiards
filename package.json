@@ -2,8 +2,8 @@
   "name": "billiards",
   "description": "Break Builder 3D - a deterministic browser billiards simulation with five rulesets and 11-level local AI",
   "version": "0.4.0",
-  "author": "tailuge and Break Builder contributors",
-  "homepage": "https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/",
+  "author": "Break Builder contributors",
+  "homepage": "https://play.campus3ai.xyz/",
   "repository": {
     "type": "git",
     "url": "https://github.com/liburce0412-alt/billiards.git"
@@ -34,8 +34,15 @@
     "build": "npm run version-gen && webpack && node scripts/prepare-sites.cjs",
     "lint": "tsc --noEmit && eslint .",
     "lint:css": "stylelint \"dist/css/**/*.css\" \"dist/{index,rules}.html\"",
-    "prettify": "prettier --cache true --write --trailing-comma es5 --no-semi {src,test}/**/*.[jt]s dist/**/*.{css,html} *.[jt]s *.json",
+    "prettify": "prettier --cache true --write --trailing-comma es5 --no-semi \"src/**/*.[jt]s\" \"test/**/*.[jt]s\" \"server/**/*.ts\" \"scripts/**/*.cjs\" \"dist/**/*.{css,html}\" \"*.{js,mjs,json,jsonc,ts,mts,css}\"",
     "markdownlint": "npx markdownlint-cli2 README.md CHANGELOG.md SECURITY.md \"docs/*.md\" .github/CONTRIBUTING.md",
+    "worker:types": "wrangler types server/worker-configuration.d.ts",
+    "worker:dev": "wrangler dev",
+    "worker:test": "vitest run --config vitest.worker.config.mts",
+    "db:migrate:local": "wrangler d1 migrations apply break-builder-prod --local",
+    "db:migrate:remote": "wrangler d1 migrations apply break-builder-prod --remote",
+    "audit:origins": "node scripts/check-external-origins.cjs",
+    "deploy": "npm run build && npm run audit:origins && wrangler deploy",
     "serve": "concurrently \"npm run watch\" \"npm run start-server\"",
     "start-server": "http-server dist -p 8080 -c-1",
     "watch": "webpack --watch",
@@ -43,12 +50,16 @@
     "gltfpack": "npx gltfpack -i dist/models/p8.gltf -o dist/models/p8.min.gltf && npx gltfpack -i dist/models/threecushion.gltf -o dist/models/threecushion.min.gltf && npx gltfpack -i dist/models/snooker.gltf -o dist/models/snooker.min.gltf && npx gltfpack -i dist/models/d-snooker.gltf -o dist/models/d-snooker.min.gltf"
   },
   "dependencies": {
-    "@tailuge/messaging": "1.29.0",
+    "@phosphor-icons/web": "2.1.2",
+    "better-auth": "1.6.27",
     "interactjs": "1.10.27",
     "jsoncrush": "^1.1.8",
-    "three": "0.185.1"
+    "three": "0.185.1",
+    "zod": "4.4.3"
   },
   "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "0.21.2",
+    "@cloudflare/workers-types": "5.20260812.1",
     "@eslint/js": "10.0.1",
     "@playwright/test": "^1.62.0",
     "@swc/core": "1.15.46",
@@ -77,8 +88,10 @@
     "ts-jest": "29.4.11",
     "typescript": "6.0.3",
     "typescript-eslint": "8.65.0",
+    "vitest": "4.1.10",
     "webpack": "5.108.4",
     "webpack-cli": "7.2.1",
-    "webpack-dev-server": "6.0.0"
+    "webpack-dev-server": "6.0.0",
+    "wrangler": "4.122.0"
   }
 }

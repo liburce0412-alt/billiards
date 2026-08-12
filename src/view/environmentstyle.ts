@@ -1,4 +1,4 @@
-export type EnvironmentStyleId = "galaxy" | "nebula" | "club"
+export type EnvironmentStyleId = "spectra" | "galaxy" | "nebula" | "club"
 
 export interface EnvironmentStyle {
   id: EnvironmentStyleId
@@ -15,6 +15,16 @@ export interface EnvironmentStyle {
 export const ENVIRONMENT_STYLE_STORAGE_KEY = "break-builder.environment-style"
 
 export const ENVIRONMENT_STYLES: readonly EnvironmentStyle[] = [
+  {
+    id: "spectra",
+    name: "SPECTRA 光谱空间",
+    description: "纸白雾面空间与低饱和流光，专注而通透",
+    background: 0xf3f6fa,
+    intensity: 0.72,
+    starTint: [0.52, 0.79, 1],
+    meteor: false,
+    swatches: ["#f8fafc", "#dff7fb", "#77d5e6", "#b38cff"],
+  },
   {
     id: "galaxy",
     name: "深空银河",

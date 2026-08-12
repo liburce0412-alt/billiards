@@ -8,6 +8,7 @@ import { Outcome } from "../model/outcome"
 import { Vector3 } from "three"
 import { Session } from "../network/client/session"
 import { RejoinEvent } from "../events/rejoinevent"
+import { NotificationData } from "../view/notification"
 
 const flipP1type = (t: number) => (t === 1 ? 2 : 1)
 
@@ -30,7 +31,17 @@ export abstract class ControllerBase extends Controller {
   }
 
   override handleNotification(event: NotificationEvent): Controller {
-    const data = event.data
+    const data: NotificationData | string =
+      typeof event.data === "string"
+        ? event.data.slice(0, 240)
+        : {
+            type: event.data.type,
+            title: event.data.title.slice(0, 120),
+            subtext: event.data.subtext?.slice(0, 240),
+            matchScore: event.data.matchScore?.slice(0, 80),
+            duration: event.data.duration,
+            highBreaks: undefined,
+          }
     if (
       typeof data !== "string" &&
       data.type === "GameOver" &&

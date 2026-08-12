@@ -32,9 +32,20 @@ export class Hud {
     }
   }
 
-  private setHTML(element: HTMLElement | null, html: string) {
-    if (element) {
-      element.innerHTML = html
+  private setScore(element: HTMLElement | null, name?: string, value?: string) {
+    if (!element) return
+    element.replaceChildren()
+    if (name) {
+      const nameElement = document.createElement("div")
+      nameElement.className = "hud-name"
+      nameElement.textContent = name
+      element.append(nameElement)
+    }
+    if (value !== undefined) {
+      const valueElement = document.createElement("div")
+      valueElement.className = "hud-value"
+      valueElement.textContent = value
+      element.append(valueElement)
     }
   }
 
@@ -77,30 +88,15 @@ export class Hud {
     const p2Str = p2Star ? `⭐${p2}` : `${p2}`
 
     if (p1Name && p2Name) {
-      this.setHTML(
-        this.p1Element,
-        `<div class="hud-name">${p1Name}</div><div class="hud-value">${p1Str}</div>`
-      )
-      this.setHTML(
-        this.p2Element,
-        `<div class="hud-name">${p2Name}</div><div class="hud-value">${p2Str}</div>`
-      )
-      this.setHTML(
-        this.middleElement,
-        `<div class="hud-name">:</div><div class="hud-value"></div>`
-      )
+      this.setScore(this.p1Element, p1Name, p1Str)
+      this.setScore(this.p2Element, p2Name, p2Str)
+      this.setScore(this.middleElement, ":", "")
     } else if (p1Name) {
-      this.setHTML(
-        this.p1Element,
-        `<div class="hud-name">${p1Name}</div><div class="hud-value">${p1Str}</div>`
-      )
+      this.setScore(this.p1Element, p1Name, p1Str)
     } else if (p2Name) {
-      this.setHTML(
-        this.p2Element,
-        `<div class="hud-name">${p2Name}</div><div class="hud-value">${p2Str}</div>`
-      )
+      this.setScore(this.p2Element, p2Name, p2Str)
     } else {
-      this.setHTML(this.p1Element, `<div class="hud-value">${p1Str}</div>`)
+      this.setScore(this.p1Element, undefined, p1Str)
     }
 
     if (b > 0) {

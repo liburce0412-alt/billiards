@@ -42,8 +42,9 @@ describe("LinkFormatter", () => {
 
   it("getHiScoreUri should return a valid URI with ruletype", () => {
     const uri = container.linkFormatter.getHiScoreUri({ test: 1 }, 10)
-    expect(uri).toContain("hiscore.html")
+    expect(uri.startsWith("/?")).toBe(true)
     expect(uri).toContain("ruletype=")
+    expect(uri).not.toContain("http")
   })
 
   it("getHiScoreUri should include score", () => {
@@ -51,8 +52,8 @@ describe("LinkFormatter", () => {
     const score = 10
     const uri = container.linkFormatter.getHiScoreUri(state, score)
 
-    const url = new URL(uri)
-    const compressed = url.searchParams.get("state")!
+    const url = new URL(uri, "https://play.campus3ai.xyz")
+    const compressed = decodeURIComponent(url.searchParams.get("state")!)
     const uncrushed = require("jsoncrush").default.uncrush(compressed)
     const payload = JSON.parse(uncrushed)
 

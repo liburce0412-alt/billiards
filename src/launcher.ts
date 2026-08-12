@@ -1,7 +1,6 @@
 import {
   buildGameUrl,
   buildInviteUrl,
-  DEFAULT_WEBSOCKET_SERVER,
   generateRoomCode,
   LauncherOpponent,
   LauncherOnlineAction,
@@ -22,11 +21,10 @@ import {
   saveEnvironmentStyleId,
   savedEnvironmentStyleId,
 } from "./view/environmentstyle"
-import { MessagingClient } from "@tailuge/messaging"
-import { deriveRoomIdentity } from "./network/client/roomidentity"
+import { apiJson, type PlatformMe } from "./platform/api"
+import { accountChip, approvalLabel, platformGate } from "./platform/shell"
 
 const storageKey = "billiards-launcher-selection"
-const onlineUserIdKey = "billiards-online-user-id"
 
 const ruleDetails: Record<
   LauncherRule,
@@ -103,8 +101,8 @@ const defaultSelection: LauncherSelection = {
   player1Cue: "heritage",
   player2Cue: "jade",
   cueStyle: "heritage",
-  tableStyle: "american-walnut",
-  environmentStyle: "galaxy",
+  tableStyle: "american-ivory",
+  environmentStyle: "spectra",
   onlineAction: "create",
   roomCode: "",
   onlinePlayerName: "玩家",
@@ -266,7 +264,7 @@ function environmentOptions(selected: string | undefined) {
   ).join("")
 }
 
-function launcherMarkup(selection: LauncherSelection) {
+function launcherMarkup(selection: LauncherSelection, session: PlatformMe) {
   const levelOptions = levelNames
     .map(
       (name, index) =>
@@ -283,7 +281,9 @@ function launcherMarkup(selection: LauncherSelection) {
         </a>
         <div class="launcher-nav__links">
           <a class="launcher-lobby" href="rules.html">规则对照</a>
-          <a class="launcher-lobby" href="lobby.html">联机大厅 <span aria-hidden="true">↗</span></a>
+          <a class="launcher-lobby" href="lobby.html">社交大厅</a>
+          ${session.capabilities.admin ? '<a class="launcher-lobby" href="/admin">管理后台</a>' : ""}
+          ${accountChip(session)}
         </div>
       </header>
 
@@ -310,11 +310,11 @@ function launcherMarkup(selection: LauncherSelection) {
           <div class="launcher-controls launcher-controls--primary">
             <fieldset class="launcher-fieldset">
               <legend>对手</legend>
-              <div class="segment-control segment-control--four">
+            <div class="segment-control segment-control--four" data-online-enabled="${session.capabilities.online}">
                 <label>${checked("opponent", "practice", selection.opponent)}<span>自由练习</span></label>
                 <label>${checked("opponent", "ai", selection.opponent)}<span>AI 对战</span></label>
                 <label>${checked("opponent", "local", selection.opponent)}<span>同屏双人</span></label>
-                <label>${checked("opponent", "online", selection.opponent)}<span>房间联机</span></label>
+                <label title="${session.capabilities.online ? "创建或加入好友房间" : approvalLabel(session.user.approvalStatus)}">${checked("opponent", "online", selection.opponent)}<span>房间联机</span></label>
               </div>
             </fieldset>
 
@@ -370,7 +370,7 @@ function launcherMarkup(selection: LauncherSelection) {
                 <p class="launcher-detail-note">每次换人会同步切换姓名、计分高亮和各自球杆。</p>
               </fieldset>
 
-              <fieldset id="onlineSettings" class="launcher-fieldset launcher-detail-panel" hidden>
+              <fieldset id="onlineSettings" class="launcher-fieldset launcher-detail-panel" data-approved="${session.capabilities.online}" hidden>
                 <legend>联机房间</legend>
                 <div class="online-config-grid">
                   <div class="segment-control segment-control--two">
@@ -378,8 +378,8 @@ function launcherMarkup(selection: LauncherSelection) {
                     <label>${checked("onlineAction", "join", selection.onlineAction ?? "create")}<span>加入房间</span></label>
                   </div>
                   <label class="launcher-input">
-                    <span>你的名字</span>
-                    <input name="onlinePlayerName" maxlength="16" value="${escapeAttribute(selection.onlinePlayerName)}" />
+                    <span>在线身份</span>
+                    <input name="onlinePlayerName" maxlength="24" value="${escapeAttribute(session.user.displayName)}" readonly />
                   </label>
                   <label class="launcher-input">
                     <span>自定义房间码</span>
@@ -396,7 +396,7 @@ function launcherMarkup(selection: LauncherSelection) {
                   </label>
                   <button id="copyInvite" type="button">复制邀请</button>
                 </div>
-                <p class="launcher-detail-note">最多 24 个可见字符。创建时会检查同名房间，进入后双方准备才会开球。</p>
+                <p class="launcher-detail-note">${session.capabilities.online ? "房间身份由账号会话确认；好友可以收到实时邀请。" : `${approvalLabel(session.user.approvalStatus)}。管理员通过后自动解锁好友、邀请、聊天和联机。`}</p>
               </fieldset>
             </div>
           </details>
@@ -457,18 +457,6 @@ function updateSummary(form: HTMLFormElement) {
   saveSelection(selection)
 }
 
-function persistentOnlineUserId(): string {
-  try {
-    const saved = localStorage.getItem(onlineUserIdKey)
-    if (saved) return saved
-    const id = `P_${globalThis.crypto?.randomUUID?.() ?? generateRoomCode()}`
-    localStorage.setItem(onlineUserIdKey, id)
-    return id
-  } catch {
-    return `P_${generateRoomCode()}`
-  }
-}
-
 function syncOpponentSettings(
   form: HTMLFormElement,
   selection = selectionFromForm(form)
@@ -508,12 +496,16 @@ function syncOpponentSettings(
   }
 }
 
-function initialiseLauncher(params: URLSearchParams) {
+function initialiseLauncher(params: URLSearchParams, session: PlatformMe) {
   document.documentElement.classList.add("launcher-mode")
   document.title = "Break Builder — 选择模式"
   const launcher = document.querySelector<HTMLElement>("#gameLauncher")!
   const selection = readSelection(params)
-  launcher.innerHTML = launcherMarkup(selection)
+  if (!session.capabilities.online && selection.opponent === "online") {
+    selection.opponent = "ai"
+  }
+  selection.onlinePlayerName = session.user.displayName
+  launcher.innerHTML = launcherMarkup(selection, session)
   launcher.hidden = false
 
   const form = document.querySelector<HTMLFormElement>("#launcherForm")!
@@ -523,6 +515,10 @@ function initialiseLauncher(params: URLSearchParams) {
   const randomRoomCode =
     document.querySelector<HTMLButtonElement>("#randomRoomCode")!
   syncOpponentSettings(form)
+  const onlineInput = form.querySelector<HTMLInputElement>(
+    'input[name="opponent"][value="online"]'
+  )
+  if (onlineInput) onlineInput.disabled = !session.capabilities.online
   updateSummary(form)
   form.addEventListener("change", () => {
     syncOpponentSettings(form)
@@ -560,10 +556,12 @@ function initialiseLauncher(params: URLSearchParams) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault()
     const current = selectionFromForm(form)
-    current.onlineUserId = persistentOnlineUserId()
+    current.onlineUserId = session.user.id
+    current.onlinePlayerName = session.user.displayName
     saveCueStyleId(current.cueStyle ?? "heritage")
-    saveTableStyleId(current.tableStyle ?? "american-walnut")
-    saveEnvironmentStyleId(current.environmentStyle ?? "galaxy")
+    saveTableStyleId(current.tableStyle ?? "american-ivory")
+    saveEnvironmentStyleId(current.environmentStyle ?? "spectra")
+    await syncLauncherPersonalisation(current, session)
     start.dataset.state = "loading"
     start.disabled = true
     start.querySelector("span")!.textContent = "正在装台…"
@@ -571,16 +569,44 @@ function initialiseLauncher(params: URLSearchParams) {
     status.textContent =
       current.opponent === "online" ? "正在检查房间状态" : "正在加载 3D 球桌"
     try {
-      if (
-        current.opponent === "online" &&
-        current.onlineAction !== "join" &&
-        (await roomCodeIsOccupied(
-          current.roomCode ?? "",
-          current.onlineUserId,
-          current.rule
-        ))
-      ) {
-        throw new Error("这个房间码正在使用，请更换房间码或选择加入房间")
+      if (current.opponent === "online") {
+        if (!session.capabilities.online) {
+          throw new Error(approvalLabel(session.user.approvalStatus))
+        }
+        const code = normaliseRoomCode(current.roomCode ?? "")
+        if (current.onlineAction === "join") {
+          const lookup = await apiJson<{
+            room: {
+              id: string
+              code: string
+              host_table_style: string
+              host_environment_style: string
+            }
+          }>(`/api/rooms/code/${encodeURIComponent(code)}`)
+          await apiJson(`/api/rooms/${lookup.room.id}/join`, {
+            method: "POST",
+            body: JSON.stringify({}),
+          })
+          current.roomInstanceId = lookup.room.id
+          current.roomCode = lookup.room.code
+          current.tableStyle = lookup.room.host_table_style
+          current.environmentStyle = lookup.room.host_environment_style
+        } else {
+          const created = await apiJson<{
+            room: { id: string; code: string }
+          }>("/api/rooms", {
+            method: "POST",
+            body: JSON.stringify({
+              ruleType: current.rule,
+              code: code || undefined,
+              options: { quality: current.quality },
+              tableStyle: current.tableStyle,
+              environmentStyle: current.environmentStyle,
+            }),
+          })
+          current.roomInstanceId = created.room.id
+          current.roomCode = created.room.code
+        }
       }
       status.textContent = "正在加载 3D 球桌"
       globalThis.location.assign(
@@ -594,50 +620,6 @@ function initialiseLauncher(params: URLSearchParams) {
         error instanceof Error ? error.message : "无法创建比赛"
     }
   })
-}
-
-async function roomCodeIsOccupied(
-  roomCode: string,
-  userId: string,
-  ruleType: LauncherRule
-): Promise<boolean> {
-  const room = await deriveRoomIdentity(roomCode)
-  const baseUrl = DEFAULT_WEBSOCKET_SERVER.replace(/^wss:/, "https:").replace(
-    /^ws:/,
-    "http:"
-  )
-  const client = new MessagingClient({ baseUrl })
-  client.start()
-  try {
-    const probeId = `room-probe-${userId}`
-    const lobby = await client.joinLobby({
-      messageType: "presence",
-      type: "join",
-      userId: probeId,
-      userName: "房间检查",
-      ruleType,
-    })
-    await new Promise<void>((resolve, reject) => {
-      const timeout = globalThis.setTimeout(
-        () => reject(new Error("房间服务暂时无响应，请稍后重试")),
-        8000
-      )
-      lobby.onSettled(() => {
-        globalThis.clearTimeout(timeout)
-        resolve()
-      })
-    })
-    return lobby
-      .getUsers()
-      .some(
-        (user) =>
-          user.userId !== probeId &&
-          !user.isSpectator &&
-          user.tableId === room.channelId
-      )
-  } finally {
-    await client.stop()
-  }
 }
 
 function loadScript(source: string) {
@@ -661,9 +643,40 @@ async function loadGame() {
   }
 }
 
-const params = new URLSearchParams(globalThis.location.search)
-if (shouldShowLauncher(params)) {
-  initialiseLauncher(params)
-} else {
-  void loadGame()
+async function syncLauncherPersonalisation(
+  current: LauncherSelection,
+  session: PlatformMe
+) {
+  try {
+    const updated = await apiJson<PlatformMe>("/api/me", {
+      method: "PATCH",
+      body: JSON.stringify({
+        cueStyle: current.cueStyle,
+        tableStyle: current.tableStyle,
+        environmentStyle: current.environmentStyle,
+        preferences: { quality: current.quality },
+      }),
+    })
+    session.user = updated.user
+    session.preferences = updated.preferences
+  } catch {
+    // A transient profile-sync failure must not block an offline match.
+  }
 }
+
+async function bootstrap() {
+  const session = await platformGate()
+  if (!session) return
+  const params = new URLSearchParams(globalThis.location.search)
+  if (shouldShowLauncher(params)) {
+    initialiseLauncher(params, session)
+  } else {
+    if (params.has("roomId") && !session.capabilities.online) {
+      globalThis.location.assign("/")
+      return
+    }
+    await loadGame()
+  }
+}
+
+void bootstrap()

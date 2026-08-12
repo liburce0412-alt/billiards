@@ -10,7 +10,7 @@
  *
  * ENDPOINT:
  * The default endpoint for this project is hosted at:
- *   https://scoreboard-tailuge.vercel.app/api/client-error
+ *   /api/client-error
  *
  * CORS:
  * The endpoint must include appropriate CORS headers (Access-Control-Allow-Origin)
@@ -23,7 +23,7 @@
  * - window.onunhandledrejection (unhandled Promise rejections)
  * @example
  * // Basic usage with default settings
- * const reporter = new ClientErrorReporter("https://scoreboard-tailuge.vercel.app/api/client-error")
+ * const reporter = new ClientErrorReporter("/api/client-error")
  * reporter.start()
  *
  */

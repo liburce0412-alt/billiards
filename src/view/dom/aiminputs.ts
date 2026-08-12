@@ -46,6 +46,16 @@ export class AimInputs {
   private controlsDisabled = true
   private readonly timeoutButton: TimeoutButton | undefined
   private sliderAnimId: number | null = null
+  private readonly shotDockElement = id("panel")
+  private readonly shotDockToggleElement = id(
+    "shotDockToggle"
+  ) as HTMLButtonElement | null
+  private readonly cuePowerValueElement = id(
+    "cuePowerValue"
+  ) as HTMLOutputElement | null
+  private powerPointerId?: number
+  private powerBeforeGesture = 0
+  private powerGestureCancelled = false
 
   constructor(container) {
     this.container = container
@@ -59,9 +69,7 @@ export class AimInputs {
     this.openElevationElement = id("openElevation") as HTMLButtonElement
     this.cueTiltElement = id("cueTilt") as AngleInput
     this.cueHitElement = id("cueHit") as HTMLButtonElement
-    this.repositionCueBallElement = id(
-      "repositionCueBall"
-    ) as HTMLButtonElement
+    this.repositionCueBallElement = id("repositionCueBall") as HTMLButtonElement
     if (this.cueHitElement) {
       this.timeoutButton = new TimeoutButton(this.cueHitElement, {
         duration: shotClockDuration(location.search),
@@ -80,6 +88,7 @@ export class AimInputs {
       this.updatePowerProgress()
     }
     this.updateTiltSlider(this.container.table.cue.aim.elevation)
+    this.restoreDockState()
     this.addListeners()
     this.updateVisualState(0, 0)
     if (Session.isSpectator()) {
@@ -96,6 +105,11 @@ export class AimInputs {
     this.openElevationElement?.addEventListener("click", this.toggleTiltControl)
     this.cueHitElement?.addEventListener("click", this.hit)
     this.cuePowerElement?.addEventListener("input", this.powerChanged)
+    this.powerSliderContainerElement?.addEventListener(
+      "pointerdown",
+      this.powerPointerDown
+    )
+    this.shotDockToggleElement?.addEventListener("click", this.toggleDock)
     this.cueTiltElement?.addEventListener("input", this.tiltChanged)
     if (!("ontouchstart" in globalThis)) {
       id("viewP1")?.addEventListener("dblclick", this.hit)
@@ -104,7 +118,13 @@ export class AimInputs {
   }
 
   setButtonText(text) {
-    this.cueHitElement && (this.cueHitElement.innerText = localizeText(text))
+    if (!this.cueHitElement) return
+    const label = this.cueHitElement.querySelector(".shot-label")
+    if (label) {
+      label.textContent = localizeText(text)
+    } else {
+      this.cueHitElement.innerText = localizeText(text)
+    }
   }
 
   showRepositionCueBall(handler: () => void) {
@@ -121,6 +141,13 @@ export class AimInputs {
 
   setDisabled(disabled: boolean) {
     this.controlsDisabled = disabled || Session.isSpectator()
+    this.shotDockElement?.setAttribute(
+      "data-controls-state",
+      this.controlsDisabled ? "waiting" : "ready"
+    )
+    if (this.controlsDisabled && this.powerPointerId !== undefined) {
+      this.cancelPowerGesture()
+    }
     this.updateHitButton()
     this.updatePowerElement()
     this.updateTiltElement()
@@ -239,6 +266,7 @@ export class AimInputs {
       this.container.table
     )
     this.container.lastEventTime = performance.now()
+    this.container.sendAimPreview()
   }
 
   updateVisualState(x: number, y: number) {
@@ -288,6 +316,13 @@ export class AimInputs {
     if (this.cuePowerElement) {
       const percent = Number(this.cuePowerElement.value) * 100
       this.cuePowerElement.style.setProperty("--p", percent + "%")
+      this.powerSliderContainerElement?.style.setProperty(
+        "--power",
+        percent + "%"
+      )
+      if (this.cuePowerValueElement) {
+        this.cuePowerValueElement.value = Math.round(percent).toString()
+      }
     }
   }
 
@@ -297,6 +332,8 @@ export class AimInputs {
     }
     this.container.table.cue.setPower(Number(this.cuePowerElement.value))
     this.updatePowerProgress()
+    this.container.lastEventTime = performance.now()
+    this.container.sendAimPreview()
   }
 
   tiltChanged = (_) => {
@@ -305,6 +342,7 @@ export class AimInputs {
     }
     this.container.table.cue.setElevation(this.cueTiltElement.elevation)
     this.container.lastEventTime = performance.now()
+    this.container.sendAimPreview()
   }
 
   updatePowerSlider(power) {
@@ -362,6 +400,7 @@ export class AimInputs {
       return
     }
     this.container.table.cue.setPower(Number(this.cuePowerElement?.value))
+    this.container.sendAimPreview()
     this.hideTiltControl()
     this.container.inputQueue.push(new Input(0, "SpaceUp"))
   }
@@ -419,6 +458,173 @@ export class AimInputs {
     const percent = val * 100
     this.cuePowerElement.value = val.toString()
     this.cuePowerElement.style.setProperty("--p", percent + "%")
+    this.powerSliderContainerElement?.style.setProperty(
+      "--power",
+      percent + "%"
+    )
+    if (this.cuePowerValueElement) {
+      this.cuePowerValueElement.value = Math.round(percent).toString()
+    }
+  }
+
+  private restoreDockState() {
+    let collapsed = false
+    try {
+      collapsed =
+        globalThis.localStorage?.getItem("break-builder.shot-dock") ===
+        "collapsed"
+    } catch {
+      // Storage is optional; expanded is the accessible default.
+    }
+    this.setDockCollapsed(collapsed)
+  }
+
+  private toggleDock = () => {
+    if (this.powerPointerId !== undefined) return
+    const collapsed = this.shotDockElement?.dataset.dockState !== "collapsed"
+    this.setDockCollapsed(collapsed)
+    try {
+      globalThis.localStorage?.setItem(
+        "break-builder.shot-dock",
+        collapsed ? "collapsed" : "expanded"
+      )
+    } catch {
+      // The live control still works when storage is unavailable.
+    }
+  }
+
+  private setDockCollapsed(collapsed: boolean) {
+    if (this.shotDockElement) {
+      this.shotDockElement.dataset.dockState = collapsed
+        ? "collapsed"
+        : "expanded"
+    }
+    if (this.shotDockToggleElement) {
+      this.shotDockToggleElement.setAttribute(
+        "aria-expanded",
+        String(!collapsed)
+      )
+      const label = this.shotDockToggleElement.querySelector("span")
+      if (label) label.textContent = collapsed ? "展开操作" : "收起操作"
+      const icon = this.shotDockToggleElement.querySelector("i")
+      icon?.classList.toggle("ph-caret-up", collapsed)
+      icon?.classList.toggle("ph-caret-down", !collapsed)
+    }
+  }
+
+  private powerPointerDown = (event: PointerEvent) => {
+    if (
+      this.controlsDisabled ||
+      this.powerPointerId !== undefined ||
+      event.button !== 0 ||
+      !this.powerSliderContainerElement
+    ) {
+      return
+    }
+    event.preventDefault()
+    this.powerPointerId = event.pointerId
+    this.powerBeforeGesture = Number(this.cuePowerElement?.value ?? 0)
+    this.powerGestureCancelled = false
+    this.powerSliderContainerElement.dataset.gesture = "charging"
+    this.powerSliderContainerElement.setPointerCapture?.(event.pointerId)
+    this.powerSliderContainerElement.addEventListener(
+      "pointermove",
+      this.powerPointerMove
+    )
+    this.powerSliderContainerElement.addEventListener(
+      "pointerup",
+      this.powerPointerUp
+    )
+    this.powerSliderContainerElement.addEventListener(
+      "pointercancel",
+      this.powerPointerCancel
+    )
+    this.updatePowerFromPointer(event)
+  }
+
+  private powerPointerMove = (event: PointerEvent) => {
+    if (event.pointerId !== this.powerPointerId) return
+    this.updatePowerFromPointer(event)
+  }
+
+  private updatePowerFromPointer(event: PointerEvent) {
+    const rect = this.powerSliderContainerElement?.getBoundingClientRect()
+    if (!rect || !this.cuePowerElement) return
+    const cancellationMargin = 56
+    this.powerGestureCancelled =
+      event.clientY < rect.top - cancellationMargin ||
+      event.clientY > rect.bottom + cancellationMargin
+    this.powerSliderContainerElement.dataset.gesture = this
+      .powerGestureCancelled
+      ? "cancel"
+      : "charging"
+    if (this.powerGestureCancelled) return
+    const inset = Math.min(44, rect.width * 0.08)
+    const value = Math.max(
+      0,
+      Math.min(
+        1,
+        (event.clientX - rect.left - inset) / (rect.width - inset * 2)
+      )
+    )
+    this.cuePowerElement.value = value.toFixed(2)
+    this.container.table.cue.setPower(value)
+    this.updatePowerProgress()
+    this.container.lastEventTime = performance.now()
+    this.container.sendAimPreview()
+  }
+
+  private powerPointerUp = (event: PointerEvent) => {
+    if (event.pointerId !== this.powerPointerId) return
+    const cancelled = this.powerGestureCancelled
+    this.finishPowerGesture()
+    if (cancelled) {
+      this.restorePowerBeforeGesture()
+      return
+    }
+    this.cueHitElement?.click()
+  }
+
+  private powerPointerCancel = (event: PointerEvent) => {
+    if (event.pointerId !== this.powerPointerId) return
+    this.cancelPowerGesture()
+  }
+
+  private cancelPowerGesture() {
+    this.finishPowerGesture()
+    this.restorePowerBeforeGesture()
+  }
+
+  private restorePowerBeforeGesture() {
+    if (!this.cuePowerElement) return
+    this.cuePowerElement.value = this.powerBeforeGesture.toFixed(2)
+    if (!this.controlsDisabled) {
+      this.container.table.cue.setPower(this.powerBeforeGesture)
+      this.container.sendAimPreview()
+    }
+    this.updatePowerProgress()
+  }
+
+  private finishPowerGesture() {
+    const pointerId = this.powerPointerId
+    this.powerPointerId = undefined
+    this.powerGestureCancelled = false
+    delete this.powerSliderContainerElement?.dataset.gesture
+    if (pointerId !== undefined) {
+      this.powerSliderContainerElement?.releasePointerCapture?.(pointerId)
+    }
+    this.powerSliderContainerElement?.removeEventListener(
+      "pointermove",
+      this.powerPointerMove
+    )
+    this.powerSliderContainerElement?.removeEventListener(
+      "pointerup",
+      this.powerPointerUp
+    )
+    this.powerSliderContainerElement?.removeEventListener(
+      "pointercancel",
+      this.powerPointerCancel
+    )
   }
 
   mousewheel = (e) => {
@@ -437,6 +643,7 @@ export class AimInputs {
       this.container.table.cue.setPower(Number(this.cuePowerElement.value))
       this.updatePowerProgress()
       this.container.lastEventTime = performance.now()
+      this.container.sendAimPreview()
     }
   }
 }

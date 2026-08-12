@@ -293,9 +293,9 @@ export class View {
       requestedEnvironment ?? this.environmentStyleId,
       false
     )
-    this.scene.add(new HemisphereLight(0xfff4df, 0x18202c, 0.45))
+    this.scene.add(new HemisphereLight(0xffffff, 0x8ca9b4, 0.72))
 
-    const keyLight = new DirectionalLight(0xfff1d6, 1.6)
+    const keyLight = new DirectionalLight(0xf8fdff, 1.74)
     keyLight.position.set(-R * 20, -R * 12, R * 65)
     keyLight.castShadow = quality.dynamicShadows
     if (quality.dynamicShadows) {
@@ -352,10 +352,18 @@ export class View {
       this.starfield.geometry.dispose()
       ;(this.starfield.material as PointsMaterial).dispose()
     }
-    let starCount = style.id === "club" ? 180 : 900
+    const starCounts: Record<string, number> = {
+      spectra: 48,
+      club: 180,
+      galaxy: 900,
+      nebula: 900,
+    }
+    let starCount = starCounts[style.id] ?? 180
     if (quality.name === "low") starCount = Math.ceil(starCount * 0.52)
     if (quality.name === "high") starCount = Math.ceil(starCount * 1.66)
     this.starfield = this.createStarfield(starCount, style.starTint)
+    ;(this.starfield.material as PointsMaterial).opacity =
+      style.id === "spectra" ? 0.2 : 0.9
     this.scene.add(this.starfield)
 
     this.scene.background = new Color(style.background)

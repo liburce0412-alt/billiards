@@ -1,0 +1,5 @@
+server/worker-configuration.d.ts
+dist/*.js
+dist/vendor/
+node_modules/
+.wrangler/

@@ -21,7 +21,7 @@ describe("Chat", () => {
     expect(currentLobby).toBe(originalLobby)
   })
 
-  it("appends html content without replacing the lobby link", () => {
+  it("renders remote html as text without creating links", () => {
     const chat = new Chat(jest.fn())
     const originalLobby = document.getElementById("lobbyOverlay")
 
@@ -31,9 +31,9 @@ describe("Chat", () => {
     const links = document.querySelectorAll("#chatoutput a")
 
     expect(currentLobby).toBe(originalLobby)
-    expect(links.length).toBeGreaterThan(0)
-    expect(
-      Array.from(links).some((link) => link.getAttribute("href") === "/test")
-    ).toBe(true)
+    expect(links).toHaveLength(0)
+    expect(document.getElementById("chatoutput")?.textContent).toContain(
+      '<a class="pill" href="/test">upload</a>'
+    )
   })
 })

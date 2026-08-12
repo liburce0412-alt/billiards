@@ -104,18 +104,21 @@ describe("Launcher configuration", () => {
           quality: "balanced",
           onlineAction: "create",
           roomCode: "银河 房间🎱",
+          roomInstanceId: "11111111-1111-4111-8111-111111111111",
           onlinePlayerName: "房主",
           onlineUserId: "host-id",
         },
         "https://example.test/"
       )
     )
-    expect(host.searchParams.get("tableId")).to.match(/^bb3d-v2-[0-9a-f]{32}$/)
+    expect(host.searchParams.get("tableId")).to.equal(
+      "11111111-1111-4111-8111-111111111111"
+    )
     expect(host.searchParams.get("roomCode")).to.equal("银河 房间🎱")
     expect(host.searchParams.get("userName")).to.equal("房主")
     expect(host.searchParams.get("userId")).to.equal("host-id")
     expect(host.searchParams.get("first")).to.equal("true")
-    expect(host.searchParams.has("websocketserver")).to.equal(true)
+    expect(host.searchParams.has("websocketserver")).to.equal(false)
 
     const guest = new URL(
       await buildGameUrl(
@@ -126,6 +129,7 @@ describe("Launcher configuration", () => {
           quality: "balanced",
           onlineAction: "join",
           roomCode: "银河　房间🎱",
+          roomInstanceId: "11111111-1111-4111-8111-111111111111",
           onlinePlayerName: "访客",
         },
         "https://example.test/"

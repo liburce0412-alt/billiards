@@ -1,23 +1,33 @@
 :root {
-  --color-paper: oklch(20% 0.042 205deg);
-  --color-paper-2: oklch(25% 0.047 202deg);
-  --color-paper-3: oklch(31% 0.052 198deg);
-  --color-paper-hover: oklch(35% 0.057 194deg);
-  --color-rule: oklch(43% 0.041 196deg);
-  --color-neutral: oklch(67% 0.024 194deg);
-  --color-muted: oklch(78% 0.021 190deg);
-  --color-ink-2: oklch(88% 0.017 184deg);
-  --color-ink: oklch(97% 0.014 177deg);
-  --color-felt: oklch(52% 0.096 191deg);
-  --color-accent: oklch(78% 0.15 82deg);
-  --color-accent-ink: oklch(17% 0.025 76deg);
-  --color-focus: oklch(84% 0.16 86deg);
-  --color-error: oklch(67% 0.18 28deg);
-  --color-success: oklch(72% 0.13 150deg);
-  --color-shadow: oklch(8% 0.025 212deg / 42%);
-  --font-display: "Tomorrow", "Exo", sans-serif;
-  --font-body: "IBM Plex Sans", "Exo", sans-serif;
-  --font-mono: "IBM Plex Mono", monospace;
+  color-scheme: light;
+  --color-paper: #f8f9fd;
+  --color-paper-2: rgb(255 255 255 / 86%);
+  --color-paper-3: #eef2f8;
+  --color-paper-hover: #e8eef8;
+  --color-rule: rgb(45 62 88 / 13%);
+  --color-neutral: #6f7c91;
+  --color-muted: #8d98aa;
+  --color-ink-2: #3f4b60;
+  --color-ink: #162033;
+  --color-felt: #4ec3dd;
+  --color-accent: #635bff;
+  --color-accent-2: #17bcd0;
+  --color-accent-ink: #fff;
+  --color-focus: #5a7dff;
+  --color-error: #d33f65;
+  --color-warning: #b87013;
+  --color-success: #159763;
+  --color-shadow: rgb(60 77 111 / 16%);
+  --surface-glass: rgb(255 255 255 / 78%);
+  --surface-solid: #fff;
+  --surface-inverse: #14213a;
+  --spectra-ocean: #3ce1ea;
+  --spectra-violet: #8a61ff;
+  --spectra-peach: #ffb68b;
+  --spectra-rose: #ff79b9;
+  --font-display: "Tomorrow", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-body: "IBM Plex Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "IBM Plex Mono", "Cascadia Code", monospace;
   --space-3xs: 0.125rem;
   --space-2xs: 0.25rem;
   --space-xs: 0.5rem;
@@ -35,19 +45,47 @@
   --text-lg: 1.5625rem;
   --text-xl: 1.9531rem;
   --text-2xl: 2.4414rem;
-  --text-display: clamp(2.5rem, 4vw + 1rem, 4.8rem);
+  --text-display: clamp(2.5rem, 5vw + 0.5rem, 5.4rem);
   --measure-copy: 65ch;
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-micro: 100ms;
   --dur-short: 180ms;
-  --dur-long: 380ms;
+  --dur-long: 420ms;
   --rule-hair: 1px;
-  --radius-sm: 0.25rem;
-  --radius-md: 0.625rem;
+  --radius-sm: 0.625rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --radius-capsule: 999px;
   --radius-round: 50%;
   --z-base: 1;
-  --z-raised: 10;
+  --z-raised: 20;
   --z-sticky: 200;
+  --z-drawer: 1000;
+  --z-modal: 2000;
+  --shadow-sm: 0 8px 24px rgb(65 82 120 / 10%);
+  --shadow-md: 0 20px 60px rgb(65 82 120 / 16%);
+  --shadow-glow: 0 16px 50px rgb(90 101 255 / 16%);
+}
+
+[data-accent="violet"] {
+  --color-accent: #7a51ed;
+  --color-accent-2: #b66cff;
+}
+
+[data-accent="ember"] {
+  --color-accent: #ee6a4d;
+  --color-accent-2: #f2aa56;
+}
+
+[data-accent="jade"] {
+  --color-accent: #168f78;
+  --color-accent-2: #42c9ad;
+}
+
+[data-accent="chrome"] {
+  --color-accent: #52647c;
+  --color-accent-2: #9ca9bd;
 }

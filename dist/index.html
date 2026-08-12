@@ -28,28 +28,20 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
     />
-    <link
-      rel="canonical"
-      href="https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/"
-    />
+    <link rel="canonical" href="https://play.campus3ai.xyz/" />
     <meta property="og:title" content="Break Builder 3D｜拟真台球" />
     <meta
       property="og:description"
       content="支持练习、AI 对战和多种规则的拟真 3D 台球游戏。"
     />
     <meta property="og:type" content="website" />
-    <meta
-      property="og:url"
-      content="https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/"
-    />
+    <meta property="og:url" content="https://play.campus3ai.xyz/" />
     <meta
       property="og:image"
-      content="https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/images/billiards.png"
+      content="https://play.campus3ai.xyz/images/billiards.png"
     />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:video" content="https://youtu.be/bAeiRQcQuyg" />
-    <meta property="og:video:type" content="text/html" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="ocs-site-verification"
@@ -65,8 +57,8 @@
         "@context": "https://schema.org",
         "@type": "VideoGame",
         "name": "Break Builder - Billiards Pool Game",
-        "url": "https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/",
-        "image": "https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/images/billiards.png",
+        "url": "https://play.campus3ai.xyz/",
+        "image": "https://play.campus3ai.xyz/images/billiards.png",
         "description": "Open source pool and billiards simulation game with realistic physics",
         "applicationCategory": "GameApplication",
         "operatingSystem": "Web",
@@ -80,25 +72,15 @@
           "name": "Break Builder",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/favicon.png"
+            "url": "https://play.campus3ai.xyz/favicon.png"
           }
         },
-        "creator": {
-          "@type": "Person",
-          "name": "tailuge"
-        },
-        "subjectOf": {
-          "@type": "VideoObject",
-          "name": "Billiards Pool Game Gameplay",
-          "description": "Realistic physics simulation and gameplay of Break Builder pool game.",
-          "thumbnailUrl": "https://liburce3d-billiards.sharp-heron-2601.chatgpt.site/images/billiards.png",
-          "contentUrl": "https://youtu.be/bAeiRQcQuyg",
-          "embedUrl": "https://www.youtube.com/embed/bAeiRQcQuyg",
-          "uploadDate": "2026-04-30T00:00:00+00:00"
-        }
+        "inLanguage": "zh-CN"
       }
     </script>
+    <link rel="stylesheet" type="text/css" href="vendor/phosphor/style.css" />
     <link rel="stylesheet" type="text/css" href="css/fonts.css" />
+    <link rel="stylesheet" type="text/css" href="css/platform.css" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <link rel="stylesheet" type="text/css" href="css/aiminputs.css" />
     <link rel="stylesheet" type="text/css" href="css/powerinput.css" />
@@ -109,6 +91,7 @@
     <link rel="stylesheet" type="text/css" href="css/menu.css" />
     <link rel="stylesheet" type="text/css" href="css/wood.css" />
     <link rel="stylesheet" type="text/css" href="css/launcher.css" />
+    <link rel="stylesheet" type="text/css" href="css/game-future.css" />
   </head>
 
   <body>
@@ -290,7 +273,7 @@
           <img src="images/billiards.png" loading="lazy" alt="Billiards Pool Game Promo - Realistic Physics Simulation">
           在浏览器中体验拟真物理台球，支持 AI 对战、8 球、9 球、斯诺克与三库。
           billiards, snooker, 9-ball, pool, carom, three-cushion, online game, free, open source, ビリヤード, スヌーカー, 9ボール, 3クッション, オンラインゲーム, 無料, 당구, 스누커, 9볼, 3쿠션, 온라인 게임, 무료
-          在 <a href="https://github.com/tailuge/billiards">GitHub</a> 查看开源项目
+          Break Builder 本地诊断视图
         </pre>
       </div>
       <div class="chatarea">
@@ -310,17 +293,21 @@
         <button id="inputClose">关闭</button>
       </dialog>
     </div>
-    <div id="panel" class="panel wood-texture">
+    <div id="panel" class="panel shot-dock" data-dock-state="expanded">
+      <button
+        id="shotDockToggle"
+        class="shot-dock__toggle"
+        type="button"
+        aria-expanded="true"
+        aria-controls="panel"
+      >
+        <i class="ph ph-caret-down" aria-hidden="true"></i>
+        <span>收起操作</span>
+      </button>
       <div class="aimControlColumn">
-        <div class="aimingArea">
-          <button
-            class="hitButton timeout-btn"
-            id="cueHit"
-            type="button"
-            aria-label="击打母球"
-          >
-            击球
-          </button>
+        <div class="shot-control-heading">
+          <span>击点</span>
+          <strong>母球旋转</strong>
         </div>
         <div id="tiltSliderContainer" class="tiltSliderContainer" hidden>
           <angle-input
@@ -349,7 +336,7 @@
             title="调节球杆俯仰角"
             aria-label="打开球杆俯仰角控制"
           >
-            ↗
+            <i class="ph ph-arrow-up-right" aria-hidden="true"></i>
           </button>
           <div id="ballContainer" class="ballContainer">
             <div id="objectBall" class="objectBall"></div>
@@ -360,7 +347,11 @@
         </div>
       </div>
       <div id="powerSliderContainer" class="powerSliderContainer">
-        <div class="power-track"></div>
+        <div class="power-arc" aria-hidden="true">
+          <div class="power-track"></div>
+          <div class="power-progress"></div>
+          <div class="power-knob"></div>
+        </div>
         <input
           class="powerSlider"
           type="range"
@@ -372,6 +363,25 @@
           title="击球力度；开球建议 90–100%"
           aria-label="击球力度，开球建议使用百分之九十到一百"
         />
+        <div class="power-readout" aria-hidden="true">
+          <output id="cuePowerValue">65</output>
+          <span>%</span>
+        </div>
+        <div class="power-instruction">
+          <strong>向右拖拽蓄力，松手出杆</strong>
+          <span>拖到操作栏外侧可取消</span>
+        </div>
+      </div>
+      <div class="shot-action">
+        <button
+          class="hitButton timeout-btn"
+          id="cueHit"
+          type="button"
+          aria-label="击打母球"
+        >
+          <span class="shot-label">击球</span>
+          <small>点击确认</small>
+        </button>
       </div>
       <div class="outerMenu">
         <button
@@ -382,7 +392,7 @@
           aria-label="聊天"
           hidden
         >
-          🗨
+          <i class="ph ph-chat-circle-dots" aria-hidden="true"></i>
         </button>
         <div id="commentMenu" class="comment-menu comment-menu--hidden">
           <button class="comment-emoji" data-angle="315"></button>
@@ -412,7 +422,7 @@
           aria-label="生成击球图"
           hidden
         >
-          📸
+          <i class="ph ph-camera" aria-hidden="true"></i>
         </button>
         <button
           class="menuButton half-height"
@@ -422,23 +432,7 @@
           aria-label="分享回放链接"
           hidden
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="18" cy="5" r="3"></circle>
-            <circle cx="6" cy="12" r="3"></circle>
-            <circle cx="18" cy="19" r="3"></circle>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
-            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
-          </svg>
+          <i class="ph ph-share-network" aria-hidden="true"></i>
         </button>
         <button
           class="menuButton half-height"
@@ -448,7 +442,7 @@
           aria-label="认输"
           hidden
         >
-          🏳️
+          <i class="ph ph-flag" aria-hidden="true"></i>
         </button>
         <button
           class="menuButton half-height"
@@ -458,7 +452,7 @@
           aria-label="击球分析"
           hidden
         >
-          🔍
+          <i class="ph ph-chart-line-up" aria-hidden="true"></i>
         </button>
         <button
           class="menuButton half-height"
@@ -467,7 +461,7 @@
           type="button"
           aria-label="选择局内球杆"
         >
-          🪄
+          <i class="ph ph-magic-wand" aria-hidden="true"></i>
         </button>
         <button
           class="menuButton half-height"
@@ -476,7 +470,7 @@
           type="button"
           aria-label="选择局内球台"
         >
-          🎱
+          <i class="ph ph-circles-three-plus" aria-hidden="true"></i>
         </button>
         <button
           class="menuButton half-height"
@@ -485,18 +479,7 @@
           type="submit"
           aria-label="打开帮助"
         >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
+          <i class="ph ph-gear-six" aria-hidden="true"></i>
         </button>
         <button
           class="menuButton"
@@ -505,7 +488,7 @@
           type="submit"
           aria-label="切换相机视角"
         >
-          🎥
+          <i class="ph ph-video-camera" aria-hidden="true"></i>
         </button>
       </div>
     </div>
@@ -522,6 +505,7 @@
     <div id="lobbyContainer">
       <div class="challenge-row">
         <span id="challengePill" class="challenge-pill" hidden>
+          <span class="challenge-label"></span>
           <button id="challengeAccept">接受</button>
           <button id="challengeDecline">拒绝</button>
         </span>
@@ -532,9 +516,49 @@
         title="联机大厅"
         id="lobbyOverlay"
         aria-label="联机大厅"
+        ><i class="ph ph-users-three" aria-hidden="true"></i
         ><span class="lobby-count"></span
       ></a>
+      <button
+        id="gameSocialToggle"
+        class="game-social-toggle"
+        type="button"
+        aria-label="展开局内社交"
+        aria-expanded="false"
+        aria-controls="gameSocialDrawer"
+      >
+        <i class="ph ph-caret-left" aria-hidden="true"></i>
+      </button>
     </div>
+    <aside
+      id="gameSocialDrawer"
+      class="game-social-drawer"
+      aria-labelledby="gameSocialTitle"
+      aria-hidden="true"
+      hidden
+    >
+      <header>
+        <div>
+          <span>REALTIME SOCIAL</span>
+          <h2 id="gameSocialTitle">在线球友</h2>
+        </div>
+        <button id="gameSocialClose" type="button" aria-label="关闭局内社交">
+          <i class="ph ph-x" aria-hidden="true"></i>
+        </button>
+      </header>
+      <div id="gameSocialSelf" class="game-social-self"></div>
+      <section>
+        <div class="game-social-section-title">
+          <strong>当前在线</strong><span id="gameSocialCount">0</span>
+        </div>
+        <ul id="gameSocialUsers" class="game-social-users"></ul>
+      </section>
+      <a class="game-social-open" href="/lobby">
+        <i class="ph ph-chats-circle" aria-hidden="true"></i>
+        <span>好友、私聊与比赛邀请</span>
+        <i class="ph ph-arrow-right" aria-hidden="true"></i>
+      </a>
+    </aside>
     <section class="constants" id="constants" aria-label="物理参数">
       <p>物理参数</p>
       <div class="nw">
@@ -568,7 +592,6 @@
         <button id="network" aria-label="切换网络设置">网络🗲</button>
       </div>
     </section>
-    <script defer src="messaging.js"></script>
     <script defer src="launcher.js"></script>
   </body>
 </html>

@@ -1,350 +1,257 @@
-import {
-  MessagingClient,
-  Lobby,
-  PresenceMessage,
-  ChatMessage,
-} from "@tailuge/messaging"
 import { Session } from "../network/client/session"
 import { Rules } from "../controller/rules/rules"
 import { id } from "../utils/dom"
-import { LOBBY_URL } from "../network/client/constants"
-import { VERSION } from "../utils/version"
-import { NetworkLogger } from "../utils/network-logger"
+
+type PresenceUser = {
+  userId: string
+  displayName: string
+  visibility: string
+}
+
+type SocialMessage =
+  | { type: "presence.snapshot"; users: PresenceUser[]; visibleCount: number }
+  | { type: "invite.created"; invite: { challengerName: string } }
+  | { type: "moderation.session_revoked"; reason: string }
+  | { type: string }
 
 export class LobbyIndicator {
   private readonly element: HTMLElement | null
   private readonly countElement: HTMLSpanElement | null
   private readonly challengePill: HTMLElement | null
-  private messagingClient: MessagingClient | null = null
-  private lobby: Lobby | null = null
+  private readonly drawer = id("gameSocialDrawer")
+  private readonly drawerUsers = id("gameSocialUsers")
+  private readonly drawerCount = id("gameSocialCount")
+  private readonly drawerSelf = id("gameSocialSelf")
+  private socket: WebSocket | null = null
   private count = 0
-  private challenger: {
-    userId: string
-    userName: string
-    ruleType: string
-  } | null = null
-  private readonly rules: Rules
-  private readonly ruleType: string
-  private static readonly NCHAN_URL = "https://billiards-network.onrender.com"
-  private readonly messagingUrl: string
+  private users: PresenceUser[] = []
+  private challengerName: string | null = null
   private currentTableId: string | null = null
-  private readonly replayMode: boolean
-  private readonly isSpectator: boolean
-  private opponentOnline: boolean | null = null
-  private users: PresenceMessage[] = []
-  private readonly onChatMessage: ((msg: string) => void) | undefined
-  private readonly onShowOverlay: ((url: string) => void) | undefined
 
   constructor(
-    botMode: boolean,
-    replayMode: boolean,
-    rules: Rules,
-    onChatMessage?: (msg: string) => void,
-    messagingUrl?: string,
-    onShowOverlay?: (url: string) => void
+    private readonly botMode: boolean,
+    private readonly replayMode: boolean,
+    _rules: Rules,
+    _onChatMessage?: (msg: string) => void,
+    _messagingUrl?: string,
+    _onShowOverlay?: (url: string) => void
   ) {
-    this.rules = rules
-    this.replayMode = replayMode
-    this.onChatMessage = onChatMessage
-    this.onShowOverlay = onShowOverlay
-    const isInsecure =
-      messagingUrl?.startsWith("ws://") || messagingUrl?.startsWith("http://")
-    const httpProtocol = isInsecure ? "http" : "https"
-    this.messagingUrl = messagingUrl
-      ? `${httpProtocol}://${messagingUrl.replace(/^(https?|wss?):\/\//, "")}`
-      : LobbyIndicator.NCHAN_URL
-    this.isSpectator = Session.getInstance().spectator
-    const tableSize = parseFloat(
-      new URLSearchParams(globalThis.location?.search ?? "").get("tableSize") ||
-        "10"
-    )
-    if (tableSize === 5) {
-      this.ruleType = `${this.rules.rulename}-mini`
-    } else if (botMode) {
-      this.ruleType = `${this.rules.rulename}-bot`
-    } else if (Session.isExamMode()) {
-      this.ruleType = `${this.rules.rulename}-exam`
-    } else if (Session.isSpeedrunMode()) {
-      this.ruleType = `${this.rules.rulename}-speedrun`
-    } else if (replayMode) {
-      this.ruleType = "replay"
-    } else if (Session.getInstance().spectator) {
-      this.ruleType = "spectator"
-    } else {
-      this.ruleType = this.rules.rulename
-    }
     this.element = id("lobbyOverlay")
     this.countElement = this.element?.querySelector(
       ".lobby-count"
-    ) as HTMLSpanElement
+    ) as HTMLSpanElement | null
     this.challengePill = id("challengePill")
     this.setupElement()
+    this.setupDrawer()
   }
 
-  private setupElement(): void {
-    if (!this.element) return
-
+  private setupElement() {
     if (this.element instanceof HTMLAnchorElement) {
-      this.element.setAttribute("target", "_self")
-      this.element.setAttribute("rel", "noopener")
-    } else {
-      this.element.style.cursor = "pointer"
+      this.element.href = "/lobby"
+      this.element.target = "_self"
+      this.element.rel = "noopener"
     }
-
-    this.element.addEventListener("click", (e) => {
-      if ((e.target as HTMLElement).closest(".status-emoji")) {
-        e.preventDefault()
-        e.stopPropagation()
-        const game = encodeURIComponent(
-          JSON.stringify(NetworkLogger.getGameLogs())
-        )
-        const lobby = encodeURIComponent(
-          JSON.stringify(NetworkLogger.getLobbyLogs())
-        )
-        const url = `net.html?game=${game}&lobby=${lobby}`
-        if (this.onShowOverlay) {
-          this.onShowOverlay(url)
-        } else {
-          globalThis.open(url, "_blank")
-        }
-        return
-      }
-
-      if (!(this.element instanceof HTMLAnchorElement)) {
-        if (typeof globalThis.open === "function") {
-          globalThis.open(this.getLobbyUrl(), "_self")
-        }
-      }
-    })
-
-    id("challengeDecline")?.addEventListener("click", (e) => {
-      e.stopPropagation()
-      if (this.lobby && this.challenger) {
-        this.lobby.declineChallenge(this.challenger.userId, this.ruleType)
-      }
-      this.challenger = null
+    id("challengeDecline")?.addEventListener("click", (event) => {
+      event.stopPropagation()
+      this.challengerName = null
       this.updateDisplay()
     })
-
     id("challengeAccept")?.addEventListener("click", () => {
-      if (typeof globalThis.open === "function") {
-        globalThis.open(this.getLobbyUrl(), "_self")
-      }
+      globalThis.location.assign("/lobby")
     })
+  }
+
+  private setupDrawer() {
+    let open = false
+    try {
+      open =
+        globalThis.localStorage?.getItem("break-builder.social-drawer") ===
+        "open"
+    } catch {
+      // The drawer remains collapsed when storage is unavailable.
+    }
+    this.setDrawerOpen(open)
+    id("gameSocialToggle")?.addEventListener("click", () =>
+      this.setDrawerOpen(this.drawer?.hasAttribute("hidden") ?? true)
+    )
+    id("gameSocialClose")?.addEventListener("click", () =>
+      this.setDrawerOpen(false)
+    )
+  }
+
+  private setDrawerOpen(open: boolean) {
+    this.drawer?.toggleAttribute("hidden", !open)
+    this.drawer?.setAttribute("aria-hidden", String(!open))
+    const toggle = id("gameSocialToggle")
+    toggle?.setAttribute("aria-expanded", String(open))
+    toggle?.setAttribute("aria-label", open ? "收起局内社交" : "展开局内社交")
+    const icon = toggle?.querySelector("i")
+    icon?.classList.toggle("ph-caret-right", open)
+    icon?.classList.toggle("ph-caret-left", !open)
+    try {
+      globalThis.localStorage?.setItem(
+        "break-builder.social-drawer",
+        open ? "open" : "closed"
+      )
+    } catch {
+      // The live drawer interaction does not depend on persistence.
+    }
   }
 
   async init(): Promise<void> {
-    if (!this.element) return
-    NetworkLogger.logLobby("init")
-
-    const userId = Session.getInstance().clientId
-    const userName = Session.getInstance().playername
-
-    this.messagingClient = new MessagingClient({
-      baseUrl: this.messagingUrl,
-    })
-    this.messagingClient.setVersion(VERSION + `-${Session.getInstance().lod}`)
-    this.messagingClient.start()
-
-    const params = new URLSearchParams(globalThis.location?.search ?? "")
-    this.currentTableId = params.get("tableId")
-
-    const presence: {
-      messageType: "presence"
-      type: "join"
-      userId: string
-      userName: string
-      ruleType: string
-      tableId?: string
-      isSpectator?: boolean
-    } = {
-      messageType: "presence",
-      type: "join",
-      userId,
-      userName,
-      ruleType: this.ruleType,
-      ...(this.isSpectator && { isSpectator: true }),
-    }
-    if (this.currentTableId) {
-      presence.tableId = this.currentTableId
-    }
-
-    this.lobby = await this.messagingClient.joinLobby(presence)
-    NetworkLogger.logLobby("joined")
-
-    this.lobby.onUsersChange((users) => {
-      NetworkLogger.logLobby(`users: ${users.length}`)
-      this.users = users
-      this.count = users.length
-      const session = Session.getInstance()
-      const opponentId = session.opponentClientId
-      if (opponentId) {
-        const wasOnline = this.opponentOnline
-        this.opponentOnline = users.some(
-          (u) =>
-            u.userId === opponentId &&
-            u.tableId === (this.currentTableId || session.tableId)
-        )
-        if (wasOnline !== false && this.opponentOnline === false) {
-          NetworkLogger.logLobby(`opponent offline: ${opponentId}`)
+    const platform = (
+      globalThis as typeof globalThis & {
+        __BREAK_BUILDER_SESSION__?: {
+          capabilities: { social: boolean }
         }
-      } else {
-        this.opponentOnline = null
       }
+    ).__BREAK_BUILDER_SESSION__
+    if (
+      !this.element ||
+      !platform?.capabilities.social ||
+      this.botMode ||
+      this.replayMode ||
+      Session.isPracticeMode()
+    ) {
+      this.updateDisplay()
+      return
+    }
+    const protocol = globalThis.location.protocol === "https:" ? "wss:" : "ws:"
+    this.socket = new WebSocket(
+      `${protocol}//${globalThis.location.host}/ws/social`
+    )
+    this.socket.addEventListener("message", (event) => this.receive(event.data))
+    this.socket.addEventListener("close", () => {
+      this.count = 0
       this.updateDisplay()
     })
-
-    this.lobby.onChat((chat: ChatMessage) => {
-      NetworkLogger.logLobby("chat")
-      const sender = this.users.find((u) => u.userId === chat.senderId)
-      const senderName = sender ? sender.userName : "Unknown"
-      this.onChatMessage?.(`[${senderName}: ${chat.text}]`)
-    })
-
-    this.lobby.onChallenge((challenge) => {
-      NetworkLogger.logLobby(`challenge: ${challenge.type}`)
-      if (challenge.type === "offer") {
-        this.challenger = {
-          userId: challenge.challengerId,
-          userName: challenge.challengerName,
-          ruleType: challenge.ruleType,
-        }
-      } else if (challenge.type === "decline" || challenge.type === "cancel") {
-        this.challenger = null
-      }
-      this.updateDisplay()
-    })
-
-    this.updateDisplay()
   }
 
   setTableId(tableId: string | null | undefined): void {
     this.currentTableId = tableId ?? null
-    if (this.lobby) {
-      this.lobby.updatePresence({ tableId: tableId ?? undefined } as any)
-    }
-  }
-
-  private updateDisplay(): void {
-    if (!this.element) return
-    const challenged = this.challenger !== null
-
-    this.updateCountDisplay()
-    this.updateChallengePill(challenged)
-
-    this.element.setAttribute(
-      "aria-label",
-      challenged
-        ? `Multiplayer Lobby - CHALLENGE FROM ${this.challenger!.userName}!`
-        : `Multiplayer Lobby - ${this.count} online`
-    )
-
-    if (this.element instanceof HTMLAnchorElement) {
-      this.element.setAttribute("href", this.getLobbyUrl())
-    }
-  }
-
-  private updateCountDisplay(): void {
-    if (!this.countElement) return
-
-    const session = Session.getInstance()
-    const opponentId = session.opponentClientId
-    const isTwoPlayer =
-      !!opponentId &&
-      opponentId !== "bot" &&
-      !session.botMode &&
-      !session.practiceMode &&
-      !this.replayMode
-
-    let status = "⚪"
-    if (isTwoPlayer) {
-      if (this.opponentOnline === true) {
-        status = "🟢"
-      } else if (this.opponentOnline === false) {
-        status = "🔴"
-      }
-    }
-    const statusEmoji = ` <span class='status-emoji' title='Network Logs'>${status}</span>`
-
-    // if replay mode then set name from queryparam userName
-    const params = new URLSearchParams(globalThis.location?.search ?? "")
-    const name = this.replayMode
-      ? (params.get("userName") ?? "Anon")
-      : session.playername
-    this.countElement.innerHTML = `${name} ${this.isSpectator ? "👀" : "👥"}${this.count}${statusEmoji}`
-
-    const otherUsers = Array.from(
-      new Set(
-        this.users
-          .filter((u) => u.userId !== session.clientId)
-          .map((u) => u.userName)
-      )
-    ).sort()
-
-    if (otherUsers.length > 0) {
-      this.countElement.title = `Online:\n${otherUsers.join("\n")}`
-    } else {
-      this.countElement.removeAttribute("title")
-    }
-  }
-
-  private updateChallengePill(challenged: boolean): void {
-    if (!this.challengePill) return
-
-    this.challengePill.hidden = !challenged
-    if (challenged) {
-      const textNode = this.challengePill.childNodes[0]
-      const msg = `Challenge of ${this.challenger!.ruleType} from ${this.challenger!.userName} `
-      if (textNode?.nodeType === Node.TEXT_NODE) {
-        textNode.textContent = msg
-      } else {
-        this.challengePill.prepend(msg)
-      }
-    }
-  }
-
-  private getLobbyUrl(): string {
-    const url = new URL(LOBBY_URL)
-    const session = Session.getInstance()
-
-    if (this.replayMode) {
-      return url.toString()
-    }
-
-    // if this page was loaded with query param test then set the user name
-    const params = new URLSearchParams(globalThis.location?.search ?? "")
-    if (params.get("test")) {
-      url.searchParams.set("userName", session.playername)
-      url.searchParams.set("userId", session.clientId)
-    }
-
-    // if the userName is Anon set userId in search params. Allows for challenges
-    if (session.playername == "Anon") {
-      url.searchParams.set("userId", session.clientId)
-    }
-
-    if (!this.challenger) {
-      return url.toString()
-    }
-
-    url.searchParams.set("action", "join")
-    url.searchParams.set("ruletype", this.challenger.ruleType)
-    url.searchParams.set("opponentId", this.challenger.userId)
-    url.searchParams.set("opponentName", this.challenger.userName)
-
-    return url.toString()
+    this.updateDisplay()
   }
 
   async stop(): Promise<void> {
+    this.socket?.close(1000, "game closed")
+    this.socket = null
+  }
+
+  private receive(raw: unknown) {
+    if (typeof raw !== "string") return
+    let message: SocialMessage
     try {
-      if (this.lobby) {
-        await this.lobby.leave()
-      }
-      if (this.messagingClient) {
-        await this.messagingClient.stop()
-      }
+      message = JSON.parse(raw) as SocialMessage
     } catch {
-      // Ignore shutdown failures.
+      return
     }
+    if (message.type === "presence.snapshot" && "visibleCount" in message) {
+      this.count = message.visibleCount
+      this.users = message.users
+    } else if (message.type === "invite.created" && "invite" in message) {
+      this.challengerName = message.invite.challengerName
+    } else if (
+      message.type === "moderation.session_revoked" &&
+      "reason" in message
+    ) {
+      this.count = 0
+      this.socket?.close(4403, message.reason)
+    }
+    this.updateDisplay()
+  }
+
+  private updateDisplay() {
+    if (this.countElement) {
+      const suffix = this.currentTableId ? " · 对局中" : ""
+      this.countElement.textContent = `${this.count} 在线${suffix}`
+    }
+    if (this.element) {
+      this.element.setAttribute("aria-label", `社交大厅，${this.count} 人在线`)
+    }
+    if (this.challengePill) {
+      this.challengePill.hidden = !this.challengerName
+      const label =
+        this.challengePill.querySelector<HTMLElement>(".challenge-label")
+      if (label)
+        label.textContent = this.challengerName
+          ? `${this.challengerName} 邀请你比赛`
+          : ""
+    }
+    this.renderDrawer()
+  }
+
+  private renderDrawer() {
+    if (this.drawerCount) this.drawerCount.textContent = String(this.count)
+    if (this.drawerSelf) {
+      const platform = (
+        globalThis as typeof globalThis & {
+          __BREAK_BUILDER_SESSION__?: {
+            user: { displayName: string; visibility: string }
+          }
+        }
+      ).__BREAK_BUILDER_SESSION__
+      this.drawerSelf.replaceChildren()
+      if (platform) {
+        this.drawerSelf.append(
+          this.userRow(
+            platform.user.displayName,
+            platform.user.visibility,
+            true
+          )
+        )
+      }
+    }
+    if (!this.drawerUsers) return
+    this.drawerUsers.replaceChildren()
+    const ownId = (
+      globalThis as typeof globalThis & {
+        __BREAK_BUILDER_SESSION__?: { user: { id?: string } }
+      }
+    ).__BREAK_BUILDER_SESSION__?.user.id
+    const visible = this.users.filter(
+      (user) => user.userId !== ownId && user.visibility !== "invisible"
+    )
+    if (!visible.length) {
+      const empty = document.createElement("li")
+      empty.className = "game-social-empty"
+      empty.textContent = "好友上线后会实时出现在这里"
+      this.drawerUsers.append(empty)
+      return
+    }
+    for (const user of visible.slice(0, 10)) {
+      this.drawerUsers.append(this.userRow(user.displayName, user.visibility))
+    }
+  }
+
+  private userRow(name: string, visibility: string, self = false) {
+    const row = document.createElement("div")
+    row.className = "game-social-user"
+    const avatar = document.createElement("span")
+    avatar.className = "game-social-avatar"
+    avatar.textContent = name.trim().slice(0, 1).toUpperCase() || "B"
+    const copy = document.createElement("span")
+    const strong = document.createElement("strong")
+    strong.textContent = self ? `${name}（我）` : name
+    const small = document.createElement("small")
+    small.textContent = this.visibilityLabel(visibility)
+    copy.append(strong, small)
+    const dot = document.createElement("i")
+    dot.className = "game-social-dot"
+    dot.dataset.state = visibility
+    row.append(avatar, copy, dot)
+    return row
+  }
+
+  private visibilityLabel(visibility: string) {
+    return (
+      (
+        {
+          online: "在线",
+          away: "暂离",
+          dnd: "勿扰",
+          invisible: "隐身",
+        } as Record<string, string>
+      )[visibility] ?? "离线"
+    )
   }
 }

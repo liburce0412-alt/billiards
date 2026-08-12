@@ -5,32 +5,61 @@ const path = require("node:path")
 
 const projectRoot = path.resolve(__dirname, "..")
 const distDirectory = path.join(projectRoot, "dist")
-const clientDirectory = path.join(distDirectory, "client")
-const serverDirectory = path.join(distDirectory, "server")
-const hostingSource = path.join(projectRoot, ".openai", "hosting.json")
-const hostingDirectory = path.join(distDirectory, ".openai")
-const workerSource = path.join(projectRoot, "worker", "index.js")
+const legacyGenerated = ["client", "server", ".openai"]
 
-const generatedDirectories = new Set(["client", "server", ".openai"])
+fs.copyFileSync(
+  path.join(projectRoot, "tokens.css"),
+  path.join(distDirectory, "tokens.css")
+)
 
-fs.rmSync(clientDirectory, { recursive: true, force: true })
-fs.rmSync(serverDirectory, { recursive: true, force: true })
-fs.rmSync(hostingDirectory, { recursive: true, force: true })
-fs.mkdirSync(clientDirectory, { recursive: true })
+for (const directory of legacyGenerated) {
+  fs.rmSync(path.join(distDirectory, directory), {
+    recursive: true,
+    force: true,
+  })
+}
 
-for (const entry of fs.readdirSync(distDirectory, { withFileTypes: true })) {
-  if (generatedDirectories.has(entry.name)) continue
-  fs.cpSync(
-    path.join(distDirectory, entry.name),
-    path.join(clientDirectory, entry.name),
-    { recursive: true }
+const phosphorSource = path.join(
+  projectRoot,
+  "node_modules",
+  "@phosphor-icons",
+  "web",
+  "src",
+  "regular"
+)
+const phosphorTarget = path.join(distDirectory, "vendor", "phosphor")
+fs.rmSync(phosphorTarget, { recursive: true, force: true })
+fs.mkdirSync(phosphorTarget, { recursive: true })
+for (const file of ["style.css", "Phosphor.woff2"]) {
+  fs.copyFileSync(
+    path.join(phosphorSource, file),
+    path.join(phosphorTarget, file)
   )
 }
 
-fs.mkdirSync(serverDirectory, { recursive: true })
-fs.copyFileSync(workerSource, path.join(serverDirectory, "index.js"))
+const retiredPages = [
+  "2p.html",
+  "2tab.html",
+  "multi.html",
+  "redirect.html",
+  "korean.html",
+  "blog1.html",
+  "blog2.html",
+  "blog3.html",
+  "ww.html",
+  "3r.html",
+  "embed.html",
+  "practice.html",
+]
+const retiredDirectories = ["itch", "exam", "speedrun"]
+for (const file of retiredPages) {
+  fs.rmSync(path.join(distDirectory, file), { force: true })
+}
+for (const directory of retiredDirectories) {
+  fs.rmSync(path.join(distDirectory, directory), {
+    recursive: true,
+    force: true,
+  })
+}
 
-fs.mkdirSync(hostingDirectory, { recursive: true })
-fs.copyFileSync(hostingSource, path.join(hostingDirectory, "hosting.json"))
-
-console.log("Prepared the Sites worker and static asset bundle in dist/")
+console.log("Prepared self-hosted UI assets for the Cloudflare Worker bundle")
