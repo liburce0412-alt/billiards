@@ -158,7 +158,7 @@ describe("Cushion", () => {
     const pos = new Vector3(
       PocketGeometry.middleKnuckleInset - 0.1 * R,
       -TableGeometry.tableY,
-      0,
+      0
     )
     const ball = new Ball(pos)
     ball.vel.y = -10 * R
@@ -193,7 +193,7 @@ describe("Cushion", () => {
       const deltaB = model(bv, bw)
       expect(deltaB.v.x).to.be.equal(deltaA.v.x)
       expect(deltaB.v.y).to.be.equal(-deltaA.v.y)
-    },
+    }
   )
 
   it.each([
@@ -210,7 +210,7 @@ describe("Cushion", () => {
       const deltaB = model(bv, bw)
       expect(deltaB.v.x).to.be.equal(deltaA.v.x)
       expect(deltaB.v.y).to.be.equal(-deltaA.v.y)
-    },
+    }
   )
 
   it("expect abs(x) velocity to be reduced after bounce", (done) => {

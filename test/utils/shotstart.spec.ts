@@ -87,7 +87,7 @@ describe("ShotStartUtils", () => {
       tableSize: 9,
     })
     const params = new URLSearchParams(
-      ShotStartUtils.buildRecreateUrl(c).split("?")[1],
+      ShotStartUtils.buildRecreateUrl(c).split("?")[1]
     )
     expect(params.get("ruletype")).to.equal("snooker")
     expect(params.get("cushionModel")).to.equal("stronge")
@@ -117,7 +117,7 @@ describe("ShotStartUtils", () => {
       power: 1,
     })
     const params = new URLSearchParams(
-      ShotStartUtils.buildRecreateUrl(c).split("?")[1],
+      ShotStartUtils.buildRecreateUrl(c).split("?")[1]
     )
     expect(params.has("tableSize")).to.be.false
     done()
@@ -133,7 +133,7 @@ describe("ShotStartUtils", () => {
     const spy = jest.spyOn(console, "error").mockImplementation(() => {})
     try {
       expect(() =>
-        ShotStartUtils.reportDepthExceeded(table, undefined),
+        ShotStartUtils.reportDepthExceeded(table, undefined)
       ).to.not.throw()
       expect(spy.mock.calls).to.not.be.empty
     } finally {

@@ -25,4 +25,3 @@ export class RuleDecisionEvent extends GameEvent {
     return new RuleDecisionEvent(json.decision, json.value)
   }
 }
-

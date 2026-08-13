@@ -25,6 +25,8 @@ describe("Runtime diagnostics", () => {
     expect(watchdog.update(true, 0)).toBe(false)
     expect(watchdog.update(true, 99)).toBe(false)
     expect(watchdog.update(true, 100)).toBe(true)
+    watchdog.reset()
+    expect(watchdog.update(true, 101)).toBe(false)
     expect(watchdog.update(false, 101)).toBe(false)
     expect(watchdog.update(true, 150)).toBe(false)
   })

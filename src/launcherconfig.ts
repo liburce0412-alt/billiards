@@ -96,6 +96,7 @@ export async function buildGameUrl(
   url.searchParams.set("play", "1")
   url.searchParams.set("ruletype", selection.rule)
   url.searchParams.set("quality", selection.quality)
+  url.searchParams.set("camera", "2d")
   if (selection.tableStyle) {
     url.searchParams.set("tableStyle", selection.tableStyle)
   }

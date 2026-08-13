@@ -9,6 +9,7 @@ import { TimeoutButton } from "../timeoutbutton"
 import { AngleInput } from "./angleinput"
 import { maxPower } from "../../model/physics/constants"
 import { localizeText } from "../../utils/locale"
+import { LiquidGlassFx } from "../liquidglassfx"
 
 export const DEFAULT_SHOT_CLOCK_MS = 35000
 export const SHOT_CLOCK_CRITICAL_MS = 7000
@@ -88,6 +89,7 @@ export class AimInputs {
       this.updatePowerProgress()
     }
     this.updateTiltSlider(this.container.table.cue.aim.elevation)
+    LiquidGlassFx.mount(this.shotDockElement)
     this.restoreDockState()
     this.addListeners()
     this.updateVisualState(0, 0)
@@ -110,6 +112,19 @@ export class AimInputs {
       this.powerPointerDown
     )
     this.shotDockToggleElement?.addEventListener("click", this.toggleDock)
+    document
+      .querySelectorAll<HTMLElement>("[data-control-target]")
+      .forEach((control) => {
+        control.addEventListener("click", () => {
+          const target = control.dataset.controlTarget
+          if (!target) return
+          if (target === "ballContainer") {
+            this.cueBallElement?.focus()
+            return
+          }
+          id(target)?.click()
+        })
+      })
     this.cueTiltElement?.addEventListener("input", this.tiltChanged)
     if (!("ontouchstart" in globalThis)) {
       id("viewP1")?.addEventListener("dblclick", this.hit)

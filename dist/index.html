@@ -294,6 +294,7 @@
       </dialog>
     </div>
     <div id="panel" class="panel shot-dock" data-dock-state="expanded">
+      <div class="shot-dock__glass-orbit" aria-hidden="true"></div>
       <button
         id="shotDockToggle"
         class="shot-dock__toggle"
@@ -350,6 +351,11 @@
         <div class="power-arc" aria-hidden="true">
           <div class="power-track"></div>
           <div class="power-progress"></div>
+          <div class="power-ticks power-ticks--major"></div>
+          <div class="power-ticks power-ticks--minor"></div>
+          <div class="power-arc__labels">
+            <span>25</span><span>50</span><span>75</span><span>100</span>
+          </div>
           <div class="power-knob"></div>
         </div>
         <input
@@ -382,6 +388,67 @@
           <span class="shot-label">击球</span>
           <small>点击确认</small>
         </button>
+      </div>
+      <div class="shot-radial" aria-label="视角与球杆快捷操作">
+        <div class="shot-radial__surface" aria-hidden="true"></div>
+        <div class="shot-radial__orbit" aria-hidden="true"></div>
+        <button
+          class="shot-radial__item shot-radial__item--aim"
+          type="button"
+          data-control-target="ballContainer"
+          aria-label="精确瞄准与母球击点"
+        >
+          <i class="ph ph-crosshair" aria-hidden="true"></i>
+          <span>精确瞄准</span>
+        </button>
+        <button
+          class="shot-radial__item shot-radial__item--spin"
+          type="button"
+          data-control-target="ballContainer"
+          aria-label="调整母球旋转"
+        >
+          <i class="ph ph-arrows-clockwise" aria-hidden="true"></i>
+          <span>加旋</span>
+        </button>
+        <button
+          class="shot-radial__item shot-radial__item--elevation"
+          type="button"
+          data-control-target="openElevation"
+          aria-label="调整球杆俯仰"
+        >
+          <i class="ph ph-arrows-out-line-vertical" aria-hidden="true"></i>
+          <span>俯仰</span>
+        </button>
+        <button
+          class="shot-radial__item shot-radial__item--camera"
+          type="button"
+          data-control-target="camera"
+          aria-label="切换视角"
+        >
+          <i class="ph ph-camera" aria-hidden="true"></i>
+          <span>视角</span>
+        </button>
+        <button
+          class="shot-radial__cue"
+          type="button"
+          data-control-target="cueStyle"
+          aria-label="选择我的球杆"
+        >
+          <span>我的球杆</span>
+          <i class="ph ph-caret-right" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="quick-loadout" aria-label="装备与环境快捷设置">
+        <button type="button" data-control-target="cueStyle">
+          <span>球杆</span><strong>光谱球杆</strong>
+        </button>
+        <button type="button" data-control-target="tableStyle">
+          <span>球桌</span><strong>光谱象牙</strong>
+        </button>
+        <button type="button" data-control-target="menu">
+          <span>环境</span><strong>SPECTRA</strong>
+        </button>
+        <i class="ph ph-cloud-check" aria-hidden="true"></i>
       </div>
       <div class="outerMenu">
         <button
@@ -511,7 +578,7 @@
         </span>
       </div>
       <a
-        href="/lobby.html"
+        href="/lobby"
         class="pill"
         title="联机大厅"
         id="lobbyOverlay"
@@ -559,6 +626,21 @@
         <i class="ph ph-arrow-right" aria-hidden="true"></i>
       </a>
     </aside>
+    <button
+      id="gameSocialDock"
+      class="game-social-dock"
+      type="button"
+      aria-label="展开实时社交"
+      aria-controls="gameSocialDrawer"
+    >
+      <span class="game-social-dock__count"
+        ><i></i><strong>0 在线</strong></span
+      >
+      <span class="game-social-dock__avatars" aria-hidden="true">
+        <i>未</i><i>友</i><i>聊</i>
+      </span>
+      <i class="ph ph-caret-right" aria-hidden="true"></i>
+    </button>
     <section class="constants" id="constants" aria-label="物理参数">
       <p>物理参数</p>
       <div class="nw">

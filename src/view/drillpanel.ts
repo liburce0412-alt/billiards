@@ -78,7 +78,7 @@ export class DrillPanel {
       this.container.updateController(
         new DrillReplay(this.container, drill.preShotState, [
           recorder.entries[last].event,
-        ]),
+        ])
       )
     })
 

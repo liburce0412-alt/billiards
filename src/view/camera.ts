@@ -17,13 +17,13 @@ export function frameRateIndependentLerp(
 }
 
 export class Camera {
-  static defaultHeight = R * 8
-  static defaultDistance = R * 18
+  static defaultHeight = R * 13
+  static defaultDistance = R * 15
   static defaultFovOffset = 0
 
   static configureForRule(ruleType: string) {
-    Camera.defaultHeight = R * 8
-    Camera.defaultDistance = R * 18
+    Camera.defaultHeight = R * 13
+    Camera.defaultDistance = R * 15
     Camera.defaultFovOffset = 0
     CameraTop.zoomFactor = 1
 
@@ -62,8 +62,8 @@ export class Camera {
   private fovOffset = Camera.defaultFovOffset
   savedDistance?: number
   private orbitAzimuth = Math.PI
-  private orbitElevation = MathUtils.degToRad(48)
-  private orbitDistance = R * 65
+  private orbitElevation = MathUtils.degToRad(64)
+  private orbitDistance = R * 52
   private orbitInitialised = false
 
   elapsed: number = 1 / 60
@@ -160,12 +160,25 @@ export class Camera {
 
   topView(_: AimEvent) {
     this.camera.fov = CameraTop.fov
+    const targetPosition = CameraTop.viewPoint(
+      this.camera.aspect,
+      this.camera.fov,
+      this.tempVec
+    )
+    if (this.camera.aspect > 1.18) {
+      // The SPECTRA table is meant to read as a premium physical object, not a
+      // flat plan view. Pull the eye towards the player and lower it just
+      // enough to reveal the front silver/graphite skirt while preserving the
+      // full-table aiming overview.
+      targetPosition.y -= R * 12.5
+      targetPosition.z *= 1.045
+    }
     this.camera.position.lerp(
-      CameraTop.viewPoint(this.camera.aspect, this.camera.fov, this.tempVec),
+      targetPosition,
       frameRateIndependentLerp(0.9, this.elapsed)
     )
     this.camera.up = up
-    this.camera.lookAt(zero)
+    this.camera.lookAt(this.lookTarget.set(0, R * 2.5, -R * 0.2))
   }
 
   aimView(aim: AimEvent, fraction = 0.08) {

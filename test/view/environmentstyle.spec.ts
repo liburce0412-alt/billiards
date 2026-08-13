@@ -23,4 +23,10 @@ describe("EnvironmentStyle", () => {
     expect(savedEnvironmentStyleId()).toBe("nebula")
     expect(environmentStyleById("missing").id).toBe("spectra")
   })
+
+  it("uses a contrasted SPECTRA base behind the GLSL environment", () => {
+    const spectra = environmentStyleById("spectra")
+    expect(spectra.background).toBe(0xc9d7e4)
+    expect(spectra.description).toContain("GLSL")
+  })
 })

@@ -49,6 +49,7 @@ import { SocialRoom } from "./durable/social-room"
 import type { PlatformEnv } from "./env"
 import { HttpError, errorResponse, json, securityHeaders } from "./http"
 import { verifyTurnstile } from "./turnstile"
+import { staticAsset } from "./assets"
 
 export { GameRoom, PasswordKdf, RateLimitBucket, SocialRoom }
 
@@ -289,7 +290,7 @@ async function dispatchRequest(
   if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/ws/")) {
     throw new HttpError(404, "not_found", "接口不存在")
   }
-  return assetRequest(request, env, url)
+  return staticAsset(request, env)
 }
 
 function configResponse(env: PlatformEnv) {
@@ -393,21 +394,6 @@ function platformHeaders(
   headers.set("X-Platform-User-Id", userId)
   headers.set("X-Platform-Display-Name", encodeURIComponent(displayName))
   return headers
-}
-
-async function assetRequest(request: Request, env: PlatformEnv, url: URL) {
-  if (request.method !== "GET" && request.method !== "HEAD") {
-    throw new HttpError(404, "not_found", "页面不存在")
-  }
-  const rewrites = new Map([
-    ["/admin", "/admin.html"],
-    ["/account", "/account.html"],
-    ["/lobby", "/lobby.html"],
-  ])
-  const target = rewrites.get(url.pathname)
-  if (!target) return env.ASSETS.fetch(request)
-  url.pathname = target
-  return env.ASSETS.fetch(new Request(url, request))
 }
 
 function decoded(value: string) {

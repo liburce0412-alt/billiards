@@ -20,7 +20,7 @@
     radial-gradient(circle at 22% 70%, rgb(56 221 230 / 86%), transparent 33%),
     radial-gradient(circle at 64% 20%, rgb(255 184 132 / 76%), transparent 31%),
     radial-gradient(circle at 88% 82%, rgb(126 90 244 / 88%), transparent 38%),
-    #eef4ff;
+    rgb(238 244 255 / 36%);
 }
 
 .account-avatar-wrap {
@@ -181,7 +181,7 @@
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-md);
   cursor: pointer;
-  background: rgb(255 255 255 / 62%);
+  background: rgb(255 255 255 / 38%);
 }
 
 .account-accent-option:has(input:checked) {
@@ -224,7 +224,7 @@
     radial-gradient(circle at 75% 10%, rgb(255 183 130 / 78%), transparent 28%),
     radial-gradient(circle at 65% 95%, rgb(123 91 245 / 78%), transparent 35%),
     radial-gradient(circle at 94% 75%, rgb(52 221 231 / 82%), transparent 34%),
-    white;
+    rgb(255 255 255 / 34%);
   box-shadow: var(--shadow-sm);
 }
 
@@ -267,7 +267,7 @@
   gap: 0.65rem;
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 62%);
+  background: rgb(255 255 255 / 38%);
 }
 
 .account-toggle input {

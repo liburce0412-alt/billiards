@@ -37,6 +37,7 @@ import {
   saveEnvironmentStyleId,
   savedEnvironmentStyleId,
 } from "./environmentstyle"
+import { SpectraEnvironment } from "./spectraenvironment"
 
 export class View {
   readonly scene = new Scene()
@@ -61,6 +62,7 @@ export class View {
   private meteor?: Line
   private meteorMaterial?: LineBasicMaterial
   private starfield?: Points
+  private spectraEnvironment?: SpectraEnvironment
   private environmentLoadToken = 0
   environmentStyleId = savedEnvironmentStyleId()
   onCameraInteraction?: () => void
@@ -123,6 +125,13 @@ export class View {
 
   update(elapsed, aim: AimEvent) {
     this.camera.update(elapsed, aim)
+    this.spectraEnvironment?.update(
+      elapsed,
+      this.windowWidth,
+      this.windowHeight,
+      this.table.cueball.pos.x,
+      this.table.cueball.pos.y
+    )
     this.updateMeteor(elapsed)
   }
 
@@ -293,9 +302,9 @@ export class View {
       requestedEnvironment ?? this.environmentStyleId,
       false
     )
-    this.scene.add(new HemisphereLight(0xffffff, 0x8ca9b4, 0.72))
+    this.scene.add(new HemisphereLight(0xf4fbff, 0x617988, 0.32))
 
-    const keyLight = new DirectionalLight(0xf8fdff, 1.74)
+    const keyLight = new DirectionalLight(0xf8fdff, 0.68)
     keyLight.position.set(-R * 20, -R * 12, R * 65)
     keyLight.castShadow = quality.dynamicShadows
     if (quality.dynamicShadows) {
@@ -347,13 +356,19 @@ export class View {
     const quality = getRenderQuality()
     const token = ++this.environmentLoadToken
 
+    if (!this.spectraEnvironment) {
+      this.spectraEnvironment = new SpectraEnvironment()
+      this.scene.add(this.spectraEnvironment.root)
+    }
+    this.spectraEnvironment.root.visible = style.id === "spectra"
+
     if (this.starfield) {
       this.scene.remove(this.starfield)
       this.starfield.geometry.dispose()
       ;(this.starfield.material as PointsMaterial).dispose()
     }
     const starCounts: Record<string, number> = {
-      spectra: 48,
+      spectra: 0,
       club: 180,
       galaxy: 900,
       nebula: 900,
@@ -361,13 +376,17 @@ export class View {
     let starCount = starCounts[style.id] ?? 180
     if (quality.name === "low") starCount = Math.ceil(starCount * 0.52)
     if (quality.name === "high") starCount = Math.ceil(starCount * 1.66)
-    this.starfield = this.createStarfield(starCount, style.starTint)
-    ;(this.starfield.material as PointsMaterial).opacity =
-      style.id === "spectra" ? 0.2 : 0.9
-    this.scene.add(this.starfield)
+    if (starCount > 0) {
+      this.starfield = this.createStarfield(starCount, style.starTint)
+      this.scene.add(this.starfield)
+    } else {
+      this.starfield = undefined
+    }
 
     this.scene.background = new Color(style.background)
     this.scene.backgroundIntensity = style.intensity
+    this.scene.environmentIntensity =
+      style.id === "spectra" ? 0.36 : style.intensity
     if (style.backdrop && quality.name !== "low" && this.renderer) {
       this.loadEnvironmentBackdrop(style, token)
     }

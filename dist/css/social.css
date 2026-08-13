@@ -79,7 +79,8 @@
   overflow: auto;
   border: 1px solid white;
   border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 96%);
+  background: rgb(255 255 255 / 68%);
+  backdrop-filter: blur(28px) saturate(145%);
   box-shadow: var(--shadow-md);
 }
 
@@ -126,7 +127,7 @@
   overflow: auto;
   background:
     radial-gradient(circle at 80% 10%, rgb(65 216 226 / 9%), transparent 28rem),
-    linear-gradient(rgb(249 251 255 / 42%), rgb(247 249 253 / 64%));
+    linear-gradient(rgb(249 251 255 / 22%), rgb(247 249 253 / 34%));
 }
 
 .social-message {
@@ -158,7 +159,7 @@
   border: 1px solid var(--color-rule);
   border-radius: 0.25rem 1rem 1rem;
   color: var(--color-ink-2);
-  background: rgb(255 255 255 / 86%);
+  background: rgb(255 255 255 / 56%);
   box-shadow: 0 5px 18px rgb(60 78 110 / 7%);
   font-size: var(--text-sm);
   line-height: 1.55;

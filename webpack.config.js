@@ -7,6 +7,7 @@ module.exports = {
     lobby: "./src/lobby.ts",
     account: "./src/account.ts",
     admin: "./src/admin.ts",
+    rules: "./src/rules.ts",
     diagram: "./src/diagrams.ts",
     mathavan: "./src/mathavan.ts",
     compare: "./src/compare.ts",

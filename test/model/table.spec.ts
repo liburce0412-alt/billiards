@@ -131,8 +131,8 @@ describe("Table", () => {
       new Vector3(
         PocketGeometry.middleKnuckleInset - 0.1 * R,
         TableGeometry.tableY,
-        0,
-      ),
+        0
+      )
     )
     const b = new Ball(new Vector3())
     a.vel.y = 10 * R

@@ -399,8 +399,8 @@ describe("Controller", () => {
     container.controller = new PlayShot(container)
     container.isSinglePlayer = true
     container.table.cueball.setStationary()
-    const objectBalls = [1, 2, 3, 4].map(
-      (label) => container.table.balls.find((b) => b.label === label)!
+    const objectBalls = [1, 2, 3, 4].map((label) =>
+      container.table.balls.find((b) => b.label === label)!
     )
     container.table.outcome.push(
       Outcome.collision(container.table.cueball, objectBalls[0], 1),

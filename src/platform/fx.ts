@@ -36,29 +36,44 @@ float fbm(vec2 p) {
   return value;
 }
 
+float fogOrb(vec2 p, vec2 center, float radius, float warp) {
+  vec2 q = p - center;
+  q += (fbm(p * 2.5 + warp) - 0.5) * 0.23;
+  return smoothstep(radius, 0.0, length(q));
+}
+
 void main() {
   vec2 uv = gl_FragCoord.xy / max(u_resolution.xy, vec2(1.0));
   vec2 p = (uv - 0.5) * vec2(u_resolution.x / u_resolution.y, 1.0);
-  float t = u_time * 0.055 * u_motion;
-  vec2 pointer = (u_pointer - 0.5) * 0.28;
-  float field = fbm(p * 2.2 + vec2(t, -t * 0.7) + pointer);
-  float ribbon = sin((p.x + field * 0.48) * 7.0 - t * 4.0) * 0.5 + 0.5;
-  ribbon = smoothstep(0.45, 0.9, ribbon) * smoothstep(0.05, 0.95, uv.y);
-  vec3 paper = vec3(0.972, 0.978, 0.996);
-  vec3 cyan = vec3(0.20, 0.88, 0.92);
-  vec3 violet = vec3(0.48, 0.30, 0.98);
-  vec3 peach = vec3(1.0, 0.66, 0.48);
-  vec3 color = mix(cyan, violet, smoothstep(0.2, 0.85, field));
-  color = mix(color, peach, smoothstep(0.68, 0.98, field + p.x * 0.22));
-  float vignette = smoothstep(1.05, 0.16, length(p * vec2(0.88, 1.1)));
-  float alpha = (0.08 + ribbon * 0.24 + field * 0.08) * vignette;
-  outColor = vec4(mix(paper, color, alpha), 1.0);
+  float t = u_time * 0.045 * u_motion;
+  vec2 pointer = (u_pointer - 0.5) * vec2(0.38, 0.28);
+  float field = fbm(p * 2.1 + vec2(t, -t * 0.72) + pointer);
+  float cyanFog = fogOrb(p, vec2(-0.50, 0.22) + pointer * 0.3, 0.78, t);
+  float violetFog = fogOrb(p, vec2(0.34, -0.27), 0.66, t + 4.0);
+  float orangeFog = fogOrb(p, vec2(0.56, 0.18), 0.72, t + 8.0);
+  float ribbon = sin((p.x + field * 0.42) * 6.4 - t * 3.6) * 0.5 + 0.5;
+  ribbon = smoothstep(0.52, 0.92, ribbon) * smoothstep(0.02, 0.92, uv.y);
+  vec3 paper = vec3(0.972, 0.982, 0.996);
+  vec3 cyan = vec3(0.12, 0.84, 0.91);
+  vec3 violet = vec3(0.47, 0.31, 0.98);
+  vec3 orange = vec3(1.0, 0.50, 0.22);
+  vec3 color = paper;
+  color = mix(color, cyan, cyanFog * (0.16 + field * 0.12));
+  color = mix(color, violet, violetFog * (0.12 + field * 0.10));
+  color = mix(color, orange, orangeFog * (0.18 + ribbon * 0.13));
+  float glassSweep = smoothstep(0.76, 0.98, ribbon + field * 0.22);
+  color += glassSweep * vec3(0.035, 0.042, 0.055);
+  float edge = smoothstep(1.25, 0.12, length(p * vec2(0.82, 1.05)));
+  outColor = vec4(mix(paper, color, edge), 1.0);
 }
 `
 
 export function mountSpectraFx(
   canvas: HTMLCanvasElement,
-  options: { quality?: "low" | "balanced" | "high"; interactive?: boolean } = {}
+  options: {
+    quality?: "low" | "balanced" | "high"
+    interactive?: boolean
+  } = {}
 ): FxHandle {
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches
   const quality = options.quality ?? "high"

@@ -50,6 +50,7 @@ describe("Launcher configuration", () => {
     expect(url.searchParams.get("botLevel")).to.equal("9")
     expect(url.searchParams.get("practice")).to.equal("false")
     expect(url.searchParams.get("quality")).to.equal("high")
+    expect(url.searchParams.get("camera")).to.equal("2d")
     expect(url.searchParams.has("old")).to.be.false
     expect(url.hash).to.equal("")
   })

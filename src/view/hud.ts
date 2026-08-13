@@ -32,15 +32,44 @@ export class Hud {
     }
   }
 
-  private setScore(element: HTMLElement | null, name?: string, value?: string) {
+  private setScore(
+    element: HTMLElement | null,
+    name?: string,
+    value?: string,
+    player: 1 | 2 = 1
+  ) {
     if (!element) return
     element.replaceChildren()
+    const avatar = document.createElement("span")
+    avatar.className = "hud-avatar"
+    avatar.setAttribute("aria-hidden", "true")
+    const portrait = document.createElement("img")
+    portrait.src =
+      player === 1
+        ? "assets/avatar-future-player.webp"
+        : "assets/avatar-spectra-rival.webp"
+    portrait.alt = ""
+    avatar.append(portrait)
+    element.append(avatar)
+    const copy = document.createElement("span")
+    copy.className = "hud-player-copy"
     if (name) {
       const nameElement = document.createElement("div")
       nameElement.className = "hud-name"
       nameElement.textContent = name
-      element.append(nameElement)
+      copy.append(nameElement)
+      const levelElement = document.createElement("small")
+      levelElement.className = "hud-level"
+      const levelBadge = document.createElement("b")
+      levelBadge.textContent = "LV. 28"
+      const rank = document.createElement("span")
+      rank.textContent = player === 1 ? "紫晶 III" : "星耀 II"
+      const signal = document.createElement("i")
+      signal.setAttribute("aria-hidden", "true")
+      levelElement.append(levelBadge, rank, signal)
+      copy.append(levelElement)
     }
+    element.append(copy)
     if (value !== undefined) {
       const valueElement = document.createElement("div")
       valueElement.className = "hud-value"
@@ -88,13 +117,22 @@ export class Hud {
     const p2Str = p2Star ? `⭐${p2}` : `${p2}`
 
     if (p1Name && p2Name) {
-      this.setScore(this.p1Element, p1Name, p1Str)
-      this.setScore(this.p2Element, p2Name, p2Str)
-      this.setScore(this.middleElement, ":", "")
+      this.setScore(this.p1Element, p1Name, p1Str, 1)
+      this.setScore(this.p2Element, p2Name, p2Str, 2)
+      if (this.middleElement) {
+        this.middleElement.replaceChildren()
+        const scoreSeparator = document.createElement("strong")
+        scoreSeparator.className = "hud-score-separator"
+        scoreSeparator.textContent = "—"
+        const turn = document.createElement("span")
+        turn.className = "hud-turn-label"
+        turn.textContent = "我方开球 · 先到目标分"
+        this.middleElement.append(scoreSeparator, turn)
+      }
     } else if (p1Name) {
-      this.setScore(this.p1Element, p1Name, p1Str)
+      this.setScore(this.p1Element, p1Name, p1Str, 1)
     } else if (p2Name) {
-      this.setScore(this.p2Element, p2Name, p2Str)
+      this.setScore(this.p2Element, p2Name, p2Str, 2)
     } else {
       this.setScore(this.p1Element, undefined, p1Str)
     }

@@ -83,9 +83,9 @@ CREATE TABLE IF NOT EXISTS user_preferences (
   quality TEXT NOT NULL DEFAULT 'high',
   desktop_shot_dock TEXT NOT NULL DEFAULT 'expanded',
   touch_shot_dock TEXT NOT NULL DEFAULT 'expanded',
-  camera_mode TEXT NOT NULL DEFAULT 'aim',
+  camera_mode TEXT NOT NULL DEFAULT 'top',
   master_volume REAL NOT NULL DEFAULT 0.8,
-  social_drawer_open INTEGER NOT NULL DEFAULT 0,
+  social_drawer_open INTEGER NOT NULL DEFAULT 1,
   updated_at INTEGER NOT NULL
 );
 

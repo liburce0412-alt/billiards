@@ -87,6 +87,19 @@ describe("LobbyIndicator", () => {
     expect(
       document.getElementById("gameSocialUsers")?.textContent
     ).not.toContain("隐身者")
+    expect(document.querySelector(".game-social-visibility")?.textContent).toBe(
+      "在线可见：在线"
+    )
+    expect(
+      document.querySelector("#gameSocialUsers button.game-social-user")
+    ).not.toBeNull()
+  })
+
+  it("keeps the desktop social panel in the lower-left opt-in state", () => {
+    new LobbyIndicator(false, false, {} as any)
+    expect(document.getElementById("gameSocialDrawer")?.hidden).toBe(true)
+    document.getElementById("gameSocialToggle")?.click()
+    expect(document.getElementById("gameSocialDrawer")?.hidden).toBe(false)
   })
 
   it("shows a live invite without accepting an injected destination", async () => {
@@ -122,10 +135,10 @@ describe("LobbyIndicator", () => {
     expect(FakeWebSocket.instances[0].closed).toBe(true)
   })
 
-  it("does not open social sockets in offline modes", async () => {
+  it("keeps presence live during local and AI matches", async () => {
     const indicator = new LobbyIndicator(true, false, {} as any)
     await indicator.init()
-    expect(FakeWebSocket.instances).toHaveLength(0)
+    expect(FakeWebSocket.instances).toHaveLength(1)
     expect(document.querySelector(".lobby-count")?.textContent).toBe("0 在线")
   })
 })

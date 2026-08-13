@@ -54,3 +54,37 @@ final result: passed
 3. Mobile capture exposed an overly heavy edge-to-edge sticky action; tightened it into a floating glass capsule and contained navigation overflow.
 4. Auth capture exposed intrinsic-width text fields; expanded fields to the full card width and re-captured.
 5. Mobile game capture showed the social drawer obscuring play by default; changed the account/platform default to collapsed while preserving the user preference.
+6. Production review exposed a Cloudflare redirect loop on `/account`, `/lobby`, and `/admin`; removed Worker-side `.html` rewrites and kept canonical extensionless links.
+7. Production game capture exposed the old aiming camera, an undersized table, and a flat white environment. Set launcher games to the selected top composition, expanded the Option 3 dock, and added a live GLSL SPECTRA dome plus cue-ball caustic projection.
+8. Matching-viewport comparison at 1680×936 showed the selected Option 3 composition needs social as a lower-left floating surface, not a fixed right column. The drawer now opens on demand from the live online control and floats at the lower-left without resizing the table.
+9. A second reference pass exposed three missing silhouettes: the deep concave power arc, the bottom-right quarter-circle control cluster, and the selected Option 1 versus card. Those structures now match the references, with live controls wired to spin/elevation/camera/cue selectors.
+10. The SPECTRA cue-ball shader was expanded to two animated follow layers, and the ivory table received woven cloth plus separate ice, graphite, and brushed-silver rail/pocket trim.
+
+## 2026-08-13 regression pass
+
+- Final capture: `qa-artifacts/game-hybrid-option1-option3.png` (1680×936).
+- Reference comparison: selected Option 1 shell + selected Option 3 control dock + final capture were reviewed together at matching size.
+- Composition: passed — the live view now keeps the full table in frame with mild perspective, a separate graphite/silver body skirt, and a full-width versus plate using generated player portraits, ranks, levels, scores, and turn state.
+- Controls: passed — the power control now has a double outline, dense major/minor ticks, cyan progress, and an independent glass drag block; the lower-right controls form a complete dual-layer transparent glass disc with an inner cue orbit.
+- Table: passed — American ivory now has woven cyan cloth, a visibly thick graphite/silver body, and six layered silver/graphite/ice pocket collars; the inner well is dark blue graphite rather than a flat black cut-out.
+- Environment: passed — the GLSL light-space dome remains contrasted; two animated cyan/violet/rose caustic layers follow the cue ball.
+- Runtime routes: local regression verification passed; production deploy/version check follows this capture.
+
+## 2026-08-13 liquid-glass fidelity pass
+
+- Intermediate capture: `qa-artifacts/game-liquid-glass-pass1.png` (1680×936).
+- The first live WebGL2 control material pass successfully added moving cyan/violet/peach refraction and preserved every DOM control, but the same-viewport review found the power rail still too shallow and the pocket collars too visually subordinate.
+- Final capture: `qa-artifacts/game-light-fog-rainbow-compact.png` (1680×936).
+- Final comparison: passed for the user-directed material correction. The control dock now reads as transparent liquid glass with a clearly visible warm-orange volumetric fog layer rather than opaque frosted colour; WebGL loss, reduced motion, and low quality retain a static fallback.
+- Mother-ball comparison: passed. The effect now follows the cue ball as an asymmetric white water-caustic network, with a compact cyan/violet/gold refraction streak on one edge instead of the rejected blue-violet concentric halo.
+- Framing comparison: passed. The top view now reserves visible light-space above the table so the table no longer touches the player matchup panel while keeping the playing surface large.
+
+## 2026-08-13 core silhouette and global material pass
+
+- Final game capture: `qa-artifacts/game-core-final-framed.png` (1680×936).
+- Cross-page captures: `qa-artifacts/launcher-global-glass.png`, `account-global-glass.png`, `lobby-global-glass.png`, `admin-global-glass.png`, and `rules-global-glass.png`.
+- Reference comparison: passed. The same 1680×936 game state was compared against selected Option 1 and Option 3. The table remains fully visible, the opponent plate has real portraits and full match metadata, the lower-left real-time social drawer is preserved, the concave power rail has its required silhouette, and the lower-right controls are one complete glass disc rather than unrelated buttons.
+- Interaction: passed. The shot dock was clicked in the real in-app browser and changed `expanded → collapsed → expanded`; the overlap that initially blocked the toggle was fixed by separating the quick-loadout and toggle stacking layers.
+- Fresh-runtime check: passed. A new game tab loaded the production build locally with zero console errors; the motion recovery watchdog now resets after a recovery so it cannot emit the same recovery repeatedly.
+- Global material: passed. Launcher, auth, account/personalization, lobby/chat, admin, and rules now share one WebGL2 colored volumetric light-fog renderer per page; translucent panels reveal clearly visible warm orange, cyan, and violet fog while preserving light-theme contrast. Reduced-motion and WebGL fallback behavior remain present.
+- Asset fidelity: passed. Two dedicated HUD portrait assets were generated, cropped, optimized to WebP, and stored in `dist/assets/`; letter-avatar placeholders were removed from the match plate.

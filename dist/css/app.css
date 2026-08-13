@@ -5,7 +5,7 @@ body.platform-app {
   min-height: 100%;
   margin: 0;
   color: var(--color-ink);
-  background: var(--color-paper);
+  background: transparent;
   font-family: var(--font-body);
 }
 
@@ -18,7 +18,7 @@ body.platform-app {
   inset: 0;
   width: 100%;
   height: 100%;
-  opacity: 0.8;
+  opacity: 1;
   pointer-events: auto;
 }
 
@@ -54,7 +54,7 @@ body.platform-app {
   padding: 0.3rem;
   border: 1px solid rgb(255 255 255 / 82%);
   border-radius: var(--radius-capsule);
-  background: rgb(255 255 255 / 56%);
+  background: rgb(255 255 255 / 36%);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(22px);
 }
@@ -97,11 +97,11 @@ body.platform-app {
     radial-gradient(circle at 78% 14%, rgb(255 185 143 / 40%), transparent 23%),
     radial-gradient(circle at 88% 80%, rgb(72 221 228 / 42%), transparent 26%),
     radial-gradient(circle at 68% 92%, rgb(127 89 245 / 36%), transparent 30%),
-    rgb(255 255 255 / 72%);
+    rgb(255 255 255 / 34%);
   box-shadow:
     var(--shadow-md),
     inset 0 1px white;
-  backdrop-filter: blur(28px) saturate(130%);
+  backdrop-filter: blur(28px) saturate(150%);
 }
 
 .platform-app__hero h1 {
@@ -151,11 +151,11 @@ body.platform-app {
 .platform-panel {
   border: 1px solid rgb(255 255 255 / 90%);
   border-radius: var(--radius-lg);
-  background: rgb(255 255 255 / 76%);
+  background: rgb(255 255 255 / 38%);
   box-shadow:
     var(--shadow-sm),
     inset 0 1px white;
-  backdrop-filter: blur(24px) saturate(120%);
+  backdrop-filter: blur(24px) saturate(148%);
 }
 
 .platform-panel__header {
@@ -197,7 +197,7 @@ body.platform-app {
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-capsule);
   color: var(--color-ink-2);
-  background: rgb(255 255 255 / 74%);
+  background: rgb(255 255 255 / 48%);
   cursor: pointer;
   text-decoration: none;
   font-size: var(--text-xs);
@@ -248,7 +248,7 @@ body.platform-app {
   border-radius: var(--radius-md);
   outline: 0;
   color: var(--color-ink);
-  background: rgb(255 255 255 / 76%);
+  background: rgb(255 255 255 / 50%);
 }
 
 .platform-field input,
@@ -453,7 +453,7 @@ body.platform-app {
   border: 1px solid white;
   border-radius: var(--radius-capsule);
   color: var(--color-ink-2);
-  background: rgb(255 255 255 / 92%);
+  background: rgb(255 255 255 / 62%);
   box-shadow: var(--shadow-md);
   backdrop-filter: blur(18px);
   font-size: var(--text-xs);

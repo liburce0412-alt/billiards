@@ -23,6 +23,7 @@ import {
 } from "./view/environmentstyle"
 import { apiJson, type PlatformMe } from "./platform/api"
 import { accountChip, approvalLabel, platformGate } from "./platform/shell"
+import { mountSpectraFx } from "./platform/fx"
 
 const storageKey = "billiards-launcher-selection"
 
@@ -274,14 +275,15 @@ function launcherMarkup(selection: LauncherSelection, session: PlatformMe) {
     )
     .join("")
   return `
+    <canvas class="launcher-fx" aria-hidden="true"></canvas>
     <div class="launcher-shell">
       <header class="launcher-nav">
         <a class="launcher-wordmark" href="./" aria-label="Break Builder 首页">
           <span aria-hidden="true">●</span> Break Builder
         </a>
         <div class="launcher-nav__links">
-          <a class="launcher-lobby" href="rules.html">规则对照</a>
-          <a class="launcher-lobby" href="lobby.html">社交大厅</a>
+          <a class="launcher-lobby" href="/rules">规则对照</a>
+          <a class="launcher-lobby" href="/lobby">社交大厅</a>
           ${session.capabilities.admin ? '<a class="launcher-lobby" href="/admin">管理后台</a>' : ""}
           ${accountChip(session)}
         </div>
@@ -412,7 +414,7 @@ function launcherMarkup(selection: LauncherSelection, session: PlatformMe) {
       </main>
 
       <footer class="launcher-footer">
-        <p>GPL-3.0 · TypeScript + Three.js · <a href="rules.html">查看规则与实现差异</a></p>
+        <p>GPL-3.0 · TypeScript + Three.js · <a href="/rules">查看规则与实现差异</a></p>
         <p>方向键选择 · Enter 开始</p>
       </footer>
     </div>`
@@ -507,6 +509,10 @@ function initialiseLauncher(params: URLSearchParams, session: PlatformMe) {
   selection.onlinePlayerName = session.user.displayName
   launcher.innerHTML = launcherMarkup(selection, session)
   launcher.hidden = false
+  mountSpectraFx(launcher.querySelector<HTMLCanvasElement>(".launcher-fx")!, {
+    quality: selection.quality,
+    interactive: true,
+  })
 
   const form = document.querySelector<HTMLFormElement>("#launcherForm")!
   const start = document.querySelector<HTMLButtonElement>("#launcherStart")!

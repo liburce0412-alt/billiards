@@ -42,7 +42,7 @@ export function mountPlatformPage(
       </main>
       <footer class="platform-app__footer">
         <span>Break Builder · GPL-3.0</span>
-        <a href="/rules.html">规则与许可证</a>
+        <a href="/rules">规则与许可证</a>
         <span>账号状态由服务器验证</span>
       </footer>
     </div>

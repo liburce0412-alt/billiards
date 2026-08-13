@@ -584,6 +584,7 @@ export class Container {
 
     const wasMoving = !this.table.allStationary()
     this.table.halt()
+    this.motionWatchdog.reset()
     this.fixedStep.reset()
     this.table.cue.hittingAnimation = false
     if (

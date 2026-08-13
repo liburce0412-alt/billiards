@@ -222,7 +222,7 @@ async function mountAuthGate() {
           </form>
         </section>
       </main>
-      <footer class="platform-gate__footer"><span>© Break Builder</span><a href="/rules.html">规则与许可证</a><span>WebGL2 安全降级</span></footer>
+      <footer class="platform-gate__footer"><span>© Break Builder</span><a href="/rules">规则与许可证</a><span>WebGL2 安全降级</span></footer>
     </div>`
   document.body.append(root)
   mountSpectraFx(root.querySelector("canvas")!, { interactive: true })

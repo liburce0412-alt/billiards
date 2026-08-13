@@ -1,6 +1,8 @@
 import { expect } from "chai"
+import { Group } from "three"
 import {
   TABLE_STYLES,
+  applyTableStyle,
   tableAssetForStyle,
   tableStyleById,
 } from "../../src/view/tablestyle"
@@ -30,5 +32,13 @@ describe("TableStyle", () => {
       )
     ).to.equal("models/d-snooker.min.gltf")
     expect(tableStyleById("missing").id).to.equal("american-ivory")
+  })
+
+  it("adds the layered silver SPECTRA trim to the ivory table", () => {
+    const root = new Group()
+    applyTableStyle(root, "american-ivory")
+    const details = root.getObjectByName("spectra-ivory-table-details")
+    expect(details).to.not.be.undefined
+    expect(details?.children.length).to.be.greaterThan(12)
   })
 })

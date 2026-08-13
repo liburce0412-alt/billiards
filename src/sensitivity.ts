@@ -75,7 +75,7 @@ export function buildWorkerConfig(
   shot: ShotParams,
   ruleType: string,
   cushionModel: string,
-  id?: number | string,
+  id?: number | string
 ): WorkerConfig {
   return {
     id,
@@ -114,10 +114,10 @@ function cueBallFirst(cueBallId: number, outcomes: SimOutcome[]): SimOutcome[] {
  */
 export function isThreeCushionScored(
   outcomes: SimOutcome[],
-  cueBallId: number,
+  cueBallId: number
 ): boolean {
   const cueFirst = cueBallFirst(cueBallId, outcomes).filter(
-    (o) => o.ballA === cueBallId,
+    (o) => o.ballA === cueBallId
   )
 
   const cannons = new Set<number | undefined>()
@@ -136,15 +136,15 @@ export function isThreeCushionScored(
 
   // Pass 2: proximity point (cue settled next to the second object ball).
   const proximity = cueFirst.find(
-    (o) => o.type === OutcomeType.Proximity && o.ballA === cueBallId,
+    (o) => o.type === OutcomeType.Proximity && o.ballA === cueBallId
   )
   if (proximity) {
     const collisionCount = new Set(
       cueFirst
         .filter(
-          (o) => o.type === OutcomeType.Collision && o.ballA === cueBallId,
+          (o) => o.type === OutcomeType.Collision && o.ballA === cueBallId
         )
-        .map((o) => o.ballB),
+        .map((o) => o.ballB)
     ).size
     if (collisionCount === 1 && cushions >= 3) {
       return true
@@ -169,10 +169,10 @@ export interface OutcomeSignature {
 /** Derive an OutcomeSignature from worker outcomes (SimOutcome[]). */
 export function outcomeSignature(
   outcomes: SimOutcome[],
-  cueBallId: number,
+  cueBallId: number
 ): OutcomeSignature {
   const cueFirst = cueBallFirst(cueBallId, outcomes).filter(
-    (o) => o.ballA === cueBallId,
+    (o) => o.ballA === cueBallId
   )
   let cushions = 0
   const ballsHit: number[] = []
@@ -197,7 +197,7 @@ export function outcomeSignature(
 /** True when two signatures describe the same shot result. */
 export function signaturesMatch(
   a: OutcomeSignature,
-  b: OutcomeSignature,
+  b: OutcomeSignature
 ): boolean {
   return (
     a.scored === b.scored &&
@@ -213,7 +213,7 @@ export function signaturesMatch(
  */
 export function simulateShot(
   config: WorkerConfig,
-  workerUrl = "worker.js",
+  workerUrl = "worker.js"
 ): Promise<SimResult> {
   return new Promise((resolve, reject) => {
     const worker = new Worker(workerUrl)
@@ -260,7 +260,7 @@ export class WorkerPool {
   constructor(
     size: number,
     workerUrl = "worker.js",
-    createWorker: (url: string) => WorkerLike = (url) => new Worker(url),
+    createWorker: (url: string) => WorkerLike = (url) => new Worker(url)
   ) {
     for (let i = 0; i < Math.max(1, size); i++) {
       const worker = createWorker(workerUrl)
@@ -305,7 +305,7 @@ export class WorkerPool {
 
   private onMessage(
     slot: { worker: WorkerLike; job: PoolJob | null },
-    e: MessageEvent,
+    e: MessageEvent
   ) {
     const d = e.data
     if (d?.type !== "COMPLETE" && d?.type !== "ERROR") return // ignore CHECKPOINTs
@@ -327,7 +327,7 @@ export class WorkerPool {
 
   private onError(
     slot: { worker: WorkerLike; job: PoolJob | null },
-    err: unknown,
+    err: unknown
   ) {
     const job = slot.job
     slot.job = null
@@ -363,7 +363,7 @@ export async function verifySeed(
   seed: ShotParams,
   ruleType: string,
   cushionModel: string,
-  workerUrl = "worker.js",
+  workerUrl = "worker.js"
 ): Promise<OutcomeSignature> {
   const config = buildWorkerConfig(
     balls,
@@ -371,7 +371,7 @@ export async function verifySeed(
     seed,
     ruleType,
     cushionModel,
-    "seed",
+    "seed"
   )
   const result = await simulateShot(config, workerUrl)
   return outcomeSignature(result.outcomes, cueBallId)
@@ -474,7 +474,7 @@ function threeCushionPlayArea(): { tableX: number; tableY: number } {
 export function firstContactDistance(
   balls: BallPos[],
   cueBallId: number,
-  angle: number,
+  angle: number
 ): number {
   const cue = balls.find((b) => b.id === cueBallId)
   if (!cue) return 1.0
@@ -513,7 +513,7 @@ export function buildAxisSpecs(
   cueBallId: number,
   selected: ParamKey[],
   stepScale = 1,
-  spinHalfWindow = DEFAULT_SPIN_HALF_WINDOW,
+  spinHalfWindow = DEFAULT_SPIN_HALF_WINDOW
 ): AxisSpec[] {
   // Build a spec from a step + a physical half-window. stepScale shrinks the
   // step (finer grid) without changing the window, so finer steps mean more
@@ -524,7 +524,7 @@ export function buildAxisSpecs(
     baseStep: number,
     min: number,
     max: number,
-    halfWindow: number,
+    halfWindow: number
   ): AxisSpec => {
     const step = baseStep * stepScale
     return {
@@ -550,7 +550,7 @@ export function buildAxisSpecs(
           cone / ONE_D_STEPS_EACH_SIDE,
           Number.NEGATIVE_INFINITY,
           Number.POSITIVE_INFINITY,
-          cone,
+          cone
         )
       }
       case "power": {
@@ -565,7 +565,7 @@ export function buildAxisSpecs(
           halfWindow / ONE_D_STEPS_EACH_SIDE,
           0,
           maxPower,
-          halfWindow,
+          halfWindow
         )
       }
       case "offsetX":
@@ -592,7 +592,7 @@ export function buildAxisSpecs(
           SPIN_GRID_STEP,
           -offCenterLimit,
           offCenterLimit,
-          halfWindow,
+          halfWindow
         )
       }
       case "elevation":
@@ -602,7 +602,7 @@ export function buildAxisSpecs(
           0.025,
           0,
           (2 * Math.PI) / 5,
-          0.1745,
+          0.1745
         )
     }
   })
@@ -638,7 +638,7 @@ export function paramRangeOf(axis: AxisSpec): ParamRange {
 function cellToShot(
   baseShot: ShotParams,
   axes: AxisSpec[],
-  indices: number[],
+  indices: number[]
 ): ShotParams {
   const shot: ShotParams = { ...baseShot }
   axes.forEach((axis, i) => {
@@ -653,7 +653,7 @@ function cellToShot(
 function isCellValid(
   baseShot: ShotParams,
   axes: AxisSpec[],
-  indices: number[],
+  indices: number[]
 ): boolean {
   for (let i = 0; i < axes.length; i++) {
     const v = valueAt(axes[i], indices[i])
@@ -663,7 +663,7 @@ function isCellValid(
   // neither spin axis is selected the offset is fixed at the (playable) seed, so
   // it must not reject neighbours — even when the seed sits exactly on the limit.
   const spinSelected = axes.some(
-    (a) => a.key === "offsetX" || a.key === "offsetY",
+    (a) => a.key === "offsetX" || a.key === "offsetY"
   )
   if (spinSelected) {
     const shot = cellToShot(baseShot, axes, indices)
@@ -708,7 +708,7 @@ export interface SensitivityOptions {
 
 function enumerateValidCells(
   baseShot: ShotParams,
-  axes: AxisSpec[],
+  axes: AxisSpec[]
 ): number[][] {
   let cells: number[][] = [[]]
   for (const axis of axes) {
@@ -726,7 +726,7 @@ function enumerateValidCells(
 function excludeInnerSpinWindow(
   cells: number[][],
   axes: AxisSpec[],
-  inner?: number,
+  inner?: number
 ): number[][] {
   if (inner === undefined) return cells
   const spinAxes = axes
@@ -736,8 +736,8 @@ function excludeInnerSpinWindow(
   return cells.filter((cell) =>
     spinAxes.some(
       ({ axis, index }) =>
-        Math.abs(cell[index] * axis.step) > inner + axis.step / 2,
-    ),
+        Math.abs(cell[index] * axis.step) > inner + axis.step / 2
+    )
   )
 }
 
@@ -748,7 +748,7 @@ async function evaluateGrid(
   score: Scorer,
   concurrency: number,
   scoring: Map<string, number[]>,
-  opts: Pick<SensitivityOptions, "onEvaluate" | "onProgress" | "signal">,
+  opts: Pick<SensitivityOptions, "onEvaluate" | "onProgress" | "signal">
 ): Promise<number> {
   let cursor = 0
   let evaluated = 0
@@ -775,7 +775,7 @@ async function evaluateGrid(
     }
   }
   const settled = await Promise.allSettled(
-    Array.from({ length: concurrency }, () => lane()),
+    Array.from({ length: concurrency }, () => lane())
   )
   if (opts.signal?.aborted) throw new Error("aborted")
   const failed = settled.find((result) => result.status === "rejected")
@@ -791,7 +791,7 @@ async function evaluateGrid(
  * are evaluated concurrently across the worker pool.
  */
 export async function runSensitivityAnalysis(
-  opts: SensitivityOptions,
+  opts: SensitivityOptions
 ): Promise<SensitivityResult> {
   const selected = opts.selectedParams ?? DEFAULT_PARAMS
   const axes = buildAxisSpecs(
@@ -800,7 +800,7 @@ export async function runSensitivityAnalysis(
     opts.cueBallId,
     selected,
     opts.stepScale ?? 1,
-    opts.spinHalfWindow ?? DEFAULT_SPIN_HALF_WINDOW,
+    opts.spinHalfWindow ?? DEFAULT_SPIN_HALF_WINDOW
   )
   const start = Date.now()
 
@@ -822,8 +822,8 @@ export async function runSensitivityAnalysis(
             opts.cueBallId,
             shot,
             opts.ruleType,
-            opts.cushionModel,
-          ),
+            opts.cushionModel
+          )
         )
         return isThreeCushionScored(result.outcomes, opts.cueBallId)
       }
@@ -832,7 +832,7 @@ export async function runSensitivityAnalysis(
   let evaluated: number
   const concurrency = Math.max(
     1,
-    opts.scorer ? Math.max(1, poolSize) : poolSize,
+    opts.scorer ? Math.max(1, poolSize) : poolSize
   )
 
   try {
@@ -841,7 +841,7 @@ export async function runSensitivityAnalysis(
     if (totalCells > MAX_CELLS) {
       throw new Error(
         `Grid too large: ${totalCells} cells (limit ${MAX_CELLS}). ` +
-          `Use fewer parameters, a coarser stepScale, or accept a smaller window.`,
+          `Use fewer parameters, a coarser stepScale, or accept a smaller window.`
       )
     }
 
@@ -856,7 +856,7 @@ export async function runSensitivityAnalysis(
     validCells = excludeInnerSpinWindow(
       validCells,
       axes,
-      opts.spinInnerHalfWindow,
+      opts.spinInnerHalfWindow
     )
 
     // Evaluate the valid cells concurrently across the pool. Each lane pulls the
@@ -870,14 +870,14 @@ export async function runSensitivityAnalysis(
       score,
       concurrency,
       scoring,
-      opts,
+      opts
     )
   } finally {
     pool?.terminate()
   }
 
   const scoringPoints = [...scoring.values()].map((indices) =>
-    cellToShot(opts.baseShot, axes, indices),
+    cellToShot(opts.baseShot, axes, indices)
   )
 
   // --- per-parameter ranges for display.

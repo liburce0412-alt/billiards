@@ -32,10 +32,18 @@ describe("View", () => {
     done()
   })
 
-  it("uses the light SPECTRA environment with a restrained starfield", () => {
+  it("uses the contrasted SPECTRA base with a GLSL environment", () => {
     const view = new View(canvas3d, table, Assets.localAssets())
-    expect((view.scene.background as any).getHex()).to.equal(0xf3f6fa)
-    expect(view.scene.getObjectByName("starfield")).to.not.be.undefined
+    expect((view.scene.background as any).getHex()).to.equal(0xc9d7e4)
+    expect(view.scene.getObjectByName("spectra-environment")).to.not.be
+      .undefined
+    expect(view.scene.getObjectByName("spectra-cue-caustic")).to.not.be
+      .undefined
+    expect(view.scene.getObjectByName("spectra-cue-caustic-halo")).to.not.be
+      .undefined
+    expect(view.scene.getObjectByName("spectra-cue-rainbow")).to.not.be
+      .undefined
+    expect(view.scene.getObjectByName("starfield")).to.be.undefined
   })
 
   it("ball not in view", (done) => {

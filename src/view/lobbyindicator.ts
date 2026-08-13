@@ -1,4 +1,3 @@
-import { Session } from "../network/client/session"
 import { Rules } from "../controller/rules/rules"
 import { id } from "../utils/dom"
 
@@ -22,6 +21,7 @@ export class LobbyIndicator {
   private readonly drawerUsers = id("gameSocialUsers")
   private readonly drawerCount = id("gameSocialCount")
   private readonly drawerSelf = id("gameSocialSelf")
+  private readonly socialDock = id("gameSocialDock") as HTMLButtonElement | null
   private socket: WebSocket | null = null
   private count = 0
   private users: PresenceUser[] = []
@@ -29,7 +29,7 @@ export class LobbyIndicator {
   private currentTableId: string | null = null
 
   constructor(
-    private readonly botMode: boolean,
+    _botMode: boolean,
     private readonly replayMode: boolean,
     _rules: Rules,
     _onChatMessage?: (msg: string) => void,
@@ -64,9 +64,12 @@ export class LobbyIndicator {
   private setupDrawer() {
     let open = false
     try {
-      open =
-        globalThis.localStorage?.getItem("break-builder.social-drawer") ===
-        "open"
+      const saved = globalThis.localStorage?.getItem(
+        "break-builder.social-drawer"
+      )
+      if (saved === "open" || saved === "closed") {
+        open = saved === "open"
+      }
     } catch {
       // The drawer remains collapsed when storage is unavailable.
     }
@@ -77,6 +80,7 @@ export class LobbyIndicator {
     id("gameSocialClose")?.addEventListener("click", () =>
       this.setDrawerOpen(false)
     )
+    this.socialDock?.addEventListener("click", () => this.setDrawerOpen(true))
   }
 
   private setDrawerOpen(open: boolean) {
@@ -88,6 +92,11 @@ export class LobbyIndicator {
     const icon = toggle?.querySelector("i")
     icon?.classList.toggle("ph-caret-right", open)
     icon?.classList.toggle("ph-caret-left", !open)
+    document.body.classList.toggle("social-drawer-open", open)
+    if (this.socialDock) {
+      this.socialDock.hidden = open
+      this.socialDock.setAttribute("aria-expanded", String(open))
+    }
     try {
       globalThis.localStorage?.setItem(
         "break-builder.social-drawer",
@@ -106,13 +115,7 @@ export class LobbyIndicator {
         }
       }
     ).__BREAK_BUILDER_SESSION__
-    if (
-      !this.element ||
-      !platform?.capabilities.social ||
-      this.botMode ||
-      this.replayMode ||
-      Session.isPracticeMode()
-    ) {
+    if (!this.element || !platform?.capabilities.social || this.replayMode) {
       this.updateDisplay()
       return
     }
@@ -125,6 +128,7 @@ export class LobbyIndicator {
       this.count = 0
       this.updateDisplay()
     })
+    this.updateDisplay()
   }
 
   setTableId(tableId: string | null | undefined): void {
@@ -168,6 +172,8 @@ export class LobbyIndicator {
     if (this.element) {
       this.element.setAttribute("aria-label", `社交大厅，${this.count} 人在线`)
     }
+    const dockCount = this.socialDock?.querySelector("strong")
+    if (dockCount) dockCount.textContent = `${this.count} 在线`
     if (this.challengePill) {
       this.challengePill.hidden = !this.challengerName
       const label =
@@ -199,6 +205,16 @@ export class LobbyIndicator {
             true
           )
         )
+        const visibility = document.createElement("button")
+        visibility.className = "game-social-visibility"
+        visibility.type = "button"
+        visibility.textContent = `在线可见：${this.visibilityLabel(
+          platform.user.visibility
+        )}`
+        visibility.addEventListener("click", () =>
+          globalThis.location.assign("/lobby")
+        )
+        this.drawerSelf.append(visibility)
       }
     }
     if (!this.drawerUsers) return
@@ -224,8 +240,13 @@ export class LobbyIndicator {
   }
 
   private userRow(name: string, visibility: string, self = false) {
-    const row = document.createElement("div")
+    const row = document.createElement(self ? "div" : "button")
     row.className = "game-social-user"
+    if (row instanceof HTMLButtonElement) {
+      row.type = "button"
+      row.title = "前往社交大厅联系球友"
+      row.addEventListener("click", () => globalThis.location.assign("/lobby"))
+    }
     const avatar = document.createElement("span")
     avatar.className = "game-social-avatar"
     avatar.textContent = name.trim().slice(0, 1).toUpperCase() || "B"

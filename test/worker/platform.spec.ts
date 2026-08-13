@@ -6,6 +6,7 @@ import {
   readJson,
   securityHeaders,
 } from "../../server/http"
+import { staticAsset } from "../../server/assets"
 
 describe("worker platform primitives", () => {
   it("uses stable cryptographic digests and constant-time comparisons", async () => {
@@ -54,5 +55,25 @@ describe("worker platform primitives", () => {
     expect(response.headers.get("content-security-policy")).not.toContain(
       "connect-src 'self' wss:"
     )
+  })
+
+  it("keeps extensionless page paths intact for Cloudflare Assets", async () => {
+    let forwardedPath = ""
+    const env = {
+      ASSETS: {
+        fetch: async (request: Request) => {
+          forwardedPath = new URL(request.url).pathname
+          return new Response("page")
+        },
+      },
+    }
+
+    const response = await staticAsset(
+      new Request("https://play.campus3ai.xyz/account"),
+      env as never
+    )
+
+    expect(response.status).toBe(200)
+    expect(forwardedPath).toBe("/account")
   })
 })

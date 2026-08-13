@@ -18,9 +18,9 @@ export const ENVIRONMENT_STYLES: readonly EnvironmentStyle[] = [
   {
     id: "spectra",
     name: "SPECTRA 光谱空间",
-    description: "纸白雾面空间与低饱和流光，专注而通透",
-    background: 0xf3f6fa,
-    intensity: 0.72,
+    description: "GLSL 虹彩流光、空间切面与柔雾，通透但不泛白",
+    background: 0xc9d7e4,
+    intensity: 0.56,
     starTint: [0.52, 0.79, 1],
     meteor: false,
     swatches: ["#f8fafc", "#dff7fb", "#77d5e6", "#b38cff"],

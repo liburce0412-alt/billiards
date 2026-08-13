@@ -315,7 +315,9 @@ describe("NineBall Rules", () => {
     expect(notifySpy.mock.calls[0][0].extra).to.contain(
       'data-notification-action="home"'
     )
-    expect(notifySpy.mock.calls[0][0].extra).to.contain("邀请 Opponent 再来一局")
+    expect(notifySpy.mock.calls[0][0].extra).to.contain(
+      "邀请 Opponent 再来一局"
+    )
     expect(notifySpy.mock.calls[0][0].extra).to.contain('data-rule="nineball"')
   })
 

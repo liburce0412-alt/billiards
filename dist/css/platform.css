@@ -51,7 +51,7 @@ a {
   z-index: var(--z-modal);
   overflow: auto;
   color: var(--color-ink);
-  background: var(--color-paper);
+  background: transparent;
   font-family: var(--font-body);
 }
 
@@ -61,6 +61,7 @@ a {
   width: 100%;
   height: 100%;
   pointer-events: auto;
+  opacity: 1;
 }
 
 .spectra-fx--fallback,
@@ -138,7 +139,7 @@ a {
   padding: 0.55rem 0.8rem;
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-capsule);
-  background: rgb(255 255 255 / 62%);
+  background: rgb(255 255 255 / 38%);
   color: var(--color-ink-2);
   font-size: var(--text-xs);
   backdrop-filter: blur(18px);
@@ -197,7 +198,7 @@ a {
     radial-gradient(circle at 72% 20%, rgb(255 190 139 / 72%), transparent 30%),
     radial-gradient(circle at 65% 90%, rgb(133 102 255 / 74%), transparent 36%),
     radial-gradient(circle at 92% 70%, rgb(53 225 234 / 76%), transparent 35%),
-    rgb(255 255 255 / 70%);
+    rgb(255 255 255 / 34%);
   box-shadow:
     var(--shadow-md),
     inset 0 1px 2px white;
@@ -280,11 +281,11 @@ a {
   padding: 1rem;
   border: 1px solid rgb(255 255 255 / 92%);
   border-radius: var(--radius-xl);
-  background: var(--surface-glass);
+  background: rgb(255 255 255 / 42%);
   box-shadow:
     var(--shadow-md),
     inset 0 1px 0 white;
-  backdrop-filter: blur(34px) saturate(125%);
+  backdrop-filter: blur(34px) saturate(145%);
 }
 
 .platform-auth-tabs {
@@ -380,7 +381,7 @@ a {
   padding: 0 0.85rem;
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 74%);
+  background: rgb(255 255 255 / 50%);
   transition:
     border-color var(--dur-short),
     box-shadow var(--dur-short),
@@ -540,7 +541,7 @@ a {
   border: 1px solid white;
   border-radius: var(--radius-xl);
   color: var(--color-ink);
-  background: rgb(255 255 255 / 90%);
+  background: rgb(255 255 255 / 66%);
   box-shadow: var(--shadow-md);
 }
 
@@ -606,7 +607,7 @@ a {
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-capsule);
   color: var(--color-ink);
-  background: var(--surface-glass);
+  background: rgb(255 255 255 / 42%);
   text-decoration: none;
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(20px);

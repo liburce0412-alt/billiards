@@ -66,9 +66,13 @@ export class MotionWatchdog {
 
   constructor(private readonly timeoutMs = 45_000) {}
 
+  reset(): void {
+    this.movingSince = undefined
+  }
+
   update(moving: boolean, now: number): boolean {
     if (!moving) {
-      this.movingSince = undefined
+      this.reset()
       return false
     }
     this.movingSince ??= now
