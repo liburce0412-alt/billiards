@@ -5,6 +5,7 @@ type MemberRole = "host" | "player" | "spectator"
 type GameAttachment = {
   userId: string
   displayName: string
+  avatarUrl: string | null
   memberRole: MemberRole
   connectedAt: number
 }
@@ -77,6 +78,7 @@ export class GameRoom extends DurableObject<PlatformEnv> {
     const attachment: GameAttachment = {
       userId,
       displayName,
+      avatarUrl: request.headers.get("X-Platform-Avatar"),
       memberRole,
       connectedAt: Date.now(),
     }
@@ -237,6 +239,7 @@ export class GameRoom extends DurableObject<PlatformEnv> {
     return [...users.values()].map((member) => ({
       userId: member.userId,
       displayName: member.displayName,
+      avatarUrl: member.avatarUrl,
       role: member.memberRole,
     }))
   }

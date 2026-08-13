@@ -19,7 +19,12 @@ import { RuleFactory } from "../controller/rules/rulefactory"
 import { ThreeCushionConfig } from "../utils/threecushionconfig"
 import { Menu } from "../view/menu"
 import { Comment } from "../view/comment"
-import { Hud } from "../view/hud"
+import {
+  Hud,
+  HudConnectionState,
+  HudPlayerKind,
+  MatchHudPresentation,
+} from "../view/hud"
 import { NotificationEvent } from "../events/notificationevent"
 import { LobbyIndicator } from "../view/lobbyindicator"
 import { MessageRelay } from "../network/client/messagerelay"
@@ -97,6 +102,17 @@ export class Container {
     p2: 0,
   }
   private hudActivePlayer: ActivePlayer = 0
+  private hudContext: {
+    ruleLabel: string
+    targetLabel?: string
+    playerAvatarUrl?: string | null
+    opponentAvatarUrl?: string | null
+    playerKind: HudPlayerKind
+    opponentKind: HudPlayerKind
+    playerDetail?: string
+    opponentDetail?: string
+    connection: HudConnectionState
+  }
   private wasReplay: boolean = false
   private readonly motionWatchdog = new MotionWatchdog()
   readonly diagnostics = new RuntimeDiagnostics()
@@ -132,6 +148,12 @@ export class Container {
     this.examMode = config.examMode ?? false
     this.isSinglePlayer = isSinglePlayer
     this.rules = RuleFactory.create(ruletype, this)
+    this.hudContext = {
+      ruleLabel: this.ruleLabel(ruletype ?? "nineball"),
+      playerKind: "human",
+      opponentKind: "human",
+      connection: isSinglePlayer ? "local" : "connected",
+    }
     this.table = this.rules.table()
     this.view = new View(element, this.table, assets)
     this.view.onCameraInteraction = () => {
@@ -247,6 +269,94 @@ export class Container {
   setHudActivePlayer(active: ActivePlayer) {
     this.hudActivePlayer = active
     this.hud.setActivePlayer(active)
+  }
+
+  private ruleLabel(ruleType: string): string {
+    return (
+      {
+        eightball: "八球",
+        nineball: "九球",
+        fourball: "四球追分",
+        snooker: "斯诺克",
+        threecushion: "三库",
+        sagu: "四球",
+        "threecushion-drill": "三库训练",
+      }[ruleType] ?? "比赛"
+    )
+  }
+
+  setHudContext(context: Partial<Container["hudContext"]>) {
+    this.hudContext = { ...this.hudContext, ...context }
+    this.updateScoreHud(
+      this.hudScores.p1,
+      this.hudScores.p2,
+      Session.getInstance().currentBreak,
+      this.hudActivePlayer
+    )
+  }
+
+  setHudConnectionState(connection: HudConnectionState) {
+    if (this.hudContext.connection === connection) return
+    this.setHudContext({ connection })
+  }
+
+  private hudPresentation(
+    p1: number,
+    p2: number,
+    names: { p1Name?: string; p2Name?: string },
+    b: number,
+    p1Star: boolean,
+    p2Star: boolean,
+    active: ActivePlayer
+  ): MatchHudPresentation {
+    const session = Session.getInstance()
+    const mySlot = session.playerIndex === 1 ? 2 : 1
+    const firstIsMe = mySlot === 1
+    const playerDetail = this.hudContext.playerDetail
+    const opponentDetail = this.hudContext.opponentDetail
+    const connection = this.hudContext.connection
+    let playerOneConnection: HudConnectionState = connection
+    if (!firstIsMe && this.hudContext.opponentKind === "ai") {
+      playerOneConnection = "local"
+    }
+    const playerTwoKind = firstIsMe
+      ? this.hudContext.opponentKind
+      : this.hudContext.playerKind
+    let playerTwoConnection: HudConnectionState = connection
+    if (playerTwoKind === "ai") playerTwoConnection = "local"
+    return {
+      playerOne: {
+        name: names.p1Name ?? "玩家一",
+        score: p1,
+        avatarUrl: firstIsMe
+          ? this.hudContext.playerAvatarUrl
+          : this.hudContext.opponentAvatarUrl,
+        kind: firstIsMe
+          ? this.hudContext.playerKind
+          : this.hudContext.opponentKind,
+        detail: firstIsMe ? playerDetail : opponentDetail,
+        connection: playerOneConnection,
+        scoreStar: p1Star ? "after" : undefined,
+      },
+      playerTwo: {
+        name: names.p2Name ?? "玩家二",
+        score: p2,
+        avatarUrl: firstIsMe
+          ? this.hudContext.opponentAvatarUrl
+          : this.hudContext.playerAvatarUrl,
+        kind: firstIsMe
+          ? this.hudContext.opponentKind
+          : this.hudContext.playerKind,
+        detail: firstIsMe ? opponentDetail : playerDetail,
+        connection: playerTwoConnection,
+        scoreStar: p2Star ? "before" : undefined,
+      },
+      ruleLabel: this.hudContext.ruleLabel,
+      targetLabel: this.hudContext.targetLabel,
+      turnLabel: active ? "当前回合" : "等待开球",
+      activePlayer: active,
+      breakScore: b,
+    }
   }
 
   initialiseLocalMatch() {
@@ -473,17 +583,40 @@ export class Container {
     const p1Star = isSagu && orderedScores.p1 === p1Target - 1
     const p2Star = isSagu && orderedScores.p2 === p2Target - 1
 
-    this.hud.updateScores(
-      orderedScores.p1,
-      orderedScores.p2,
-      orderedNames.p1Name,
-      orderedNames.p2Name,
-      hideScore ? 0 : b,
-      hideScore,
-      p1Star,
-      p2Star
-    )
-    this.setHudActivePlayer(active ?? this.inferActivePlayer())
+    const activePlayer = active ?? this.inferActivePlayer()
+    if (hideScore) {
+      this.hud.updateScores(
+        orderedScores.p1,
+        orderedScores.p2,
+        orderedNames.p1Name,
+        orderedNames.p2Name,
+        0,
+        true
+      )
+    } else {
+      this.hud.updateScores(
+        orderedScores.p1,
+        orderedScores.p2,
+        orderedNames.p1Name,
+        orderedNames.p2Name,
+        b,
+        false,
+        p1Star,
+        p2Star
+      )
+      this.hud.updatePresentation(
+        this.hudPresentation(
+          orderedScores.p1,
+          orderedScores.p2,
+          orderedNames,
+          b,
+          p1Star,
+          p2Star,
+          activePlayer
+        )
+      )
+    }
+    this.setHudActivePlayer(activePlayer)
   }
 
   sendScoreUpdate(p1: number, p2: number, b: number, active?: ActivePlayer) {

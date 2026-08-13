@@ -6,7 +6,7 @@ export class CameraTop {
   static readonly aspectLimit = 1.78
   static readonly portrait = 0.95
   static readonly fov = 20
-  static zoomFactor = 1
+  static zoomFactor = 0.94
 
   private static lastFov: number
   private static lastZoom: number

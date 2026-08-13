@@ -380,6 +380,9 @@ async function gameSocket(request: Request, env: PlatformEnv, roomId: string) {
     profile.display_name
   )
   headers.set("X-Platform-Member-Role", member.member_role)
+  if (profile.avatar_key) {
+    headers.set("X-Platform-Avatar", `/media/avatar/${session.user.id}`)
+  }
   return env.GAME_ROOMS.getByName(roomId).fetch(
     new Request(request, { headers })
   )

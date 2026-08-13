@@ -25,7 +25,7 @@ export class Camera {
     Camera.defaultHeight = R * 13
     Camera.defaultDistance = R * 15
     Camera.defaultFovOffset = 0
-    CameraTop.zoomFactor = 1
+    CameraTop.zoomFactor = 0.94
 
     if (ruleType === "threecushion" || ruleType === "sagu") {
       Camera.defaultHeight = R * 23
@@ -170,8 +170,8 @@ export class Camera {
       // flat plan view. Pull the eye towards the player and lower it just
       // enough to reveal the front silver/graphite skirt while preserving the
       // full-table aiming overview.
-      targetPosition.y -= R * 12.5
-      targetPosition.z *= 1.045
+      targetPosition.y -= R * 11
+      targetPosition.z *= 0.98
     }
     this.camera.position.lerp(
       targetPosition,

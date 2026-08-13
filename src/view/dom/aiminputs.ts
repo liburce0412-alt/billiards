@@ -10,6 +10,7 @@ import { AngleInput } from "./angleinput"
 import { maxPower } from "../../model/physics/constants"
 import { localizeText } from "../../utils/locale"
 import { LiquidGlassFx } from "../liquidglassfx"
+import { PowerArcRenderer } from "../powerarcrenderer"
 
 export const DEFAULT_SHOT_CLOCK_MS = 35000
 export const SHOT_CLOCK_CRITICAL_MS = 7000
@@ -57,6 +58,11 @@ export class AimInputs {
   private powerPointerId?: number
   private powerBeforeGesture = 0
   private powerGestureCancelled = false
+  private readonly powerArcRenderer: PowerArcRenderer | undefined
+  private readonly gameOverflowToggle = id(
+    "gameOverflowToggle"
+  ) as HTMLButtonElement | null
+  private readonly gameOverflowMenu = id("gameOverflowMenu")
 
   constructor(container) {
     this.container = container
@@ -71,6 +77,9 @@ export class AimInputs {
     this.cueTiltElement = id("cueTilt") as AngleInput
     this.cueHitElement = id("cueHit") as HTMLButtonElement
     this.repositionCueBallElement = id("repositionCueBall") as HTMLButtonElement
+    this.powerArcRenderer = PowerArcRenderer.mount(
+      this.powerSliderContainerElement
+    )
     if (this.cueHitElement) {
       this.timeoutButton = new TimeoutButton(this.cueHitElement, {
         duration: shotClockDuration(location.search),
@@ -111,7 +120,12 @@ export class AimInputs {
       "pointerdown",
       this.powerPointerDown
     )
+    this.powerSliderContainerElement?.addEventListener(
+      "keydown",
+      this.powerKeyDown
+    )
     this.shotDockToggleElement?.addEventListener("click", this.toggleDock)
+    this.gameOverflowToggle?.addEventListener("click", this.toggleGameOverflow)
     document
       .querySelectorAll<HTMLElement>("[data-control-target]")
       .forEach((control) => {
@@ -338,6 +352,11 @@ export class AimInputs {
       if (this.cuePowerValueElement) {
         this.cuePowerValueElement.value = Math.round(percent).toString()
       }
+      this.powerSliderContainerElement?.setAttribute(
+        "aria-valuenow",
+        Math.round(percent).toString()
+      )
+      this.powerArcRenderer?.setValue(Number(this.cuePowerElement.value))
     }
   }
 
@@ -480,6 +499,7 @@ export class AimInputs {
     if (this.cuePowerValueElement) {
       this.cuePowerValueElement.value = Math.round(percent).toString()
     }
+    this.powerArcRenderer?.setValue(val)
   }
 
   private restoreDockState() {
@@ -525,6 +545,36 @@ export class AimInputs {
       icon?.classList.toggle("ph-caret-up", collapsed)
       icon?.classList.toggle("ph-caret-down", !collapsed)
     }
+  }
+
+  private toggleGameOverflow = (event: Event) => {
+    event.stopPropagation()
+    if (!this.gameOverflowMenu || !this.gameOverflowToggle) return
+    const opening = this.gameOverflowMenu.hidden
+    this.gameOverflowMenu.hidden = !opening
+    this.gameOverflowToggle.setAttribute("aria-expanded", String(opening))
+  }
+
+  private powerKeyDown = (event: KeyboardEvent) => {
+    if (this.controlsDisabled || !this.cuePowerElement) return
+    if (event.key === "Escape" && this.powerPointerId !== undefined) {
+      event.preventDefault()
+      this.cancelPowerGesture()
+      return
+    }
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return
+    event.preventDefault()
+    const direction = event.key === "ArrowRight" ? 1 : -1
+    const step = event.shiftKey ? 0.05 : 0.01
+    const value = Math.max(
+      0,
+      Math.min(1, Number(this.cuePowerElement.value) + direction * step)
+    )
+    this.cuePowerElement.value = value.toFixed(2)
+    this.container.table.cue.setPower(value)
+    this.updatePowerProgress()
+    this.container.lastEventTime = performance.now()
+    this.container.sendAimPreview()
   }
 
   private powerPointerDown = (event: PointerEvent) => {
@@ -574,14 +624,17 @@ export class AimInputs {
       ? "cancel"
       : "charging"
     if (this.powerGestureCancelled) return
-    const inset = Math.min(44, rect.width * 0.08)
-    const value = Math.max(
-      0,
-      Math.min(
-        1,
-        (event.clientX - rect.left - inset) / (rect.width - inset * 2)
+    const value =
+      this.powerArcRenderer
+        ?.getGeometry()
+        .valueFromPointer(
+          event.clientX - rect.left,
+          event.clientY - rect.top
+        ) ??
+      Math.max(
+        0,
+        Math.min(1, (event.clientX - rect.left) / Math.max(1, rect.width))
       )
-    )
     this.cuePowerElement.value = value.toFixed(2)
     this.container.table.cue.setPower(value)
     this.updatePowerProgress()

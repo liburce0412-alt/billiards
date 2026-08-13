@@ -10,9 +10,21 @@ type GameSocketMessage =
       type: "game.resync"
       events: Array<{ seq: number; event: unknown }>
     }
-  | { type: "room.joined"; lastSeq: number }
+  | {
+      type: "room.joined"
+      lastSeq: number
+      members?: GameRoomMember[]
+    }
+  | { type: "room.member_changed"; members?: GameRoomMember[] }
   | { type: "room.revoked"; reason: string }
   | { type: string }
+
+export interface GameRoomMember {
+  userId: string
+  displayName: string
+  avatarUrl?: string | null
+  role: "host" | "player" | "spectator"
+}
 
 export class MessagingMessageRelay implements MessageRelay {
   private socket: WebSocket | null = null
@@ -23,6 +35,7 @@ export class MessagingMessageRelay implements MessageRelay {
   private reconnectTimer: ReturnType<typeof globalThis.setTimeout> | null = null
   private lastSeq = 0
   private clientSeq = 0
+  onMembersChanged?: (members: GameRoomMember[]) => void
 
   constructor(private readonly roomId?: string) {}
 
@@ -108,6 +121,12 @@ export class MessagingMessageRelay implements MessageRelay {
       }
     } else if (message.type === "room.revoked") {
       this.stopped = true
+    } else if (
+      (message.type === "room.joined" ||
+        message.type === "room.member_changed") &&
+      "members" in message
+    ) {
+      this.onMembersChanged?.(message.members ?? [])
     }
   }
 

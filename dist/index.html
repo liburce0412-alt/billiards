@@ -294,7 +294,6 @@
       </dialog>
     </div>
     <div id="panel" class="panel shot-dock" data-dock-state="expanded">
-      <div class="shot-dock__glass-orbit" aria-hidden="true"></div>
       <button
         id="shotDockToggle"
         class="shot-dock__toggle"
@@ -347,14 +346,20 @@
           </div>
         </div>
       </div>
-      <div id="powerSliderContainer" class="powerSliderContainer">
+      <div
+        id="powerSliderContainer"
+        class="powerSliderContainer"
+        role="slider"
+        tabindex="0"
+        aria-label="击球力度"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="65"
+      >
         <div class="power-arc" aria-hidden="true">
-          <div class="power-track"></div>
-          <div class="power-progress"></div>
-          <div class="power-ticks power-ticks--major"></div>
-          <div class="power-ticks power-ticks--minor"></div>
           <div class="power-arc__labels">
-            <span>25</span><span>50</span><span>75</span><span>100</span>
+            <span>0</span><span>25</span><span>50</span><span>75</span
+            ><span>100</span>
           </div>
           <div class="power-knob"></div>
         </div>
@@ -394,6 +399,7 @@
         <div class="shot-radial__orbit" aria-hidden="true"></div>
         <button
           class="shot-radial__item shot-radial__item--aim"
+          data-orbit="aim"
           type="button"
           data-control-target="ballContainer"
           aria-label="精确瞄准与母球击点"
@@ -403,6 +409,7 @@
         </button>
         <button
           class="shot-radial__item shot-radial__item--spin"
+          data-orbit="spin"
           type="button"
           data-control-target="ballContainer"
           aria-label="调整母球旋转"
@@ -412,6 +419,7 @@
         </button>
         <button
           class="shot-radial__item shot-radial__item--elevation"
+          data-orbit="elevation"
           type="button"
           data-control-target="openElevation"
           aria-label="调整球杆俯仰"
@@ -421,6 +429,7 @@
         </button>
         <button
           class="shot-radial__item shot-radial__item--camera"
+          data-orbit="camera"
           type="button"
           data-control-target="camera"
           aria-label="切换视角"
@@ -450,7 +459,28 @@
         </button>
         <i class="ph ph-cloud-check" aria-hidden="true"></i>
       </div>
-      <div class="outerMenu">
+    </div>
+    <div class="outerMenu game-utility-bar">
+      <button
+        id="menu"
+        class="menuButton game-settings-button"
+        title="设置"
+        type="button"
+        aria-label="打开游戏设置"
+      >
+        <i class="ph ph-gear-six" aria-hidden="true"></i>
+      </button>
+      <button
+        id="gameOverflowToggle"
+        class="menuButton game-overflow-toggle"
+        type="button"
+        aria-label="更多比赛操作"
+        aria-controls="gameOverflowMenu"
+        aria-expanded="false"
+      >
+        <i class="ph ph-dots-three" aria-hidden="true"></i>
+      </button>
+      <div id="gameOverflowMenu" class="game-overflow-menu" hidden>
         <button
           class="menuButton half-height"
           title="聊天"
@@ -521,6 +551,8 @@
         >
           <i class="ph ph-chart-line-up" aria-hidden="true"></i>
         </button>
+      </div>
+      <div class="game-control-proxies" hidden>
         <button
           class="menuButton half-height"
           title="选择球杆"
@@ -540,15 +572,6 @@
           <i class="ph ph-circles-three-plus" aria-hidden="true"></i>
         </button>
         <button
-          class="menuButton half-height"
-          title="帮助"
-          id="menu"
-          type="submit"
-          aria-label="打开帮助"
-        >
-          <i class="ph ph-gear-six" aria-hidden="true"></i>
-        </button>
-        <button
           class="menuButton"
           title="点击切换俯视；右键拖动自由旋转；滚轮缩放"
           id="camera"
@@ -566,36 +589,45 @@
       <div class="nav-btn btn-right" id="trayRight">❯</div>
     </div>
     <div class="tray-score-container">
+      <div class="hud-system-status" aria-label="游戏状态">
+        <button type="button" data-control-target="menu" aria-label="打开菜单">
+          <i class="ph ph-list" aria-hidden="true"></i>
+        </button>
+        <span
+          ><i class="ph ph-wifi-high" aria-hidden="true"></i
+          ><b id="hudNetworkState">就绪</b></span
+        >
+      </div>
       <div id="p1Score" class="p1Score"></div>
       <div id="p2Score" class="p2Score"></div>
-    </div>
-    <div id="lobbyContainer">
-      <div class="challenge-row">
-        <span id="challengePill" class="challenge-pill" hidden>
-          <span class="challenge-label"></span>
-          <button id="challengeAccept">接受</button>
-          <button id="challengeDecline">拒绝</button>
-        </span>
+      <div id="lobbyContainer">
+        <div class="challenge-row">
+          <span id="challengePill" class="challenge-pill" hidden>
+            <span class="challenge-label"></span>
+            <button id="challengeAccept">接受</button>
+            <button id="challengeDecline">拒绝</button>
+          </span>
+        </div>
+        <a
+          href="/lobby"
+          class="pill"
+          title="联机大厅"
+          id="lobbyOverlay"
+          aria-label="联机大厅"
+          ><i class="ph ph-users-three" aria-hidden="true"></i
+          ><span class="lobby-count"></span
+        ></a>
+        <button
+          id="gameSocialToggle"
+          class="game-social-toggle"
+          type="button"
+          aria-label="展开局内社交"
+          aria-expanded="false"
+          aria-controls="gameSocialDrawer"
+        >
+          <i class="ph ph-caret-left" aria-hidden="true"></i>
+        </button>
       </div>
-      <a
-        href="/lobby"
-        class="pill"
-        title="联机大厅"
-        id="lobbyOverlay"
-        aria-label="联机大厅"
-        ><i class="ph ph-users-three" aria-hidden="true"></i
-        ><span class="lobby-count"></span
-      ></a>
-      <button
-        id="gameSocialToggle"
-        class="game-social-toggle"
-        type="button"
-        aria-label="展开局内社交"
-        aria-expanded="false"
-        aria-controls="gameSocialDrawer"
-      >
-        <i class="ph ph-caret-left" aria-hidden="true"></i>
-      </button>
     </div>
     <aside
       id="gameSocialDrawer"

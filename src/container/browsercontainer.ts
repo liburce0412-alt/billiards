@@ -16,7 +16,10 @@ import { SnookerConfig } from "../utils/snookerconfig"
 import { ThreeCushionConfig } from "../utils/threecushionconfig"
 import { Session } from "../network/client/session"
 import { MessageRelay } from "../network/client/messagerelay"
-import { MessagingMessageRelay } from "../network/client/messagingmessagerelay"
+import {
+  GameRoomMember,
+  MessagingMessageRelay,
+} from "../network/client/messagingmessagerelay"
 import { BotRelay } from "../network/bot/botrelay"
 import { ScoreReporter } from "../network/client/scorereporter"
 import { BeginEvent } from "../events/beginevent"
@@ -40,6 +43,7 @@ import {
   loadRoomState,
   saveRoomState,
 } from "../network/client/roomstate"
+import { verifiedGameIdentity } from "../platform/gameidentity"
 
 /**
  * Integrate game container into HTML page
@@ -103,11 +107,13 @@ export class BrowserContainer {
     "connected"
   constructor(canvas3d, params) {
     this.now = Date.now()
+    const platformIdentity = verifiedGameIdentity()
     this.playername =
       params.get("userName") ??
       params.get("name") ??
       params.get("playername") ??
-      "Anon"
+      platformIdentity?.displayName ??
+      "玩家"
     this.tableId = params.get("tableId") ?? "default"
     this.clientId =
       params.get("userId") ?? params.get("clientId") ?? `G_${getUID()}`
@@ -203,7 +209,57 @@ export class BrowserContainer {
       isSinglePlayer: !this.wss && !this.botMode && !this.replay,
       examMode: this.examMode,
     }
-    return new Container(config)
+    const container = new Container(config)
+    const identity = verifiedGameIdentity()
+    const botLevel = Math.max(
+      1,
+      Math.min(
+        11,
+        Number.parseInt(
+          new URLSearchParams(globalThis.location.search).get("botLevel") ?? "1"
+        ) || 1
+      )
+    )
+    container.setHudContext(
+      this.initialHudContext(identity?.avatarUrl, effectiveRuletype, botLevel)
+    )
+    return container
+  }
+
+  private initialHudContext(
+    avatarUrl: string | null | undefined,
+    ruleType: string,
+    botLevel: number
+  ) {
+    let playerKind: "human" | "local" = "human"
+    let playerDetail = "本地玩家"
+    let opponentKind: "human" | "ai" | "local" = "human"
+    let opponentDetail = "本地玩家"
+    if (this.localVersus) {
+      playerKind = "local"
+      playerDetail = "同设备玩家"
+      opponentKind = "local"
+      opponentDetail = "同设备玩家"
+    } else if (this.botMode) {
+      opponentKind = "ai"
+      opponentDetail = `AI 难度 ${botLevel}/11`
+    } else if (this.wss) {
+      playerDetail = "已验证在线玩家"
+      opponentDetail = "在线对手"
+    }
+    let targetLabel: string | undefined
+    if (ruleType === "threecushion" || ruleType === "sagu") {
+      targetLabel = `先到 ${ThreeCushionConfig.raceTo} 分`
+    }
+    return {
+      playerAvatarUrl: avatarUrl,
+      playerKind,
+      playerDetail,
+      opponentKind,
+      opponentDetail,
+      connection: this.wss ? "connected" : "local",
+      targetLabel,
+    } as const
   }
 
   start() {
@@ -263,9 +319,26 @@ export class BrowserContainer {
   }
 
   private initMultiplayer(scoreReporter: ScoreReporter) {
-    this.messageRelay = new MessagingMessageRelay(this.wss ?? undefined)
+    const relay = new MessagingMessageRelay(this.wss ?? undefined)
+    this.messageRelay = relay
     this.container = this.createContainer(scoreReporter)
+    relay.onMembersChanged = (members) => this.updateHudRoomMembers(members)
     this.container.init()
+  }
+
+  private updateHudRoomMembers(members: GameRoomMember[]) {
+    const opponent = members.find(
+      (member) => member.userId !== this.clientId && member.role !== "spectator"
+    )
+    if (!opponent) return
+    const session = Session.getInstance()
+    session.opponentName = opponent.displayName
+    session.setOpponentClientId(opponent.userId)
+    this.container.setHudContext({
+      opponentAvatarUrl: opponent.avatarUrl,
+      opponentDetail: "在线对手",
+      connection: "connected",
+    })
   }
 
   onAssetsReady() {
@@ -799,6 +872,7 @@ export class BrowserContainer {
     if (!this.wss || typeof globalThis.addEventListener !== "function") return
     globalThis.addEventListener("offline", () => {
       this.connectionState = "offline"
+      this.container.setHudConnectionState("offline")
       this.container.notifyLocal(
         {
           type: "Info",
@@ -810,6 +884,7 @@ export class BrowserContainer {
     })
     globalThis.addEventListener("online", () => {
       this.connectionState = "reconnecting"
+      this.container.setHudConnectionState("reconnecting")
       this.container.notifyLocal(
         {
           type: "Info",
@@ -938,6 +1013,7 @@ export class BrowserContainer {
   private markNetworkConnected(): void {
     if (this.connectionState !== "reconnecting") return
     this.connectionState = "connected"
+    this.container.setHudConnectionState("connected")
     this.container.notifyLocal(
       {
         type: "Info",

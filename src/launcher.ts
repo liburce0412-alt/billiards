@@ -24,6 +24,7 @@ import {
 import { apiJson, type PlatformMe } from "./platform/api"
 import { accountChip, approvalLabel, platformGate } from "./platform/shell"
 import { mountSpectraFx } from "./platform/fx"
+import { publishVerifiedGameIdentity } from "./platform/gameidentity"
 
 const storageKey = "billiards-launcher-selection"
 
@@ -673,6 +674,7 @@ async function syncLauncherPersonalisation(
 async function bootstrap() {
   const session = await platformGate()
   if (!session) return
+  publishVerifiedGameIdentity(session)
   const params = new URLSearchParams(globalThis.location.search)
   if (shouldShowLauncher(params)) {
     initialiseLauncher(params, session)

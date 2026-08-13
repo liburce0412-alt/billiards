@@ -88,3 +88,13 @@ final result: passed
 - Fresh-runtime check: passed. A new game tab loaded the production build locally with zero console errors; the motion recovery watchdog now resets after a recovery so it cannot emit the same recovery repeatedly.
 - Global material: passed. Launcher, auth, account/personalization, lobby/chat, admin, and rules now share one WebGL2 colored volumetric light-fog renderer per page; translucent panels reveal clearly visible warm orange, cyan, and violet fog while preserving light-theme contrast. Reduced-motion and WebGL fallback behavior remain present.
 - Asset fidelity: passed. Two dedicated HUD portrait assets were generated, cropped, optimized to WebP, and stored in `dist/assets/`; letter-avatar placeholders were removed from the match plate.
+
+## 2026-08-13 match HUD and control-geometry pass
+
+- References: `codex-clipboard-e6280d85-b64f-4a2b-be21-5e4b80155e8a.png` for the matchup bar and `codex-clipboard-e7567c08-d271-4517-95ed-8c3f9655883f.png` for the bowed power rail and lower-right disc.
+- Match HUD: passed. The bar now has system status, two readable player blocks, a central `0 – 0` scoreline with real rule/turn state, and the online entry. Fixed `LV.28`, invented ranks, and fake latency were removed. Platform avatar/name, AI name and actual `botLevel/11`, and optional server-stamped online avatar data are used.
+- Power rail: passed. `PowerArcGeometry` is the shared source for WebGL2/GLSL rendering, the DOM readout/drag block and pointer input. Canvas fallback remains available for low quality or unavailable WebGL. Arrow keys adjust by 1%, Shift+Arrow by 5%, Escape cancels an active gesture, and release still strikes.
+- Operation disc: passed. The independent glass orbit was removed; one 380 px liquid-glass disc now owns the inner cue disc and four polar controls. Settings and low-frequency overflow actions were moved above the play field, outside the disc.
+- Structural overlap: passed. At 1680×936 and 2048×1080, radial/quick-loadout/menu/power pairwise overlap areas are all `0`. At 1440×900 and 1280×720 the optional quick-loadout collapses and the remaining areas are `0`; at 390×844 the compact control set also reports `0`.
+- Responsive states: passed at 2048×1080, 1680×936, 1440×900, 1280×720 and 390×844. Both expanded/collapsed dock transitions and the overflow menu were exercised in the real page. Mobile retains both names, central score and turn state.
+- Runtime: passed. The fresh 1680×936 game run produced no console warnings/errors. Real HUD text remained present at every viewport and the forbidden fabricated metadata scan stayed false.
