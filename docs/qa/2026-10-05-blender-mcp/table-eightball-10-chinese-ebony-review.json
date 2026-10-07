@@ -1,0 +1,12 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-eightball-10-chinese-ebony-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.5306249+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "56da78d3759a6cf01912a5937534316247e581aa0e8f24599d70ba6e7c15f1fa"
+}

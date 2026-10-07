@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "sha256": "b7eaabb96014bc6a4c8922486f92ca292bf68f7b88ba773db3a1e8033214b718",
+  "reviewer": "three_asset_inventory",
+  "reviewedAt": "2026-10-05T18:01:59.3391048+08:00",
+  "evidence": [
+    "environment-nebula-angles-0.png",
+    "environment-nebula-detail-0.png"
+  ],
+  "scope": "Actual Blender four-angle architecture and one theme-specific close-up, excluding runtime shader/phone acceptance",
+  "notes": [
+    "Actually rebuilt via MCP and re-inspected in four views plus telescope close-up. Replaced two spherical gimbals with smooth 64-segment spheres and enlarged the elevation ring to clear the housing; earlier sharp silver intersection slivers are gone.",
+    "Instrument barrels retain a faceted manufactured outline. Runtime nebula shader and energy animation are outside Blender evidence."
+  ]
+}

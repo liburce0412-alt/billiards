@@ -3,6 +3,7 @@ const ZH_TEXT: Record<string, string> = {
   Continue: "继续",
   Restore: "恢复",
   "Place\nBall": "摆放\n母球",
+  "Confirm cue ball": "确认母球",
   FOUL: "犯规",
   "Ball in hand": "自由球",
   "Cue ball potted": "母球落袋",

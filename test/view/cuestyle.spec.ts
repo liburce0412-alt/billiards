@@ -1,4 +1,5 @@
 import {
+  CUE_STYLES,
   CUE_STYLE_STORAGE_KEY,
   CUSTOM_CUE_STYLE_ID,
   CUSTOM_CUE_STYLE_STORAGE_KEY,
@@ -15,6 +16,17 @@ describe("cue customisation", () => {
   beforeEach(() => {
     localStorage.removeItem(CUE_STYLE_STORAGE_KEY)
     localStorage.removeItem(CUSTOM_CUE_STYLE_STORAGE_KEY)
+  })
+
+  it("offers ten authored cue presets with the four showcase additions", () => {
+    expect(CUE_STYLES).toHaveLength(10)
+    expect(CUE_STYLES.slice(-4).map((style) => style.id)).toEqual([
+      "porcelain-wave",
+      "amber-tiger",
+      "aurora-prism",
+      "holo-laser",
+    ])
+    expect(cueStyleById("holo-laser").finish).toBe("holographic")
   })
 
   it("persists a colour combination as the custom cue", () => {

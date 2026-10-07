@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:34:13.292782+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 16:34:13 | INFO: Data are loaded, start creating Blender stuff\n16:34:13 | INFO: Blender create Mesh node 0\n16:34:13 | INFO: Blender create Mesh node 1\n16:34:13 | INFO: Blender create Mesh node 2\n16:34:13 | INFO: Blender create Mesh node 3\n16:34:13 | INFO: Blender create Mesh node 4\n16:34:13 | INFO: Blender create Mesh node 5\n16:34:13 | INFO: Blender create Mesh node 6\n16:34:13 | INFO: glTF import finished in 0.05s\nclub-dome 2143 [49.779998779296875, 49.780006408691406, 49.780006408691406] ['legacyNode']\nclub-0-surface 108 [10.085739135742188, 3.1517937183380127, 9.627297401428223] ['legacyNode']\nclub-1-surface 144 [10.085739135742188, 4.492738723754883, 7.151706218719482] ['legacyNode']\nclub-2-surface 2484 [9.741907119750977, 4.297900676727295, 7.077209949493408] ['legacyNode']\nclub-3-surface 51336 [9.53560733795166, 4.2291340827941895, 7.231934547424316] ['legacyNode']\nclub-4-surface 2664 [8.951093673706055, 3.7523536682128906, 6.186111927032471] ['legacyNode']\nclub-5-surface 576 [8.240507125854492, 0.704855740070343, 2.4412074089050293] ['legacyNode']\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 16:34:13 | INFO: Data are loaded, start creating Blender stuff\n16:34:13 | INFO: Blender create Mesh node 0\n16:34:13 | INFO: Blender create Mesh node 1\n16:34:13 | INFO: Blender create Mesh node 2\n16:34:13 | INFO: Blender create Mesh node 3\n16:34:13 | INFO: Blender create Mesh node 4\n16:34:13 | INFO: Blender create Mesh node 5\n16:34:13 | INFO: Blender create Mesh node 6\n16:34:13 | INFO: glTF import finished in 0.05s\nclub-dome 2143 [49.779998779296875, 49.780006408691406, 49.780006408691406] ['legacyNode']\nclub-0-surface 108 [10.085739135742188, 3.1517937183380127, 9.627297401428223] ['legacyNode']\nclub-1-surface 144 [10.085739135742188, 4.492738723754883, 7.151706218719482] ['legacyNode']\nclub-2-surface 2484 [9.741907119750977, 4.297900676727295, 7.077209949493408] ['legacyNode']\nclub-3-surface 51336 [9.53560733795166, 4.2291340827941895, 7.231934547424316] ['legacyNode']\nclub-4-surface 2664 [8.951093673706055, 3.7523536682128906, 6.186111927032471] ['legacyNode']\nclub-5-surface 576 [8.240507125854492, 0.704855740070343, 2.4412074089050293] ['legacyNode']\n"
+    },
+    "isError": false
+  }
+}

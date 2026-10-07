@@ -19,9 +19,15 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600&family=Tomorrow:wght@500;700&display=swap"
     />
     <link rel="stylesheet" href="css/rules.css" />
-    <script defer src="rules.js"></script>
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="vendor/phosphor/style.css" />
+    <link rel="stylesheet" href="css/platform.css" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="css/react-app.css" />
+    <script defer src="app.js"></script>
   </head>
-  <body>
+  <body class="app-platform-route">
+    <div id="appRoot"></div>
     <canvas class="rule-fx" aria-hidden="true"></canvas>
     <nav class="rule-rail" aria-label="规则页导航">
       <a class="rule-rail__brand" href="./">Break Builder</a>

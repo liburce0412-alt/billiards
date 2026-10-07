@@ -1,0 +1,31 @@
+{
+  "time": "2026-10-05T09:35:59.709268+00:00",
+  "tool": "look",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "image",
+        "mimeType": "image/png",
+        "annotations": null,
+        "meta": null,
+        "savedImage": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-10-05-blender-mcp\\table-snooker-5-chinese-ebony-angles-0.png"
+      },
+      {
+        "type": "text",
+        "text": "Tiles left to right, top to bottom: front, right, back, three_quarter. Framed 41 objects, 2.59 x 1.51 x 0.96 m across, centred at [-0.35, -0.17, -0.46].",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "sha256": "6d8ddc1d0b1bb0cc36cfd805bad270116aa8e5efb3aad5867d211aabe716ca31",
+  "reviewer": "three_asset_inventory",
+  "reviewedAt": "2026-10-05T17:49:06.8345345+08:00",
+  "evidence": [
+    "ball-pool-12-angles-0.png",
+    "ball-pool-12-number-0.png"
+  ],
+  "scope": "Blender sphere silhouette, colour/stripe boundaries and corrected printed number orientation",
+  "notes": [
+    "Four-angle sphere inspection plus final regenerated top number view were actually viewed. Number is readable with correct orientation after source texture flipY correction; no mirrored or inverted numeral remains.",
+    "Continuous sphere and number-disc/stripe boundaries; no visible holes. In-game rolling, lighting and phone frame rate are outside these static Blender views."
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "reviewedAt": "2026-10-05T17:29:24.3467480+08:00",
+  "scope": "Blender full-length shape plus listed close-up images",
+  "passed": true,
+  "sha256": "dd1ae1264eb3ceb3db6e2f51a37e8d401f6713cbf59be812aaabaabcd26f23c6",
+  "notes": [
+    "Four-angle full length view actually inspected: taper and color regions are coherent, shaft and butt have no visible breaks. Runtime hand alignment, chalk animation and phone appearance are outside this Blender review.",
+    "No microtexture close-up was captured for this individual variant; only full-length shape and palette approved."
+  ],
+  "reviewer": "three_asset_inventory",
+  "evidence": [
+    "cue-glacier-angles-0.png"
+  ]
+}

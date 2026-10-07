@@ -11,6 +11,7 @@ import { initDom } from "../view/dom"
 import { Vector3 } from "three"
 import { EventType } from "../../src/events/eventtype"
 import { Rack } from "../../src/utils/rack"
+import { PocketGeometry } from "../../src/view/pocketgeometry"
 
 initDom()
 
@@ -32,6 +33,36 @@ function initFourBall(): {
 
 describe("FourBallChase Rules", () => {
   afterEach(() => Session.reset())
+
+  it("keeps potted low balls out of play after a compact ball-in-hand handoff", () => {
+    const { container, rules } = initFourBall()
+    rules.tableGeometry()
+    const table = container.table
+    const nine = table.balls.find((ball) => ball.label === 9)!
+    for (const ball of table.balls) {
+      if (ball === table.cueball || ball === nine) continue
+      ball.pos.copy(PocketGeometry.pocketCenters[0].pos).setZ(-R * 5)
+      ball.state = State.InPocket
+    }
+    const handoff = table.shortSerialise()
+    table.updateFromShortSerialised(handoff)
+    table.halt()
+    expect(table.balls.filter((ball) => ball.onTable())).to.have.length(2)
+    expect(rules.nextCandidateBall()).to.equal(nine)
+    expect(
+      rules.foulReason([
+        Outcome.collision(table.cueball, nine, 1),
+        Outcome.cushion(nine, 1, 2),
+      ])
+    ).to.be.null
+    nine.state = State.InPocket
+    expect(
+      rules.foulReason([
+        Outcome.collision(table.cueball, nine, 1),
+        Outcome.pot(nine, 1, 2),
+      ])
+    ).to.be.null
+  })
 
   it("racks cue ball with 1, 2, 3 and 9", () => {
     const { container, rules } = initFourBall()

@@ -1,4 +1,4 @@
-import { id, getInput } from "../utils/dom"
+import { id } from "../utils/dom"
 
 /**
  * Generate SVG markup for a ball icon with a blue dot at the given angle.
@@ -25,45 +25,143 @@ function appendBallIcon(parent: HTMLElement, angleDeg: number) {
   if (svg) parent.append(svg)
 }
 
+export interface MatchChatMessage {
+  id?: string
+  senderId?: string | null
+  senderName: string
+  body: string
+  createdAt: number
+  isMine: boolean
+}
+
 export class Chat {
   chatoutput: HTMLElement | null
-  chatInput: HTMLElement | null
-  chatSend: HTMLElement | null
-  chatInputText: HTMLInputElement | null
-  send
-  constructor(send) {
+  private readonly toggle = id("matchChatToggle") as HTMLButtonElement | null
+  private readonly compose = id("matchChatCompose") as HTMLButtonElement | null
+  private readonly unread = id("matchChatUnread")
+  private readonly shell = document.querySelector<HTMLElement>(".chatarea")
+  private readonly seenIds = new Set<string>()
+  private unreadCount = 0
+  private readonly openComposer = () => {
+    const dialog = document.getElementById("inputTextDiv") as HTMLDialogElement
+    const input = document.getElementById("inputText") as HTMLInputElement
+    dialog?.showModal()
+    input?.focus()
+  }
+
+  constructor(_send: (message: string) => void) {
     this.chatoutput = id("chatoutput")
-    this.chatInputText = getInput("chatinputtext")
-    this.chatSend = id("chatsend")
-    this.chatSend?.addEventListener("click", this.sendClicked)
-    this.send = send
+    this.toggle?.addEventListener("click", this.toggleOpen)
+    this.compose?.addEventListener("click", this.openComposer)
+    this.close()
+    document.addEventListener("pointerdown", this.closeOnOutside)
+    document.addEventListener("keydown", this.closeOnEscape)
   }
 
-  sendClicked = (_) => {
-    this.send(this.chatInputText?.value)
-    this.showMessage(this.chatInputText?.value)
+  private close = () => {
+    if (this.shell) this.shell.dataset.chatState = "peek"
+    this.toggle?.setAttribute("aria-expanded", "false")
   }
 
-  showMessage(msg) {
-    if (!this.chatoutput || msg === undefined || msg === null) {
+  private closeOnOutside = (event: PointerEvent) => {
+    if (
+      event.target instanceof Node &&
+      !this.toggle?.contains(event.target) &&
+      !this.shell?.contains(event.target) &&
+      !document.getElementById("inputTextDiv")?.contains(event.target)
+    )
+      this.close()
+  }
+
+  private closeOnEscape = (event: KeyboardEvent) => {
+    if (event.key === "Escape") this.close()
+  }
+
+  showMessage(message: MatchChatMessage | string) {
+    if (!this.chatoutput || message === undefined || message === null) {
       this.updateScroll()
       return
     }
+    const item: MatchChatMessage =
+      typeof message === "string"
+        ? {
+            senderName: "系统",
+            body: message,
+            createdAt: Date.now(),
+            isMine: false,
+          }
+        : message
+    if (item.id && this.seenIds.has(item.id)) return
+    if (item.id) this.seenIds.add(item.id)
 
-    if (msg.length > 2 && this.chatoutput.childNodes.length) {
-      this.chatoutput.appendChild(document.createElement("br"))
-    }
-    const ball = /^\[\[ball:(\d{1,3})\]\]$/.exec(msg)
+    const article = document.createElement("article")
+    article.className = "match-chat-message"
+    article.classList.toggle("is-mine", item.isMine)
+    const meta = document.createElement("header")
+    const sender = document.createElement("strong")
+    sender.textContent = item.isMine ? "我" : item.senderName
+    const time = document.createElement("time")
+    time.dateTime = new Date(item.createdAt).toISOString()
+    time.textContent = new Intl.DateTimeFormat("zh-CN", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(item.createdAt)
+    meta.append(sender, time)
+    const body = document.createElement("div")
+    body.className = "match-chat-message__body"
+    const text = item.body.trim().slice(0, 240)
+    const ball = /^\[\[ball:(\d{1,3})\]\]$/.exec(text)
     if (ball) {
-      appendBallIcon(this.chatoutput, Number(ball[1]))
+      appendBallIcon(body, Number(ball[1]))
     } else {
-      this.chatoutput.appendChild(document.createTextNode(msg.slice(0, 240)))
+      body.textContent = text
+    }
+    article.append(meta, body)
+    this.chatoutput.append(article)
+    while (this.chatoutput.childElementCount > 30) {
+      this.chatoutput.firstElementChild?.remove()
+    }
+    if (this.shell?.dataset.chatState !== "open" && !item.isMine) {
+      this.unreadCount += 1
+      this.updateUnread()
     }
     this.updateScroll()
+  }
+
+  private toggleOpen = () => {
+    if (!this.shell || !this.toggle) return
+    const open = this.shell.dataset.chatState !== "open"
+    this.shell.dataset.chatState = open ? "open" : "peek"
+    this.toggle.setAttribute("aria-expanded", String(open))
+    if (open) {
+      this.unreadCount = 0
+      this.updateUnread()
+      this.updateScroll()
+    }
+  }
+
+  private updateUnread() {
+    if (!this.unread) return
+    this.unread.hidden = this.unreadCount === 0
+    this.unread.textContent = String(Math.min(99, this.unreadCount))
   }
 
   updateScroll() {
     this.chatoutput &&
       (this.chatoutput.scrollTop = this.chatoutput.scrollHeight)
+  }
+
+  dispose() {
+    document.removeEventListener("pointerdown", this.closeOnOutside)
+    document.removeEventListener("keydown", this.closeOnEscape)
+    this.toggle?.removeEventListener("click", this.toggleOpen)
+    this.compose?.removeEventListener("click", this.openComposer)
+    if (this.shell) this.shell.dataset.chatState = "peek"
+    this.toggle?.setAttribute("aria-expanded", "false")
+    this.seenIds.clear()
+    this.unreadCount = 0
+    this.updateUnread()
+    this.chatoutput?.replaceChildren()
+    this.chatoutput = null
   }
 }

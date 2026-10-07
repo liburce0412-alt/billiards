@@ -1,0 +1,130 @@
+[
+  {
+    "environment": "spectra",
+    "render": {
+      "frame": 2305,
+      "calls": 256,
+      "triangles": 352612,
+      "points": 0,
+      "lines": 0
+    },
+    "robots": {
+      "activePlayer": 1,
+      "shotCount": 0,
+      "phase": "aim",
+      "drawCalls": 20
+    }
+  },
+  {
+    "environment": "galaxy",
+    "render": {
+      "frame": 2376,
+      "calls": 161,
+      "triangles": 249844,
+      "points": 0,
+      "lines": 1
+    },
+    "robots": {
+      "activePlayer": 1,
+      "shotCount": 0,
+      "phase": "aim",
+      "drawCalls": 20
+    }
+  },
+  {
+    "environment": "nebula",
+    "render": {
+      "frame": 2464,
+      "calls": 161,
+      "triangles": 257380,
+      "points": 0,
+      "lines": 1
+    },
+    "robots": {
+      "activePlayer": 1,
+      "shotCount": 0,
+      "phase": "aim",
+      "drawCalls": 20
+    }
+  },
+  {
+    "environment": "club",
+    "render": {
+      "frame": 2527,
+      "calls": 162,
+      "triangles": 263620,
+      "points": 0,
+      "lines": 0
+    },
+    "robots": {
+      "activePlayer": 1,
+      "shotCount": 0,
+      "phase": "aim",
+      "drawCalls": 20
+    }
+  },
+  {
+    "environment": "aurora-hall",
+    "render": {
+      "frame": 2610,
+      "calls": 248,
+      "triangles": 374702,
+      "points": 0,
+      "lines": 0
+    },
+    "robots": {
+      "activePlayer": 1,
+      "shotCount": 0,
+      "phase": "aim",
+      "drawCalls": 20
+    }
+  },
+  {
+    "environment": "sky-temple",
+    "render": {
+      "frame": 2692,
+      "calls": 156,
+      "triangles": 308736,
+      "points": 0,
+      "lines": 0
+    },
+    "robots": {
+      "activePlayer": 1,
+      "shotCount": 0,
+      "phase": "aim",
+      "drawCalls": 20
+    }
+  },
+  {
+    "environment": "abyss-palace",
+    "render": {
+      "frame": 2753,
+      "calls": 162,
+      "triangles": 282720,
+      "points": 0,
+      "lines": 0
+    },
+    "robots": {
+      "activePlayer": 1,
+      "shotCount": 0,
+      "phase": "aim",
+      "drawCalls": 20
+    }
+  },
+  {
+    "environment": "lunar-observatory",
+    "render": {
+      "frame": 2813,
+      "calls": 162,
+      "triangles": 274548,
+      "points": 0,
+      "lines": 1
+    },
+    "robots": {
+      "activePlayer": 1,
+      "shotCount": 0,
+      "phase": "aim",
+      "drawCalls": 20
+    }
+  }
+]

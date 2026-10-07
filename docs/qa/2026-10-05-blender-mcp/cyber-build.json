@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:21:53.096003+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: Error receiving data: [WinError 10054] 远程主机强迫关闭了一个现有的连接。\nClient handler stopped\nInfo: Saved as \"cyber-arena.blend\"\n16:21:52 | INFO: Starting glTF 2.0 export\n16:21:52 | INFO: Extracting primitive: Cube.566\n16:21:52 | INFO: Primitives created: 1\n16:21:52 | INFO: Extracting primitive: Cube.111\n16:21:52 | INFO: Primitives created: 1\n16:21:52 | INFO: Extracting primitive: Arena wordmark\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Cube.110\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Cube.303\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Cube.565\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Cube.578\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Championship subtitle\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Finished glTF 2.0 export in 0.1339397430419922 s\n\nASSET_READY cyber-arena TRIANGLES 97836 ROOTS ['CyberArena']\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: Error receiving data: [WinError 10054] 远程主机强迫关闭了一个现有的连接。\nClient handler stopped\nInfo: Saved as \"cyber-arena.blend\"\n16:21:52 | INFO: Starting glTF 2.0 export\n16:21:52 | INFO: Extracting primitive: Cube.566\n16:21:52 | INFO: Primitives created: 1\n16:21:52 | INFO: Extracting primitive: Cube.111\n16:21:52 | INFO: Primitives created: 1\n16:21:52 | INFO: Extracting primitive: Arena wordmark\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Cube.110\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Cube.303\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Cube.565\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Cube.578\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Extracting primitive: Championship subtitle\n16:21:53 | INFO: Primitives created: 1\n16:21:53 | INFO: Finished glTF 2.0 export in 0.1339397430419922 s\n\nASSET_READY cyber-arena TRIANGLES 97836 ROOTS ['CyberArena']\n"
+    },
+    "isError": false
+  }
+}

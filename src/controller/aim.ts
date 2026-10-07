@@ -8,6 +8,13 @@ import { StartAimEvent } from "../events/startaimevent"
 import { WatchAim } from "./watchaim"
 import { Session } from "../network/client/session"
 
+export const FULL_POWER_HOLD_MS = 2000
+
+export function powerRatioFromHeldMs(heldMs: number): number {
+  if (!Number.isFinite(heldMs)) return 0
+  return Math.max(0, Math.min(1, heldMs / FULL_POWER_HOLD_MS))
+}
+
 /**
  * Aim using input events.
  *
@@ -48,13 +55,16 @@ export class Aim extends ControllerBase {
     table.cue.aim.i = table.balls.indexOf(table.cueball)
     table.cue.moveTo(table.cueball.pos)
     if (!customShot) {
+      // A new turn starts uncharged; the previous shot remains intact until
+      // its physics and replay record have finished consuming it.
+      table.cue.aim.power = 0
       table.cue.aimAtNext(
         table.cueball,
         this.container.rules.nextCandidateBall()
       )
       table.cue.aim.elevation = 0
     }
-    this.container.view.camera.suggestMode(this.container.view.camera.aimView)
+    this.container.view.camera.beginAimTurn()
     table.cue.updateAimInput()
   }
 
@@ -109,7 +119,7 @@ export class Aim extends ControllerBase {
   override handleInput(input: Input): Controller {
     switch (input.key) {
       case "Space":
-        this.container.table.cue.setPower(input.t * this.scale)
+        this.container.table.cue.setControlPower(powerRatioFromHeldMs(input.t))
         break
       case "SpaceUp":
         return this.playShot()
@@ -152,12 +162,16 @@ export class Aim extends ControllerBase {
     )
   }
 
-  playShot() {
+  playShot(source: "player" | "assist" = "player") {
     this.container.inputQueue.length = 0
     this.container.table.cue.aimInputs.hideRepositionCueBall()
     this.container.table.cue.aimInputs.setDisabled(true)
     const hitEvent = new HitEvent(this.container.table.serialiseHit())
-    this.container.sendEvent(hitEvent)
-    return new PlayShot(this.container)
+    if (source === "player") this.container.manualShotCount += 1
+    return new PlayShot(
+      this.container,
+      () => this.container.sendEvent(hitEvent),
+      source
+    )
   }
 }

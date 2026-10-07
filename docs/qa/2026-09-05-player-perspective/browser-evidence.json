@@ -1,0 +1,9 @@
+{
+  "minimumSeparation": 0.85,
+  "standing": {
+    "eyeDistance": 0,
+    "firstPerson": true,
+    "helmetVisible": false
+  },
+  "errors": []
+}

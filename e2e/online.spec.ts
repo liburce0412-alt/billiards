@@ -27,16 +27,10 @@ test("two browser contexts can enter the same room", async ({ browser }) => {
   const guestPage = await guest.newPage()
   await Promise.all([
     hostPage.addInitScript(() => {
-      localStorage.setItem(
-        "break-builder.controls-seen.v2",
-        "acknowledged"
-      )
+      localStorage.setItem("break-builder.controls-seen.v2", "acknowledged")
     }),
     guestPage.addInitScript(() => {
-      localStorage.setItem(
-        "break-builder.controls-seen.v2",
-        "acknowledged"
-      )
+      localStorage.setItem("break-builder.controls-seen.v2", "acknowledged")
     }),
   ])
   await Promise.all([

@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:39:38.187094+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: INSPECTION_READY ball-pool-12\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: INSPECTION_READY ball-pool-12\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\ball-pool-12.blend",
+    "sha256": "b897c9a5e21fc46eec5a4fdbd6b65fd1cd0521a709164cc864d9cfa9f1dec16c"
+  }
+}

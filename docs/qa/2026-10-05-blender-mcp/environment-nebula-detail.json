@@ -1,0 +1,31 @@
+{
+  "time": "2026-10-05T09:59:07.645756+00:00",
+  "tool": "look",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "image",
+        "mimeType": "image/png",
+        "annotations": null,
+        "meta": null,
+        "savedImage": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-10-05-blender-mcp\\environment-nebula-detail-0.png"
+      },
+      {
+        "type": "text",
+        "text": "Through camera '_Preview_EnvironmentCamera'. Framed 18 objects, 9.4 x 11.04 x 9.03 m across, centred at [0.0, 2.88, 3.1].",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

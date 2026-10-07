@@ -1,0 +1,478 @@
+/* Shared shell and control material; game input and rules stay independent. */
+body.app-platform-route .holo-app-shell,
+#platformGate {
+  --color-ink: var(--glass-ink, #172d40);
+  --color-ink-soft: var(--glass-muted, #455c70);
+  --color-ink-muted: var(--glass-muted, #455c70);
+  --color-ink-2: var(--glass-muted, #455c70);
+  --color-paper-2: var(--glass-tint);
+  --surface-raised: var(--glass-tint);
+  --color-muted: var(--glass-muted, #455c70);
+  --color-accent: var(--glass-accent, #087586);
+  --surface-glass: var(--glass-tint);
+  --surface-glass-strong: var(--glass-tint);
+  --glass-border: var(--glass-rim);
+  --glass-paper-soft: var(--glass-tint);
+  --glass-paper-medium: color-mix(in srgb, var(--glass-tint) 70%, transparent);
+  --color-neutral: var(--glass-muted);
+
+  background: transparent;
+  color: var(--color-ink);
+}
+
+.holo-app-shell .holo-ambient {
+  opacity: 1;
+}
+
+.holo-app-shell .holo-main,
+.holo-app-shell .holo-footer {
+  position: relative;
+  z-index: 1;
+}
+
+body.app-platform-route .holo-app-shell .holo-topbar {
+  position: sticky;
+}
+
+body.app-platform-route .holo-app-shell [data-glass] {
+  background: var(--glass-tint);
+  border-color: var(--glass-rim);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px rgb(255 255 255 / 18%);
+  color: var(--glass-ink);
+  backdrop-filter: blur(5px) saturate(1.06);
+}
+
+body.app-platform-route .holo-app-shell [data-optical-ready="true"] {
+  backdrop-filter: none;
+  background: transparent;
+}
+
+/* Auth uses the same captured scene, not the former white veil. */
+#platformGate .platform-gate__fx {
+  z-index: 0;
+  pointer-events: none;
+}
+
+#platformGate > .caesar-optical-layer {
+  z-index: 1;
+}
+
+#platformGate .platform-gate__shell {
+  z-index: 2;
+}
+
+#platformGate [data-glass] {
+  background: var(--glass-tint);
+  border-color: var(--glass-rim);
+  color: var(--glass-ink);
+  backdrop-filter: blur(6px);
+  box-shadow:
+    var(--glass-shadow),
+    inset 0 1px rgb(255 255 255 / 38%);
+}
+
+#platformGate [data-optical-ready="true"] {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+#platformGate :is(.platform-auth-tabs, input, select, textarea) {
+  color: var(--glass-ink);
+  background: var(--glass-tint);
+  border-color: var(--glass-rim);
+}
+
+#platformGate .platform-auth-tabs button[aria-selected="true"] {
+  color: var(--glass-ink);
+  background: color-mix(in srgb, var(--glass-accent) 14%, transparent);
+  box-shadow: inset 0 -2px var(--glass-accent);
+}
+
+#platformGate .platform-modal,
+.holo-app-shell .platform-modal {
+  background: rgb(9 21 38 / 24%);
+  backdrop-filter: blur(5px);
+}
+
+#platformGate .platform-modal__card,
+.holo-app-shell .platform-modal__card {
+  position: relative;
+  z-index: 1;
+}
+
+#platformGate .platform-modal > .caesar-optical-layer,
+.holo-app-shell .platform-modal > .caesar-optical-layer {
+  z-index: 0;
+}
+
+body.app-platform-route
+  .holo-app-shell
+  :is(
+    .platform-panel__header,
+    .platform-panel__body,
+    .holo-config-grid,
+    .holo-room-panel,
+    .account-settings,
+    .social-activity
+  ) {
+  background: transparent;
+}
+
+body.app-platform-route
+  .holo-app-shell
+  :is(
+    .holo-page-heading p,
+    .holo-page-heading span,
+    .holo-footer,
+    .platform-panel p,
+    .platform-field small,
+    .holo-field > span
+  ) {
+  color: var(--glass-muted);
+}
+
+body.app-platform-route
+  .holo-app-shell
+  :is(
+    input,
+    select,
+    textarea,
+    .platform-soft-button,
+    .platform-icon-button,
+    .holo-nav a,
+    .holo-account,
+    .holo-segmented button
+  ) {
+  background: var(--glass-tint);
+  color: var(--glass-ink);
+  border-color: var(--glass-rim);
+  border-radius: 12px;
+}
+
+body.app-platform-route .holo-app-shell :is(button, a)[aria-pressed="true"],
+body.app-platform-route .holo-app-shell .holo-nav a[aria-current="page"] {
+  border-color: var(--glass-accent);
+  box-shadow: inset 0 -2px var(--glass-accent);
+}
+
+body.app-platform-route .holo-app-shell option {
+  background: #f2f8fb;
+  color: #172d40;
+}
+
+body.app-platform-route .holo-app-shell[data-glass-theme="dark"] option {
+  background: #162339;
+  color: #eef8ff;
+}
+
+body.app-platform-route
+  .holo-app-shell[data-glass-theme="dark"]
+  :is(
+    .platform-panel__header h2,
+    .platform-panel__header h3,
+    .platform-field,
+    .account-toggle,
+    .social-me__copy,
+    .platform-list,
+    .platform-modal__card
+  ) {
+  color: var(--glass-ink);
+}
+
+body.app-platform-route .holo-app-shell[data-glass-theme="dark"] {
+  color-scheme: dark;
+}
+
+body.app-platform-route .holo-app-shell[data-glass-theme="light"] {
+  color-scheme: light;
+}
+
+.caesar-appearance-row {
+  display: flex;
+  justify-content: end;
+  margin: -1rem 0 1rem;
+  position: relative;
+  z-index: 8;
+}
+
+.caesar-appearance {
+  position: relative;
+}
+
+.caesar-appearance > summary {
+  list-style: none;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+  padding: 9px 16px;
+  border: 1px solid var(--glass-rim);
+  border-radius: 999px;
+  background: var(--glass-tint);
+}
+
+.caesar-appearance > summary::-webkit-details-marker {
+  display: none;
+}
+
+.caesar-appearance__panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: min(320px, calc(100vw - 32px));
+  border-radius: 22px;
+  padding: 20px;
+  display: grid;
+  gap: 13px;
+}
+
+.caesar-appearance__panel header {
+  display: grid;
+  gap: 5px;
+  padding-bottom: 8px;
+}
+
+.caesar-appearance__panel small,
+.caesar-appearance__panel p {
+  color: var(--glass-muted);
+  font-size: 12px;
+}
+
+.caesar-appearance__panel p {
+  line-height: 1.6;
+  margin: 0;
+}
+
+.caesar-appearance__panel label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.caesar-appearance__panel select {
+  padding: 8px;
+  max-width: 65%;
+}
+
+.caesar-switch input {
+  accent-color: var(--glass-accent);
+  width: 18px;
+  height: 18px;
+}
+
+/* Scene previews contain real arena renders, with a readable label below. */
+body.app-platform-route .holo-app-shell .tt-scene {
+  padding: 0;
+  overflow: hidden;
+  min-height: 0;
+  display: grid;
+  gap: 0;
+  border-width: 1px;
+  background: var(--glass-tint);
+  color: var(--glass-ink);
+  position: relative;
+}
+
+.tt-scene__image {
+  width: 100%;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  display: block;
+}
+
+.tt-scene__copy {
+  padding: 18px 22px;
+  display: grid;
+  gap: 6px;
+}
+
+.tt-scene__copy > span {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--glass-accent);
+}
+
+.tt-scene__copy strong {
+  font-size: 23px;
+}
+
+.tt-scene__copy small {
+  font-size: 12px;
+  color: var(--glass-muted);
+}
+
+.tt-scene__selected {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #efffff;
+  background: #075765;
+  font-size: 12px;
+}
+
+.tt-config {
+  align-self: start;
+}
+
+.tt-config h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+
+.tt-config > p {
+  color: var(--glass-muted);
+  line-height: 1.65;
+  font-size: 14px;
+}
+
+.tt-config .tt-config__eyebrow {
+  color: var(--glass-accent);
+  letter-spacing: 0.14em;
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+body.app-platform-route .holo-app-shell .tt-launch {
+  color: #f5ffff;
+  background: #087586;
+  border-color: transparent;
+}
+
+.tt-mode-links a,
+.tt-mode-links span {
+  background: var(--glass-tint);
+  border: 1px solid var(--glass-rim);
+  color: var(--glass-ink);
+  text-decoration: none;
+}
+
+.tt-mode-links [aria-current] {
+  color: var(--glass-accent);
+  border-color: var(--glass-accent);
+}
+
+body.app-game-route > .caesar-optical-layer {
+  z-index: 99;
+}
+
+body.app-game-route [data-glass] {
+  background: var(--glass-tint);
+  border-color: var(--glass-rim);
+  color: var(--glass-ink);
+  backdrop-filter: blur(5px) saturate(1.06);
+  box-shadow: inset 0 1px rgb(255 255 255 / 16%);
+}
+
+body.app-game-route [data-optical-ready="true"] {
+  backdrop-filter: none;
+}
+
+body.app-game-route
+  :is(.p1Score, .p2Score, .hudMiddle, .game-settings__header) {
+  background: transparent;
+}
+
+body.app-game-route[data-glass-theme] {
+  --game-ink: var(--glass-ink);
+  --game-muted: var(--glass-muted);
+}
+
+.tt-quick-guide {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0;
+}
+
+.tt-quick-guide span {
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  border: 1px solid var(--glass-rim);
+}
+
+.tt-control-guide {
+  padding: clamp(20px, 4vw, 38px);
+  margin-bottom: 28px;
+  border-radius: 24px;
+  line-height: 1.7;
+}
+
+.tt-control-guide h2 {
+  margin: 6px 0 14px;
+  font-size: clamp(22px, 3vw, 32px);
+}
+
+.tt-control-guide > p {
+  max-width: 75ch;
+  color: var(--glass-muted);
+}
+
+.tt-control-guide dl {
+  margin: 22px 0 26px;
+}
+
+.tt-control-guide dl > div {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+  gap: 20px;
+  padding-block: 17px;
+  border-top: 1px solid var(--glass-rim);
+}
+
+.tt-control-guide dt {
+  font-weight: 650;
+  color: var(--glass-ink);
+}
+
+.tt-control-guide dd {
+  margin: 0;
+  max-width: 76ch;
+  color: var(--glass-muted);
+}
+
+.tt-control-guide kbd {
+  display: inline-block;
+  min-width: 24px;
+  padding: 0 6px;
+  border: 1px solid var(--glass-rim);
+  border-radius: 5px;
+  background: var(--glass-tint);
+  box-shadow: 0 2px rgb(25 50 70 / 12%);
+  color: var(--glass-ink);
+  text-align: center;
+  font: 600 12px / 1.7 var(--font-body);
+}
+
+.tt-control-guide > a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  text-decoration: none;
+}
+
+@media (width <= 700px) {
+  .tt-control-guide dl > div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .caesar-appearance-row {
+    margin-top: 0;
+  }
+
+  .tt-scene__image {
+    aspect-ratio: 16 / 8;
+  }
+
+  .tt-scene__copy {
+    padding: 14px 18px;
+  }
+}

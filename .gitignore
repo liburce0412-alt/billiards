@@ -99,3 +99,10 @@ rg.sh
 dist/SCOREPLANREMOTE.md
 telemetry-id
 src/utils/version.ts
+
+# Local staging and build analysis
+.tmp/
+bundle-meta.json
+
+# Recreated from the pinned table-tennis submodule
+dist/models/table-tennis/

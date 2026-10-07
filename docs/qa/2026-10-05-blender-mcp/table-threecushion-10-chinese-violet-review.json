@@ -1,0 +1,13 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-threecushion-10-chinese-violet-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence.",
+    "Final 17:36 rebuild checked: six inherited crescent pocket ornaments are removed; pocketless cloth and rails are continuous."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.6413444+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "3c499e51f701734aed087dc2f58e1ef7623ee242beaccc4144d44d1207bebaa8"
+}

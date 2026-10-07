@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:21:08.288293+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 17:21:08 | INFO: Data are loaded, start creating Blender stuff\n17:21:08 | INFO: Blender create Mesh node 0\n17:21:08 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"robot-prototype-sphere.blend\"\n17:21:08 | INFO: Starting glTF 2.0 export\n17:21:08 | INFO: Extracting primitive: Mesh_0.062\n17:21:08 | INFO: Primitives created: 1\n17:21:08 | INFO: Finished glTF 2.0 export in 0.007551431655883789 s\n\nREFINED robot-prototype-sphere ['subdivision + original-bounds projection'] BOUNDS_PRESERVED\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 17:21:08 | INFO: Data are loaded, start creating Blender stuff\n17:21:08 | INFO: Blender create Mesh node 0\n17:21:08 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"robot-prototype-sphere.blend\"\n17:21:08 | INFO: Starting glTF 2.0 export\n17:21:08 | INFO: Extracting primitive: Mesh_0.062\n17:21:08 | INFO: Primitives created: 1\n17:21:08 | INFO: Finished glTF 2.0 export in 0.007551431655883789 s\n\nREFINED robot-prototype-sphere ['subdivision + original-bounds projection'] BOUNDS_PRESERVED\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\.tmp\\legacy-art-export\\robot-prototype-sphere.glb",
+    "sha256": "78ffa87ef7679e462990332ffaf2e95b5244fd9fe69b96b94ad9f9f92df21230"
+  }
+}

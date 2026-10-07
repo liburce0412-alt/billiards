@@ -1,0 +1,14 @@
+{
+  "reviewedAt": "2026-10-05T17:29:24.3395564+08:00",
+  "scope": "Blender full-length shape plus listed close-up images",
+  "passed": true,
+  "sha256": "d8a033f5dccd4f8793bd69c987e8c5a7904d0c0f2946e104482f3430185b957c",
+  "notes": [
+    "Four-angle full length view actually inspected: taper and color regions are coherent, shaft and butt have no visible breaks. Runtime hand alignment, chalk animation and phone appearance are outside this Blender review.",
+    "No microtexture close-up was captured for this individual variant; only full-length shape and palette approved."
+  ],
+  "reviewer": "three_asset_inventory",
+  "evidence": [
+    "cue-jade-angles-0.png"
+  ]
+}

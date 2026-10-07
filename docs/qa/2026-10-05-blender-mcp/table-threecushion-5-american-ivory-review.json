@@ -1,0 +1,12 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-threecushion-5-american-ivory-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.6636326+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "c57c33312679bf30753fa50483cdbc524d7767a5710c2778a5a03db02d9b42e4"
+}

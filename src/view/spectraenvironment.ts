@@ -1,5 +1,4 @@
 import {
-  AdditiveBlending,
   BackSide,
   Group,
   Mesh,
@@ -10,6 +9,7 @@ import {
   Vector2,
 } from "three"
 import { R } from "../model/physics/constants"
+import { getRenderQuality, RenderQualityProfile } from "./renderquality"
 
 const vertexShader = /* glsl */ `
   varying vec3 vDirection;
@@ -145,29 +145,6 @@ const causticFragmentShader = /* glsl */ `
   }
 `
 
-const rainbowFragmentShader = /* glsl */ `
-  precision highp float;
-
-  uniform float uTime;
-  varying vec2 vUv;
-
-  void main() {
-    vec2 p = (vUv - 0.5) * 2.0;
-    p.x -= 0.1;
-    p.y -= 0.1;
-    p.y += p.x * 0.31 + sin(p.x * 6.0 + uTime * 0.17) * 0.045;
-    float stripe = exp(-pow(p.y / 0.065, 2.0));
-    float falloff = exp(-dot(p, p) * 3.8);
-    float spectral = smoothstep(-0.52, 0.58, p.x);
-    vec3 cyan = vec3(0.04, 0.94, 1.0);
-    vec3 violet = vec3(0.56, 0.14, 1.0);
-    vec3 gold = vec3(1.0, 0.72, 0.16);
-    vec3 colour = mix(cyan, violet, spectral);
-    colour = mix(colour, gold, smoothstep(0.65, 1.0, spectral));
-    gl_FragColor = vec4(colour, stripe * falloff * 0.58);
-  }
-`
-
 export class SpectraEnvironment {
   readonly root = new Group()
 
@@ -184,10 +161,10 @@ export class SpectraEnvironment {
     toneMapped: false,
   })
 
-  readonly mesh = new Mesh(new SphereGeometry(R * 760, 48, 24), this.material)
+  readonly mesh: Mesh
 
   private readonly causticMaterial = new ShaderMaterial({
-    uniforms: { uTime: { value: 0 }, uOpacity: { value: 0.72 } },
+    uniforms: { uTime: { value: 0 }, uOpacity: { value: 0.16 } },
     vertexShader: causticVertexShader,
     fragmentShader: causticFragmentShader,
     transparent: true,
@@ -201,40 +178,17 @@ export class SpectraEnvironment {
     this.causticMaterial
   )
 
-  private readonly causticHaloMaterial = (() => {
-    const material = new ShaderMaterial({
-      uniforms: { uTime: { value: 0 }, uOpacity: { value: 0.19 } },
-      vertexShader: causticVertexShader,
-      fragmentShader: causticFragmentShader,
-      transparent: true,
-      blending: AdditiveBlending,
-      depthWrite: false,
-      toneMapped: false,
-    })
-    return material
-  })()
-
-  private readonly causticHalo = new Mesh(
-    new PlaneGeometry(R * 24, R * 24),
-    this.causticHaloMaterial
-  )
-
-  private readonly rainbowMaterial = new ShaderMaterial({
-    uniforms: { uTime: { value: 0 } },
-    vertexShader: causticVertexShader,
-    fragmentShader: rainbowFragmentShader,
-    transparent: true,
-    blending: AdditiveBlending,
-    depthWrite: false,
-    toneMapped: false,
-  })
-
-  private readonly rainbow = new Mesh(
-    new PlaneGeometry(R * 13, R * 8),
-    this.rainbowMaterial
-  )
-
-  constructor() {
+  constructor(
+    private readonly quality: RenderQualityProfile = getRenderQuality()
+  ) {
+    this.mesh = new Mesh(
+      new SphereGeometry(
+        R * 760,
+        quality.environmentSegments,
+        Math.max(16, quality.environmentSegments / 2)
+      ),
+      this.material
+    )
     this.root.name = "spectra-environment"
     this.mesh.name = "spectra-environment-dome"
     this.mesh.renderOrder = -10_000
@@ -242,14 +196,8 @@ export class SpectraEnvironment {
     this.caustic.name = "spectra-cue-caustic"
     this.caustic.position.z = R * 0.08
     this.caustic.renderOrder = 2
-    this.causticHalo.name = "spectra-cue-caustic-halo"
-    this.causticHalo.position.z = R * 0.06
-    this.causticHalo.renderOrder = 1
-    this.causticHalo.scale.set(1.0, 0.72, 1.0)
-    this.rainbow.name = "spectra-cue-rainbow"
-    this.rainbow.position.z = R * 0.11
-    this.rainbow.renderOrder = 3
-    this.root.add(this.mesh, this.causticHalo, this.caustic, this.rainbow)
+    this.caustic.visible = quality.name !== "low"
+    this.root.add(this.mesh, this.caustic)
   }
 
   update(
@@ -259,23 +207,16 @@ export class SpectraEnvironment {
     cueX: number,
     cueY: number
   ): void {
-    this.material.uniforms.uTime.value += Math.min(Math.max(elapsed, 0), 0.1)
+    if (!this.root.visible) return
+    if (this.quality.environmentMotion) {
+      this.material.uniforms.uTime.value += Math.min(Math.max(elapsed, 0), 0.1)
+    }
     this.material.uniforms.uViewport.value.set(width, height)
     this.causticMaterial.uniforms.uTime.value =
-      this.material.uniforms.uTime.value
-    this.causticHaloMaterial.uniforms.uTime.value =
-      this.material.uniforms.uTime.value + 4.7
-    this.rainbowMaterial.uniforms.uTime.value =
       this.material.uniforms.uTime.value
     this.caustic.position.x = cueX
     this.caustic.position.y = cueY
     this.caustic.rotation.z = this.material.uniforms.uTime.value * 0.045
-    this.causticHalo.position.x = cueX
-    this.causticHalo.position.y = cueY
-    this.causticHalo.rotation.z = -this.material.uniforms.uTime.value * 0.024
-    this.rainbow.position.x = cueX - R * 0.8
-    this.rainbow.position.y = cueY - R * 0.65
-    this.rainbow.rotation.z = -0.13
   }
 
   dispose(): void {
@@ -283,9 +224,5 @@ export class SpectraEnvironment {
     this.material.dispose()
     this.caustic.geometry.dispose()
     this.causticMaterial.dispose()
-    this.causticHalo.geometry.dispose()
-    this.causticHaloMaterial.dispose()
-    this.rainbow.geometry.dispose()
-    this.rainbowMaterial.dispose()
   }
 }

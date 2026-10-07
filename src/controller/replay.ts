@@ -132,6 +132,7 @@ export class Replay extends ControllerBase {
     this.container.updateLastShot()
     this.container.table.cue.updateAimInput()
     this.container.table.cue.t = 1
+    this.container.view.camera.beginAimTurn(false)
     this.container.view.camera.suggestMode(
       canPan
         ? this.container.view.camera.spectatorView
@@ -203,6 +204,12 @@ export class Replay extends ControllerBase {
     clearTimeout(this.timer)
     this.timer = undefined
     return new End(this.container)
+  }
+
+  override dispose() {
+    super.dispose()
+    clearTimeout(this.timer)
+    this.timer = undefined
   }
 
   retry() {

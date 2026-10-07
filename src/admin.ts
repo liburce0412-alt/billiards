@@ -6,6 +6,11 @@ import {
   toast,
 } from "./platform/page"
 import { platformGate } from "./platform/shell"
+import {
+  loadAdminAssistSettings,
+  saveAdminAssistSettings,
+} from "./platform/adminassistsettings"
+import { publishVerifiedGameIdentity } from "./platform/gameidentity"
 
 type Counts = {
   users: number
@@ -81,6 +86,7 @@ class AdminPage {
       )
       return
     }
+    publishVerifiedGameIdentity(this.session)
     this.root.innerHTML = `
       <div class="admin-layout">
         <aside class="platform-panel admin-rail">
@@ -91,6 +97,7 @@ class AdminPage {
             <button type="button" data-admin-section="users"><i class="ph ph-users"></i><span>用户治理</span></button>
             <button type="button" data-admin-section="reports"><i class="ph ph-flag"></i><span>举报处理</span><b id="adminReportBadge">0</b></button>
             <button type="button" data-admin-section="announcements"><i class="ph ph-megaphone"></i><span>公告</span></button>
+            ${this.session.capabilities.adminDemoAssist ? '<button type="button" data-admin-section="demo"><i class="ph ph-film-slate"></i><span>演示辅助</span></button>' : ""}
             <button type="button" data-admin-section="audit"><i class="ph ph-scroll"></i><span>审计日志</span></button>
           </nav>
           <p><i class="ph ph-lock-key"></i> 所有管理操作均在服务端校验角色并写入审计。</p>
@@ -153,6 +160,25 @@ class AdminPage {
               <div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>时间</th><th>操作者</th><th>动作</th><th>对象</th><th>详情</th></tr></thead><tbody id="adminAuditBody"></tbody></table></div>
             </div>
           </section>
+
+          ${
+            this.session.capabilities.adminDemoAssist
+              ? `<section data-admin-panel="demo" hidden>
+            <div class="platform-panel admin-demo-panel">
+              <header class="platform-panel__header"><div><h2>管理员演示辅助</h2><p>离线与普通线上对局可分别控制；每局第一杆必须由你亲自完成</p></div><span class="admin-status-badge" data-state="approved">OWNER ONLY</span></header>
+              <div class="platform-panel__body admin-demo-controls">
+                <div class="admin-demo-copy"><i class="ph ph-crosshair"></i><div><strong>第一杆后接管当前回合</strong><span>你主动开球后才开始规划；自动击球始终锁定在本方球杆后的瞄准视角。</span></div></div>
+                <div class="admin-demo-scope">
+                  <label class="admin-demo-switch"><span><strong>线下演示</strong><small>自由练习、AI 对战和同屏模式</small></span><input id="adminDemoOfflineEnabled" type="checkbox" /><i aria-hidden="true"></i></label>
+                  <label class="admin-demo-switch"><span><strong>线上演示</strong><small>普通线上对局也可启用；进入比赛后不显示辅助控件</small></span><input id="adminDemoOnlineEnabled" type="checkbox" /><i aria-hidden="true"></i></label>
+                </div>
+                <label class="admin-demo-level"><span><strong>演示实力</strong><small>11 档优先选择连续清台走位</small></span><output id="adminDemoLevelValue">11 / 11</output><input id="adminDemoLevel" type="range" min="1" max="11" step="1" value="11" /></label>
+                <p class="admin-demo-note"><i class="ph ph-info"></i>设置保存到当前账号，并在本机即时生效；比赛画面不显示辅助控件。</p>
+              </div>
+            </div>
+          </section>`
+              : ""
+          }
         </div>
       </div>`
     this.bind()
@@ -203,6 +229,71 @@ class AdminPage {
       event.preventDefault()
       void this.createAnnouncement(event.currentTarget as HTMLFormElement)
     }
+    this.bindDemoAssist()
+  }
+
+  private bindDemoAssist() {
+    if (!this.session.capabilities.adminDemoAssist) return
+    const offlineEnabled = this.root.querySelector<HTMLInputElement>(
+      "#adminDemoOfflineEnabled"
+    )
+    const onlineEnabled = this.root.querySelector<HTMLInputElement>(
+      "#adminDemoOnlineEnabled"
+    )
+    const level = this.root.querySelector<HTMLInputElement>("#adminDemoLevel")
+    const output = this.root.querySelector<HTMLOutputElement>(
+      "#adminDemoLevelValue"
+    )
+    if (!offlineEnabled || !onlineEnabled || !level || !output) return
+    const settings = loadAdminAssistSettings()
+    offlineEnabled.checked = settings.offlineEnabled
+    onlineEnabled.checked = settings.onlineEnabled
+    level.value = String(settings.level)
+    output.value = `${settings.level} / 11`
+    let persistTimer: ReturnType<typeof globalThis.setTimeout> | undefined
+    const save = () => {
+      const next = saveAdminAssistSettings({
+        offlineEnabled: offlineEnabled.checked,
+        onlineEnabled: onlineEnabled.checked,
+        level: Number(level.value),
+      })
+      output.value = `${next.level} / 11`
+      this.session.preferences.admin_demo_offline_enabled = Number(
+        next.offlineEnabled
+      )
+      this.session.preferences.admin_demo_online_enabled = Number(
+        next.onlineEnabled
+      )
+      this.session.preferences.admin_demo_level = next.level
+      if (isLocalDemo()) return
+      if (persistTimer) globalThis.clearTimeout(persistTimer)
+      persistTimer = globalThis.setTimeout(() => {
+        void apiJson<PlatformMe>("/api/me", {
+          method: "PATCH",
+          body: JSON.stringify({
+            preferences: {
+              adminDemoOfflineEnabled: next.offlineEnabled,
+              adminDemoOnlineEnabled: next.onlineEnabled,
+              adminDemoLevel: next.level,
+            },
+          }),
+        })
+          .then((updated) => {
+            this.session.preferences = updated.preferences
+            globalThis.__BREAK_BUILDER_SESSION__ = this.session
+            publishVerifiedGameIdentity(this.session)
+          })
+          .catch((error) => {
+            toast(
+              error instanceof Error ? error.message : "演示设置同步失败",
+              "error"
+            )
+          })
+      }, 180)
+    }
+    offlineEnabled.onchange = save
+    onlineEnabled.onchange = save
+    level.oninput = save
   }
 
   private async loadOverview() {
@@ -805,6 +896,12 @@ async function bootstrap() {
   await new AdminPage(session, root).init()
 }
 
-void bootstrap().catch((error) =>
-  toast(error instanceof Error ? error.message : "管理后台加载失败", "error")
-)
+export function mountAdminInto(session: PlatformMe, root: HTMLElement) {
+  return new AdminPage(session, root).init()
+}
+
+if (!document.querySelector("#appRoot")) {
+  void bootstrap().catch((error) =>
+    toast(error instanceof Error ? error.message : "管理后台加载失败", "error")
+  )
+}

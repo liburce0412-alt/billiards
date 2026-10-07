@@ -19,9 +19,7 @@ export class TimeoutButton {
     this.criticalMs = options.criticalMs || 2000
     this.onComplete = options.onComplete || (() => {})
 
-    this.el.addEventListener("click", () => {
-      this.cancel()
-    })
+    this.el.addEventListener("click", this.handleClick)
   }
 
   startTimer() {
@@ -40,6 +38,13 @@ export class TimeoutButton {
     }
     this.el.style.setProperty("--sweep", "0deg")
   }
+
+  dispose() {
+    this.cancel()
+    this.el.removeEventListener("click", this.handleClick)
+  }
+
+  private readonly handleClick = () => this.cancel()
 
   private readonly tick = (now: number) => {
     if (!this.isRunning) return

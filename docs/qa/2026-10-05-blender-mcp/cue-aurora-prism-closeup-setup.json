@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T09:03:14.484688+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 17:03:14 | INFO: Data are loaded, start creating Blender stuff\n17:03:14 | INFO: Blender create Mesh node Cylinder.034\n17:03:14 | INFO: Blender create Mesh node Segmented angular titanium sleeve.009\n17:03:14 | INFO: Blender create Mesh node Cylinder.037\n17:03:14 | INFO: Blender create Mesh node Cube.2092\n17:03:14 | INFO: Blender create Mesh node Mesh_3.010\n17:03:14 | INFO: Blender create Mesh node Mesh_4.010\n17:03:14 | INFO: Blender create Mesh node Mesh_0.011\n17:03:14 | INFO: Blender create Mesh node Mesh_1.010\n17:03:14 | INFO: Blender create Mesh node Mesh_2.010\n17:03:14 | INFO: glTF import finished in 0.04s\nCUE_CLOSEUP_READY grip WIDTH_M 1.5905548560619354 TARGET [0.0032268762588500977, -0.006513148546218872, 0.0023949509486556053]\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 17:03:14 | INFO: Data are loaded, start creating Blender stuff\n17:03:14 | INFO: Blender create Mesh node Cylinder.034\n17:03:14 | INFO: Blender create Mesh node Segmented angular titanium sleeve.009\n17:03:14 | INFO: Blender create Mesh node Cylinder.037\n17:03:14 | INFO: Blender create Mesh node Cube.2092\n17:03:14 | INFO: Blender create Mesh node Mesh_3.010\n17:03:14 | INFO: Blender create Mesh node Mesh_4.010\n17:03:14 | INFO: Blender create Mesh node Mesh_0.011\n17:03:14 | INFO: Blender create Mesh node Mesh_1.010\n17:03:14 | INFO: Blender create Mesh node Mesh_2.010\n17:03:14 | INFO: glTF import finished in 0.04s\nCUE_CLOSEUP_READY grip WIDTH_M 1.5905548560619354 TARGET [0.0032268762588500977, -0.006513148546218872, 0.0023949509486556053]\n"
+    },
+    "isError": false
+  }
+}

@@ -494,7 +494,30 @@ a {
 
 .platform-primary:disabled {
   cursor: wait;
-  opacity: 0.62;
+  color: var(--color-ink-2);
+  background: linear-gradient(
+    105deg,
+    color-mix(in oklch, var(--color-accent-soft) 78%, white),
+    color-mix(in oklch, var(--color-energy-soft) 66%, white)
+  );
+  border: 1px solid color-mix(in oklch, var(--color-accent) 26%, transparent);
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 82%),
+    0 10px 24px color-mix(in oklch, var(--color-accent) 10%, transparent);
+  opacity: 1;
+}
+
+body.app-platform-route .holo-app-shell .platform-primary:not(:disabled) {
+  color: white;
+  background: linear-gradient(
+    105deg,
+    color-mix(in oklch, var(--color-accent-2) 88%, black 12%),
+    color-mix(in oklch, var(--color-accent) 88%, black 12%)
+  );
+}
+
+body.app-platform-route .holo-app-shell .platform-primary:disabled {
+  color: var(--color-ink-2);
 }
 
 .platform-form-note {

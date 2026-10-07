@@ -1,0 +1,13 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-snooker-10-american-burgundy-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence.",
+    "Final 17:35–17:36 rebuild checked: duplicate legacy supports are removed, only one coherent leg system remains. Baulk marking is faintly visible; close-up contrast and rule dimensions were not measured from this overview."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.5682361+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "8c07b526482943ec0bb179944d7b8a782e01e4d9f9903841fd1ff3a38a9a8263"
+}

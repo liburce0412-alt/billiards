@@ -149,6 +149,9 @@ describe("Controller Replay", () => {
     container.inputQueue.push(new Input(0.1, "SpaceUp"))
     container.processEvents()
     expect(container.controller).to.be.an.instanceof(Aim)
+    expect(document.getElementById("panel")?.dataset.actionMode).to.equal(
+      "shot"
+    )
     done()
   })
 

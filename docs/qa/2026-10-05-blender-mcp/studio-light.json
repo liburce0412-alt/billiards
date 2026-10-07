@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:42:21.725902+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: Default STUDIO\nbasic.sl STUDIO\nbasic_1.exr MATCAP\nbasic_2.exr MATCAP\nbasic_dark.exr MATCAP\nbasic_side.exr MATCAP\nceramic_dark.exr MATCAP\nceramic_lightbulb.exr MATCAP\ncheck_normal+y.exr MATCAP\ncheck_rim_dark.exr MATCAP\ncheck_rim_light.exr MATCAP\ncity.exr WORLD\nclay_brown.exr MATCAP\nclay_muddy.exr MATCAP\nclay_studio.exr MATCAP\ncourtyard.exr WORLD\nforest.exr WORLD\ninterior.exr WORLD\njade.exr MATCAP\nmetal_anisotropic.exr MATCAP\nmetal_carpaint.exr MATCAP\nmetal_lead.exr MATCAP\nmetal_shiny.exr MATCAP\nnight.exr WORLD\noutdoor.sl STUDIO\npaint.sl STUDIO\npearl.exr MATCAP\nreflection_check_horizontal.exr MATCAP\nreflection_check_vertical.exr MATCAP\nresin.exr MATCAP\nrim.sl STUDIO\nskin.exr MATCAP\nstudio.exr WORLD\nstudio.sl STUDIO\nsunrise.exr WORLD\nsunset.exr WORLD\ntoon.exr MATCAP\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: Default STUDIO\nbasic.sl STUDIO\nbasic_1.exr MATCAP\nbasic_2.exr MATCAP\nbasic_dark.exr MATCAP\nbasic_side.exr MATCAP\nceramic_dark.exr MATCAP\nceramic_lightbulb.exr MATCAP\ncheck_normal+y.exr MATCAP\ncheck_rim_dark.exr MATCAP\ncheck_rim_light.exr MATCAP\ncity.exr WORLD\nclay_brown.exr MATCAP\nclay_muddy.exr MATCAP\nclay_studio.exr MATCAP\ncourtyard.exr WORLD\nforest.exr WORLD\ninterior.exr WORLD\njade.exr MATCAP\nmetal_anisotropic.exr MATCAP\nmetal_carpaint.exr MATCAP\nmetal_lead.exr MATCAP\nmetal_shiny.exr MATCAP\nnight.exr WORLD\noutdoor.sl STUDIO\npaint.sl STUDIO\npearl.exr MATCAP\nreflection_check_horizontal.exr MATCAP\nreflection_check_vertical.exr MATCAP\nresin.exr MATCAP\nrim.sl STUDIO\nskin.exr MATCAP\nstudio.exr WORLD\nstudio.sl STUDIO\nsunrise.exr WORLD\nsunset.exr WORLD\ntoon.exr MATCAP\n"
+    },
+    "isError": false
+  }
+}

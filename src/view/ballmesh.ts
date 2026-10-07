@@ -1,13 +1,11 @@
 import {
-  IcosahedronGeometry,
   Matrix4,
   Mesh,
-  MeshPhongMaterial,
   CircleGeometry,
   MeshBasicMaterial,
   ArrowHelper,
   Color,
-  BufferAttribute,
+  CanvasTexture,
   Vector3,
   MeshStandardMaterial,
   MeshPhysicalMaterial,
@@ -24,34 +22,22 @@ import { BallMaterialFactory } from "./ballmaterialfactory"
 import { Session } from "../network/client/session"
 import { BallAppearance } from "./ballappearance"
 import { getRenderQuality } from "./renderquality"
+import { disposeRefinedArt, refinedArt, refinedArtEntry } from "./refinedart"
 
 export class BallMesh {
-  private static _ballGeometry: BufferGeometry
+  private static readonly _ballGeometries = new Map<string, BufferGeometry>()
   private static _shadowGeometry: CircleGeometry
   private static _shadowMaterial: MeshBasicMaterial
-  private static readonly _dottedGeometryCache = new Map<
-    number,
-    IcosahedronGeometry
-  >()
 
   private static getBallGeometry() {
-    if (!this._ballGeometry) {
-      const quality = getRenderQuality()
-      let segments: number
-      let rows: number
-      if (quality.name === "high") {
-        segments = 64
-        rows = 40
-      } else if (quality.name === "low") {
-        segments = 20
-        rows = 14
-      } else {
-        segments = 40
-        rows = 28
-      }
-      this._ballGeometry = new SphereGeometry(R, segments, rows)
+    const quality = getRenderQuality()
+    const key = `${quality.name}:${quality.ballSegments}:${quality.ballRows}`
+    let geometry = this._ballGeometries.get(key)
+    if (!geometry) {
+      geometry = new SphereGeometry(R, quality.ballSegments, quality.ballRows)
+      this._ballGeometries.set(key, geometry)
     }
-    return this._ballGeometry
+    return geometry
   }
 
   private static getShadowGeometry() {
@@ -69,9 +55,24 @@ export class BallMesh {
 
   private static getShadowMaterial() {
     if (!this._shadowMaterial) {
+      const canvas = document.createElement("canvas")
+      canvas.width = 128
+      canvas.height = 128
+      const context = canvas.getContext("2d")
+      if (context) {
+        const gradient = context.createRadialGradient(64, 64, 4, 64, 64, 64)
+        gradient.addColorStop(0, "rgba(0,0,0,0.86)")
+        gradient.addColorStop(0.48, "rgba(0,0,0,0.42)")
+        gradient.addColorStop(1, "rgba(0,0,0,0)")
+        context.fillStyle = gradient
+        context.fillRect(0, 0, 128, 128)
+      }
+      const alphaMap = new CanvasTexture(canvas)
+      alphaMap.generateMipmaps = true
       this._shadowMaterial = new MeshBasicMaterial({
-        color: 0x111122,
-        opacity: 0.34,
+        color: 0x101821,
+        opacity: 0.38,
+        alphaMap,
         transparent: true,
         depthWrite: false,
       })
@@ -146,22 +147,14 @@ export class BallMesh {
 
   initialiseMesh(color: Color, label?: number, appearance?: BallAppearance) {
     let geometry: BufferGeometry
-    let material:
-      MeshPhongMaterial | MeshStandardMaterial | MeshPhysicalMaterial
+    let material: MeshStandardMaterial | MeshPhysicalMaterial
     const effectiveAppearance =
       appearance ?? (label === undefined ? "dotted" : "projected")
 
-    if (effectiveAppearance === "dotted") {
-      const key = color.getHex()
-      let cached = BallMesh._dottedGeometryCache.get(key)
-      if (!cached) {
-        cached = new IcosahedronGeometry(R, Math.max(1, Session.getLod()))
-        BallMesh.addDots(cached, color)
-        BallMesh._dottedGeometryCache.set(key, cached)
-      }
-      geometry = cached
-      material = BallMaterialFactory.createDottedMaterial(color)
-    } else if (effectiveAppearance === "texturedDots") {
+    if (
+      effectiveAppearance === "dotted" ||
+      effectiveAppearance === "texturedDots"
+    ) {
       geometry = BallMesh.getBallGeometry()
       material = BallMaterialFactory.createTexturedDotsMaterial(color)
     } else {
@@ -175,7 +168,32 @@ export class BallMesh {
         getRenderQuality().ballTextureSize
       )
     }
+    const assetId =
+      label === undefined
+        ? `ball-dotted-${color.getHexString()}`
+        : `ball-pool-${label}`
+    const art = refinedArt(assetId)
+    if (art) {
+      art.updateMatrixWorld(true)
+      let adopted = false
+      art.traverse((object) => {
+        if (adopted || !(object instanceof Mesh)) return
+        const sourceRadius = refinedArtEntry(assetId)?.radius ?? R
+        geometry = object.geometry.clone().applyMatrix4(object.matrixWorld)
+        geometry.scale(R / sourceRadius, R / sourceRadius, R / sourceRadius)
+        // The marker shader depends on live cubemap uniforms. Keep it for
+        // dotted balls; numbered balls use the Blender-authored resin/maps.
+        if (
+          effectiveAppearance === "projected" &&
+          !Array.isArray(object.material)
+        )
+          material = object.material.clone()
+        adopted = true
+      })
+      disposeRefinedArt(art)
+    }
     this.mesh = new Mesh(geometry, material)
+    if (art) this.mesh.userData.refinedArtId = assetId
     this.mesh.name = "ball"
     this.mesh.castShadow = getRenderQuality().dynamicShadows
     this.updateRotation(new Vector3().random(), 100)
@@ -190,47 +208,10 @@ export class BallMesh {
     this.trace = new Trace(500, color)
   }
 
-  private static addDots(geometry, baseColor) {
-    const count = geometry.attributes.position.count
-    const color = new Color(baseColor)
-
-    geometry.setAttribute(
-      "color",
-      new BufferAttribute(new Float32Array(count * 3), 3)
-    )
-
-    const verticies = geometry.attributes.color
-    for (let i = 0; i < count / 3; i++) {
-      BallMesh.colorVerticesForFace(
-        i,
-        verticies,
-        BallMesh.scaleNoise(color.r),
-        BallMesh.scaleNoise(color.g),
-        BallMesh.scaleNoise(color.b)
-      )
-    }
-
-    const red = new Color(0xaa2222)
-    const dots = [0, 96, 111, 156, 186, 195]
-    dots.forEach((i) => {
-      BallMesh.colorVerticesForFace(i / 3, verticies, red.r, red.g, red.b)
-    })
-  }
-
   addToScene(scene) {
     scene.add(this.mesh)
     scene.add(this.shadow)
     scene.add(this.spinAxisArrow)
     scene.add(this.trace.line)
-  }
-
-  private static colorVerticesForFace(face, verticies, r, g, b) {
-    verticies.setXYZ(face * 3 + 0, r, g, b)
-    verticies.setXYZ(face * 3 + 1, r, g, b)
-    verticies.setXYZ(face * 3 + 2, r, g, b)
-  }
-
-  private static scaleNoise(v) {
-    return (1 - Math.random() * 0.25) * v
   }
 }

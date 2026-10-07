@@ -15,6 +15,7 @@ describe("persisted room state", () => {
     rackNumber: 2,
     revision: 12,
     savedAt: Date.now(),
+    adminAssistAuthorised: true,
     snapshot: {
       table: { balls: [] },
       scores: { p1: 3, p2: 2, breakScore: 1 },
@@ -36,6 +37,9 @@ describe("persisted room state", () => {
     expect(loadRoomState(state.tableId, state.clientId)?.journal).toEqual([
       '{"type":"AIM"}',
     ])
+    expect(
+      loadRoomState(state.tableId, state.clientId)?.adminAssistAuthorised
+    ).toBe(true)
     clearRoomState(state.tableId, state.clientId)
     expect(loadRoomState(state.tableId, state.clientId)).toBeUndefined()
   })

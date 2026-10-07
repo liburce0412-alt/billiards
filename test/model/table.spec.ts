@@ -18,6 +18,18 @@ describe("Table", () => {
     done()
   })
 
+  it("recovery stops motion without reviving balls below the cloth", () => {
+    const table = new Table([
+      new Ball(zero),
+      new Ball(new Vector3(1, 1, -5 * R)),
+    ])
+    table.balls[0].state = State.Sliding
+    table.balls[0].vel.x = 2
+    table.balls[1].state = State.InPocket
+    table.halt()
+    expect(table.allStationary()).to.be.true
+    expect(table.balls[1].onTable()).to.be.false
+  })
   it("updates when all stationary", (done) => {
     const a = new Ball(zero)
     const b = new Ball(new Vector3(1, 0, 0))

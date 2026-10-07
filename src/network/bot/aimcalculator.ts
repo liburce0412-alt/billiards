@@ -38,8 +38,12 @@ interface CushionLine {
 export class AimCalculator {
   private static readonly POCKET_INSET_FACTOR = 0.94
   private static readonly GHOST_BALL_DISTANCE_FACTOR = 2.001
-  static readonly DEFAULT_SHOT_POWER = 90 * R
-  static readonly MAX_SHOT_POWER = 110 * R
+  static get DEFAULT_SHOT_POWER() {
+    return 90 * R
+  }
+  static get MAX_SHOT_POWER() {
+    return 110 * R
+  }
   private static readonly MAX_ERROR_DEGREES = [
     7.5, 6.2, 4.8, 3.5, 2.55, 0.32, 0.3, 0.28, 0.26, 0.24, 0.22,
   ]
@@ -105,7 +109,7 @@ export class AimCalculator {
     spinOffset: Vector3 = new Vector3()
   ): HitEvent {
     const { cueball, cue, balls } = table
-    const { aim } = cue
+    const aim = cue.aim.copy()
 
     aim.pos.copy(cueball.pos)
     aim.i = balls.indexOf(cueball)
@@ -113,13 +117,18 @@ export class AimCalculator {
     const lineTo = targetPos.clone().sub(cueball.pos)
     aim.angle = atan2(lineTo.y, lineTo.x) + angleError
     aim.power = power
-    aim.offset = spinOffset
+    aim.offset.copy(spinOffset)
+    // A planned level stroke must not inherit the previous player's jump shot.
+    aim.elevation = 0
 
     if (cue.intersectsAnything(table, aim)) {
       aim.offset.set(0, offCenterLimit, 0)
     }
 
-    return new HitEvent(table.serialiseHit())
+    return new HitEvent({
+      balls: [cueball.serialise()],
+      aim: aim.copy(),
+    })
   }
 
   /**

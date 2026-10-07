@@ -9,6 +9,7 @@ import {
 import { BallMesh } from "../view/ballmesh"
 import { Pocket } from "./physics/pocket"
 import { BallAppearance } from "../view/ballappearance"
+import { R } from "./physics/constants"
 
 export enum State {
   Stationary = "Stationary",
@@ -33,6 +34,15 @@ export class Ball {
   readonly appearance: BallAppearance | undefined
 
   static readonly transition = 0.05
+  static readonly sleepSurfaceSpeed = 0.0015
+  private static readonly slipBefore = new Vector3()
+  private static readonly slipAfter = new Vector3()
+  private static readonly slipNextVelocity = new Vector3()
+  private static readonly slipNextRotation = new Vector3()
+  private static readonly planarVelocity = new Vector3()
+  private static readonly planarVelocityDelta = new Vector3()
+  private static readonly planarRotation = new Vector3()
+  private static readonly planarRotationDelta = new Vector3()
 
   constructor(pos, color?, label?: number, appearance?: BallAppearance) {
     this.pos = pos.clone()
@@ -87,7 +97,20 @@ export class Ball {
         this.state = State.Sliding
         this.addDelta(t, sliding(this.vel, this.rvel))
       }
+      if (this.hasOnlyImperceptibleMotion()) this.setStationary()
     }
+  }
+
+  private hasOnlyImperceptibleMotion(): boolean {
+    const thresholdSq = Ball.sleepSurfaceSpeed * Ball.sleepSurfaceSpeed
+    const planarSpinSurfaceSpeedSq =
+      (this.rvel.x * this.rvel.x + this.rvel.y * this.rvel.y) * R * R
+    const sideSpinSurfaceSpeedSq = this.rvel.z * this.rvel.z * R * R
+    return (
+      this.vel.lengthSq() <= thresholdSq &&
+      planarSpinSurfaceSpeedSq <= thresholdSq &&
+      sideSpinSurfaceSpeedSq <= thresholdSq
+    )
   }
 
   private addDelta(t: number, delta: { v: Vector3; w: Vector3 }) {
@@ -96,12 +119,74 @@ export class Ball {
     delta.w.multiplyScalar(t)
 
     // 2. Separate logic: Let passesZero handle the check, and handle the state mutation cleanly
-    if (this.passesZero(delta)) {
+    if (this.settleExhaustedRollingMotion(delta)) {
+      // Linear rolling and vertical side-spin do not have to stop together.
+      // Clamp the exhausted planar component instead of letting it reverse
+      // while the ball continues spinning in place.
+    } else if (this.passesZero(delta)) {
       this.setStationary()
+    } else if (
+      this.state === State.Sliding &&
+      t <= 1 / 128 &&
+      this.transitionSlipToRolling(delta)
+    ) {
+      // The friction step crossed zero surface slip. Apply only the fraction
+      // up to that instant so a tiny reverse slide cannot be introduced.
     } else {
       this.vel.add(delta.v)
       this.rvel.add(delta.w)
     }
+  }
+
+  private settleExhaustedRollingMotion(delta: {
+    v: Vector3
+    w: Vector3
+  }): boolean {
+    if (this.state !== State.Rolling) return false
+
+    const planarVelocity = Ball.planarVelocity.copy(this.vel).setZ(0)
+    const planarVelocityDelta = Ball.planarVelocityDelta.copy(delta.v).setZ(0)
+    const planarRotation = Ball.planarRotation.copy(this.rvel).setZ(0)
+    const planarRotationDelta = Ball.planarRotationDelta.copy(delta.w).setZ(0)
+    const velocityStops =
+      planarVelocity.lengthSq() > 0 &&
+      passesThroughZero(planarVelocity, planarVelocityDelta)
+    const rotationStops =
+      planarRotation.lengthSq() > 0 &&
+      passesThroughZero(planarRotation, planarRotationDelta)
+    if (!velocityStops && !rotationStops) return false
+
+    this.vel.set(0, 0, 0)
+    this.rvel.setX(0).setY(0)
+    const nextSideSpin = this.rvel.z + delta.w.z
+    this.rvel.z =
+      this.rvel.z === 0 || this.rvel.z * nextSideSpin <= 0 ? 0 : nextSideSpin
+    this.state = State.Rolling
+    if (Math.abs(this.rvel.z) * R <= Ball.sleepSurfaceSpeed) {
+      this.setStationary()
+    }
+    return true
+  }
+
+  private transitionSlipToRolling(delta: { v: Vector3; w: Vector3 }): boolean {
+    const before = Ball.slipBefore
+      .copy(surfaceVelocityFull(this.vel, this.rvel))
+      .setZ(0)
+    const nextVelocity = Ball.slipNextVelocity.copy(this.vel).add(delta.v)
+    const nextRotation = Ball.slipNextRotation.copy(this.rvel).add(delta.w)
+    const after = Ball.slipAfter
+      .copy(surfaceVelocityFull(nextVelocity, nextRotation))
+      .setZ(0)
+
+    if (before.lengthSq() !== 0 && before.dot(after) > 0) return false
+
+    const denominator = before.lengthSq() - before.dot(after)
+    const fraction = denominator > 0 ? before.lengthSq() / denominator : 0
+    this.vel.addScaledVector(delta.v, Math.max(0, Math.min(1, fraction)))
+    this.rvel.addScaledVector(delta.w, Math.max(0, Math.min(1, fraction)))
+    forceRoll(this.vel, this.rvel)
+    this.state = State.Rolling
+    return true
   }
 
   private passesZero(delta: { v: Vector3; w: Vector3 }): boolean {

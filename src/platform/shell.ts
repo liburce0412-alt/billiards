@@ -6,6 +6,12 @@ import {
   type PlatformMe,
 } from "./api"
 import { mountSpectraFx } from "./fx"
+import { mountGlassOverlay } from "../../packages/table-tennis/src/browser/glass"
+import {
+  RENDER_QUALITY_STORAGE_KEY,
+  renderQualityModeForPreference,
+  serverQualityForRenderMode,
+} from "../view/renderquality"
 
 type TurnstileApi = {
   render(
@@ -30,6 +36,7 @@ declare global {
 }
 
 let turnstilePromise: Promise<TurnstileApi> | null = null
+let disposeAuthPresentation: (() => void) | null = null
 
 export async function platformGate(): Promise<PlatformMe | null> {
   document.documentElement.classList.add("platform-loading")
@@ -41,6 +48,8 @@ export async function platformGate(): Promise<PlatformMe | null> {
     }
     const session = await loadSession()
     if (session) {
+      disposeAuthPresentation?.()
+      document.getElementById("platformGate")?.remove()
       applyPersonalisation(session)
       ;(
         globalThis as typeof globalThis & {
@@ -60,10 +69,14 @@ export async function platformGate(): Promise<PlatformMe | null> {
 
 export function applyPersonalisation(session: PlatformMe) {
   const root = document.documentElement
+  const qualityMode = renderQualityModeForPreference(
+    session.preferences.quality
+  )
   root.dataset.accent = session.user.accent
   root.dataset.approval = session.user.approvalStatus
   root.dataset.visibility = session.user.visibility
-  root.dataset.quality = session.preferences.quality
+  root.dataset.quality = serverQualityForRenderMode(qualityMode)
+  root.dataset.qualityMode = qualityMode
   root.dataset.camera = session.preferences.camera_mode
   root.classList.toggle("reduced-motion", !!session.preferences.reduced_motion)
 
@@ -87,6 +100,7 @@ export function applyPersonalisation(session: PlatformMe) {
     "break-builder.social-drawer": session.preferences.social_drawer_open
       ? "open"
       : "closed",
+    [RENDER_QUALITY_STORAGE_KEY]: qualityMode,
     "billiards-camera-mode": cameraMode,
   }
   try {
@@ -100,7 +114,7 @@ export function applyPersonalisation(session: PlatformMe) {
       "billiards-launcher-selection",
       JSON.stringify({
         ...stored,
-        quality: session.preferences.quality,
+        quality: qualityMode,
         cueStyle: session.user.cueStyle,
         tableStyle: session.user.tableStyle,
         environmentStyle: session.user.environmentStyle,
@@ -142,6 +156,8 @@ export async function signOut() {
 }
 
 async function mountAuthGate() {
+  disposeAuthPresentation?.()
+  document.getElementById("platformGate")?.remove()
   const config = await apiJson<{
     turnstileSiteKey: string | null
     account: { minimumPasswordLength: number }
@@ -178,7 +194,7 @@ async function mountAuthGate() {
             <li><i class="ph ph-sliders-horizontal"></i><span><strong>跨设备个性化</strong>外观与操作一起同步</span></li>
           </ul>
         </section>
-        <section class="platform-auth-card" aria-labelledby="authTitle">
+        <section class="platform-auth-card" data-glass="optical" aria-labelledby="authTitle">
           <div class="platform-auth-tabs" role="tablist" aria-label="账号操作">
             <button type="button" role="tab" data-auth-tab="login" aria-selected="true">登录</button>
             <button type="button" role="tab" data-auth-tab="register" aria-selected="false">注册</button>
@@ -225,7 +241,22 @@ async function mountAuthGate() {
       <footer class="platform-gate__footer"><span>© Break Builder</span><a href="/rules">规则与许可证</a><span>WebGL2 安全降级</span></footer>
     </div>`
   document.body.append(root)
-  mountSpectraFx(root.querySelector("canvas")!, { interactive: true })
+  const canvas = root.querySelector("canvas")!
+  const glass = mountGlassOverlay(root, canvas)
+  const background = mountSpectraFx(canvas, {
+    interactive: true,
+    onRender: (now) => glass.render(now),
+  })
+  const onPageHide = (event: PageTransitionEvent) => {
+    if (!event.persisted) disposeAuthPresentation?.()
+  }
+  disposeAuthPresentation = () => {
+    window.removeEventListener("pagehide", onPageHide)
+    background.dispose()
+    glass.dispose()
+    disposeAuthPresentation = null
+  }
+  window.addEventListener("pagehide", onPageHide)
   initialiseTabs(root)
   initialiseAuthForms(root, config.turnstileSiteKey)
 }
@@ -405,7 +436,7 @@ function showRecoveryCodes(
   modal.setAttribute("aria-modal", "true")
   modal.setAttribute("aria-labelledby", "recoveryCodesTitle")
   modal.innerHTML = `
-    <div class="platform-modal__card">
+    <div class="platform-modal__card" data-glass="optical">
       <span class="platform-modal__icon"><i class="ph ph-key"></i></span>
       <p class="platform-eyebrow">账号创建成功</p>
       <h2 id="recoveryCodesTitle">保存一次性恢复码</h2>

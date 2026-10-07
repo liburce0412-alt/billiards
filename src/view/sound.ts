@@ -23,6 +23,7 @@ export class Sound {
   private readonly voiceStartedAt = new WeakMap<Voice, number>()
   private readonly contactPosition = new Vector3()
   private readonly maxConcurrentVoices = 24
+  private disposed = false
   lastOutcomeTime = 0
   lastOutcomeIndex = 0
   lastOutcomesRef: Outcome[] | null = null
@@ -62,6 +63,7 @@ export class Sound {
       this.audioLoader.load(
         path,
         (buffer) => {
+          if (this.disposed) return
           const useSpatial =
             definition.spatial && getRenderQuality().name !== "low"
           const voices = this.pools.get(key) ?? []
@@ -98,7 +100,7 @@ export class Sound {
     position?: Vector3,
     delay = 0
   ) {
-    if (!this.loadAssets) return
+    if (!this.loadAssets || this.disposed) return
     const context = this.listener.context
     if (context?.state === "suspended") {
       if (globalThis.navigator?.userActivation?.hasBeenActive) {
@@ -216,5 +218,28 @@ export class Sound {
 
   playSuccess(pitch) {
     this.play("success", 0.1, pitch * 100 - 2200)
+  }
+
+  dispose() {
+    if (this.disposed) return
+    this.disposed = true
+    for (const voice of this.pools.values()) {
+      for (const entry of voice) {
+        if (entry.isPlaying) entry.stop()
+        try {
+          entry.disconnect()
+          entry.gain.disconnect()
+        } catch {
+          // A voice without an active source may already be disconnected.
+        }
+        entry.removeFromParent()
+      }
+    }
+    this.pools.clear()
+    this.cursors.clear()
+    this.root.clear()
+    this.listener?.getFilter()?.disconnect()
+    this.listener?.gain.disconnect()
+    this.listener?.removeFromParent()
   }
 }

@@ -2,6 +2,7 @@ const path = require("node:path")
 const TerserPlugin = require("terser-webpack-plugin")
 module.exports = {
   entry: {
+    app: "./src/app/main.tsx",
     index: "./src/index.ts",
     launcher: "./src/launcher.ts",
     lobby: "./src/lobby.ts",
@@ -23,7 +24,12 @@ module.exports = {
             jsc: {
               parser: {
                 syntax: "typescript",
-                tsx: false,
+                tsx: true,
+              },
+              transform: {
+                react: {
+                  runtime: "automatic",
+                },
               },
             },
             env: {
@@ -38,7 +44,10 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".tsx", ".ts", ".jsx", ".js"],
+    // The independently runnable submodule has its own development install.
+    // Hosted games must still share the main site's single Three.js runtime.
+    alias: { three: path.resolve(__dirname, "node_modules/three") },
   },
   devServer: {
     static: {

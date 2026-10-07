@@ -1,0 +1,13 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-eightball-5-american-graphite-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence.",
+    "Final 17:34 rebuild checked: former V-shaped apron normal artifact and broad dark cloth bands are gone; compact body and six pocket decorations now match the visible table footprint."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.5470163+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "7041ab2a11ae08857d64eb1002164e5098d1328e5596448418e338ce50fac050"
+}

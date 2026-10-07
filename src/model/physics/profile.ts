@@ -62,7 +62,9 @@ export const POOL_STANDARD_PHYSICS: PhysicsProfile = {
   rollingFriction: Math.SQRT2 * 0.01,
   slidingFriction: 0.2,
   ballRestitution: 0.95,
-  maxCueSpeed: 8.5,
+  // A full input charge is the hard break-speed ceiling. The input curve
+  // reserves more control travel for gentle shots.
+  maxCueSpeed: 17,
 }
 
 export function physicsProfileForRule(ruleType: string): PhysicsProfile {

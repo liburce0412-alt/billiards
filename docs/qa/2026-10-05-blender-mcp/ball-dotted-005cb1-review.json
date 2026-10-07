@@ -1,0 +1,12 @@
+{
+  "evidence": "ball-dotted-005cb1-angles-0.png",
+  "reviewer": "three_asset_inventory",
+  "notes": [
+    "All four actual views inspected: continuous round silhouette, uninterrupted highlight and matching base color; no broken surface visible.",
+    "Dotted material is explicitly a runtime shader slot. Blender PBR proxy shows base color without dots; runtime dot visibility is outside this asset geometry review."
+  ],
+  "sha256": "d16c29a2e5969f3c97e436eea7d8b7e09989c2f710ec284a20d3f11d9f5eeb80",
+  "reviewedAt": "2026-10-05T17:28:04.3805930+08:00",
+  "scope": "Blender ball geometry and base palette inspection",
+  "passed": true
+}

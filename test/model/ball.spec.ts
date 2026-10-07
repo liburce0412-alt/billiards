@@ -139,6 +139,83 @@ describe("Ball", () => {
     done()
   })
 
+  it("transitions sliding side-spin to rolling without reversing drift", () => {
+    const ball = new Ball(new Vector3())
+    ball.vel.x = 0.001
+    ball.rvel.z = 10
+    ball.state = State.Sliding
+
+    ball.update(1 / 512)
+
+    expect(ball.state).to.equal(State.Rolling)
+    expect(ball.vel.x).to.be.at.least(0)
+    expect(surfaceVelocity(ball.vel, ball.rvel).length()).to.be.below(1e-9)
+  })
+
+  it("settles a slow side-spin shot in bounded time", () => {
+    const ball = new Ball(new Vector3())
+    ball.vel.set(0.001, -0.0005, 0)
+    ball.rvel.z = 10
+    ball.state = State.Sliding
+
+    let steps = 0
+    while (ball.inMotion() && steps++ < 4096) ball.update(1 / 512)
+
+    expect(ball.inMotion()).to.be.false
+    expect(steps).to.be.below(4096)
+  })
+
+  it("sleeps imperceptible residual rolling instead of drifting forever", () => {
+    const ball = new Ball(new Vector3())
+    ball.vel.set(Ball.sleepSurfaceSpeed * 0.5, 0, 0)
+    forceRoll(ball.vel, ball.rvel)
+    ball.rvel.z = (Ball.sleepSurfaceSpeed * 0.5) / R
+    ball.state = State.Rolling
+
+    ball.update(1 / 512)
+
+    expect(ball.state).to.equal(State.Stationary)
+    expect(ball.vel).to.deep.equal(zero)
+    expect(ball.rvel).to.deep.equal(zero)
+  })
+
+  it("does not reverse into a drift after planar roll is exhausted", () => {
+    const ball = new Ball(new Vector3())
+    ball.vel.set(0.0002, 0, 0)
+    forceRoll(ball.vel, ball.rvel)
+    ball.rvel.z = 7
+    ball.state = State.Rolling
+
+    let minimumX = ball.pos.x
+    let maximumX = ball.pos.x
+    let steps = 0
+    while (ball.inMotion() && steps++ < 20 * 512) {
+      ball.update(1 / 512)
+      minimumX = Math.min(minimumX, ball.pos.x)
+      maximumX = Math.max(maximumX, ball.pos.x)
+      expect(ball.vel.x).to.be.at.least(0)
+    }
+
+    expect(ball.inMotion()).to.be.false
+    expect(minimumX).to.equal(0)
+    expect(maximumX).to.be.below(0.001)
+    expect(steps).to.be.below(20 * 512)
+  })
+
+  it("damps a high side-spin sliding shot before the watchdog window", () => {
+    const ball = new Ball(new Vector3())
+    ball.vel.set(0.4, 0.15, 0)
+    ball.rvel.set(0, 0, 320)
+    ball.state = State.Sliding
+
+    let steps = 0
+    const maxSteps = 20 * 512
+    while (ball.inMotion() && steps++ < maxSteps) ball.update(1 / 512)
+
+    expect(ball.inMotion()).to.be.false
+    expect(steps).to.be.below(maxSteps)
+  })
+
   it("halts at close to zero", (done) => {
     expect(passesThroughZero(new Vector3(1, 1, 0), new Vector3(-0.5, -0.5, 0)))
       .to.be.false

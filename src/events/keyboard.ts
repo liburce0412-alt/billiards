@@ -1,5 +1,6 @@
 import { Input } from "./input"
 import interact from "interactjs"
+import { MOBILE_AIM_SENSITIVITY } from "./mobilegesturecoordinator"
 
 /**
  * Maintains a map of pressed keys.
@@ -11,6 +12,7 @@ export class Keyboard {
   released = {}
   private readonly flipX: boolean
   private readonly disabled: boolean
+  private readonly element: HTMLCanvasElement
 
   getEvents() {
     const keys = Object.keys(this.pressed)
@@ -37,6 +39,7 @@ export class Keyboard {
   }
 
   constructor(element: HTMLCanvasElement, opts: { disabled?: boolean } = {}) {
+    this.element = element
     this.flipX = new URLSearchParams(globalThis.location?.search).has("flip")
     this.disabled = opts.disabled ?? false
     this.addHandlers(element)
@@ -65,9 +68,13 @@ export class Keyboard {
   }
 
   mousetouch = (e) => {
+    if (e.pointerType === "touch") return
     const k = this.released
     const topHalf = e.client.y < e.rect.height / 2
-    const factor = topHalf || e.ctrlKey ? 0.5 : 1
+    const precision = document.body.dataset.precisionAim === "true"
+    let factor = 1
+    if (precision) factor = 0.22
+    else if (topHalf || e.ctrlKey) factor = 0.5
     const dx = e.dx * factor * (this.flipX ? -1 : 1)
     const dy = e.dy * 0.8
     k["movementY"] = (k["movementY"] ?? 0) + dy
@@ -77,10 +84,31 @@ export class Keyboard {
     }
   }
 
+  /**
+   * Queues movement from the canvas-owned touch coordinator. The controller's
+   * existing movementX scale is 0.002 rad/unit, so these factors produce a
+   * device-pixel-ratio-independent 0.003 rad/CSS px normal aim and a
+   * 0.00065 rad/CSS px precision aim.
+   */
+  touchmove(dx: number, dy: number, twoAxis = false) {
+    if (this.disabled) return
+    const precision = document.body.dataset.precisionAim === "true"
+    const radiansPerPixel = precision
+      ? MOBILE_AIM_SENSITIVITY.precision
+      : MOBILE_AIM_SENSITIVITY.normal
+    const factor = radiansPerPixel / 0.002
+    const horizontal = dx * factor * (this.flipX ? -1 : 1)
+    this.released["movementX"] = (this.released["movementX"] ?? 0) + horizontal
+    if (twoAxis) {
+      this.released["movementY"] =
+        (this.released["movementY"] ?? 0) + dy * factor
+    }
+  }
+
   private addHandlers(element: HTMLCanvasElement) {
     element.addEventListener("keydown", this.keydown)
     element.addEventListener("keyup", this.keyup)
-    element.addEventListener("dragstart", (e) => e.preventDefault())
+    element.addEventListener("dragstart", this.preventDrag)
     element.focus()
 
     interact(element).draggable({
@@ -91,11 +119,20 @@ export class Keyboard {
         },
       },
     })
-    interact(element).gesturable({
-      onmove: (e) => {
-        e.dx /= 3
-        this.mousetouch(e)
-      },
-    })
+    // Two-finger gestures belong to the free camera. Keeping Interact's
+    // gesturable aim handler here made pinch/rotate alter the cue at the same
+    // time as the camera on touch devices.
+  }
+
+  private readonly preventDrag = (event: DragEvent) => event.preventDefault()
+
+  dispose() {
+    this.element.removeEventListener("keydown", this.keydown)
+    this.element.removeEventListener("keyup", this.keyup)
+    this.element.removeEventListener("dragstart", this.preventDrag)
+    interact(this.element).unset()
+    this.pressed = {}
+    this.released = {}
+    this.element.removeAttribute("contenteditable")
   }
 }

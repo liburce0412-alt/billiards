@@ -1,5 +1,6 @@
 import {
   DataTexture,
+  LinearMipmapLinearFilter,
   MeshStandardMaterial,
   Object3D,
   RepeatWrapping,
@@ -30,6 +31,7 @@ function configureMaterial(
   material.envMapIntensity = quality.name === "high" ? 1.15 : 0.8
 
   if (isCloth(name)) {
+    material.userData.snookerMarkings = snooker && Boolean(material.map)
     const clothColor = snooker ? 0x17613e : 0x155f75
     const shadeColor = snooker ? 0x103e2a : 0x0e4050
     material.color.setHex(name.includes("shade") ? shadeColor : clothColor)
@@ -97,6 +99,8 @@ function createFeltTextures() {
   for (const texture of [feltNormal, feltRoughness]) {
     texture.wrapS = texture.wrapT = RepeatWrapping
     texture.repeat.set(36, 18)
+    texture.generateMipmaps = true
+    texture.minFilter = LinearMipmapLinearFilter
     texture.needsUpdate = true
   }
 }

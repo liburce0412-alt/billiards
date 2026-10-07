@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "sha256": "dfafde5cf53ec59698f07f854c49ad0c1ae08d6f56c4246aab6816654ed876a5",
+  "reviewer": "three_asset_inventory",
+  "reviewedAt": "2026-10-05T18:01:59.3525374+08:00",
+  "evidence": [
+    "environment-lunar-observatory-angles-0.png",
+    "environment-lunar-observatory-detail-0.png"
+  ],
+  "scope": "Actual Blender four-angle architecture and one theme-specific close-up, excluding runtime shader/phone acceptance",
+  "notes": [
+    "Actually rebuilt via MCP and re-inspected in four views plus reflector close-up. Replaced the reversed single-sided lathe with a closed 18mm parabolic shell; the bowl now visibly occludes the crater field and receives the feed support shadow.",
+    "Existing terrain, pedestal, feed assembly and solar arrays are preserved. Lunar landscape is stylized, not terrain scan data."
+  ]
+}

@@ -10,7 +10,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Exo:wght@200&family=IBM+Plex+Sans:wght@400;600&family=Tomorrow:wght@500;700&display=swap"
     />
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta charset="UTF-8" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta
@@ -26,7 +26,7 @@
     <meta http-equiv="Permissions-Policy" content="interest-cohort=()" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
     />
     <link rel="canonical" href="https://play.campus3ai.xyz/" />
     <meta property="og:title" content="Break Builder 3D｜拟真台球" />
@@ -78,37 +78,59 @@
         "inLanguage": "zh-CN"
       }
     </script>
-    <link rel="stylesheet" type="text/css" href="vendor/phosphor/style.css" />
-    <link rel="stylesheet" type="text/css" href="css/fonts.css" />
-    <link rel="stylesheet" type="text/css" href="css/platform.css" />
-    <link rel="stylesheet" type="text/css" href="css/index.css" />
-    <link rel="stylesheet" type="text/css" href="css/aiminputs.css" />
-    <link rel="stylesheet" type="text/css" href="css/powerinput.css" />
-    <link rel="stylesheet" type="text/css" href="css/notification.css" />
-    <link rel="stylesheet" type="text/css" href="css/tray.css" />
-    <link rel="stylesheet" type="text/css" href="css/chat.css" />
-    <link rel="stylesheet" type="text/css" href="css/lobby.css" />
-    <link rel="stylesheet" type="text/css" href="css/menu.css" />
-    <link rel="stylesheet" type="text/css" href="css/wood.css" />
-    <link rel="stylesheet" type="text/css" href="css/launcher.css" />
-    <link rel="stylesheet" type="text/css" href="css/game-future.css" />
+    <link rel="stylesheet" type="text/css" href="/vendor/phosphor/style.css" />
+    <link rel="stylesheet" type="text/css" href="/tokens.css" />
+    <link rel="stylesheet" type="text/css" href="/css/fonts.css" />
+    <link rel="stylesheet" type="text/css" href="/css/platform.css" />
+    <link rel="stylesheet" type="text/css" href="/css/app.css" />
+    <link rel="stylesheet" type="text/css" href="/css/account.css" />
+    <link rel="stylesheet" type="text/css" href="/css/admin.css" />
+    <link rel="stylesheet" type="text/css" href="/css/social.css" />
+    <link rel="stylesheet" type="text/css" href="/css/index.css" />
+    <link rel="stylesheet" type="text/css" href="/css/aiminputs.css" />
+    <link rel="stylesheet" type="text/css" href="/css/powerinput.css" />
+    <link rel="stylesheet" type="text/css" href="/css/notification.css" />
+    <link rel="stylesheet" type="text/css" href="/css/tray.css" />
+    <link rel="stylesheet" type="text/css" href="/css/chat.css" />
+    <link rel="stylesheet" type="text/css" href="/css/lobby.css" />
+    <link rel="stylesheet" type="text/css" href="/css/menu.css" />
+    <link rel="stylesheet" type="text/css" href="/css/wood.css" />
+    <link rel="stylesheet" type="text/css" href="/css/launcher.css" />
+    <link rel="stylesheet" type="text/css" href="/css/game-future.css" />
+    <link rel="stylesheet" type="text/css" href="/css/react-app.css" />
+    <link rel="stylesheet" type="text/css" href="/css/game-react.css" />
+    <link rel="stylesheet" type="text/css" href="/css/table-tennis-host.css" />
+    <link rel="stylesheet" type="text/css" href="/css/caesar-ui.css" />
   </head>
 
   <body>
-    <div id="gameLauncher" hidden></div>
+    <div id="appRoot"></div>
+    <div id="legacyGameLauncher" hidden></div>
+    <section id="landscapePrompt" class="landscape-prompt" hidden>
+      <div
+        class="landscape-prompt__card"
+        role="dialog"
+        aria-labelledby="landscapePromptTitle"
+      >
+        <i class="ph ph-device-rotate" aria-hidden="true"></i>
+        <div>
+          <strong id="landscapePromptTitle">横屏操作更顺手</strong>
+          <p data-orientation-status>
+            横放手机可同时看清球台、蓄力轨和操作盘。
+          </p>
+        </div>
+        <button id="landscapeEnter" type="button">进入横屏</button>
+        <button id="landscapeContinue" type="button">继续竖屏</button>
+      </div>
+    </section>
     <h1 hidden>在线 3D 台球、斯诺克与三库</h1>
     <div id="viewP1" class="view3d">
       <div class="camera-control-hint" aria-hidden="true">
-        右键拖动旋转 · 滚轮缩放
+        <span class="camera-control-hint__mouse">右键拖动旋转 · 滚轮缩放</span>
+        <span class="camera-control-hint__touch"
+          >单指横拖瞄准、上下俯仰 · 双指环绕、捏合缩放</span
+        >
       </div>
-      <button
-        id="repositionCueBall"
-        class="reposition-cue-ball"
-        type="button"
-        hidden
-      >
-        ↺ 重新摆放自由球
-      </button>
       <div id="snookerScoreOverlay">
         <div id="snookerScore" aria-live="polite">
           <div id="breakScore" class="breakScore"></div>
@@ -169,6 +191,7 @@
             <label class="game-settings__field">
               <span>画质（切换后重载）</span>
               <select id="settingsQuality">
+                <option value="adaptive">观感优先自适应</option>
                 <option value="low">省电</option>
                 <option value="balanced">均衡</option>
                 <option value="high">高画质</option>
@@ -181,7 +204,11 @@
             <button id="settingsTable" type="button">选择球台</button>
             <label class="game-settings__field">
               <span>周围环境</span>
-              <select id="settingsEnvironment"></select>
+              <select
+                id="settingsEnvironment"
+                aria-describedby="settingsEnvironmentDescription"
+              ></select>
+              <small id="settingsEnvironmentDescription"></small>
             </label>
           </section>
         </div>
@@ -198,11 +225,17 @@
         <div class="control-tutorial__card">
           <span>首次操作提示</span>
           <h2 id="controlTutorialTitle">自由观察每一杆</h2>
-          <ul>
+          <ul class="control-tutorial__desktop">
             <li><strong>右键拖动</strong>：旋转方位并改变俯仰</li>
             <li><strong>鼠标滚轮</strong>：自由放大和缩小球台</li>
             <li><strong>摆自由球</strong>：确认前可拖动，击球后不能重摆</li>
             <li><strong>AI 击球时</strong>：仍可旋转和缩放视角</li>
+          </ul>
+          <ul class="control-tutorial__touch">
+            <li><strong>单指拖动</strong>：横向瞄准，上下调整视角俯仰</li>
+            <li><strong>双指拖动</strong>：自由旋转方位与俯仰</li>
+            <li><strong>双指捏合</strong>：放大或缩小整张球台</li>
+            <li><strong>摆好母球</strong>：点击“确认母球”进入开球</li>
           </ul>
           <button id="controlTutorialClose" type="button">
             知道了，开始比赛
@@ -276,15 +309,27 @@
           Break Builder 本地诊断视图
         </pre>
       </div>
-      <div class="chatarea">
-        <div id="chatoutput" class="chatoutput"></div>
+      <div class="chatarea" data-chat-state="peek">
+        <div
+          id="chatoutput"
+          class="chatoutput"
+          role="log"
+          aria-live="polite"
+          aria-relevant="additions"
+        ></div>
+        <button id="matchChatCompose" class="match-chat-compose" type="button">
+          发送消息
+        </button>
       </div>
       <dialog id="inputTextDiv">
+        <div class="match-chat-composer__heading">
+          <strong>局内聊天</strong><span>最多 240 字</span>
+        </div>
         <input
           id="inputText"
           type="text"
           placeholder="输入消息……"
-          maxlength="24"
+          maxlength="240"
           autofocus
           autocomplete="off"
           aria-label="聊天消息"
@@ -300,9 +345,19 @@
         type="button"
         aria-expanded="true"
         aria-controls="panel"
+        aria-label="收起击球操作"
       >
         <i class="ph ph-caret-down" aria-hidden="true"></i>
         <span>收起操作</span>
+      </button>
+      <button
+        id="repositionCueBall"
+        class="reposition-cue-ball"
+        type="button"
+        hidden
+      >
+        <i class="ph ph-arrow-counter-clockwise" aria-hidden="true"></i>
+        <span>重摆母球</span>
       </button>
       <div class="aimControlColumn">
         <div class="shot-control-heading">
@@ -315,6 +370,15 @@
             title="球杆俯仰角（0–72°）"
             aria-label="球杆俯仰角，0 到 72 度"
           ></angle-input>
+          <div class="elevation-stepper" aria-label="球杆俯仰微调">
+            <button id="elevationDown" type="button" aria-label="俯仰角减一度">
+              −1°
+            </button>
+            <output id="elevationValue">0°</output>
+            <button id="elevationUp" type="button" aria-label="俯仰角加一度">
+              +1°
+            </button>
+          </div>
         </div>
         <template id="angle-input-template">
           <div class="area" id="area">
@@ -330,14 +394,6 @@
           </div>
         </template>
         <div id="ballContainerWrapper" class="ballContainerWrapper">
-          <button
-            id="openElevation"
-            class="openElevation"
-            title="调节球杆俯仰角"
-            aria-label="打开球杆俯仰角控制"
-          >
-            <i class="ph ph-arrow-up-right" aria-hidden="true"></i>
-          </button>
           <div id="ballContainer" class="ballContainer">
             <div id="objectBall" class="objectBall"></div>
             <div id="cueBall" class="cueBall">
@@ -379,8 +435,8 @@
           <span>%</span>
         </div>
         <div class="power-instruction">
-          <strong>向右拖拽蓄力，松手出杆</strong>
-          <span>拖到操作栏外侧可取消</span>
+          <strong>拖动蓄力，松手出杆</strong>
+          <span>移出操作栏可取消</span>
         </div>
       </div>
       <div class="shot-action">
@@ -392,59 +448,6 @@
         >
           <span class="shot-label">击球</span>
           <small>点击确认</small>
-        </button>
-      </div>
-      <div class="shot-radial" aria-label="视角与球杆快捷操作">
-        <div class="shot-radial__surface" aria-hidden="true"></div>
-        <div class="shot-radial__orbit" aria-hidden="true"></div>
-        <button
-          class="shot-radial__item shot-radial__item--aim"
-          data-orbit="aim"
-          type="button"
-          data-control-target="ballContainer"
-          aria-label="精确瞄准与母球击点"
-        >
-          <i class="ph ph-crosshair" aria-hidden="true"></i>
-          <span>精确瞄准</span>
-        </button>
-        <button
-          class="shot-radial__item shot-radial__item--spin"
-          data-orbit="spin"
-          type="button"
-          data-control-target="ballContainer"
-          aria-label="调整母球旋转"
-        >
-          <i class="ph ph-arrows-clockwise" aria-hidden="true"></i>
-          <span>加旋</span>
-        </button>
-        <button
-          class="shot-radial__item shot-radial__item--elevation"
-          data-orbit="elevation"
-          type="button"
-          data-control-target="openElevation"
-          aria-label="调整球杆俯仰"
-        >
-          <i class="ph ph-arrows-out-line-vertical" aria-hidden="true"></i>
-          <span>俯仰</span>
-        </button>
-        <button
-          class="shot-radial__item shot-radial__item--camera"
-          data-orbit="camera"
-          type="button"
-          data-control-target="camera"
-          aria-label="切换视角"
-        >
-          <i class="ph ph-camera" aria-hidden="true"></i>
-          <span>视角</span>
-        </button>
-        <button
-          class="shot-radial__cue"
-          type="button"
-          data-control-target="cueStyle"
-          aria-label="选择我的球杆"
-        >
-          <span>我的球杆</span>
-          <i class="ph ph-caret-right" aria-hidden="true"></i>
         </button>
       </div>
       <div class="quick-loadout" aria-label="装备与环境快捷设置">
@@ -481,6 +484,35 @@
         <i class="ph ph-dots-three" aria-hidden="true"></i>
       </button>
       <div id="gameOverflowMenu" class="game-overflow-menu" hidden>
+        <button
+          id="openElevation"
+          class="openElevation menuButton"
+          type="button"
+          title="调节球杆俯仰角"
+          aria-label="打开球杆俯仰角控制"
+        >
+          <i class="ph ph-arrow-up-right" aria-hidden="true"></i>
+        </button>
+        <button
+          class="menuButton"
+          type="button"
+          data-control-target="menu"
+          aria-label="打开游戏设置"
+          title="比赛设置"
+        >
+          <i class="ph ph-gear-six" aria-hidden="true"></i>
+        </button>
+        <button
+          class="menuButton half-height"
+          type="button"
+          data-precision-aim="true"
+          aria-pressed="false"
+          aria-label="切换精确瞄准"
+          title="精确瞄准"
+        >
+          <i class="ph ph-crosshair" aria-hidden="true"></i>
+        </button>
+
         <button
           class="menuButton half-height"
           title="聊天"
@@ -571,27 +603,60 @@
         >
           <i class="ph ph-circles-three-plus" aria-hidden="true"></i>
         </button>
-        <button
-          class="menuButton"
-          title="点击切换俯视；右键拖动自由旋转；滚轮缩放"
-          id="camera"
-          type="submit"
-          aria-label="切换相机视角"
-        >
-          <i class="ph ph-video-camera" aria-hidden="true"></i>
-        </button>
       </div>
     </div>
 
-    <div id="ballTray" class="tray-container" aria-live="polite" role="log">
-      <div class="nav-btn btn-left" id="trayLeft">❮</div>
-      <div class="ball-tray-list" id="ballTrayList"></div>
-      <div class="nav-btn btn-right" id="trayRight">❯</div>
-    </div>
     <div class="tray-score-container">
       <div class="hud-system-status" aria-label="游戏状态">
-        <button type="button" data-control-target="menu" aria-label="打开菜单">
-          <i class="ph ph-list" aria-hidden="true"></i>
+        <details id="matchHistory" class="match-history">
+          <summary aria-label="查看击球记录" title="击球记录">
+            <i class="ph ph-trophy" aria-hidden="true"></i>
+          </summary>
+          <div class="match-history-popover">
+            <strong>击球记录</strong>
+            <div
+              id="ballTray"
+              class="tray-container"
+              aria-live="polite"
+              role="log"
+            >
+              <div class="nav-btn btn-left" id="trayLeft">❮</div>
+              <div class="ball-tray-list" id="ballTrayList"></div>
+              <div class="nav-btn btn-right" id="trayRight">❯</div>
+            </div>
+            <span class="match-history-empty">暂无击球记录</span>
+          </div>
+        </details>
+        <button
+          id="camera"
+          type="button"
+          class="match-camera-toggle"
+          aria-label="切换到 3D 视角"
+          title="切换 2D / 3D 视角"
+        >
+          <span data-mode="2d">2D</span><span data-mode="3d">3D</span>
+        </button>
+        <button
+          id="chalkCue"
+          type="button"
+          class="match-chat-toggle"
+          aria-label="第一视角擦巧粉"
+          title="第一视角擦巧粉"
+          disabled
+        >
+          擦粉
+        </button>
+        <button
+          id="matchChatToggle"
+          aria-label="局内消息"
+          class="match-chat-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="chatoutput"
+        >
+          <i class="ph ph-chat-circle-dots" aria-hidden="true"></i>
+          <span>局内消息</span>
+          <strong id="matchChatUnread" hidden>0</strong>
         </button>
         <span
           ><i class="ph ph-wifi-high" aria-hidden="true"></i
@@ -658,21 +723,6 @@
         <i class="ph ph-arrow-right" aria-hidden="true"></i>
       </a>
     </aside>
-    <button
-      id="gameSocialDock"
-      class="game-social-dock"
-      type="button"
-      aria-label="展开实时社交"
-      aria-controls="gameSocialDrawer"
-    >
-      <span class="game-social-dock__count"
-        ><i></i><strong>0 在线</strong></span
-      >
-      <span class="game-social-dock__avatars" aria-hidden="true">
-        <i>未</i><i>友</i><i>聊</i>
-      </span>
-      <i class="ph ph-caret-right" aria-hidden="true"></i>
-    </button>
     <section class="constants" id="constants" aria-label="物理参数">
       <p>物理参数</p>
       <div class="nw">
@@ -706,6 +756,6 @@
         <button id="network" aria-label="切换网络设置">网络🗲</button>
       </div>
     </section>
-    <script defer src="launcher.js"></script>
+    <script defer src="/app.js"></script>
   </body>
 </html>

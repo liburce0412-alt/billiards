@@ -1,4 +1,4 @@
-import { PowerArcGeometry } from "./powerarcgeometry"
+import { PowerArcGeometry, PowerArcOrientation } from "./powerarcgeometry"
 
 type ArcContext = WebGL2RenderingContext | CanvasRenderingContext2D
 
@@ -7,9 +7,11 @@ export class PowerArcRenderer {
   private readonly context: ArcContext
   private readonly webgl: boolean
   private program?: WebGLProgram
+  private buffer?: WebGLBuffer
   private resizeObserver?: ResizeObserver
   private geometry = new PowerArcGeometry(1, 1)
   private value = 0
+  private orientation: PowerArcOrientation = "horizontal"
 
   static mount(parent: HTMLElement | null): PowerArcRenderer | undefined {
     if (!parent) return
@@ -63,6 +65,12 @@ export class PowerArcRenderer {
     return this.geometry
   }
 
+  setOrientation(orientation: PowerArcOrientation) {
+    if (this.orientation === orientation) return
+    this.orientation = orientation
+    this.resize()
+  }
+
   setValue(value: number) {
     this.value = this.geometry.clamp(value)
     this.positionDom(this.value)
@@ -72,13 +80,25 @@ export class PowerArcRenderer {
   private resize = () => {
     const rect = this.parent.getBoundingClientRect()
     const width = Math.max(1, rect.width)
-    const height = Math.max(1, Math.min(128, rect.height - 18))
+    const height = Math.max(
+      1,
+      this.orientation === "vertical"
+        ? rect.height
+        : Math.min(128, rect.height - 18)
+    )
     const density = Math.min(globalThis.devicePixelRatio || 1, 1.75)
     this.canvas.width = Math.max(1, Math.round(width * density))
     this.canvas.height = Math.max(1, Math.round(height * density))
     this.canvas.style.width = `${width}px`
     this.canvas.style.height = `${height}px`
-    this.geometry = new PowerArcGeometry(width, height)
+    this.geometry = new PowerArcGeometry(
+      width,
+      height,
+      undefined,
+      undefined,
+      undefined,
+      this.orientation
+    )
     if (this.webgl) {
       const gl = this.context as WebGL2RenderingContext
       gl.viewport(0, 0, this.canvas.width, this.canvas.height)
@@ -131,36 +151,41 @@ export class PowerArcRenderer {
       uniform vec2 uResolution;
       uniform float uPower;
       uniform float uInset;
-      uniform float uTop;
+      uniform float uCross;
       uniform float uSag;
+      uniform float uVertical;
       out vec4 outColor;
 
-      float curveY(float x) {
-        float t = clamp((x - uInset) / max(1.0, uResolution.x - 2.0 * uInset), 0.0, 1.0);
+      float curveCross(float primary, float primarySize) {
+        float t = clamp((primary - uInset) / max(1.0, primarySize - 2.0 * uInset), 0.0, 1.0);
         float c = t * 2.0 - 1.0;
-        return uTop + uSag * (1.0 - c * c);
+        return uCross + uSag * (1.0 - c * c);
       }
 
       void main() {
         vec2 p = vec2(gl_FragCoord.x, uResolution.y - gl_FragCoord.y);
-        float t = clamp((p.x - uInset) / max(1.0, uResolution.x - 2.0 * uInset), 0.0, 1.0);
-        float y = curveY(p.x);
-        float dy = abs(p.y - y);
+        float primary = mix(p.x, p.y, uVertical);
+        float cross = mix(p.y, p.x, uVertical);
+        float primarySize = mix(uResolution.x, uResolution.y, uVertical);
+        float t = clamp((primary - uInset) / max(1.0, primarySize - 2.0 * uInset), 0.0, 1.0);
+        float curve = curveCross(primary, primarySize);
+        float dc = abs(cross - curve);
         float ends = smoothstep(0.0, 0.012, t) * smoothstep(0.0, 0.012, 1.0 - t);
-        float outer = (1.0 - smoothstep(13.0, 15.0, dy)) * ends;
-        float slot = (1.0 - smoothstep(7.0, 8.4, dy)) * ends;
-        float core = (1.0 - smoothstep(2.2, 3.8, dy)) * ends * step(t, uPower);
-        float glow = (1.0 - smoothstep(4.0, 16.0, dy)) * step(t, uPower) * ends;
-        float upper = exp(-pow((p.y - (y - 8.2)) / 1.6, 2.0)) * ends;
+        float outer = (1.0 - smoothstep(13.0, 15.0, dc)) * ends;
+        float slot = (1.0 - smoothstep(7.0, 8.4, dc)) * ends;
+        float core = (1.0 - smoothstep(2.2, 3.8, dc)) * ends * step(t, uPower);
+        float glow = (1.0 - smoothstep(4.0, 16.0, dc)) * step(t, uPower) * ends;
+        float highlightOffset = mix(-8.2, 8.2, uVertical);
+        float upper = exp(-pow((cross - (curve + highlightOffset)) / 1.6, 2.0)) * ends;
 
         float majorPhase = abs(fract(t * 4.0 + 0.5) - 0.5);
         float minorPhase = abs(fract(t * 20.0 + 0.5) - 0.5);
         float major = (1.0 - smoothstep(0.0, 0.035, majorPhase)) *
-          (1.0 - smoothstep(8.0, 13.0, abs(p.y - y))) * ends;
+          (1.0 - smoothstep(8.0, 13.0, dc)) * ends;
         float minor = (1.0 - smoothstep(0.0, 0.055, minorPhase)) *
-          (1.0 - smoothstep(9.0, 11.5, abs(p.y - y))) * ends * 0.5;
+          (1.0 - smoothstep(9.0, 11.5, dc)) * ends * 0.5;
 
-        vec3 silver = mix(vec3(0.37, 0.48, 0.56), vec3(0.99), clamp((y - p.y + 14.0) / 28.0, 0.0, 1.0));
+        vec3 silver = mix(vec3(0.37, 0.48, 0.56), vec3(0.99), clamp((curve - cross + 14.0) / 28.0, 0.0, 1.0));
         vec3 colour = silver * outer;
         colour = mix(colour, vec3(0.025, 0.105, 0.16), slot);
         colour += vec3(0.06, 0.88, 0.98) * core;
@@ -183,6 +208,11 @@ export class PowerArcRenderer {
       throw new Error(gl.getProgramInfoLog(program) ?? "Power arc link failed")
     }
     const buffer = gl.createBuffer()
+    if (!buffer) {
+      gl.deleteProgram(program)
+      throw new Error("Unable to create power arc buffer")
+    }
+    this.buffer = buffer
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer)
     gl.bufferData(
       gl.ARRAY_BUFFER,
@@ -219,12 +249,16 @@ export class PowerArcRenderer {
       this.geometry.inset * density
     )
     gl.uniform1f(
-      gl.getUniformLocation(program, "uTop"),
+      gl.getUniformLocation(program, "uCross"),
       this.geometry.top * density
     )
     gl.uniform1f(
       gl.getUniformLocation(program, "uSag"),
       this.geometry.sag * density
+    )
+    gl.uniform1f(
+      gl.getUniformLocation(program, "uVertical"),
+      this.orientation === "vertical" ? 1 : 0
     )
     gl.drawArrays(gl.TRIANGLES, 0, 6)
   }
@@ -285,8 +319,12 @@ export class PowerArcRenderer {
   dispose() {
     this.resizeObserver?.disconnect()
     globalThis.removeEventListener("resize", this.resize)
-    if (this.webgl && this.program) {
-      ;(this.context as WebGL2RenderingContext).deleteProgram(this.program)
+    if (this.webgl) {
+      const gl = this.context as WebGL2RenderingContext
+      if (this.buffer) gl.deleteBuffer(this.buffer)
+      if (this.program) gl.deleteProgram(this.program)
+      this.buffer = undefined
+      this.program = undefined
     }
     this.canvas.remove()
   }

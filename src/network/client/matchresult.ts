@@ -65,10 +65,8 @@ export class MatchResultHelper {
       }
       const isWinnerByScore = winnerIndex === playerIndex
       if (Session.isBotMode()) {
-        // If it's a natural end (forcedAmIWinner came from rules), score should be considered
-        // If it's a concession (forcedAmIWinner=false passed to rules), forcedAmIWinner should be respected.
-        // Rules pass false to handleGameEnd when bot wins by score/legal pot.
-        // But BotEventHandler should now be passing the correct winner based on score.
+        // The bot handler resolves legal decisive pots and terminal fouls.
+        // Pot counters cannot override that outcome, including a 7-7 tie.
         return forcedAmIWinner
       }
       // For games like NineBall/EightBall, forcedAmIWinner (potting 9-ball/8-ball) is king.
@@ -145,7 +143,7 @@ export class MatchResultHelper {
     container.notifyLocal({
       type: "GameOver",
       title: "YOU LOST",
-      subtext: Session.isBotMode() ? "Lostber 🦞" : subtext,
+      subtext,
       highBreaks: this.getHighBreaks(container),
       icon: "🥈",
       extraClass: "is-loser",
@@ -262,6 +260,20 @@ export class MatchResultHelper {
   }
 
   private static getScoreSubtext(
+    container: Container,
+    rulename: string
+  ): string {
+    const decisiveRule = {
+      eightball: "合法打进黑八决定本局胜负；上方数字为进球统计",
+      nineball: "合法打进 9 号球决定本局胜负；上方数字为进球统计",
+    }[rulename]
+    if (decisiveRule) {
+      return decisiveRule
+    }
+    return this.getInningsSubtext(container, rulename)
+  }
+
+  private static getInningsSubtext(
     container: Container,
     rulename: string
   ): string {

@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:05:21.711423+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 4.5.14 LTS\n[('Cube', 'MESH'), ('Light', 'LIGHT'), ('Camera', 'CAMERA')]\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 4.5.14 LTS\n[('Cube', 'MESH'), ('Light', 'LIGHT'), ('Camera', 'CAMERA')]\n"
+    },
+    "isError": false
+  }
+}

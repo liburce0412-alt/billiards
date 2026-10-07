@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:50:49.097848+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: INSPECTION_READY environment-spectra\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: INSPECTION_READY environment-spectra\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\environment-spectra.blend",
+    "sha256": "3503409ac5b5d1aab1c15baf5bac612dc5116828b2d026f204533e48c128e09a"
+  }
+}

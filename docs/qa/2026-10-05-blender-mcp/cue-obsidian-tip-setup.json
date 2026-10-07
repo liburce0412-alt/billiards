@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:26:21.318557+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: CUE_CLOSEUP_READY tip WIDTH_M 0.145 TARGET [0.0, 0.655396580696106, -9.452924132347107e-08]\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: CUE_CLOSEUP_READY tip WIDTH_M 0.145 TARGET [0.0, 0.655396580696106, -9.452924132347107e-08]\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\cue-obsidian.blend",
+    "sha256": "5f049a8794efd5113cae83eeb15dcf46a380954324ed67edb6e2e5d94441b67a"
+  }
+}

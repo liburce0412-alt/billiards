@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>库边出杆与起身修复 · Break Builder</title>
+  <style>
+    body { margin: 0; color: #e4edf1; background: #101a24; font: 16px/1.7 system-ui, sans-serif; }
+    main { max-width: 1100px; margin: auto; padding: 36px 20px 60px; }
+    h1 { line-height: 1.3; }
+    p { color: #b1c3ce; }
+    figure { margin: 30px 0; }
+    img { width: 100%; display: block; border-radius: 12px; border: 1px solid #355361; }
+    figcaption { margin-top: 12px; }
+    a { color: #6ce1ee; }
+  </style>
+  <main>
+    <h1>库边也能看清母球与球杆</h1>
+    <p>2026-09-06 · 实际 WebGL 截图。瞄准眼位对齐母球与出杆轴线，避免沿用库边脚位导致镜头越过母球。出杆停留 1 秒后起身，等待新方向稳定时保持站立。</p>
+    <figure><img src="desktop-aim.png" alt="桌面端，母球靠库时仍能看到母球与杆头" /><figcaption>桌面端库边瞄准：母球与杆头保持在画面下半部。</figcaption></figure>
+    <figure><img src="desktop-stroke.png" alt="桌面端，击球后球杆仍在画面中" /><figcaption>击球后保持原视角，球杆仍可见，母球开始向前运动。</figcaption></figure>
+    <figure><img src="touch-aim.png" alt="手机横屏模拟中的库边瞄准" /><figcaption>915 × 412 手机横屏触控模拟；另验证了触控拉条出杆。</figcaption></figure>
+    <figure><img src="touch-stroke.png" alt="手机横屏触控出杆后保持原视角" /><figcaption>手机横屏出杆后的停留画面。</figcaption></figure>
+    <p>835 项单元测试、16 项浏览器回归通过。覆盖 9 组球位与角度，以及 30 / 60 / 120 FPS 的停留和站立流程。尚未进行手机真机验收。</p>
+    <p><a href="desktop.json">桌面采样</a> · <a href="touch.json">触控采样</a> · <a href="release-verification.json">线上资源核验</a> · <a href="README.md">发布记录</a></p>
+  </main>
+</html>

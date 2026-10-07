@@ -1,0 +1,14 @@
+{
+  "reviewedAt": "2026-10-05T17:29:24.3329879+08:00",
+  "scope": "Blender full-length shape plus listed close-up images",
+  "passed": true,
+  "sha256": "22311ed43e69cbe455dda510fef8e86be7353fbe785d16086971fe4c35a00236",
+  "notes": [
+    "Four-angle full length view actually inspected: taper and color regions are coherent, shaft and butt have no visible breaks. Runtime hand alignment, chalk animation and phone appearance are outside this Blender review.",
+    "No microtexture close-up was captured for this individual variant; only full-length shape and palette approved."
+  ],
+  "reviewer": "three_asset_inventory",
+  "evidence": [
+    "cue-amber-tiger-angles-0.png"
+  ]
+}

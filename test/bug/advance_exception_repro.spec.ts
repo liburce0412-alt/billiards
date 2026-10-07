@@ -74,6 +74,7 @@ function replayShot(startState: number[], aimJson: Record<string, unknown>) {
   return {
     iterations,
     state: table.shortSerialise(),
+    ball6OnTable: table.balls[6].onTable(),
   }
 }
 
@@ -95,7 +96,7 @@ function ballState(state: number[], ballIndex: number) {
 }
 
 describe("Advance Exception Repro", () => {
-  it("replays shot 5 with ball 6 landing on the local shot 6 position", () => {
+  it("replays shot 5 without resurrecting and moving the already pocketed ball 6", () => {
     const replay = replayShot(shot5StartState, shot5Aim)
 
     expect(replay.iterations).to.be.greaterThan(0)
@@ -104,11 +105,12 @@ describe("Advance Exception Repro", () => {
     expect(
       differingBallIndexes(remoteShot6StartState, localShot6StartState)
     ).to.deep.equal([6])
-    expect(ballState(replay.state, 6)).to.deep.equal(
+    expect(ballState(replay.state, 6)).to.not.deep.equal(
       ballState(localShot6StartState, 6)
     )
-    expect(ballState(replay.state, 6)).to.not.deep.equal(
+    expect(ballState(replay.state, 6)).to.deep.equal(
       ballState(remoteShot6StartState, 6)
     )
+    expect(replay.ball6OnTable).to.equal(false)
   })
 })

@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:25:11.452685+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 17:25:10 | INFO: Data are loaded, start creating Blender stuff\n17:25:10 | INFO: Blender create Mesh node 0\n17:25:10 | INFO: Blender create Mesh node 1\n17:25:10 | INFO: Blender create Mesh node 2\n17:25:10 | INFO: Blender create Mesh node 3\n17:25:10 | INFO: Blender create Mesh node 4\n17:25:10 | INFO: Blender create Mesh node 5\n17:25:10 | INFO: Blender create Mesh node 6\n17:25:10 | INFO: Blender create Mesh node 7\n17:25:10 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"cue-holo-laser.blend\"\n17:25:11 | INFO: Starting glTF 2.0 export\n17:25:11 | INFO: Extracting primitive: Mesh_3.002\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Mesh_4.002\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Cylinder.018\n17:25:11 | INFO: Primitives created: 3\n17:25:11 | INFO: Extracting primitive: Segmented angular titanium sleeve.009\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Cylinder.021\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Cube.032\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Mesh_0.002\n17:25:11 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Mesh_1.002\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Mesh_2.002\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Finished glTF 2.0 export in 0.10513877868652344 s\n\nCUE_REFINED cue-holo-laser LENGTH 1.40825 TIP_UNCHANGED True\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 17:25:10 | INFO: Data are loaded, start creating Blender stuff\n17:25:10 | INFO: Blender create Mesh node 0\n17:25:10 | INFO: Blender create Mesh node 1\n17:25:10 | INFO: Blender create Mesh node 2\n17:25:10 | INFO: Blender create Mesh node 3\n17:25:10 | INFO: Blender create Mesh node 4\n17:25:10 | INFO: Blender create Mesh node 5\n17:25:10 | INFO: Blender create Mesh node 6\n17:25:10 | INFO: Blender create Mesh node 7\n17:25:10 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"cue-holo-laser.blend\"\n17:25:11 | INFO: Starting glTF 2.0 export\n17:25:11 | INFO: Extracting primitive: Mesh_3.002\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Mesh_4.002\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Cylinder.018\n17:25:11 | INFO: Primitives created: 3\n17:25:11 | INFO: Extracting primitive: Segmented angular titanium sleeve.009\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Cylinder.021\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Cube.032\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Mesh_0.002\n17:25:11 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Mesh_1.002\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Extracting primitive: Mesh_2.002\n17:25:11 | INFO: Primitives created: 1\n17:25:11 | INFO: Finished glTF 2.0 export in 0.10513877868652344 s\n\nCUE_REFINED cue-holo-laser LENGTH 1.40825 TIP_UNCHANGED True\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\.tmp\\legacy-art-export\\cue-holo-laser.glb",
+    "sha256": "3807208f366b22776452f36e77a6b571415f3374a000476df02fc929b854d2a2"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:24:54.412576+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: Connected to client: ('127.0.0.1', 57510)\nClient handler started\nQueued command: get_addon_info\nConnected to client: ('127.0.0.1', 57527)\nClient handler started\nQueued command: get_addon_info\nInfo: Saved as \"sports-hall.blend\"\n16:24:54 | INFO: Starting glTF 2.0 export\n16:24:54 | INFO: Extracting primitive: Cube.967\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Scoreboard numerals\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.980\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.975\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1294\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.587\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.589\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.591\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.588\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.590\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1178\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1044\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1180\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1179\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.970\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Finished glTF 2.0 export in 0.13128161430358887 s\n\nASSET_READY sports-hall TRIANGLES 126088 ROOTS ['SportsHall']\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: Connected to client: ('127.0.0.1', 57510)\nClient handler started\nQueued command: get_addon_info\nConnected to client: ('127.0.0.1', 57527)\nClient handler started\nQueued command: get_addon_info\nInfo: Saved as \"sports-hall.blend\"\n16:24:54 | INFO: Starting glTF 2.0 export\n16:24:54 | INFO: Extracting primitive: Cube.967\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Scoreboard numerals\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.980\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.975\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1294\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.587\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.589\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.591\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.588\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.590\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1178\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1044\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1180\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.1179\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Extracting primitive: Cube.970\n16:24:54 | INFO: Primitives created: 1\n16:24:54 | INFO: Finished glTF 2.0 export in 0.13128161430358887 s\n\nASSET_READY sports-hall TRIANGLES 126088 ROOTS ['SportsHall']\n"
+    },
+    "isError": false
+  }
+}

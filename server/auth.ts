@@ -91,6 +91,7 @@ export type ProfileRow = {
   table_style: string
   environment_style: string
   language: string
+  admin_demo_assist: number
   sanction_version: number
   muted_until: number | null
   banned_until: number | null

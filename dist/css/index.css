@@ -4,19 +4,34 @@ html {
   background-color: #000;
   color: #444;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
   border: 0;
-  overflow: hidden;
+  overflow-x: clip;
   display: flex;
   flex-direction: column;
+}
+
+html.game-viewport-root,
+body.game-viewport {
+  width: 100%;
+  height: var(--bb-visual-height, 100dvh);
+  min-height: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
 }
 
 ::selection {
   color: white;
 }
 
-div {
+:where(body:not(.app-platform-route)) div {
   color: antiquewhite;
+}
+
+#viewP1,
+.powerSliderContainer,
+.ballContainer,
+angle-input {
   touch-action: none;
 }
 
@@ -101,6 +116,12 @@ canvas {
   border-radius: 5px;
   -webkit-user-drag: none;
   user-select: none;
+}
+
+/* Game optics and vector controls rely on smooth browser resampling. */
+.view3d > canvas,
+.power-arc-canvas {
+  image-rendering: auto;
 }
 
 .panel {

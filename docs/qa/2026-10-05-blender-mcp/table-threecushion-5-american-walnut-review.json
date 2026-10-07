@@ -1,0 +1,12 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-threecushion-5-american-walnut-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.6676211+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "fcc42f3fb8f05b579fc0def30165b99d477ac983f5681ef3c03dbf1b517fd868"
+}

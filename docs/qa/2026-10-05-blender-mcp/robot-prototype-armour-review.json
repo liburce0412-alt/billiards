@@ -1,0 +1,10 @@
+{
+  "sha256": "e4ddfb71cb12a03b68b3390d8f96d5b24912a282b74ae78a5277a44475e5fbe7",
+  "reviewedAt": "2026-10-05T09:58:12.5093592Z",
+  "passed": true,
+  "evidence": [
+    "robot-prototype-armour-angles-0.png ../2026-10-05-billiards-regression/README.md"
+  ],
+  "reviewer": "root",
+  "notes": "Viewed the current actual Blender front/right/back/three-quarter capture. Closed silhouette and continuous chamfered edges; no missing faces or detached parts. The original instance envelope is retained. Whole-player motion is covered separately by the six real-browser billiards regressions, not inferred from this primitive view."
+}

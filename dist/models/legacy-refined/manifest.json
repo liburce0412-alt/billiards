@@ -1,0 +1,2177 @@
+{
+  "version": 1,
+  "sourceBallRadius": 0.03275,
+  "runtimeRootRotationX": 1.5707963267948966,
+  "assets": [
+    {
+      "id": "robot-prototype-sphere",
+      "category": "robot-prototype",
+      "file": "robot-prototype-sphere.glb",
+      "sha256": "83bb5d627570b7ac584b3f9f7e295697098bf9d91db0bd741477106c5fd4dc80",
+      "sourceSha256": "78ffa87ef7679e462990332ffaf2e95b5244fd9fe69b96b94ad9f9f92df21230",
+      "sourceVerification": "sha256",
+      "bytes": 94884,
+      "sourceBlend": "assets/blender/legacy/robot-prototype-sphere.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/robot-prototype-sphere-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/robot-prototype-sphere-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "shape": "sphere"
+    },
+    {
+      "id": "robot-prototype-box",
+      "category": "robot-prototype",
+      "file": "robot-prototype-box.glb",
+      "sha256": "834cca1b344a43bbac64a7e766417efcba2e6c35828371b400e62ccd841e8bc7",
+      "sourceSha256": "7da058cbc6eb57356b1eea99fadfc424abe3685d6ffac33c72c81e42a864fe47",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 10616,
+      "sourceBlend": "assets/blender/legacy/robot-prototype-box.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/robot-prototype-box-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/robot-prototype-box-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "shape": "box"
+    },
+    {
+      "id": "robot-prototype-cylinder",
+      "category": "robot-prototype",
+      "file": "robot-prototype-cylinder.glb",
+      "sha256": "262ef2f44626bc95fa056c4c942e55ff99c4aad33abcc3f6d341bb36cb9ab8ad",
+      "sourceSha256": "cfc138ecc89d17d8b53c233c60e5a08376fa731bb6fbc267227cd95b020547f0",
+      "sourceVerification": "sha256",
+      "bytes": 14888,
+      "sourceBlend": "assets/blender/legacy/robot-prototype-cylinder.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/robot-prototype-cylinder-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/robot-prototype-cylinder-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "shape": "cylinder"
+    },
+    {
+      "id": "robot-prototype-armour",
+      "category": "robot-prototype",
+      "file": "robot-prototype-armour.glb",
+      "sha256": "e4ddfb71cb12a03b68b3390d8f96d5b24912a282b74ae78a5277a44475e5fbe7",
+      "sourceSha256": "e82ab5747dbe71f59b8ae930459cdbea6bd135847bfeffa4f212d6b497631b9a",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 16516,
+      "sourceBlend": "assets/blender/legacy/robot-prototype-armour.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/robot-prototype-armour-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/robot-prototype-armour-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "shape": "armour"
+    },
+    {
+      "id": "robot-prototype-helmet",
+      "category": "robot-prototype",
+      "file": "robot-prototype-helmet.glb",
+      "sha256": "672b4f0c0c18c3f415c1b8b6e632ea7b2b1acdfbf51228083c5740d8980eb713",
+      "sourceSha256": "ab4d40e3e8d58de8bcb7a1b568c567b741c254b96e0b017c8ce3800777c703dc",
+      "sourceVerification": "sha256",
+      "bytes": 161204,
+      "sourceBlend": "assets/blender/legacy/robot-prototype-helmet.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/robot-prototype-helmet-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/robot-prototype-helmet-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "shape": "helmet"
+    },
+    {
+      "id": "cue-heritage",
+      "category": "cue",
+      "file": "cue-heritage.glb",
+      "sha256": "59fc3d684da9e08c26cd816ce9b8f17765ee48eb8cb9917ba94ce2c05758aa3e",
+      "sourceSha256": "720c612ea1702073d44eb8d29c9a531aabe156e26821c840d2f7b2e2d33d91b4",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 1325080,
+      "sourceBlend": "assets/blender/legacy/cue-heritage.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-heritage-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-heritage-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "heritage"
+    },
+    {
+      "id": "cue-obsidian",
+      "category": "cue",
+      "file": "cue-obsidian.glb",
+      "sha256": "6d6a247e86300782b8b26ba1cef0d85281a9d65ebcc5529f6aa8425fa5d37764",
+      "sourceSha256": "85c21758eeab0289e00be0d1778d05f1387711e789bc1de513c25c209802b752",
+      "sourceVerification": "sha256",
+      "bytes": 986208,
+      "sourceBlend": "assets/blender/legacy/cue-obsidian.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-obsidian-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-obsidian-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "obsidian"
+    },
+    {
+      "id": "cue-jade",
+      "category": "cue",
+      "file": "cue-jade.glb",
+      "sha256": "d8a033f5dccd4f8793bd69c987e8c5a7904d0c0f2946e104482f3430185b957c",
+      "sourceSha256": "8cc935e313409bc43a071c0a04bce7f07fa534a48de0ad4b808417215932fb21",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 1352044,
+      "sourceBlend": "assets/blender/legacy/cue-jade.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-jade-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-jade-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "jade"
+    },
+    {
+      "id": "cue-royal",
+      "category": "cue",
+      "file": "cue-royal.glb",
+      "sha256": "6278b0f97add83e9f7170b747190d8a620b7239798e7c6916c957bd85afe31f1",
+      "sourceSha256": "6a81a477bd5da8790230c32f294f508eeacf4b5b67c4964b87dbae61879ae401",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 1339420,
+      "sourceBlend": "assets/blender/legacy/cue-royal.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-royal-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-royal-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "royal"
+    },
+    {
+      "id": "cue-glacier",
+      "category": "cue",
+      "file": "cue-glacier.glb",
+      "sha256": "dd1ae1264eb3ceb3db6e2f51a37e8d401f6713cbf59be812aaabaabcd26f23c6",
+      "sourceSha256": "94e2e4e40f1248619b67efe826431d0b71f6c866d3b183de0f9e558228e04de8",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 1316420,
+      "sourceBlend": "assets/blender/legacy/cue-glacier.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-glacier-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-glacier-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "glacier"
+    },
+    {
+      "id": "cue-ivory",
+      "category": "cue",
+      "file": "cue-ivory.glb",
+      "sha256": "9b4405cb187a66a71c454d3fa6b6eaf7c9925331a3b9f708def754986a0581cc",
+      "sourceSha256": "d206fff8dec90fdf2c43c2edd476f28650241b250c383cf7f3f57c60bdd6d404",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 1358312,
+      "sourceBlend": "assets/blender/legacy/cue-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "ivory"
+    },
+    {
+      "id": "cue-porcelain-wave",
+      "category": "cue",
+      "file": "cue-porcelain-wave.glb",
+      "sha256": "e0b5b352ef6b97d7d8a0047e4e2bcdccdffd1daeb99c5945120b1cafd4ef0072",
+      "sourceSha256": "d3935e4c8214d0408ed516b449ed91ffd52b750bf167f92cea808a64e9c12f42",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 1360532,
+      "sourceBlend": "assets/blender/legacy/cue-porcelain-wave.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-porcelain-wave-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-porcelain-wave-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "porcelain-wave"
+    },
+    {
+      "id": "cue-amber-tiger",
+      "category": "cue",
+      "file": "cue-amber-tiger.glb",
+      "sha256": "22311ed43e69cbe455dda510fef8e86be7353fbe785d16086971fe4c35a00236",
+      "sourceSha256": "605cfd976b2003b49a68e09edf5d3424d2cfb076df24d84b2084778299667e25",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 1326008,
+      "sourceBlend": "assets/blender/legacy/cue-amber-tiger.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-amber-tiger-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-amber-tiger-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "amber-tiger"
+    },
+    {
+      "id": "cue-aurora-prism",
+      "category": "cue",
+      "file": "cue-aurora-prism.glb",
+      "sha256": "a80000c328718a643af93fc5ca9857ec62ccda6aee0e74900eff3b1160650909",
+      "sourceSha256": "fce595ab200d8372ae0873bad57913fb278a42719f2a54e2ff45c3602e7ac9d9",
+      "sourceVerification": "sha256",
+      "bytes": 1121288,
+      "sourceBlend": "assets/blender/legacy/cue-aurora-prism.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-aurora-prism-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-aurora-prism-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "aurora-prism"
+    },
+    {
+      "id": "cue-holo-laser",
+      "category": "cue",
+      "file": "cue-holo-laser.glb",
+      "sha256": "0703c29d51e98baa7c60ead527ef74d40b3537c11329a5560e40033024781cf6",
+      "sourceSha256": "3807208f366b22776452f36e77a6b571415f3374a000476df02fc929b854d2a2",
+      "sourceVerification": "sha256",
+      "bytes": 1247240,
+      "sourceBlend": "assets/blender/legacy/cue-holo-laser.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-holo-laser-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-holo-laser-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "holo-laser"
+    },
+    {
+      "id": "cue-custom",
+      "category": "cue",
+      "file": "cue-custom.glb",
+      "sha256": "5f2ac690b64b09b6feffec9c3b7ffff25061dd43057e6ed0f20ccf0b755e96f6",
+      "sourceSha256": "eb1d7672230a721e2ab3f1eac922ce05a8a12df08602850e12e2f5b257d27fe5",
+      "sourceVerification": "sha256",
+      "bytes": 1493704,
+      "sourceBlend": "assets/blender/legacy/cue-custom.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/cue-custom-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/cue-custom-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "length": 1.40825,
+      "style": "custom"
+    },
+    {
+      "id": "environment-spectra",
+      "category": "environment",
+      "file": "environment-spectra.glb",
+      "sha256": "09983f7a6fa50ce55b59196107084242d956978bf8659d0d448ad25e42ccc528",
+      "sourceSha256": "588afb970d1dc8cfcb6d60e1c2a777a64e6431f2c4c3fbc61381e08698209a84",
+      "sourceVerification": "sha256",
+      "bytes": 1579324,
+      "sourceBlend": "assets/blender/legacy/environment-spectra.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/environment-spectra-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/environment-spectra-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "style": "spectra"
+    },
+    {
+      "id": "environment-galaxy",
+      "category": "environment",
+      "file": "environment-galaxy.glb",
+      "sha256": "0b3cae86b87fa7ed698fd4960b3e37d95b90c24aa05a34bda13ec6475f8ef4b0",
+      "sourceSha256": "48ca33f1f8731d7640d8a67af0923c89414c5dc256606383d31f49c2592218e4",
+      "sourceVerification": "sha256",
+      "bytes": 2895000,
+      "sourceBlend": "assets/blender/legacy/environment-galaxy.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/environment-galaxy-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/environment-galaxy-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "style": "galaxy"
+    },
+    {
+      "id": "environment-nebula",
+      "category": "environment",
+      "file": "environment-nebula.glb",
+      "sha256": "b7eaabb96014bc6a4c8922486f92ca292bf68f7b88ba773db3a1e8033214b718",
+      "sourceSha256": "314ead656418887489fcb903af3ea42248619fb696b1376a271c234e6472b47c",
+      "sourceVerification": "sha256",
+      "bytes": 2602388,
+      "sourceBlend": "assets/blender/legacy/environment-nebula.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/environment-nebula-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/environment-nebula-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "style": "nebula"
+    },
+    {
+      "id": "environment-club",
+      "category": "environment",
+      "file": "environment-club.glb",
+      "sha256": "46ab0ce4151b1105fbb8aa4feba6d9656bef72c0d1e8c6d1371e3e01af465784",
+      "sourceSha256": "41762c49c266173f07294b049a1a8c7dc12d929fe1ecbf42061a985605d09f68",
+      "sourceVerification": "sha256",
+      "bytes": 2950780,
+      "sourceBlend": "assets/blender/legacy/environment-club.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/environment-club-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/environment-club-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "style": "club"
+    },
+    {
+      "id": "environment-aurora-hall",
+      "category": "environment",
+      "file": "environment-aurora-hall.glb",
+      "sha256": "dbdc6a21925e16b3bc3d9212d482fcc9afa4562f82d768858f799923c62d211c",
+      "sourceSha256": "a61a08680fddaaa64cbffc5c87ab52ca1813a9bb228344ad8858b0c645da21a8",
+      "sourceVerification": "sha256",
+      "bytes": 822004,
+      "sourceBlend": "assets/blender/legacy/environment-aurora-hall.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/environment-aurora-hall-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/environment-aurora-hall-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "style": "aurora-hall"
+    },
+    {
+      "id": "environment-sky-temple",
+      "category": "environment",
+      "file": "environment-sky-temple.glb",
+      "sha256": "179a4316aba48e8c350a55fdc7c32240a6b882f3631ccdc85356a2bc27fe06bf",
+      "sourceSha256": "8cd1d7a0dd7242b9d20085c2b586deb29e012212293c93c5fca326bdb5742f93",
+      "sourceVerification": "sha256",
+      "bytes": 7549508,
+      "sourceBlend": "assets/blender/legacy/environment-sky-temple.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/environment-sky-temple-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/environment-sky-temple-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "style": "sky-temple"
+    },
+    {
+      "id": "environment-abyss-palace",
+      "category": "environment",
+      "file": "environment-abyss-palace.glb",
+      "sha256": "014bd08a070cec865852a34345c47d87e24bd9ef3e4c5ffd84a28b69a85f3d99",
+      "sourceSha256": "4b4e22cecccaa5636323b91c247014016c77ba1cfe72bdd4c9f2aa46fd546e4b",
+      "sourceVerification": "sha256",
+      "bytes": 4139612,
+      "sourceBlend": "assets/blender/legacy/environment-abyss-palace.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/environment-abyss-palace-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/environment-abyss-palace-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "style": "abyss-palace"
+    },
+    {
+      "id": "environment-lunar-observatory",
+      "category": "environment",
+      "file": "environment-lunar-observatory.glb",
+      "sha256": "dfafde5cf53ec59698f07f854c49ad0c1ae08d6f56c4246aab6816654ed876a5",
+      "sourceSha256": "a141b6fefadbac9714ae3f83c4c5fd2239a8007442f39175b6de09fcdaf54023",
+      "sourceVerification": "sha256",
+      "bytes": 1839632,
+      "sourceBlend": "assets/blender/legacy/environment-lunar-observatory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/environment-lunar-observatory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/environment-lunar-observatory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "style": "lunar-observatory"
+    },
+    {
+      "id": "ball-dotted-ffffff",
+      "category": "ball",
+      "file": "ball-dotted-ffffff.glb",
+      "sha256": "ca086a5da7862dba33a57ed1301f1f0ccd119c0fc42055a20aefc8eb0d8a0218",
+      "sourceSha256": "7fa94f4fd3db62bb88b55aa0aec056849cc63d4533dddb35a8ad8dbf2ca318eb",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 117424,
+      "sourceBlend": "assets/blender/legacy/ball-dotted-ffffff.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-dotted-ffffff-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-dotted-ffffff-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "texturedDots",
+      "colour": "ffffff"
+    },
+    {
+      "id": "ball-pool-1",
+      "category": "ball",
+      "file": "ball-pool-1.glb",
+      "sha256": "9a877f86b66ed3b5c3ca551266c2e7444f7b8e29c0c582aae926188f17d173b8",
+      "sourceSha256": "bd3d7ab693bc2874827a5457da4b081cfc3802731fe4934e0cd841f5934e6cfc",
+      "sourceVerification": "sha256",
+      "bytes": 131964,
+      "sourceBlend": "assets/blender/legacy/ball-pool-1.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-1-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-1-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "e8bb27",
+      "label": 1
+    },
+    {
+      "id": "ball-pool-2",
+      "category": "ball",
+      "file": "ball-pool-2.glb",
+      "sha256": "d041af855469e11ffffdee93943160b4f20157f59ab2bd614566b27da29f1017",
+      "sourceSha256": "b19e189e776a39225392bb13e1a016a279af7e1b053f3413c43c30d6c1b58589",
+      "sourceVerification": "sha256",
+      "bytes": 134792,
+      "sourceBlend": "assets/blender/legacy/ball-pool-2.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-2-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-2-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "1767a3",
+      "label": 2
+    },
+    {
+      "id": "ball-pool-3",
+      "category": "ball",
+      "file": "ball-pool-3.glb",
+      "sha256": "9c82d7b42624a11162a393c518a1f3dd2426ffebd23aab042f04c715489139fc",
+      "sourceSha256": "39d034c69cf036dbde0e546a150e2eea677007103276573ac9fd34c8391b0b99",
+      "sourceVerification": "sha256",
+      "bytes": 135796,
+      "sourceBlend": "assets/blender/legacy/ball-pool-3.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-3-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-3-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "c82f3a",
+      "label": 3
+    },
+    {
+      "id": "ball-pool-4",
+      "category": "ball",
+      "file": "ball-pool-4.glb",
+      "sha256": "e45262e779209e2485fc95e0fd2300d9d7245a0d189843fcb5ac961182bb0615",
+      "sourceSha256": "0c59d89cc264a547de536124cfb94d4156717afec54be0ce700a859fd2dad2d5",
+      "sourceVerification": "sha256",
+      "bytes": 133248,
+      "sourceBlend": "assets/blender/legacy/ball-pool-4.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-4-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-4-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "70438f",
+      "label": 4
+    },
+    {
+      "id": "ball-pool-5",
+      "category": "ball",
+      "file": "ball-pool-5.glb",
+      "sha256": "0a0ff357b78f4e00744b7564892def9a115f37ee6d0cb4738f55d183a5e743c6",
+      "sourceSha256": "ce9576ae5f9fae92d1ab55ab0d0155dce9e65ee7aae1b6a666e30c4bade1a22f",
+      "sourceVerification": "sha256",
+      "bytes": 134932,
+      "sourceBlend": "assets/blender/legacy/ball-pool-5.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-5-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-5-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "df6a25",
+      "label": 5
+    },
+    {
+      "id": "ball-pool-6",
+      "category": "ball",
+      "file": "ball-pool-6.glb",
+      "sha256": "83a9bb37497a955f57ee4d908d1adaacbb55d6883dd006fd8b3cf38378a15526",
+      "sourceSha256": "be70e4e7c8b848f6f3221faf569126380b5f776a8f402f052d4c048e940dcd10",
+      "sourceVerification": "sha256",
+      "bytes": 136228,
+      "sourceBlend": "assets/blender/legacy/ball-pool-6.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-6-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-6-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "238052",
+      "label": 6
+    },
+    {
+      "id": "ball-pool-7",
+      "category": "ball",
+      "file": "ball-pool-7.glb",
+      "sha256": "fcaea4eab165c0113e2b6dd18f4989befbaf7500ec171f130ddb39dc691ddb1b",
+      "sourceSha256": "e6386950f8a698b2284d28b6e9296484d164eefb0d55c26f0fe47bd3d4617238",
+      "sourceVerification": "sha256",
+      "bytes": 133156,
+      "sourceBlend": "assets/blender/legacy/ball-pool-7.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-7-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-7-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "743244",
+      "label": 7
+    },
+    {
+      "id": "ball-pool-8",
+      "category": "ball",
+      "file": "ball-pool-8.glb",
+      "sha256": "1557cb77c4c913d83d35f8e62a8d6d234a956c5e92a5eb75fe67aacb3617f524",
+      "sourceSha256": "e10401df100e89f3f9d4ea9a0b04c11369add6a7d49cfc1993d4e04be38f8f74",
+      "sourceVerification": "sha256",
+      "bytes": 135348,
+      "sourceBlend": "assets/blender/legacy/ball-pool-8.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-8-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-8-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "111214",
+      "label": 8
+    },
+    {
+      "id": "ball-pool-9",
+      "category": "ball",
+      "file": "ball-pool-9.glb",
+      "sha256": "6ae497690521df2df30fa4dfdafc9c2e45a4ae5ccfbdd7e1c9804a6ca00f63d3",
+      "sourceSha256": "96a472bcecc20e066b0ece1fcf4d052dd28aa086e29b1e21b3bf4e6812a12a4d",
+      "sourceVerification": "sha256",
+      "bytes": 136256,
+      "sourceBlend": "assets/blender/legacy/ball-pool-9.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-9-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-9-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "e8bb27",
+      "label": 9
+    },
+    {
+      "id": "ball-pool-10",
+      "category": "ball",
+      "file": "ball-pool-10.glb",
+      "sha256": "d7be67f0636639169a31932052bd12c7d389046405ad5d6d7b4c8cde48d3d958",
+      "sourceSha256": "baed762a7a4d2a3fee875ec9ddd85859b042b7dc3a7e84ebccf6e8d236b6b434",
+      "sourceVerification": "sha256",
+      "bytes": 135876,
+      "sourceBlend": "assets/blender/legacy/ball-pool-10.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-10-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-10-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "1767a3",
+      "label": 10
+    },
+    {
+      "id": "ball-pool-11",
+      "category": "ball",
+      "file": "ball-pool-11.glb",
+      "sha256": "d6b19ee01afc733570bdb977c747de37f055b506c6966bed03875e0300ac1530",
+      "sourceSha256": "c84ebdc707a544c33ee57d402ca31d9d077ba2b91867e776d30983b4f3822a80",
+      "sourceVerification": "sha256",
+      "bytes": 132844,
+      "sourceBlend": "assets/blender/legacy/ball-pool-11.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-11-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-11-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "c82f3a",
+      "label": 11
+    },
+    {
+      "id": "ball-pool-12",
+      "category": "ball",
+      "file": "ball-pool-12.glb",
+      "sha256": "6d8ddc1d0b1bb0cc36cfd805bad270116aa8e5efb3aad5867d211aabe716ca31",
+      "sourceSha256": "e417985280613f9e53964dd8c6ee2c91ef1beb2a8a986ca6cb7c96db1a0feedb",
+      "sourceVerification": "sha256",
+      "bytes": 135480,
+      "sourceBlend": "assets/blender/legacy/ball-pool-12.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-12-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-12-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "70438f",
+      "label": 12
+    },
+    {
+      "id": "ball-pool-13",
+      "category": "ball",
+      "file": "ball-pool-13.glb",
+      "sha256": "d1961a88f3f6710ca3601fef96726848fa8c724e87c4c9c12338aba9f8faf7fe",
+      "sourceSha256": "fdab84bf4210cf16d7787e0f8a3ae468168253fe3455066c622d4db50b0d7cf0",
+      "sourceVerification": "sha256",
+      "bytes": 136144,
+      "sourceBlend": "assets/blender/legacy/ball-pool-13.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-13-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-13-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "df6a25",
+      "label": 13
+    },
+    {
+      "id": "ball-pool-14",
+      "category": "ball",
+      "file": "ball-pool-14.glb",
+      "sha256": "55d905fc82c433e16614fa24430c44db22ae8e2e1ebbd1adf8c797af8f63fa10",
+      "sourceSha256": "a7de064df9294185aa30d5080be29a59dfa33c60d2091da637b66ac5a6cd67e2",
+      "sourceVerification": "sha256",
+      "bytes": 133604,
+      "sourceBlend": "assets/blender/legacy/ball-pool-14.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-14-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-14-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "238052",
+      "label": 14
+    },
+    {
+      "id": "ball-pool-15",
+      "category": "ball",
+      "file": "ball-pool-15.glb",
+      "sha256": "ee17af4a5ba5054bd6988a55ec41d939016027736d7f48f138ae02302d171a65",
+      "sourceSha256": "f616a732865869546cad99ad140f6b594758819d13ef37abb15b1d329bed40f2",
+      "sourceVerification": "sha256",
+      "bytes": 135488,
+      "sourceBlend": "assets/blender/legacy/ball-pool-15.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-pool-15-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-pool-15-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "projected",
+      "colour": "743244",
+      "label": 15
+    },
+    {
+      "id": "ball-dotted-ffd700",
+      "category": "ball",
+      "file": "ball-dotted-ffd700.glb",
+      "sha256": "82549d66121cf0d29dd21279862f2ecbb7152fa6099d65808de79c0fa7ff6139",
+      "sourceSha256": "2d9138ae980144c36aaa005e6e792a99e7445a0e18eee734bf5ba19c7ef21439",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 117468,
+      "sourceBlend": "assets/blender/legacy/ball-dotted-ffd700.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-dotted-ffd700-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-dotted-ffd700-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "texturedDots",
+      "colour": "ffd700"
+    },
+    {
+      "id": "ball-dotted-ff0000",
+      "category": "ball",
+      "file": "ball-dotted-ff0000.glb",
+      "sha256": "0bfe5dc8fad3e03d9d40f30a560d2917cab35bb2c8f6d239b55219c7815a694b",
+      "sourceSha256": "c27dba3afabf48312e36652e6bb60d617f1675b87836f7d7dd88246cc1e8ab1d",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 117452,
+      "sourceBlend": "assets/blender/legacy/ball-dotted-ff0000.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-dotted-ff0000-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-dotted-ff0000-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "texturedDots",
+      "colour": "ff0000"
+    },
+    {
+      "id": "ball-dotted-008000",
+      "category": "ball",
+      "file": "ball-dotted-008000.glb",
+      "sha256": "a956b4521ea27479a6027ac0b94169b3ebc6ab4f67e45ec36d6a02544e4e0390",
+      "sourceSha256": "cbc8852df0d669c93ec3e56bf90f19732128d24b2781df0b6ac6c4bf31972d7e",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 117468,
+      "sourceBlend": "assets/blender/legacy/ball-dotted-008000.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-dotted-008000-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-dotted-008000-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "texturedDots",
+      "colour": "008000"
+    },
+    {
+      "id": "ball-dotted-6a2500",
+      "category": "ball",
+      "file": "ball-dotted-6a2500.glb",
+      "sha256": "99beb96b7e6b8ae280a30a69f0539cf182f52d0f255cac8938cd2983779e1833",
+      "sourceSha256": "affd678c96e32f9d84f9c144f90f4fd56adcba023cc3ecdfd0f940192aac08f5",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 117484,
+      "sourceBlend": "assets/blender/legacy/ball-dotted-6a2500.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-dotted-6a2500-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-dotted-6a2500-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "texturedDots",
+      "colour": "6a2500"
+    },
+    {
+      "id": "ball-dotted-005cb1",
+      "category": "ball",
+      "file": "ball-dotted-005cb1.glb",
+      "sha256": "d16c29a2e5969f3c97e436eea7d8b7e09989c2f710ec284a20d3f11d9f5eeb80",
+      "sourceSha256": "04a47f4e5bbf787f88fbf20f9f1081420803fc7472bc48448e1c2237353d1be9",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 117488,
+      "sourceBlend": "assets/blender/legacy/ball-dotted-005cb1.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-dotted-005cb1-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-dotted-005cb1-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "texturedDots",
+      "colour": "005cb1"
+    },
+    {
+      "id": "ball-dotted-ff80b3",
+      "category": "ball",
+      "file": "ball-dotted-ff80b3.glb",
+      "sha256": "e147990b3a63b4e25cc6b8f0766af34ef0be1825d1aa8e3bdb68b34822b7fe7e",
+      "sourceSha256": "cfae3527f66613840e993ee2d4f5d16af117b27d5d124145be8ae51c7da241c9",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 117484,
+      "sourceBlend": "assets/blender/legacy/ball-dotted-ff80b3.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-dotted-ff80b3-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-dotted-ff80b3-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "texturedDots",
+      "colour": "ff80b3"
+    },
+    {
+      "id": "ball-dotted-010000",
+      "category": "ball",
+      "file": "ball-dotted-010000.glb",
+      "sha256": "c64660a859a29d43f6f9df5e4354c676e17631860148eb0ab7e5578a324ff3be",
+      "sourceSha256": "50b87529fc4bc422c909d0705973c7e850a110c2c8991172a3cf692a9fc01662",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 117472,
+      "sourceBlend": "assets/blender/legacy/ball-dotted-010000.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-dotted-010000-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-dotted-010000-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "texturedDots",
+      "colour": "010000"
+    },
+    {
+      "id": "ball-dotted-ee0000",
+      "category": "ball",
+      "file": "ball-dotted-ee0000.glb",
+      "sha256": "eb19e8047046b9ed238a10c84533204c644382601468f952c6a782320471ab45",
+      "sourceSha256": "add86cfcb7ada88a85443e461a8b27c27b532abfdbb66374a5dfe087596588f4",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 117468,
+      "sourceBlend": "assets/blender/legacy/ball-dotted-ee0000.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/ball-dotted-ee0000-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/ball-dotted-ee0000-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "radius": 0.03275,
+      "appearance": "texturedDots",
+      "colour": "ee0000"
+    },
+    {
+      "id": "table-eightball-10-american-ivory",
+      "category": "table",
+      "file": "table-eightball-10-american-ivory.glb",
+      "sha256": "b8441d880e7c4e3c7c8751d7a9ef7148370c7180216788ad26e113f704ae42f1",
+      "sourceSha256": "e802307d847f6cfc4a36b589e883916121ba6ba33b796a5ffe1f42f6b1009fac",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 268732,
+      "sourceBlend": "assets/blender/legacy/table-eightball-10-american-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-10-american-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-10-american-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 10,
+      "style": "american-ivory",
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-10-american-walnut",
+      "category": "table",
+      "file": "table-eightball-10-american-walnut.glb",
+      "sha256": "6eb9804e8fc8e3a35ed923928ad068d41a71ce76a37d15e6dad7a5a42b969200",
+      "sourceSha256": "43ccaf701191acdb36e6da6b10ee13994299348d1c158227c3204ea062bd8a7c",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 240176,
+      "sourceBlend": "assets/blender/legacy/table-eightball-10-american-walnut.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-10-american-walnut-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-10-american-walnut-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 10,
+      "style": "american-walnut",
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-10-american-graphite",
+      "category": "table",
+      "file": "table-eightball-10-american-graphite.glb",
+      "sha256": "1a9e2af2e66ffbf1f8e5872392f95f88472a6d0fc288962924cafcbe5a13ff9c",
+      "sourceSha256": "72b87a60ec8642257f1303d53f1dc95c3de666e8ec944ac14f7d7c4ce391eb04",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 200792,
+      "sourceBlend": "assets/blender/legacy/table-eightball-10-american-graphite.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-10-american-graphite-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-10-american-graphite-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 10,
+      "style": "american-graphite",
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-10-american-burgundy",
+      "category": "table",
+      "file": "table-eightball-10-american-burgundy.glb",
+      "sha256": "20fe5a5675d5db36c82edea2d50e3d4e15d855244f4cc0760d89eaee24276fce",
+      "sourceSha256": "b5846bf45e1cffa8c664812f3d593156d7e5b9582312fb68bde55d3b892456a1",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 240176,
+      "sourceBlend": "assets/blender/legacy/table-eightball-10-american-burgundy.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-10-american-burgundy-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-10-american-burgundy-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 10,
+      "style": "american-burgundy",
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-10-chinese-ebony",
+      "category": "table",
+      "file": "table-eightball-10-chinese-ebony.glb",
+      "sha256": "56da78d3759a6cf01912a5937534316247e581aa0e8f24599d70ba6e7c15f1fa",
+      "sourceSha256": "fe6ca1a20ae969ca39ac4e8fe6905a464c5a54debefa6e8573aff6f2b4cc5053",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 261704,
+      "sourceBlend": "assets/blender/legacy/table-eightball-10-chinese-ebony.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-10-chinese-ebony-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-10-chinese-ebony-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 10,
+      "style": "chinese-ebony",
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-10-chinese-ivory",
+      "category": "table",
+      "file": "table-eightball-10-chinese-ivory.glb",
+      "sha256": "5051051d4c4dd5a7482637c5fbab936cc873d859a2bdc04438d8a6ca893ffea5",
+      "sourceSha256": "9926c1e9a501d18cbaba2bce553e7adb44e80e9a24d40957a7a1b3cb1b452630",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 261600,
+      "sourceBlend": "assets/blender/legacy/table-eightball-10-chinese-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-10-chinese-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-10-chinese-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 10,
+      "style": "chinese-ivory",
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-10-chinese-jade",
+      "category": "table",
+      "file": "table-eightball-10-chinese-jade.glb",
+      "sha256": "e684ecba122775f04c3d727271d1fa2be83196ccbbcc41a52d64cd205436e361",
+      "sourceSha256": "d2ab805ff2bf8254e4b876242f8ceab49bebac9fbbd18c6a0226e189ea8851d3",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 301052,
+      "sourceBlend": "assets/blender/legacy/table-eightball-10-chinese-jade.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-10-chinese-jade-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-10-chinese-jade-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 10,
+      "style": "chinese-jade",
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-10-chinese-violet",
+      "category": "table",
+      "file": "table-eightball-10-chinese-violet.glb",
+      "sha256": "455e9b85973fcab47707a30d4cb848d4bf727431cbaa13a8c97092af278ebd93",
+      "sourceSha256": "46921b160cf969e77f25b3cdfb88224387cb934c5d480622b62373fcfe1f5861",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 261692,
+      "sourceBlend": "assets/blender/legacy/table-eightball-10-chinese-violet.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-10-chinese-violet-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-10-chinese-violet-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 10,
+      "style": "chinese-violet",
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-5-american-ivory",
+      "category": "table",
+      "file": "table-eightball-5-american-ivory.glb",
+      "sha256": "d24d70746359a19715835b396037b07005cd9150f0514597b1034e8771322d70",
+      "sourceSha256": "a453c747c59de4b8a008bf2d7c1038b10e48e1d207d75e360b7020be6a3b344c",
+      "sourceVerification": "sha256",
+      "bytes": 270100,
+      "sourceBlend": "assets/blender/legacy/table-eightball-5-american-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-5-american-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-5-american-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 5,
+      "style": "american-ivory",
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-5-american-walnut",
+      "category": "table",
+      "file": "table-eightball-5-american-walnut.glb",
+      "sha256": "b36bf4d127dedfd0a6f083ce2d70c884063b7e96c5dc4d795aeee8b50034fd84",
+      "sourceSha256": "f39caf5315e210fd40b21b3c681fe4be30ddf97bbf191cb85c19017c04ba0bda",
+      "sourceVerification": "sha256",
+      "bytes": 243388,
+      "sourceBlend": "assets/blender/legacy/table-eightball-5-american-walnut.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-5-american-walnut-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-5-american-walnut-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 5,
+      "style": "american-walnut",
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-5-american-graphite",
+      "category": "table",
+      "file": "table-eightball-5-american-graphite.glb",
+      "sha256": "7041ab2a11ae08857d64eb1002164e5098d1328e5596448418e338ce50fac050",
+      "sourceSha256": "fddbc9038b55e659da574d1f0f939b964d2889293072f27596d013cc29c192f2",
+      "sourceVerification": "sha256",
+      "bytes": 203928,
+      "sourceBlend": "assets/blender/legacy/table-eightball-5-american-graphite.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-5-american-graphite-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-5-american-graphite-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 5,
+      "style": "american-graphite",
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-5-american-burgundy",
+      "category": "table",
+      "file": "table-eightball-5-american-burgundy.glb",
+      "sha256": "71613f8f78009e0b66dc6f20d49c7761081fa04acf4daf44f52d039d8536118e",
+      "sourceSha256": "6b89a54e7422c8097a79a3c1a444fe9f8f29c05498c595fe80d0c755e9111276",
+      "sourceVerification": "sha256",
+      "bytes": 243440,
+      "sourceBlend": "assets/blender/legacy/table-eightball-5-american-burgundy.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-5-american-burgundy-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-5-american-burgundy-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 5,
+      "style": "american-burgundy",
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-5-chinese-ebony",
+      "category": "table",
+      "file": "table-eightball-5-chinese-ebony.glb",
+      "sha256": "6e9f9f2f00b86666826b1482628e16c12a06ec04c2ec64c3c97f199a991964cd",
+      "sourceSha256": "4cd76bbe6d58d8ac13df98077bbd36707e5a870e0c29b58a857c9d87ad872063",
+      "sourceVerification": "sha256",
+      "bytes": 264860,
+      "sourceBlend": "assets/blender/legacy/table-eightball-5-chinese-ebony.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-5-chinese-ebony-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-5-chinese-ebony-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 5,
+      "style": "chinese-ebony",
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-5-chinese-ivory",
+      "category": "table",
+      "file": "table-eightball-5-chinese-ivory.glb",
+      "sha256": "8e7ceedf92333aebb417ff8658165204dea42af83b528e5551791367b382886b",
+      "sourceSha256": "0823ba26ec2915ff5cdd32bc27e81a6fb5cd6415ea11284f941c7d0aef51021a",
+      "sourceVerification": "sha256",
+      "bytes": 264752,
+      "sourceBlend": "assets/blender/legacy/table-eightball-5-chinese-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-5-chinese-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-5-chinese-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 5,
+      "style": "chinese-ivory",
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-5-chinese-jade",
+      "category": "table",
+      "file": "table-eightball-5-chinese-jade.glb",
+      "sha256": "4a9d4194c141385d4ee6dfa2c98afa1264e2589a4cc28106e449b8d315cc745a",
+      "sourceSha256": "c1d8f63da3153b7d4494500ecbe23cefbdff6da57b2c85ac1d8909b2a951742c",
+      "sourceVerification": "sha256",
+      "bytes": 304288,
+      "sourceBlend": "assets/blender/legacy/table-eightball-5-chinese-jade.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-5-chinese-jade-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-5-chinese-jade-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 5,
+      "style": "chinese-jade",
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-eightball-5-chinese-violet",
+      "category": "table",
+      "file": "table-eightball-5-chinese-violet.glb",
+      "sha256": "4b7965fa0605620fadf1d737ca6a2378d7b20f492bb90163f1b9cd2f16acd7d8",
+      "sourceSha256": "84ab29dabdfa5c3cee59b02642d87cdb80655226a8b6c695ced51a34622267e7",
+      "sourceVerification": "sha256",
+      "bytes": 264988,
+      "sourceBlend": "assets/blender/legacy/table-eightball-5-chinese-violet.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-eightball-5-chinese-violet-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-eightball-5-chinese-violet-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.028575,
+      "rule": "eightball",
+      "size": 5,
+      "style": "chinese-violet",
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ]
+    },
+    {
+      "id": "table-snooker-10-american-ivory",
+      "category": "table",
+      "file": "table-snooker-10-american-ivory.glb",
+      "sha256": "bf680720ac257dfefce41ca0f7c88df168fed41efa6d1b85204f90ebb1f311a5",
+      "sourceSha256": "c5bd534ccc11831f0b06910860d1f59673c60c0eba2a06f025ed26c0113649eb",
+      "sourceVerification": "sha256",
+      "bytes": 274252,
+      "sourceBlend": "assets/blender/legacy/table-snooker-10-american-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-10-american-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-10-american-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 10,
+      "style": "american-ivory",
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-10-american-walnut",
+      "category": "table",
+      "file": "table-snooker-10-american-walnut.glb",
+      "sha256": "3a6768c6bee346c7f0a6ea650a7f669a563a05deb3f62e47838a72b3d4040cf9",
+      "sourceSha256": "59f190c739a3a0b31c5970204b9b5596aa18f2f94b991b4dbc7947fe87e37432",
+      "sourceVerification": "sha256",
+      "bytes": 247116,
+      "sourceBlend": "assets/blender/legacy/table-snooker-10-american-walnut.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-10-american-walnut-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-10-american-walnut-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 10,
+      "style": "american-walnut",
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-10-american-graphite",
+      "category": "table",
+      "file": "table-snooker-10-american-graphite.glb",
+      "sha256": "d60886f7d1883313286e60f397cef293d020cc44c06af997c69175a8806acf57",
+      "sourceSha256": "10e8d04cdcd31341a2f6ccfb3f031107c6fcb6a8b7078ab626706bce41838a3e",
+      "sourceVerification": "sha256",
+      "bytes": 207736,
+      "sourceBlend": "assets/blender/legacy/table-snooker-10-american-graphite.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-10-american-graphite-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-10-american-graphite-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 10,
+      "style": "american-graphite",
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-10-american-burgundy",
+      "category": "table",
+      "file": "table-snooker-10-american-burgundy.glb",
+      "sha256": "8c07b526482943ec0bb179944d7b8a782e01e4d9f9903841fd1ff3a38a9a8263",
+      "sourceSha256": "73e8797a2cb1fc89151a01b3100e226f7ade33402f87e3a9e2d2f4c9c6dba43a",
+      "sourceVerification": "sha256",
+      "bytes": 247116,
+      "sourceBlend": "assets/blender/legacy/table-snooker-10-american-burgundy.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-10-american-burgundy-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-10-american-burgundy-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 10,
+      "style": "american-burgundy",
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-10-chinese-ebony",
+      "category": "table",
+      "file": "table-snooker-10-chinese-ebony.glb",
+      "sha256": "6e652a109e57bf6e6c407641b585fed927d989e6adac62a220ff4dc47437e1b9",
+      "sourceSha256": "b8d714b44d4880ab2fafadd9d4e752986c1358bb010d62d0a9da0afde32d76e9",
+      "sourceVerification": "sha256",
+      "bytes": 275488,
+      "sourceBlend": "assets/blender/legacy/table-snooker-10-chinese-ebony.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-10-chinese-ebony-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-10-chinese-ebony-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 10,
+      "style": "chinese-ebony",
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-10-chinese-ivory",
+      "category": "table",
+      "file": "table-snooker-10-chinese-ivory.glb",
+      "sha256": "db46ac4f20b1006ea0d8cf3d65eff17ca4c7d5e12e269e38f90c1158fe9bcca8",
+      "sourceSha256": "00de40c2a95d306f66171167402c7aced46cb83adbe75867393e73135f699b46",
+      "sourceVerification": "sha256",
+      "bytes": 275384,
+      "sourceBlend": "assets/blender/legacy/table-snooker-10-chinese-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-10-chinese-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-10-chinese-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 10,
+      "style": "chinese-ivory",
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-10-chinese-jade",
+      "category": "table",
+      "file": "table-snooker-10-chinese-jade.glb",
+      "sha256": "4f4438b6b28e6639d75eb9b43b7e9ef76d088fb37316b20e1e56ce6158cccb87",
+      "sourceSha256": "c037345e2ecba178c417231e0639b5d9314d8094adae425e32c2ef5840c00486",
+      "sourceVerification": "sha256",
+      "bytes": 314832,
+      "sourceBlend": "assets/blender/legacy/table-snooker-10-chinese-jade.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-10-chinese-jade-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-10-chinese-jade-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 10,
+      "style": "chinese-jade",
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-10-chinese-violet",
+      "category": "table",
+      "file": "table-snooker-10-chinese-violet.glb",
+      "sha256": "6a545f328e4024e1f6fa616eadf9abe8c972e13722f56727ce98d627adae2d97",
+      "sourceSha256": "12b1f304575837900fb5082e111d1660f0e9ddc552a094bb3b8857a92a20970c",
+      "sourceVerification": "sha256",
+      "bytes": 275472,
+      "sourceBlend": "assets/blender/legacy/table-snooker-10-chinese-violet.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-10-chinese-violet-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-10-chinese-violet-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 10,
+      "style": "chinese-violet",
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-5-american-ivory",
+      "category": "table",
+      "file": "table-snooker-5-american-ivory.glb",
+      "sha256": "1114274fe048cb924ad2faf09e3acdc224727109967f409162e538954fa9155e",
+      "sourceSha256": "da837db66ec3b6de23d734145fb41e6f169b1f405cb02684ac7aeb59fc50f5bc",
+      "sourceVerification": "sha256",
+      "bytes": 274400,
+      "sourceBlend": "assets/blender/legacy/table-snooker-5-american-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-5-american-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-5-american-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 5,
+      "style": "american-ivory",
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-5-american-walnut",
+      "category": "table",
+      "file": "table-snooker-5-american-walnut.glb",
+      "sha256": "6f8356dcc0e3e476a6982838e377ceb131f270435b0cf97489740b07ec0804be",
+      "sourceSha256": "3b633514987f34ba9b3024ad15936d4d78ecb4d8150a7e81a27e0a2f1dd3dec4",
+      "sourceVerification": "sha256",
+      "bytes": 247252,
+      "sourceBlend": "assets/blender/legacy/table-snooker-5-american-walnut.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-5-american-walnut-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-5-american-walnut-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 5,
+      "style": "american-walnut",
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-5-american-graphite",
+      "category": "table",
+      "file": "table-snooker-5-american-graphite.glb",
+      "sha256": "050dd4d458379115d7f165281a5c904c3479c7f44c813c144c78be38233fe87a",
+      "sourceSha256": "a24cf7f9b615fea6088810a0999c02d8518eef24cc8005e5f39aa9b768f7ecd9",
+      "sourceVerification": "sha256",
+      "bytes": 207868,
+      "sourceBlend": "assets/blender/legacy/table-snooker-5-american-graphite.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-5-american-graphite-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-5-american-graphite-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 5,
+      "style": "american-graphite",
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-5-american-burgundy",
+      "category": "table",
+      "file": "table-snooker-5-american-burgundy.glb",
+      "sha256": "134d63bd900f2ef1540571d126c2ec0d83ebc4925244227213e39e67501d9440",
+      "sourceSha256": "f40f1837a4b1d273d72eb9ba897ce4b514c131f463c588eec5800166ae32b62c",
+      "sourceVerification": "sha256",
+      "bytes": 247248,
+      "sourceBlend": "assets/blender/legacy/table-snooker-5-american-burgundy.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-5-american-burgundy-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-5-american-burgundy-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 5,
+      "style": "american-burgundy",
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-5-chinese-ebony",
+      "category": "table",
+      "file": "table-snooker-5-chinese-ebony.glb",
+      "sha256": "51db7ffb0c17aa1c674357f566aee6657f36441a9910d07d959a902037a9d169",
+      "sourceSha256": "2fa7618b7b4661f9022d1e334af95bdee64f2dfe79eb77f71d210e4ad5fc588e",
+      "sourceVerification": "sha256",
+      "bytes": 275628,
+      "sourceBlend": "assets/blender/legacy/table-snooker-5-chinese-ebony.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-5-chinese-ebony-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-5-chinese-ebony-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 5,
+      "style": "chinese-ebony",
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-5-chinese-ivory",
+      "category": "table",
+      "file": "table-snooker-5-chinese-ivory.glb",
+      "sha256": "e11327a8e004730a19c8be05874655ecd4bf4d44def7da96b35d1e35996b0371",
+      "sourceSha256": "75b6e906421e60c2c514f2758c5d9119c5ed9cb87d2bfc67f0320fe66e180be6",
+      "sourceVerification": "sha256",
+      "bytes": 275520,
+      "sourceBlend": "assets/blender/legacy/table-snooker-5-chinese-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-5-chinese-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-5-chinese-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 5,
+      "style": "chinese-ivory",
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-5-chinese-jade",
+      "category": "table",
+      "file": "table-snooker-5-chinese-jade.glb",
+      "sha256": "039f92e5ab8f2f671bb9bee416f10223d80708e4aed285560afdf53430515d62",
+      "sourceSha256": "f4bbc04fbf93a4a57c3230a06cee7c9ce8340a0151ad115e207142a34905f323",
+      "sourceVerification": "sha256",
+      "bytes": 314972,
+      "sourceBlend": "assets/blender/legacy/table-snooker-5-chinese-jade.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-5-chinese-jade-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-5-chinese-jade-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 5,
+      "style": "chinese-jade",
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-snooker-5-chinese-violet",
+      "category": "table",
+      "file": "table-snooker-5-chinese-violet.glb",
+      "sha256": "74743e759f73e1b39ac85e278193c287f31f5c217356897d345a1e8d23ef84aa",
+      "sourceSha256": "f6f84f8131bc3f4bbc80da6937a496b794b1a1a33937efcb1944986aac574af0",
+      "sourceVerification": "sha256",
+      "bytes": 275400,
+      "sourceBlend": "assets/blender/legacy/table-snooker-5-chinese-violet.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-snooker-5-chinese-violet-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-snooker-5-chinese-violet-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "snooker",
+      "size": 5,
+      "style": "chinese-violet",
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "compatibleRules": [
+        "snooker"
+      ]
+    },
+    {
+      "id": "table-threecushion-10-american-ivory",
+      "category": "table",
+      "file": "table-threecushion-10-american-ivory.glb",
+      "sha256": "86e5167c923f5e10605d80249db9a91595a99fce58e3a8a6d807e95ddf40dded",
+      "sourceSha256": "733c9a2bd3551b9b357e3f4e8c13f4f7c04cbb884e32cf27ccf75fe0f8946a83",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 254044,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-10-american-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-american-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-american-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 10,
+      "style": "american-ivory",
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-10-american-walnut",
+      "category": "table",
+      "file": "table-threecushion-10-american-walnut.glb",
+      "sha256": "3a7212c935441af0008b202d546a836549bc446847ff13a77277a47deae85ad8",
+      "sourceSha256": "21f44c484e21b06181a15f50549e1621bba6f7da5186f511de997b530edab612",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 225352,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-10-american-walnut.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-american-walnut-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-american-walnut-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 10,
+      "style": "american-walnut",
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-10-american-graphite",
+      "category": "table",
+      "file": "table-threecushion-10-american-graphite.glb",
+      "sha256": "3e8e0d45d4c236e85a345650593066c1288d2b3592774f319d89ab8f23fb53db",
+      "sourceSha256": "fcbc677dd6b285b1ae4382af35a1092bba192ab5775c4eab374edb595f6123e8",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 186080,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-10-american-graphite.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-american-graphite-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-american-graphite-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 10,
+      "style": "american-graphite",
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-10-american-burgundy",
+      "category": "table",
+      "file": "table-threecushion-10-american-burgundy.glb",
+      "sha256": "1a394c567539f00034be364f1d21109350e9035df44b9e2c9cb3db97c1792ffe",
+      "sourceSha256": "68f86bf287c5540ff43ab2d4951bb1695866c5dc54e767254ed275f58c56bce4",
+      "sourceVerification": "source-before-mcp-timestamp",
+      "bytes": 225352,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-10-american-burgundy.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-american-burgundy-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-american-burgundy-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 10,
+      "style": "american-burgundy",
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-10-chinese-ebony",
+      "category": "table",
+      "file": "table-threecushion-10-chinese-ebony.glb",
+      "sha256": "e006b57f129bfa5d6a6992f549f60518f26a3189e0f898779729f2c5403999b0",
+      "sourceSha256": "9f9041f79dec8ce0d7d16beb5eb404f198861f451260ac5eb80574c65c417352",
+      "sourceVerification": "sha256",
+      "bytes": 193972,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-10-chinese-ebony.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-chinese-ebony-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-chinese-ebony-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 10,
+      "style": "chinese-ebony",
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-10-chinese-ivory",
+      "category": "table",
+      "file": "table-threecushion-10-chinese-ivory.glb",
+      "sha256": "47f0d6f27238bf330fa2a42ef4659f40d5e8e091f1700288c457dc0b882957ba",
+      "sourceSha256": "bc46adb3b581ceaf48b067a64adda974a44417118e88af0717682074705bef5c",
+      "sourceVerification": "sha256",
+      "bytes": 193880,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-10-chinese-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-chinese-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-chinese-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 10,
+      "style": "chinese-ivory",
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-10-chinese-jade",
+      "category": "table",
+      "file": "table-threecushion-10-chinese-jade.glb",
+      "sha256": "a5e18b15cf6a68711deccd82518637d000bd6a041eaa647d57337cf3cd26e6fd",
+      "sourceSha256": "4b33fbcad3a02bf2efcca5f72b055a28d2bd3533fee4349736feb8fa8963355e",
+      "sourceVerification": "sha256",
+      "bytes": 233212,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-10-chinese-jade.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-chinese-jade-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-chinese-jade-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 10,
+      "style": "chinese-jade",
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-10-chinese-violet",
+      "category": "table",
+      "file": "table-threecushion-10-chinese-violet.glb",
+      "sha256": "3c499e51f701734aed087dc2f58e1ef7623ee242beaccc4144d44d1207bebaa8",
+      "sourceSha256": "ddf0b55fbe14f44873dd9298e36401dffa5d77aeba0db9ab1a6bc9a8b15a4e5a",
+      "sourceVerification": "sha256",
+      "bytes": 193960,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-10-chinese-violet.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-chinese-violet-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-10-chinese-violet-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 10,
+      "style": "chinese-violet",
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-5-american-ivory",
+      "category": "table",
+      "file": "table-threecushion-5-american-ivory.glb",
+      "sha256": "c57c33312679bf30753fa50483cdbc524d7767a5710c2778a5a03db02d9b42e4",
+      "sourceSha256": "b3633c8364238f4d98b460acb242242cf577b273e6ad645e6028b9e2b5747e4d",
+      "sourceVerification": "sha256",
+      "bytes": 253964,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-5-american-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-american-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-american-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 5,
+      "style": "american-ivory",
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-5-american-walnut",
+      "category": "table",
+      "file": "table-threecushion-5-american-walnut.glb",
+      "sha256": "fcc42f3fb8f05b579fc0def30165b99d477ac983f5681ef3c03dbf1b517fd868",
+      "sourceSha256": "863e61945ba6d414f9545fc9d857e2d4075468d62173505c7332a9a5e78f8dd8",
+      "sourceVerification": "sha256",
+      "bytes": 226748,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-5-american-walnut.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-american-walnut-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-american-walnut-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 5,
+      "style": "american-walnut",
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-5-american-graphite",
+      "category": "table",
+      "file": "table-threecushion-5-american-graphite.glb",
+      "sha256": "0319762a086d6c0053350e90af3394861cdf5323636e359c6bd55a1a7870800d",
+      "sourceSha256": "efc540730f0f547ed9bb7a2d6825d1f1b7c7b8940a3acb83138b297fcc5ab4c1",
+      "sourceVerification": "sha256",
+      "bytes": 187400,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-5-american-graphite.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-american-graphite-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-american-graphite-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 5,
+      "style": "american-graphite",
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-5-american-burgundy",
+      "category": "table",
+      "file": "table-threecushion-5-american-burgundy.glb",
+      "sha256": "39c91b7d1edb2500616c92dc11379c49f7e0a6b6047dff622d9c621e208fd545",
+      "sourceSha256": "06aac0ca3c24d129eee08bf3f7edcec896e0ffb5df74a95379ce8d58b51a1a06",
+      "sourceVerification": "sha256",
+      "bytes": 226800,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-5-american-burgundy.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-american-burgundy-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-american-burgundy-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 5,
+      "style": "american-burgundy",
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-5-chinese-ebony",
+      "category": "table",
+      "file": "table-threecushion-5-chinese-ebony.glb",
+      "sha256": "9c97a6235b0ebf1678182120bad1df6a044966c39de98e401bc2ed3a59949029",
+      "sourceSha256": "dd353b635133b91f72a1e706de7148286733646f9680a83eb3c6177eff114c99",
+      "sourceVerification": "sha256",
+      "bytes": 195284,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-5-chinese-ebony.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-chinese-ebony-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-chinese-ebony-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 5,
+      "style": "chinese-ebony",
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-5-chinese-ivory",
+      "category": "table",
+      "file": "table-threecushion-5-chinese-ivory.glb",
+      "sha256": "738fa354dcc574d2b204c7d7972ea1ce76787ca4fd1600914cf88d983ae89cda",
+      "sourceSha256": "0338df528c38cdf6d096fdda5488035f5c7293a824129ebec1df4292eec10b2d",
+      "sourceVerification": "sha256",
+      "bytes": 195188,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-5-chinese-ivory.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-chinese-ivory-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-chinese-ivory-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 5,
+      "style": "chinese-ivory",
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-5-chinese-jade",
+      "category": "table",
+      "file": "table-threecushion-5-chinese-jade.glb",
+      "sha256": "f6fabea0c9e03f3f28ea79d0b8df57015643dea1603a6ba3ef16ba6f11de354d",
+      "sourceSha256": "8acf40e0018d24a2b1bfc4bb98d11aa7a09c66c0759e476e3de1473f44e358f6",
+      "sourceVerification": "sha256",
+      "bytes": 234604,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-5-chinese-jade.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-chinese-jade-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-chinese-jade-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 5,
+      "style": "chinese-jade",
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    },
+    {
+      "id": "table-threecushion-5-chinese-violet",
+      "category": "table",
+      "file": "table-threecushion-5-chinese-violet.glb",
+      "sha256": "bd412011991a1ccdb5924e76af45d8155ca5a4558765e71d3746f5cadca5298f",
+      "sourceSha256": "086dfa0ba89069b3a7890a10864659722b6771cdd2861c3e3c4407fdec0948c0",
+      "sourceVerification": "sha256",
+      "bytes": 195412,
+      "sourceBlend": "assets/blender/legacy/table-threecushion-5-chinese-violet.blend",
+      "evidence": "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-chinese-violet-refine.json",
+      "angleImages": [
+        "docs/qa/2026-10-05-blender-mcp/table-threecushion-5-chinese-violet-angles-0.png"
+      ],
+      "visualReviewed": true,
+      "ballRadius": 0.03275,
+      "rule": "threecushion",
+      "size": 5,
+      "style": "chinese-violet",
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "compatibleRules": [
+        "threecushion"
+      ]
+    }
+  ]
+}

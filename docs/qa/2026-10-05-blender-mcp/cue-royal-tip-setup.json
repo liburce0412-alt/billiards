@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:22:54.216335+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: CUE_CLOSEUP_READY tip WIDTH_M 0.145 TARGET [0.0, 0.655396580696106, -9.452924132347107e-08]\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: CUE_CLOSEUP_READY tip WIDTH_M 0.145 TARGET [0.0, 0.655396580696106, -9.452924132347107e-08]\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\cue-royal.blend",
+    "sha256": "e7e31f3aaf8b982085cd318ce8bc0fab272b2bdf441daed5bea7da91ede45953"
+  }
+}

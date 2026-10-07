@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:26:24.411357+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: CUE_CLOSEUP_READY tip WIDTH_M 0.145 TARGET [0.0, 0.655396580696106, -9.452924132347107e-08]\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: CUE_CLOSEUP_READY tip WIDTH_M 0.145 TARGET [0.0, 0.655396580696106, -9.452924132347107e-08]\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\cue-aurora-prism.blend",
+    "sha256": "f76fa7248094188b919bc386536478dd971087541608e0e704b4dd3febaf051e"
+  }
+}

@@ -1,8 +1,25 @@
 export type CueInlayPattern =
-  "spear" | "diamond" | "chevron" | "feather" | "constellation"
+  | "spear"
+  | "diamond"
+  | "chevron"
+  | "feather"
+  | "constellation"
+  | "wave"
+  | "tiger"
+  | "prism"
+  | "laser"
 export type CueShaftPattern = "maple" | "ash" | "carbon" | "radial"
-export type CueForearmPattern = "straight" | "burl" | "flame" | "marble"
+export type CueForearmPattern =
+  | "straight"
+  | "burl"
+  | "flame"
+  | "marble"
+  | "porcelain"
+  | "tiger"
+  | "prism"
+  | "holographic"
 export type CueWrapPattern = "linen" | "leather" | "braid"
+export type CueFinish = "satin" | "lacquer" | "pearl" | "carbon" | "holographic"
 
 export interface CueStyle {
   id: string
@@ -16,6 +33,10 @@ export interface CueStyle {
   ferrule: number
   tip: number
   shaftMetalness?: number
+  secondaryAccent?: number
+  finish?: CueFinish
+  iridescence?: number
+  emissive?: number
   inlayPattern: CueInlayPattern
   shaftPattern?: CueShaftPattern
   forearmPattern?: CueForearmPattern
@@ -76,6 +97,7 @@ export const CUE_STYLES: readonly CueStyle[] = [
     forearmPattern: "straight",
     wrapPattern: "linen",
     ringCount: 4,
+    finish: "lacquer",
     swatches: ["#d8bd91", "#8b4b26", "#174735", "#d8b25c"],
   },
   {
@@ -95,6 +117,7 @@ export const CUE_STYLES: readonly CueStyle[] = [
     forearmPattern: "straight",
     wrapPattern: "leather",
     ringCount: 6,
+    finish: "carbon",
     swatches: ["#24282d", "#050607", "#5d151b", "#aeb7c2"],
   },
   {
@@ -113,6 +136,7 @@ export const CUE_STYLES: readonly CueStyle[] = [
     forearmPattern: "burl",
     wrapPattern: "braid",
     ringCount: 6,
+    finish: "lacquer",
     swatches: ["#d6b98a", "#0e665a", "#073a34", "#e5c56f"],
   },
   {
@@ -131,6 +155,7 @@ export const CUE_STYLES: readonly CueStyle[] = [
     forearmPattern: "flame",
     wrapPattern: "leather",
     ringCount: 4,
+    finish: "lacquer",
     swatches: ["#d1ae78", "#672a47", "#281122", "#d9a94d"],
   },
   {
@@ -149,6 +174,7 @@ export const CUE_STYLES: readonly CueStyle[] = [
     forearmPattern: "straight",
     wrapPattern: "linen",
     ringCount: 3,
+    finish: "pearl",
     swatches: ["#e1c89f", "#174f78", "#0a243c", "#77d4e8"],
   },
   {
@@ -167,7 +193,93 @@ export const CUE_STYLES: readonly CueStyle[] = [
     forearmPattern: "burl",
     wrapPattern: "braid",
     ringCount: 6,
+    finish: "pearl",
     swatches: ["#ddc49a", "#e7dfcc", "#8b5c3d", "#167c87"],
+  },
+  {
+    id: "porcelain-wave",
+    name: "青花瓷影",
+    description: "暖白瓷漆、钴蓝云水纹与细银关节环",
+    shaft: 0xe4cda6,
+    forearm: 0xf3efe4,
+    sleeve: 0x174d78,
+    wrap: 0x182838,
+    accent: 0x245f92,
+    secondaryAccent: 0xcad9df,
+    ferrule: 0xf8f5ec,
+    tip: 0x2f7390,
+    inlayPattern: "wave",
+    shaftPattern: "maple",
+    forearmPattern: "porcelain",
+    wrapPattern: "linen",
+    ringCount: 6,
+    finish: "lacquer",
+    swatches: ["#f3efe4", "#245f92", "#182838", "#cad9df"],
+  },
+  {
+    id: "amber-tiger",
+    name: "琥珀虎纹",
+    description: "虎纹枫木、烟熏胡桃与古铜嵌环",
+    shaft: 0xdcc08c,
+    forearm: 0xb76a2f,
+    sleeve: 0x3d2418,
+    wrap: 0x17191a,
+    accent: 0xb68142,
+    secondaryAccent: 0xe8bc6c,
+    ferrule: 0xf0e5cf,
+    tip: 0x315f79,
+    inlayPattern: "tiger",
+    shaftPattern: "ash",
+    forearmPattern: "tiger",
+    wrapPattern: "linen",
+    ringCount: 4,
+    finish: "satin",
+    swatches: ["#dcc08c", "#b76a2f", "#3d2418", "#b68142"],
+  },
+  {
+    id: "aurora-prism",
+    name: "极光棱镜",
+    description: "三脊钛银装甲、悬置棱镜能量芯与编织碳纤前节",
+    shaft: 0x566573,
+    forearm: 0x96cbd0,
+    sleeve: 0x25314b,
+    wrap: 0x1b2531,
+    accent: 0x5bdde4,
+    secondaryAccent: 0xa78af0,
+    ferrule: 0xf4f8f7,
+    tip: 0x377b96,
+    shaftMetalness: 0.14,
+    inlayPattern: "prism",
+    shaftPattern: "carbon",
+    forearmPattern: "prism",
+    wrapPattern: "braid",
+    ringCount: 6,
+    finish: "pearl",
+    iridescence: 0.72,
+    swatches: ["#dce8ea", "#96cbd0", "#5bdde4", "#a78af0"],
+  },
+  {
+    id: "holo-laser",
+    name: "全息激光",
+    description: "四轨外骨骼、分段脉冲反应芯与机械锁紧碳纤前节",
+    shaft: 0x27323a,
+    forearm: 0x111a24,
+    sleeve: 0x080e15,
+    wrap: 0x151a22,
+    accent: 0x45e8ed,
+    secondaryAccent: 0xb878ff,
+    ferrule: 0xbadce1,
+    tip: 0x2e708d,
+    shaftMetalness: 0.46,
+    inlayPattern: "laser",
+    shaftPattern: "carbon",
+    forearmPattern: "holographic",
+    wrapPattern: "leather",
+    ringCount: 6,
+    finish: "holographic",
+    iridescence: 1,
+    emissive: 0x45e8ed,
+    swatches: ["#111a24", "#45e8ed", "#b878ff", "#ff9f57"],
   },
 ]
 

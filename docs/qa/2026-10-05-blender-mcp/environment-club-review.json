@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "sha256": "46ab0ce4151b1105fbb8aa4feba6d9656bef72c0d1e8c6d1371e3e01af465784",
+  "reviewer": "three_asset_inventory",
+  "reviewedAt": "2026-10-05T18:01:59.3472258+08:00",
+  "evidence": [
+    "environment-club-angles-0.png",
+    "environment-club-detail-0.png"
+  ],
+  "scope": "Actual Blender four-angle architecture and one theme-specific close-up, excluding runtime shader/phone acceptance",
+  "notes": [
+    "Latest four views show continuous trophy gallery and furniture. Close view confirms cushion welts, rounded panel edges and restrained wall surface detail.",
+    "Dark upholstery is stylized; no claim of scanned leather or physically stitched upholstery."
+  ]
+}

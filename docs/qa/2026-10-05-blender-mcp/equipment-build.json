@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:20:55.659212+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: Info: Saved as \"table-tennis-equipment.blend\"\n16:20:55 | INFO: Starting glTF 2.0 export\n16:20:55 | INFO: Extracting primitive: Cube.066\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.067\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cylinder\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.074\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.073\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.095\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.070\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cylinder.013\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.100\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.099\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Horizontal net filament\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.103\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Back rubber\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Front rubber\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.109\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.106\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Rubber sponge\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.105\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Blade ply 1\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Blade ply 2\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Sphere.080\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Finished glTF 2.0 export in 0.05043601989746094 s\n\nASSET_READY table-tennis-equipment TRIANGLES 24764 ROOTS ['Table', 'Net', 'Ball', 'Paddle']\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: Info: Saved as \"table-tennis-equipment.blend\"\n16:20:55 | INFO: Starting glTF 2.0 export\n16:20:55 | INFO: Extracting primitive: Cube.066\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.067\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cylinder\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.074\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.073\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.095\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.070\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cylinder.013\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.100\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.099\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Horizontal net filament\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.103\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Back rubber\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Front rubber\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.109\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.106\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Rubber sponge\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Cube.105\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Blade ply 1\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Blade ply 2\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Extracting primitive: Sphere.080\n16:20:55 | INFO: Primitives created: 1\n16:20:55 | INFO: Finished glTF 2.0 export in 0.05043601989746094 s\n\nASSET_READY table-tennis-equipment TRIANGLES 24764 ROOTS ['Table', 'Net', 'Ball', 'Paddle']\n"
+    },
+    "isError": false
+  }
+}

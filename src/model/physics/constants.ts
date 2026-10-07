@@ -39,7 +39,8 @@ export const sinθ = 2 / 5
 export const cosθ = Math.sqrt(21) / 5
 
 export const offCenterLimit = 0.45
-export let maxPower: number
+// The cue-speed ceiling is a profile setting, not a mass/friction derivative.
+export let maxPower = 160 * R
 
 refresh()
 
@@ -47,7 +48,6 @@ function refresh() {
   Mz = ((mu * m * g * 2) / 3) * rho
   Mxy = (7 / (5 * Math.sqrt(2))) * R * mu * m * g
   I = (2 / 5) * m * R * R
-  maxPower = 160 * R
 }
 
 export function setR(val: number) {

@@ -1,0 +1,17 @@
+{
+  "reviewedAt": "2026-10-05T17:29:24.3599416+08:00",
+  "scope": "Blender full-length shape plus listed close-up images",
+  "passed": true,
+  "sha256": "a80000c328718a643af93fc5ca9857ec62ccda6aee0e74900eff3b1160650909",
+  "notes": [
+    "Four-angle full length view actually inspected: taper and color regions are coherent, shaft and butt have no visible breaks. Runtime hand alignment, chalk animation and phone appearance are outside this Blender review.",
+    "Latest 17:26 tip close-up checked: carbon weave cells are visible and continuous along the shaft; ferrule and blue tip connections have no visible gaps.",
+    "Grip close-up confirms segmented protected chassis, enclosed luminous core, embedded rails and connected locking collars; no floating pieces or medieval spikes."
+  ],
+  "reviewer": "three_asset_inventory",
+  "evidence": [
+    "cue-aurora-prism-angles-0.png",
+    "cue-aurora-prism-tip-closeup-0.png",
+    "cue-aurora-prism-grip-closeup-0.png"
+  ]
+}

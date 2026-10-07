@@ -16,7 +16,7 @@ export class Session {
     readonly examMode: boolean = false,
     readonly practiceMode: boolean = false,
     readonly lod: number = 1,
-    readonly first: boolean = false,
+    public first: boolean = false,
     readonly speedrunMode: boolean = false
   ) {}
 

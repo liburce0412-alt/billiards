@@ -35,6 +35,16 @@ export class ShotPlannerClient {
     })
   }
 
+  dispose(): void {
+    for (const pending of this.pending.values()) {
+      clearTimeout(pending.timer)
+      pending.reject(new Error("AI planner disposed"))
+    }
+    this.pending.clear()
+    this.worker?.terminate()
+    this.worker = undefined
+  }
+
   private getWorker(): Worker {
     if (this.worker) return this.worker
     this.worker = new Worker("worker.js")

@@ -1,0 +1,15 @@
+{
+  "reviewedAt": "2026-10-05T17:29:24.3428182+08:00",
+  "scope": "Blender full-length shape plus listed close-up images",
+  "passed": true,
+  "sha256": "6278b0f97add83e9f7170b747190d8a620b7239798e7c6916c957bd85afe31f1",
+  "notes": [
+    "Four-angle full length view actually inspected: taper and color regions are coherent, shaft and butt have no visible breaks. Runtime hand alignment, chalk animation and phone appearance are outside this Blender review.",
+    "Tip close-up confirms visible longitudinal wood grain, clean ferrule joint and blue tip."
+  ],
+  "reviewer": "three_asset_inventory",
+  "evidence": [
+    "cue-royal-angles-0.png",
+    "cue-royal-tip-closeup-0.png"
+  ]
+}

@@ -55,6 +55,7 @@ export class ParticleSystem {
   private dummy: Object3D = new Object3D()
   private stopZ: number = 0
   private instancedMesh: InstancedMesh | null = null
+  private elapsed = 0
 
   constructor(config: ParticleSystemConfig = {}) {
     this.config = { ...DEFAULT_CONFIG, ...config }
@@ -77,6 +78,8 @@ export class ParticleSystem {
   }
 
   initParticles(scene: Scene) {
+    if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches)
+      return
     const sourceCanvas = document.createElement("canvas")
     sourceCanvas.width = this.config.tableWidth
     sourceCanvas.height = this.config.tableLength
@@ -101,7 +104,8 @@ export class ParticleSystem {
         image.data[pixel] = colour[0]
         image.data[pixel + 1] = colour[1]
         image.data[pixel + 2] = colour[2]
-        image.data[pixel + 3] = 255
+        image.data[pixel + 3] =
+          (x + y * this.config.tableWidth) % 11 === 0 ? 255 : 0
       }
     }
     ctx.putImageData(image, 0, 0)
@@ -111,6 +115,7 @@ export class ParticleSystem {
   initialise(scene: Scene, sourceCanvas: HTMLCanvasElement): void {
     this.dispose()
     this.scene = scene
+    this.elapsed = 0
     this.stopZ = this.config.tableZ + 0.1
 
     const ctx = sourceCanvas.getContext("2d", { willReadFrequently: true })
@@ -133,6 +138,7 @@ export class ParticleSystem {
     const totalPixels = this.config.tableWidth * this.config.tableLength
     for (let i = 0; i < totalPixels; i++) {
       const idx = i * 4
+      if (imgData[idx + 3] === 0) continue
       if (
         imgData[idx] === bgR &&
         imgData[idx + 1] === bgG &&
@@ -181,6 +187,8 @@ export class ParticleSystem {
     geo.computeVertexNormals()
     const mat = new MeshStandardMaterial({
       side: DoubleSide,
+      transparent: true,
+      depthWrite: false,
       metalness: 0.72,
       roughness: 0.3,
     })
@@ -324,6 +332,15 @@ export class ParticleSystem {
   update(dt: number): void {
     if (!this.instancedMesh) return
     const safeDt = Math.min(dt, 0.1)
+    this.elapsed += safeDt
+    if (this.elapsed >= 8) {
+      this.dispose()
+      return
+    }
+    ;(this.instancedMesh.material as MeshStandardMaterial).opacity = Math.min(
+      1,
+      (8 - this.elapsed) / 2
+    )
     for (let i = 0; i < this.count; i++) {
       this.updateParticle(i, safeDt)
     }

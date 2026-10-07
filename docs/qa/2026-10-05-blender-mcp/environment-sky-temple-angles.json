@@ -1,0 +1,31 @@
+{
+  "time": "2026-10-05T09:37:23.613188+00:00",
+  "tool": "look",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "image",
+        "mimeType": "image/png",
+        "annotations": null,
+        "meta": null,
+        "savedImage": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-10-05-blender-mcp\\environment-sky-temple-angles-0.png"
+      },
+      {
+        "type": "text",
+        "text": "Tiles left to right, top to bottom: front, right, back, three_quarter. Framed 9 objects, 19.71 x 18.68 x 9.75 m across, centred at [0.23, 4.87, 0.55].",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

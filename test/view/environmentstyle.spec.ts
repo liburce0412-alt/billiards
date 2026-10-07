@@ -9,13 +9,20 @@ import {
 describe("EnvironmentStyle", () => {
   beforeEach(() => localStorage.removeItem(ENVIRONMENT_STYLE_STORAGE_KEY))
 
-  it("offers SPECTRA plus galaxy, nebula and club environments", () => {
+  it("offers four upgraded and four new showcase environments", () => {
     expect(ENVIRONMENT_STYLES.map((style) => style.id)).toEqual([
       "spectra",
       "galaxy",
       "nebula",
       "club",
+      "aurora-hall",
+      "sky-temple",
+      "abyss-palace",
+      "lunar-observatory",
     ])
+    expect(
+      new Set(ENVIRONMENT_STYLES.map((style) => style.architecture)).size
+    ).toBe(8)
   })
 
   it("persists a valid selection and rejects unknown ids", () => {

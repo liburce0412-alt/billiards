@@ -1,0 +1,13 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-eightball-5-chinese-violet-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence.",
+    "Final 17:34 rebuild checked: former V-shaped apron normal artifact and broad dark cloth bands are gone; compact body and six pocket decorations now match the visible table footprint."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.5646703+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "4b7965fa0605620fadf1d737ca6a2378d7b20f492bb90163f1b9cd2f16acd7d8"
+}

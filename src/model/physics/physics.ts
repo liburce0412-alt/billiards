@@ -17,9 +17,10 @@ const delta = { v: new Vector3(), w: new Vector3() }
 
 export function sliding(v, w) {
   const va = surfaceVelocity(v, w)
+  const spindownFactor = Math.abs(w.z) > 8 ? 12 : 1
   delta.v.copy(norm(va).multiplyScalar(-muS * g))
   delta.w.copy(norm(upCross(va)).multiplyScalar(((5 / 2) * muS * g) / R))
-  delta.w.setZ(-(5 / 2) * (Mz / (m * R * R)) * Math.sign(w.z))
+  delta.w.setZ(-(5 / 2) * (Mz / (m * R * R)) * spindownFactor * Math.sign(w.z))
   return delta
 }
 
@@ -31,7 +32,7 @@ export function rollingFull(w: Vector3, v: Vector3, t: number) {
 
   if (mag < eps) {
     delta.v.set(-v.x / t, -v.y / t, 0)
-    const spindownFactor = zmag > 24 ? 12 : 1
+    const spindownFactor = zmag > 8 ? 12 : 1
     delta.w.set(
       -w.x / t,
       -w.y / t,

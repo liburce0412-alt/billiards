@@ -1,0 +1,14 @@
+{
+  "reviewedAt": "2026-10-05T17:29:24.3500737+08:00",
+  "scope": "Blender full-length shape plus listed close-up images",
+  "passed": true,
+  "sha256": "9b4405cb187a66a71c454d3fa6b6eaf7c9925331a3b9f708def754986a0581cc",
+  "notes": [
+    "Four-angle full length view actually inspected: taper and color regions are coherent, shaft and butt have no visible breaks. Runtime hand alignment, chalk animation and phone appearance are outside this Blender review.",
+    "No microtexture close-up was captured for this individual variant; only full-length shape and palette approved."
+  ],
+  "reviewer": "three_asset_inventory",
+  "evidence": [
+    "cue-ivory-angles-0.png"
+  ]
+}

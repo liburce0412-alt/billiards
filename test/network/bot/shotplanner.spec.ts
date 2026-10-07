@@ -65,5 +65,9 @@ describe("physical bot shot planner", () => {
     expect(first.candidateId).to.equal("contact")
     expect(second.candidateId).to.equal(first.candidateId)
     expect(second.score).to.equal(first.score)
+    // Carom uses a second cue ball, and collision pairs need not list it first.
+    request.cueBallId = 3
+    request.balls = [request.balls[1], { ...request.balls[0], id: 3 }]
+    expect(planBotShotSync(request).candidateId).to.equal("contact")
   })
 })

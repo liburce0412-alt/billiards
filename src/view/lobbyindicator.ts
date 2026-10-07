@@ -14,6 +14,7 @@ type SocialMessage =
   | { type: string }
 
 export class LobbyIndicator {
+  private readonly listenerAbort = new AbortController()
   private readonly element: HTMLElement | null
   private readonly countElement: HTMLSpanElement | null
   private readonly challengePill: HTMLElement | null
@@ -51,36 +52,52 @@ export class LobbyIndicator {
       this.element.target = "_self"
       this.element.rel = "noopener"
     }
-    id("challengeDecline")?.addEventListener("click", (event) => {
-      event.stopPropagation()
-      this.challengerName = null
-      this.updateDisplay()
-    })
-    id("challengeAccept")?.addEventListener("click", () => {
-      globalThis.location.assign("/lobby")
-    })
+    id("challengeDecline")?.addEventListener(
+      "click",
+      (event) => {
+        event.stopPropagation()
+        this.challengerName = null
+        this.updateDisplay()
+      },
+      { signal: this.listenerAbort.signal }
+    )
+    id("challengeAccept")?.addEventListener(
+      "click",
+      () => {
+        globalThis.location.assign("/lobby")
+      },
+      { signal: this.listenerAbort.signal }
+    )
   }
 
   private setupDrawer() {
     let open = false
+    const compactTouchLayout =
+      globalThis.matchMedia?.("(pointer: coarse)").matches ?? false
     try {
       const saved = globalThis.localStorage?.getItem(
         "break-builder.social-drawer"
       )
-      if (saved === "open" || saved === "closed") {
+      if (!compactTouchLayout && (saved === "open" || saved === "closed")) {
         open = saved === "open"
       }
     } catch {
       // The drawer remains collapsed when storage is unavailable.
     }
     this.setDrawerOpen(open)
-    id("gameSocialToggle")?.addEventListener("click", () =>
-      this.setDrawerOpen(this.drawer?.hasAttribute("hidden") ?? true)
+    id("gameSocialToggle")?.addEventListener(
+      "click",
+      () => this.setDrawerOpen(this.drawer?.hasAttribute("hidden") ?? true),
+      { signal: this.listenerAbort.signal }
     )
-    id("gameSocialClose")?.addEventListener("click", () =>
-      this.setDrawerOpen(false)
+    id("gameSocialClose")?.addEventListener(
+      "click",
+      () => this.setDrawerOpen(false),
+      { signal: this.listenerAbort.signal }
     )
-    this.socialDock?.addEventListener("click", () => this.setDrawerOpen(true))
+    this.socialDock?.addEventListener("click", () => this.setDrawerOpen(true), {
+      signal: this.listenerAbort.signal,
+    })
   }
 
   private setDrawerOpen(open: boolean) {
@@ -123,11 +140,19 @@ export class LobbyIndicator {
     this.socket = new WebSocket(
       `${protocol}//${globalThis.location.host}/ws/social`
     )
-    this.socket.addEventListener("message", (event) => this.receive(event.data))
-    this.socket.addEventListener("close", () => {
-      this.count = 0
-      this.updateDisplay()
-    })
+    this.socket.addEventListener(
+      "message",
+      (event) => this.receive(event.data),
+      { signal: this.listenerAbort.signal }
+    )
+    this.socket.addEventListener(
+      "close",
+      () => {
+        this.count = 0
+        this.updateDisplay()
+      },
+      { signal: this.listenerAbort.signal }
+    )
     this.updateDisplay()
   }
 
@@ -137,8 +162,17 @@ export class LobbyIndicator {
   }
 
   async stop(): Promise<void> {
+    this.setDrawerOpen(false)
+    this.listenerAbort.abort()
     this.socket?.close(1000, "game closed")
     this.socket = null
+    document.body.classList.remove("social-drawer-open")
+    this.drawer?.setAttribute("hidden", "true")
+    this.drawer?.setAttribute("aria-hidden", "true")
+    const toggle = id("gameSocialToggle")
+    toggle?.setAttribute("aria-expanded", "false")
+    this.socialDock?.setAttribute("aria-expanded", "false")
+    if (this.socialDock) this.socialDock.hidden = false
   }
 
   private receive(raw: unknown) {
@@ -211,8 +245,10 @@ export class LobbyIndicator {
         visibility.textContent = `在线可见：${this.visibilityLabel(
           platform.user.visibility
         )}`
-        visibility.addEventListener("click", () =>
-          globalThis.location.assign("/lobby")
+        visibility.addEventListener(
+          "click",
+          () => globalThis.location.assign("/lobby"),
+          { signal: this.listenerAbort.signal }
         )
         this.drawerSelf.append(visibility)
       }
@@ -245,7 +281,11 @@ export class LobbyIndicator {
     if (row instanceof HTMLButtonElement) {
       row.type = "button"
       row.title = "前往社交大厅联系球友"
-      row.addEventListener("click", () => globalThis.location.assign("/lobby"))
+      row.addEventListener(
+        "click",
+        () => globalThis.location.assign("/lobby"),
+        { signal: this.listenerAbort.signal }
+      )
     }
     const avatar = document.createElement("span")
     avatar.className = "game-social-avatar"

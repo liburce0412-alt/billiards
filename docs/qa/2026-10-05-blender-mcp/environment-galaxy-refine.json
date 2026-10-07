@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:37:05.924441+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 17:37:04 | INFO: Data are loaded, start creating Blender stuff\n17:37:04 | INFO: Blender create Mesh node 0\n17:37:04 | INFO: Blender create Mesh node 1\n17:37:04 | INFO: Blender create Mesh node 2\n17:37:04 | INFO: Blender create Mesh node 3\n17:37:04 | INFO: Blender create Mesh node 4\n17:37:04 | INFO: Blender create Mesh node 5\n17:37:04 | INFO: Blender create Mesh node 6\n17:37:04 | INFO: glTF import finished in 0.07s\nInfo: Saved as \"environment-galaxy.blend\"\n17:37:05 | INFO: Starting glTF 2.0 export\n17:37:05 | INFO: Extracting primitive: Cylinder.154\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Cube.037\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Cube.019\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_1.039\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_2.040\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_3.040\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_4.040\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_5.040\n17:37:05 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_0.038\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_6.039\n17:37:05 | INFO: Primitives created: 0\n17:37:05 | WARNING: Mesh 'Mesh_6.039' has no primitives and will be omitted.\n17:37:05 | INFO: Finished glTF 2.0 export in 0.22320318222045898 s\n\nENVIRONMENT_REFINED environment-galaxy TRIANGLES 71564 PROXIES_PRESERVED 1\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 17:37:04 | INFO: Data are loaded, start creating Blender stuff\n17:37:04 | INFO: Blender create Mesh node 0\n17:37:04 | INFO: Blender create Mesh node 1\n17:37:04 | INFO: Blender create Mesh node 2\n17:37:04 | INFO: Blender create Mesh node 3\n17:37:04 | INFO: Blender create Mesh node 4\n17:37:04 | INFO: Blender create Mesh node 5\n17:37:04 | INFO: Blender create Mesh node 6\n17:37:04 | INFO: glTF import finished in 0.07s\nInfo: Saved as \"environment-galaxy.blend\"\n17:37:05 | INFO: Starting glTF 2.0 export\n17:37:05 | INFO: Extracting primitive: Cylinder.154\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Cube.037\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Cube.019\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_1.039\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_2.040\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_3.040\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_4.040\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_5.040\n17:37:05 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_0.038\n17:37:05 | INFO: Primitives created: 1\n17:37:05 | INFO: Extracting primitive: Mesh_6.039\n17:37:05 | INFO: Primitives created: 0\n17:37:05 | WARNING: Mesh 'Mesh_6.039' has no primitives and will be omitted.\n17:37:05 | INFO: Finished glTF 2.0 export in 0.22320318222045898 s\n\nENVIRONMENT_REFINED environment-galaxy TRIANGLES 71564 PROXIES_PRESERVED 1\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\.tmp\\legacy-art-export\\environment-galaxy.glb",
+    "sha256": "48ca33f1f8731d7640d8a67af0923c89414c5dc256606383d31f49c2592218e4"
+  }
+}

@@ -27,6 +27,14 @@ function createCueAndTable(ballPosition: Vector3) {
 }
 
 describe("Cue", () => {
+  test("finishes the cue follow-through while the struck ball is still moving", () => {
+    const { cue, table } = createCueAndTable(new Vector3(0, 1, 0))
+    cue.aim.power = 4
+    cue.hit(table.cueball)
+    cue.update(0.3)
+    expect(cue.hittingAnimation).to.be.false
+    expect(table.cueball.vel.length()).to.be.greaterThan(0)
+  })
   test("cue intersection with ball infront of cueball", () => {
     const { cue, table } = createCueAndTable(new Vector3(-3 * R, 0, 0))
     expect(cue.intersectsAnything(table)).to.be.true
@@ -88,6 +96,23 @@ describe("Cue", () => {
     } as any
     cue.setPower(0.5)
     expect(cue.aim.power).to.equal(Math.fround(0.5 * maxPower))
+  })
+
+  test("setPower clamps every input source to the configured ceiling", () => {
+    const { cue } = createCueAndTable(new Vector3(0, 1, 0))
+    cue.aimInputs = {
+      isDisabled: () => false,
+      updateVisualState: () => {},
+      updatePowerSlider: () => {},
+      showOverlap: () => {},
+    } as any
+
+    cue.setPower(2)
+    expect(cue.aim.power).to.equal(Math.fround(maxPower))
+    cue.setPower(-1)
+    expect(cue.aim.power).to.equal(0)
+    cue.setPower(Number.NaN)
+    expect(cue.aim.power).to.equal(0)
   })
 
   test("setPower returns early when disabled", () => {
@@ -212,7 +237,9 @@ describe("Cue", () => {
 
     expect(visiblePatterns).not.to.be.empty
     expect(visiblePatterns.every((pattern) => pattern === "chevron")).to.be.true
-    expect(wrapThreads).to.equal(13)
+    // The visible wrap threads are merged into one mesh so the richer cue
+    // geometry does not add a draw call per ring.
+    expect(wrapThreads).to.equal(1)
 
     cue.setStyle("ivory", false)
     const visibleAfterSwitch: string[] = []

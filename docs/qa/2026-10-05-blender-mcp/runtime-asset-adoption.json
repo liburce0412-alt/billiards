@@ -1,0 +1,610 @@
+{
+  "generatedAt": "2026-10-05T10:03:02.471Z",
+  "scope": "Actual GLB decoding and runtime geometry/material adoption; not a WebGL screenshot or phone test",
+  "assetVersions": {
+    "robot-prototype-sphere": "83bb5d627570b7ac584b3f9f7e295697098bf9d91db0bd741477106c5fd4dc80",
+    "robot-prototype-box": "834cca1b344a43bbac64a7e766417efcba2e6c35828371b400e62ccd841e8bc7",
+    "robot-prototype-cylinder": "262ef2f44626bc95fa056c4c942e55ff99c4aad33abcc3f6d341bb36cb9ab8ad",
+    "robot-prototype-armour": "e4ddfb71cb12a03b68b3390d8f96d5b24912a282b74ae78a5277a44475e5fbe7",
+    "robot-prototype-helmet": "672b4f0c0c18c3f415c1b8b6e632ea7b2b1acdfbf51228083c5740d8980eb713",
+    "cue-heritage": "59fc3d684da9e08c26cd816ce9b8f17765ee48eb8cb9917ba94ce2c05758aa3e",
+    "cue-obsidian": "6d6a247e86300782b8b26ba1cef0d85281a9d65ebcc5529f6aa8425fa5d37764",
+    "cue-jade": "d8a033f5dccd4f8793bd69c987e8c5a7904d0c0f2946e104482f3430185b957c",
+    "cue-royal": "6278b0f97add83e9f7170b747190d8a620b7239798e7c6916c957bd85afe31f1",
+    "cue-glacier": "dd1ae1264eb3ceb3db6e2f51a37e8d401f6713cbf59be812aaabaabcd26f23c6",
+    "cue-ivory": "9b4405cb187a66a71c454d3fa6b6eaf7c9925331a3b9f708def754986a0581cc",
+    "cue-porcelain-wave": "e0b5b352ef6b97d7d8a0047e4e2bcdccdffd1daeb99c5945120b1cafd4ef0072",
+    "cue-amber-tiger": "22311ed43e69cbe455dda510fef8e86be7353fbe785d16086971fe4c35a00236",
+    "cue-aurora-prism": "a80000c328718a643af93fc5ca9857ec62ccda6aee0e74900eff3b1160650909",
+    "cue-holo-laser": "0703c29d51e98baa7c60ead527ef74d40b3537c11329a5560e40033024781cf6",
+    "cue-custom": "5f2ac690b64b09b6feffec9c3b7ffff25061dd43057e6ed0f20ccf0b755e96f6",
+    "environment-spectra": "09983f7a6fa50ce55b59196107084242d956978bf8659d0d448ad25e42ccc528",
+    "environment-galaxy": "0b3cae86b87fa7ed698fd4960b3e37d95b90c24aa05a34bda13ec6475f8ef4b0",
+    "environment-nebula": "b7eaabb96014bc6a4c8922486f92ca292bf68f7b88ba773db3a1e8033214b718",
+    "environment-club": "46ab0ce4151b1105fbb8aa4feba6d9656bef72c0d1e8c6d1371e3e01af465784",
+    "environment-aurora-hall": "dbdc6a21925e16b3bc3d9212d482fcc9afa4562f82d768858f799923c62d211c",
+    "environment-sky-temple": "179a4316aba48e8c350a55fdc7c32240a6b882f3631ccdc85356a2bc27fe06bf",
+    "environment-abyss-palace": "014bd08a070cec865852a34345c47d87e24bd9ef3e4c5ffd84a28b69a85f3d99",
+    "environment-lunar-observatory": "dfafde5cf53ec59698f07f854c49ad0c1ae08d6f56c4246aab6816654ed876a5",
+    "ball-dotted-ffffff": "ca086a5da7862dba33a57ed1301f1f0ccd119c0fc42055a20aefc8eb0d8a0218",
+    "ball-pool-1": "9a877f86b66ed3b5c3ca551266c2e7444f7b8e29c0c582aae926188f17d173b8",
+    "ball-pool-2": "d041af855469e11ffffdee93943160b4f20157f59ab2bd614566b27da29f1017",
+    "ball-pool-3": "9c82d7b42624a11162a393c518a1f3dd2426ffebd23aab042f04c715489139fc",
+    "ball-pool-4": "e45262e779209e2485fc95e0fd2300d9d7245a0d189843fcb5ac961182bb0615",
+    "ball-pool-5": "0a0ff357b78f4e00744b7564892def9a115f37ee6d0cb4738f55d183a5e743c6",
+    "ball-pool-6": "83a9bb37497a955f57ee4d908d1adaacbb55d6883dd006fd8b3cf38378a15526",
+    "ball-pool-7": "fcaea4eab165c0113e2b6dd18f4989befbaf7500ec171f130ddb39dc691ddb1b",
+    "ball-pool-8": "1557cb77c4c913d83d35f8e62a8d6d234a956c5e92a5eb75fe67aacb3617f524",
+    "ball-pool-9": "6ae497690521df2df30fa4dfdafc9c2e45a4ae5ccfbdd7e1c9804a6ca00f63d3",
+    "ball-pool-10": "d7be67f0636639169a31932052bd12c7d389046405ad5d6d7b4c8cde48d3d958",
+    "ball-pool-11": "d6b19ee01afc733570bdb977c747de37f055b506c6966bed03875e0300ac1530",
+    "ball-pool-12": "6d8ddc1d0b1bb0cc36cfd805bad270116aa8e5efb3aad5867d211aabe716ca31",
+    "ball-pool-13": "d1961a88f3f6710ca3601fef96726848fa8c724e87c4c9c12338aba9f8faf7fe",
+    "ball-pool-14": "55d905fc82c433e16614fa24430c44db22ae8e2e1ebbd1adf8c797af8f63fa10",
+    "ball-pool-15": "ee17af4a5ba5054bd6988a55ec41d939016027736d7f48f138ae02302d171a65",
+    "ball-dotted-ffd700": "82549d66121cf0d29dd21279862f2ecbb7152fa6099d65808de79c0fa7ff6139",
+    "ball-dotted-ff0000": "0bfe5dc8fad3e03d9d40f30a560d2917cab35bb2c8f6d239b55219c7815a694b",
+    "ball-dotted-008000": "a956b4521ea27479a6027ac0b94169b3ebc6ab4f67e45ec36d6a02544e4e0390",
+    "ball-dotted-6a2500": "99beb96b7e6b8ae280a30a69f0539cf182f52d0f255cac8938cd2983779e1833",
+    "ball-dotted-005cb1": "d16c29a2e5969f3c97e436eea7d8b7e09989c2f710ec284a20d3f11d9f5eeb80",
+    "ball-dotted-ff80b3": "e147990b3a63b4e25cc6b8f0766af34ef0be1825d1aa8e3bdb68b34822b7fe7e",
+    "ball-dotted-010000": "c64660a859a29d43f6f9df5e4354c676e17631860148eb0ab7e5578a324ff3be",
+    "ball-dotted-ee0000": "eb19e8047046b9ed238a10c84533204c644382601468f952c6a782320471ab45",
+    "table-eightball-10-american-ivory": "b8441d880e7c4e3c7c8751d7a9ef7148370c7180216788ad26e113f704ae42f1",
+    "table-eightball-10-american-walnut": "6eb9804e8fc8e3a35ed923928ad068d41a71ce76a37d15e6dad7a5a42b969200",
+    "table-eightball-10-american-graphite": "1a9e2af2e66ffbf1f8e5872392f95f88472a6d0fc288962924cafcbe5a13ff9c",
+    "table-eightball-10-american-burgundy": "20fe5a5675d5db36c82edea2d50e3d4e15d855244f4cc0760d89eaee24276fce",
+    "table-eightball-10-chinese-ebony": "56da78d3759a6cf01912a5937534316247e581aa0e8f24599d70ba6e7c15f1fa",
+    "table-eightball-10-chinese-ivory": "5051051d4c4dd5a7482637c5fbab936cc873d859a2bdc04438d8a6ca893ffea5",
+    "table-eightball-10-chinese-jade": "e684ecba122775f04c3d727271d1fa2be83196ccbbcc41a52d64cd205436e361",
+    "table-eightball-10-chinese-violet": "455e9b85973fcab47707a30d4cb848d4bf727431cbaa13a8c97092af278ebd93",
+    "table-eightball-5-american-ivory": "d24d70746359a19715835b396037b07005cd9150f0514597b1034e8771322d70",
+    "table-eightball-5-american-walnut": "b36bf4d127dedfd0a6f083ce2d70c884063b7e96c5dc4d795aeee8b50034fd84",
+    "table-eightball-5-american-graphite": "7041ab2a11ae08857d64eb1002164e5098d1328e5596448418e338ce50fac050",
+    "table-eightball-5-american-burgundy": "71613f8f78009e0b66dc6f20d49c7761081fa04acf4daf44f52d039d8536118e",
+    "table-eightball-5-chinese-ebony": "6e9f9f2f00b86666826b1482628e16c12a06ec04c2ec64c3c97f199a991964cd",
+    "table-eightball-5-chinese-ivory": "8e7ceedf92333aebb417ff8658165204dea42af83b528e5551791367b382886b",
+    "table-eightball-5-chinese-jade": "4a9d4194c141385d4ee6dfa2c98afa1264e2589a4cc28106e449b8d315cc745a",
+    "table-eightball-5-chinese-violet": "4b7965fa0605620fadf1d737ca6a2378d7b20f492bb90163f1b9cd2f16acd7d8",
+    "table-snooker-10-american-ivory": "bf680720ac257dfefce41ca0f7c88df168fed41efa6d1b85204f90ebb1f311a5",
+    "table-snooker-10-american-walnut": "3a6768c6bee346c7f0a6ea650a7f669a563a05deb3f62e47838a72b3d4040cf9",
+    "table-snooker-10-american-graphite": "d60886f7d1883313286e60f397cef293d020cc44c06af997c69175a8806acf57",
+    "table-snooker-10-american-burgundy": "8c07b526482943ec0bb179944d7b8a782e01e4d9f9903841fd1ff3a38a9a8263",
+    "table-snooker-10-chinese-ebony": "6e652a109e57bf6e6c407641b585fed927d989e6adac62a220ff4dc47437e1b9",
+    "table-snooker-10-chinese-ivory": "db46ac4f20b1006ea0d8cf3d65eff17ca4c7d5e12e269e38f90c1158fe9bcca8",
+    "table-snooker-10-chinese-jade": "4f4438b6b28e6639d75eb9b43b7e9ef76d088fb37316b20e1e56ce6158cccb87",
+    "table-snooker-10-chinese-violet": "6a545f328e4024e1f6fa616eadf9abe8c972e13722f56727ce98d627adae2d97",
+    "table-snooker-5-american-ivory": "1114274fe048cb924ad2faf09e3acdc224727109967f409162e538954fa9155e",
+    "table-snooker-5-american-walnut": "6f8356dcc0e3e476a6982838e377ceb131f270435b0cf97489740b07ec0804be",
+    "table-snooker-5-american-graphite": "050dd4d458379115d7f165281a5c904c3479c7f44c813c144c78be38233fe87a",
+    "table-snooker-5-american-burgundy": "134d63bd900f2ef1540571d126c2ec0d83ebc4925244227213e39e67501d9440",
+    "table-snooker-5-chinese-ebony": "51db7ffb0c17aa1c674357f566aee6657f36441a9910d07d959a902037a9d169",
+    "table-snooker-5-chinese-ivory": "e11327a8e004730a19c8be05874655ecd4bf4d44def7da96b35d1e35996b0371",
+    "table-snooker-5-chinese-jade": "039f92e5ab8f2f671bb9bee416f10223d80708e4aed285560afdf53430515d62",
+    "table-snooker-5-chinese-violet": "74743e759f73e1b39ac85e278193c287f31f5c217356897d345a1e8d23ef84aa",
+    "table-threecushion-10-american-ivory": "86e5167c923f5e10605d80249db9a91595a99fce58e3a8a6d807e95ddf40dded",
+    "table-threecushion-10-american-walnut": "3a7212c935441af0008b202d546a836549bc446847ff13a77277a47deae85ad8",
+    "table-threecushion-10-american-graphite": "3e8e0d45d4c236e85a345650593066c1288d2b3592774f319d89ab8f23fb53db",
+    "table-threecushion-10-american-burgundy": "1a394c567539f00034be364f1d21109350e9035df44b9e2c9cb3db97c1792ffe",
+    "table-threecushion-10-chinese-ebony": "e006b57f129bfa5d6a6992f549f60518f26a3189e0f898779729f2c5403999b0",
+    "table-threecushion-10-chinese-ivory": "47f0d6f27238bf330fa2a42ef4659f40d5e8e091f1700288c457dc0b882957ba",
+    "table-threecushion-10-chinese-jade": "a5e18b15cf6a68711deccd82518637d000bd6a041eaa647d57337cf3cd26e6fd",
+    "table-threecushion-10-chinese-violet": "3c499e51f701734aed087dc2f58e1ef7623ee242beaccc4144d44d1207bebaa8",
+    "table-threecushion-5-american-ivory": "c57c33312679bf30753fa50483cdbc524d7767a5710c2778a5a03db02d9b42e4",
+    "table-threecushion-5-american-walnut": "fcc42f3fb8f05b579fc0def30165b99d477ac983f5681ef3c03dbf1b517fd868",
+    "table-threecushion-5-american-graphite": "0319762a086d6c0053350e90af3394861cdf5323636e359c6bd55a1a7870800d",
+    "table-threecushion-5-american-burgundy": "39c91b7d1edb2500616c92dc11379c49f7e0a6b6047dff622d9c621e208fd545",
+    "table-threecushion-5-chinese-ebony": "9c97a6235b0ebf1678182120bad1df6a044966c39de98e401bc2ed3a59949029",
+    "table-threecushion-5-chinese-ivory": "738fa354dcc574d2b204c7d7972ea1ce76787ca4fd1600914cf88d983ae89cda",
+    "table-threecushion-5-chinese-jade": "f6fabea0c9e03f3f28ea79d0b8df57015643dea1603a6ba3ef16ba6f11de354d",
+    "table-threecushion-5-chinese-violet": "bd412011991a1ccdb5924e76af45d8155ca5a4558765e71d3746f5cadca5298f"
+  },
+  "cues": [
+    {
+      "id": "cue-heritage",
+      "meshes": 13,
+      "texturedMeshes": 5,
+      "customControls": false
+    },
+    {
+      "id": "cue-obsidian",
+      "meshes": 13,
+      "texturedMeshes": 5,
+      "customControls": false
+    },
+    {
+      "id": "cue-jade",
+      "meshes": 13,
+      "texturedMeshes": 5,
+      "customControls": false
+    },
+    {
+      "id": "cue-royal",
+      "meshes": 13,
+      "texturedMeshes": 5,
+      "customControls": false
+    },
+    {
+      "id": "cue-glacier",
+      "meshes": 13,
+      "texturedMeshes": 5,
+      "customControls": false
+    },
+    {
+      "id": "cue-ivory",
+      "meshes": 13,
+      "texturedMeshes": 5,
+      "customControls": false
+    },
+    {
+      "id": "cue-porcelain-wave",
+      "meshes": 13,
+      "texturedMeshes": 5,
+      "customControls": false
+    },
+    {
+      "id": "cue-amber-tiger",
+      "meshes": 13,
+      "texturedMeshes": 5,
+      "customControls": false
+    },
+    {
+      "id": "cue-aurora-prism",
+      "meshes": 11,
+      "texturedMeshes": 1,
+      "customControls": false
+    },
+    {
+      "id": "cue-holo-laser",
+      "meshes": 11,
+      "texturedMeshes": 1,
+      "customControls": false
+    },
+    {
+      "id": "cue-custom",
+      "meshes": 31,
+      "texturedMeshes": 5,
+      "customControls": true
+    }
+  ],
+  "balls": [
+    {
+      "id": "ball-dotted-ffffff",
+      "radius": 0.032749999314546585,
+      "shaderRetained": true
+    },
+    {
+      "id": "ball-pool-1",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-2",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-3",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-4",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-5",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-6",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-7",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-8",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-9",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-10",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-11",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-12",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-13",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-14",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-pool-15",
+      "radius": 0.032749999314546585,
+      "shaderRetained": false
+    },
+    {
+      "id": "ball-dotted-ffd700",
+      "radius": 0.032749999314546585,
+      "shaderRetained": true
+    },
+    {
+      "id": "ball-dotted-ff0000",
+      "radius": 0.032749999314546585,
+      "shaderRetained": true
+    },
+    {
+      "id": "ball-dotted-008000",
+      "radius": 0.032749999314546585,
+      "shaderRetained": true
+    },
+    {
+      "id": "ball-dotted-6a2500",
+      "radius": 0.032749999314546585,
+      "shaderRetained": true
+    },
+    {
+      "id": "ball-dotted-005cb1",
+      "radius": 0.032749999314546585,
+      "shaderRetained": true
+    },
+    {
+      "id": "ball-dotted-ff80b3",
+      "radius": 0.032749999314546585,
+      "shaderRetained": true
+    },
+    {
+      "id": "ball-dotted-010000",
+      "radius": 0.032749999314546585,
+      "shaderRetained": true
+    },
+    {
+      "id": "ball-dotted-ee0000",
+      "radius": 0.032749999314546585,
+      "shaderRetained": true
+    }
+  ],
+  "environments": [
+    {
+      "id": "environment-spectra",
+      "liveShaderObjects": 2
+    },
+    {
+      "id": "environment-galaxy",
+      "liveShaderObjects": 1
+    },
+    {
+      "id": "environment-nebula",
+      "liveShaderObjects": 1
+    },
+    {
+      "id": "environment-club",
+      "liveShaderObjects": 1
+    },
+    {
+      "id": "environment-aurora-hall",
+      "liveShaderObjects": 1
+    },
+    {
+      "id": "environment-sky-temple",
+      "liveShaderObjects": 1
+    },
+    {
+      "id": "environment-abyss-palace",
+      "liveShaderObjects": 1
+    },
+    {
+      "id": "environment-lunar-observatory",
+      "liveShaderObjects": 2
+    }
+  ],
+  "robots": [
+    {
+      "robot": "robot-ivory-cyan",
+      "shape": "sphere"
+    },
+    {
+      "robot": "robot-ivory-cyan",
+      "shape": "box"
+    },
+    {
+      "robot": "robot-ivory-cyan",
+      "shape": "cylinder"
+    },
+    {
+      "robot": "robot-ivory-cyan",
+      "shape": "armour"
+    },
+    {
+      "robot": "robot-ivory-cyan",
+      "shape": "helmet"
+    },
+    {
+      "robot": "robot-graphite-amber",
+      "shape": "sphere"
+    },
+    {
+      "robot": "robot-graphite-amber",
+      "shape": "box"
+    },
+    {
+      "robot": "robot-graphite-amber",
+      "shape": "cylinder"
+    },
+    {
+      "robot": "robot-graphite-amber",
+      "shape": "armour"
+    },
+    {
+      "robot": "robot-graphite-amber",
+      "shape": "helmet"
+    }
+  ],
+  "tables": [
+    {
+      "id": "table-eightball-10-american-ivory",
+      "meshes": 46,
+      "halfX": 1.228725
+    },
+    {
+      "id": "table-eightball-10-american-walnut",
+      "meshes": 26,
+      "halfX": 1.228725
+    },
+    {
+      "id": "table-eightball-10-american-graphite",
+      "meshes": 26,
+      "halfX": 1.228725
+    },
+    {
+      "id": "table-eightball-10-american-burgundy",
+      "meshes": 26,
+      "halfX": 1.228725
+    },
+    {
+      "id": "table-eightball-10-chinese-ebony",
+      "meshes": 35,
+      "halfX": 1.228725
+    },
+    {
+      "id": "table-eightball-10-chinese-ivory",
+      "meshes": 35,
+      "halfX": 1.228725
+    },
+    {
+      "id": "table-eightball-10-chinese-jade",
+      "meshes": 35,
+      "halfX": 1.228725
+    },
+    {
+      "id": "table-eightball-10-chinese-violet",
+      "meshes": 35,
+      "halfX": 1.228725
+    },
+    {
+      "id": "table-eightball-5-american-ivory",
+      "meshes": 46,
+      "halfX": 0.6143625
+    },
+    {
+      "id": "table-eightball-5-american-walnut",
+      "meshes": 26,
+      "halfX": 0.6143625
+    },
+    {
+      "id": "table-eightball-5-american-graphite",
+      "meshes": 26,
+      "halfX": 0.6143625
+    },
+    {
+      "id": "table-eightball-5-american-burgundy",
+      "meshes": 26,
+      "halfX": 0.6143625
+    },
+    {
+      "id": "table-eightball-5-chinese-ebony",
+      "meshes": 35,
+      "halfX": 0.6143625
+    },
+    {
+      "id": "table-eightball-5-chinese-ivory",
+      "meshes": 35,
+      "halfX": 0.6143625
+    },
+    {
+      "id": "table-eightball-5-chinese-jade",
+      "meshes": 35,
+      "halfX": 0.6143625
+    },
+    {
+      "id": "table-eightball-5-chinese-violet",
+      "meshes": 35,
+      "halfX": 0.6143625
+    },
+    {
+      "id": "table-snooker-10-american-ivory",
+      "meshes": 46,
+      "halfX": 1.40825
+    },
+    {
+      "id": "table-snooker-10-american-walnut",
+      "meshes": 26,
+      "halfX": 1.40825
+    },
+    {
+      "id": "table-snooker-10-american-graphite",
+      "meshes": 26,
+      "halfX": 1.40825
+    },
+    {
+      "id": "table-snooker-10-american-burgundy",
+      "meshes": 26,
+      "halfX": 1.40825
+    },
+    {
+      "id": "table-snooker-10-chinese-ebony",
+      "meshes": 36,
+      "halfX": 1.40825
+    },
+    {
+      "id": "table-snooker-10-chinese-ivory",
+      "meshes": 36,
+      "halfX": 1.40825
+    },
+    {
+      "id": "table-snooker-10-chinese-jade",
+      "meshes": 36,
+      "halfX": 1.40825
+    },
+    {
+      "id": "table-snooker-10-chinese-violet",
+      "meshes": 36,
+      "halfX": 1.40825
+    },
+    {
+      "id": "table-snooker-5-american-ivory",
+      "meshes": 46,
+      "halfX": 0.704125
+    },
+    {
+      "id": "table-snooker-5-american-walnut",
+      "meshes": 26,
+      "halfX": 0.704125
+    },
+    {
+      "id": "table-snooker-5-american-graphite",
+      "meshes": 26,
+      "halfX": 0.704125
+    },
+    {
+      "id": "table-snooker-5-american-burgundy",
+      "meshes": 26,
+      "halfX": 0.704125
+    },
+    {
+      "id": "table-snooker-5-chinese-ebony",
+      "meshes": 36,
+      "halfX": 0.704125
+    },
+    {
+      "id": "table-snooker-5-chinese-ivory",
+      "meshes": 36,
+      "halfX": 0.704125
+    },
+    {
+      "id": "table-snooker-5-chinese-jade",
+      "meshes": 36,
+      "halfX": 0.704125
+    },
+    {
+      "id": "table-snooker-5-chinese-violet",
+      "meshes": 36,
+      "halfX": 0.704125
+    },
+    {
+      "id": "table-threecushion-10-american-ivory",
+      "meshes": 44,
+      "halfX": 1.479645
+    },
+    {
+      "id": "table-threecushion-10-american-walnut",
+      "meshes": 24,
+      "halfX": 1.479645
+    },
+    {
+      "id": "table-threecushion-10-american-graphite",
+      "meshes": 24,
+      "halfX": 1.479645
+    },
+    {
+      "id": "table-threecushion-10-american-burgundy",
+      "meshes": 24,
+      "halfX": 1.479645
+    },
+    {
+      "id": "table-threecushion-10-chinese-ebony",
+      "meshes": 28,
+      "halfX": 1.479645
+    },
+    {
+      "id": "table-threecushion-10-chinese-ivory",
+      "meshes": 28,
+      "halfX": 1.479645
+    },
+    {
+      "id": "table-threecushion-10-chinese-jade",
+      "meshes": 28,
+      "halfX": 1.479645
+    },
+    {
+      "id": "table-threecushion-10-chinese-violet",
+      "meshes": 28,
+      "halfX": 1.479645
+    },
+    {
+      "id": "table-threecushion-5-american-ivory",
+      "meshes": 44,
+      "halfX": 0.7398225
+    },
+    {
+      "id": "table-threecushion-5-american-walnut",
+      "meshes": 24,
+      "halfX": 0.7398225
+    },
+    {
+      "id": "table-threecushion-5-american-graphite",
+      "meshes": 24,
+      "halfX": 0.7398225
+    },
+    {
+      "id": "table-threecushion-5-american-burgundy",
+      "meshes": 24,
+      "halfX": 0.7398225
+    },
+    {
+      "id": "table-threecushion-5-chinese-ebony",
+      "meshes": 28,
+      "halfX": 0.7398225
+    },
+    {
+      "id": "table-threecushion-5-chinese-ivory",
+      "meshes": 28,
+      "halfX": 0.7398225
+    },
+    {
+      "id": "table-threecushion-5-chinese-jade",
+      "meshes": 28,
+      "halfX": 0.7398225
+    },
+    {
+      "id": "table-threecushion-5-chinese-violet",
+      "meshes": 28,
+      "halfX": 0.7398225
+    }
+  ]
+}

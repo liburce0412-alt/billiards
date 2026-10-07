@@ -14,6 +14,17 @@ import { TableMesh } from "./tablemesh"
 import { TableGeometry } from "./tablegeometry"
 import { enhanceTableMaterials } from "./materialenhancer"
 import { getRenderQuality } from "./renderquality"
+import { savedCueStyleId } from "./cuestyle"
+import { savedEnvironmentStyleId } from "./environmentstyle"
+import { TableConfig } from "./tableconfig"
+import { fitPocketTableModel } from "./tablemodelgeometry"
+import {
+  loadRefinedArt,
+  disposeRefinedArt,
+  preloadRefinedArt,
+  refinedArtManifest,
+  refinedTableId,
+} from "./refinedart"
 import {
   applyTableStyle,
   savedTableStyleId,
@@ -43,6 +54,7 @@ export class Assets {
   private tableReady = false
   private tableLoadToken = 0
   private localMesh = false
+  private disposed = false
 
   constructor(ruletype) {
     this.rules = RuleFactory.create(ruletype, null)
@@ -53,9 +65,23 @@ export class Assets {
     this.ready = ready
     this.sound = new Sound(true)
     this.table = new Group()
-    this.loadTableVariant(this.tableStyleId, () => {
-      this.tableReady = true
-      this.done()
+    void refinedArtManifest().then(async (manifest) => {
+      if (this.disposed) return
+      await preloadRefinedArt([
+        `cue-${savedCueStyleId()}`,
+        `environment-${savedEnvironmentStyleId()}`,
+        ...["sphere", "box", "cylinder", "armour", "helmet"].map(
+          (shape) => `robot-prototype-${shape}`
+        ),
+        ...(manifest?.assets
+          .filter((entry) => entry.category === "ball")
+          .map((entry) => entry.id) ?? []),
+      ])
+      if (this.disposed) return
+      this.loadTableVariant(this.tableStyleId, () => {
+        this.tableReady = true
+        this.done()
+      })
     })
   }
 
@@ -91,7 +117,7 @@ export class Assets {
     return this.tableStyleId
   }
 
-  private loadTableVariant(styleId: string, ready: () => void) {
+  private async loadTableVariant(styleId: string, ready: () => void) {
     const normalizedStyleId = tableStyleById(styleId).id
     const asset = tableAssetForStyle(
       this.rules.rulename,
@@ -99,9 +125,26 @@ export class Assets {
       normalizedStyleId
     )
     const token = ++this.tableLoadToken
-    const cached = this.tableVariants.get(asset)
+    const refinedId = refinedTableId(
+      this.rules.rulename,
+      TableConfig.tableSizeFromUrl(),
+      normalizedStyleId
+    )
+    const cached = this.tableVariants.get(refinedId)
     if (cached) {
       this.activateTableVariant(cached, normalizedStyleId)
+      ready()
+      return
+    }
+
+    const refined = await loadRefinedArt(refinedId)
+    if (token !== this.tableLoadToken) {
+      if (refined) disposeRefinedArt(refined)
+      return
+    }
+    if (refined) {
+      this.tableVariants.set(refinedId, refined)
+      this.activateTableVariant(refined, normalizedStyleId)
       ready()
       return
     }
@@ -110,11 +153,16 @@ export class Assets {
       asset,
       (m) => {
         this.rules.scaleTableModel?.(m.scene)
-        if (this.isTableSize5()) {
+        fitPocketTableModel(
+          m.scene,
+          this.rules.rulename,
+          TableConfig.tableSizeFromUrl()
+        )
+        if (this.isTableSize5() && this.rules.rulename !== "snooker") {
           this.customizeTableScene(m.scene)
         }
         enhanceTableMaterials(m.scene, getRenderQuality(), this.rules.rulename)
-        this.tableVariants.set(asset, m.scene)
+        this.tableVariants.set(refinedId, m.scene)
         if (token !== this.tableLoadToken) return
         this.activateTableVariant(m.scene, normalizedStyleId)
         ready()
@@ -124,7 +172,7 @@ export class Assets {
         if (token !== this.tableLoadToken) return
         const fallback = new TableMesh().generateTable(TableGeometry.hasPockets)
         enhanceTableMaterials(fallback, getRenderQuality(), this.rules.rulename)
-        this.tableVariants.set(asset, fallback)
+        this.tableVariants.set(refinedId, fallback)
         this.activateTableVariant(fallback, normalizedStyleId)
         ready()
       }
@@ -140,7 +188,7 @@ export class Assets {
       this.tableScene = scene
       TableMesh.mesh = scene.children[0]
     }
-    applyTableStyle(scene, styleId)
+    if (!scene.userData.refinedArtId) applyTableStyle(scene, styleId)
   }
 
   private isTableSize5(): boolean {
@@ -249,5 +297,13 @@ export class Assets {
     if (this.table && this.tableReady) {
       this.ready()
     }
+  }
+
+  dispose() {
+    this.disposed = true
+    this.tableLoadToken++
+    for (const table of this.tableVariants.values())
+      if (table.userData.refinedArtId) disposeRefinedArt(table)
+    this.tableVariants.clear()
   }
 }

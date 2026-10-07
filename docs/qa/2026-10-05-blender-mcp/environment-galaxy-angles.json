@@ -1,0 +1,31 @@
+{
+  "time": "2026-10-05T09:37:07.898691+00:00",
+  "tool": "look",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "image",
+        "mimeType": "image/png",
+        "annotations": null,
+        "meta": null,
+        "savedImage": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-10-05-blender-mcp\\environment-galaxy-angles-0.png"
+      },
+      {
+        "type": "text",
+        "text": "Tiles left to right, top to bottom: front, right, back, three_quarter. Framed 13 objects, 8.71 x 16.15 x 8.37 m across, centred at [0.0, 1.2, 3.16].",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

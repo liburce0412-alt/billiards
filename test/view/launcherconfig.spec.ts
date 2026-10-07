@@ -3,6 +3,7 @@ import { webcrypto } from "node:crypto"
 import { TextEncoder } from "node:util"
 import {
   buildGameUrl,
+  applyRoomDemoOptions,
   buildInviteUrl,
   generateRoomCode,
   normaliseRoomCode,
@@ -40,6 +41,7 @@ describe("Launcher configuration", () => {
           opponent: "ai",
           botLevel: 9,
           quality: "high",
+          cueStyle: "aurora-prism",
         },
         "https://example.test/index.html?old=value#fragment"
       )
@@ -51,8 +53,24 @@ describe("Launcher configuration", () => {
     expect(url.searchParams.get("practice")).to.equal("false")
     expect(url.searchParams.get("quality")).to.equal("high")
     expect(url.searchParams.get("camera")).to.equal("2d")
+    expect(url.searchParams.get("cueStyle")).to.equal("aurora-prism")
     expect(url.searchParams.has("old")).to.be.false
     expect(url.hash).to.equal("")
+  })
+
+  it("preserves adaptive mode in newly generated game URLs", async () => {
+    const url = new URL(
+      await buildGameUrl(
+        {
+          rule: "eightball",
+          opponent: "practice",
+          botLevel: 5,
+          quality: "adaptive",
+        },
+        "https://example.test/"
+      )
+    )
+    expect(url.searchParams.get("quality")).to.equal("adaptive")
   })
 
   it("builds a practice URL without a bot", async () => {
@@ -95,7 +113,7 @@ describe("Launcher configuration", () => {
     expect(url.searchParams.has("bot")).to.equal(false)
   })
 
-  it("builds host and guest URLs for the same online room", async () => {
+  it("builds host and guest URLs without trusting identity or role fields", async () => {
     const host = new URL(
       await buildGameUrl(
         {
@@ -116,9 +134,9 @@ describe("Launcher configuration", () => {
       "11111111-1111-4111-8111-111111111111"
     )
     expect(host.searchParams.get("roomCode")).to.equal("银河 房间🎱")
-    expect(host.searchParams.get("userName")).to.equal("房主")
-    expect(host.searchParams.get("userId")).to.equal("host-id")
-    expect(host.searchParams.get("first")).to.equal("true")
+    expect(host.searchParams.has("userName")).to.equal(false)
+    expect(host.searchParams.has("userId")).to.equal(false)
+    expect(host.searchParams.has("first")).to.equal(false)
     expect(host.searchParams.has("websocketserver")).to.equal(false)
 
     const guest = new URL(
@@ -139,7 +157,40 @@ describe("Launcher configuration", () => {
     expect(guest.searchParams.get("tableId")).to.equal(
       host.searchParams.get("tableId")
     )
+    expect(guest.searchParams.has("userName")).to.equal(false)
+    expect(guest.searchParams.has("userId")).to.equal(false)
     expect(guest.searchParams.has("first")).to.equal(false)
+  })
+
+  it("does not expose admin assist state in room URLs", async () => {
+    const selection = {
+      rule: "eightball" as const,
+      opponent: "online" as const,
+      botLevel: 5,
+      quality: "high" as const,
+      roomInstanceId: "11111111-1111-4111-8111-111111111111",
+    }
+    applyRoomDemoOptions(
+      selection,
+      {
+        id: selection.roomInstanceId,
+        code: "DEMO01",
+        status: "waiting",
+        ruleType: "eightball",
+        options: {
+          adminDemoRoom: true,
+          adminDemoOwnerId: "admin-id",
+        },
+        tableStyle: "american-ivory",
+        environmentStyle: "spectra",
+        memberRole: "host",
+        createdAt: 1,
+      },
+      "admin-id"
+    )
+    const url = new URL(await buildGameUrl(selection, "https://example.test/"))
+    expect(url.searchParams.has("demoRoom")).to.equal(false)
+    expect(url.searchParams.has("adminDemoRoom")).to.equal(false)
   })
 
   it("normalises Unicode room codes and creates launcher invite links", () => {

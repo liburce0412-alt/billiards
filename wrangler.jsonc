@@ -36,6 +36,7 @@
     "bindings": [
       { "name": "SOCIAL", "class_name": "SocialRoom" },
       { "name": "GAME_ROOMS", "class_name": "GameRoom" },
+      { "name": "TABLE_TENNIS_ROOMS", "class_name": "TableTennisRoom" },
       { "name": "PASSWORD_KDF", "class_name": "PasswordKdf" },
       { "name": "RATE_LIMITS", "class_name": "RateLimitBucket" },
     ],
@@ -49,6 +50,10 @@
         "PasswordKdf",
         "RateLimitBucket",
       ],
+    },
+    {
+      "tag": "v2-table-tennis",
+      "new_sqlite_classes": ["TableTennisRoom"],
     },
   ],
   "vars": {

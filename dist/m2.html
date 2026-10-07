@@ -43,8 +43,19 @@
         display: none;
       }
     </style>
+    <link rel="stylesheet" href="/css/lab-tools.css" />
   </head>
-  <body>
+  <body class="lab-page lab-m2">
+    <header class="lab-header">
+      <div class="lab-header__top">
+        <div>
+          <p class="lab-kicker">BREAK BUILDER / MULTI VIEW</p>
+          <h1>大厅多视窗诊断</h1>
+        </div>
+        <a class="lab-back" href="/tools">返回工具舱</a>
+      </div>
+    </header>
+    <main class="lab-m2-workspace" id="panes"></main>
     <script>
       // Read overrides from query params: ?a=Alice&b=Bob&c=Carol
       const p = new URLSearchParams(location.search)
@@ -54,14 +65,18 @@
         { id: p.get("cid") || "carol", name: p.get("c") || "Carol" },
       ]
 
+      const workspace = document.getElementById("panes")
       users.forEach((u) => {
         const pane = document.createElement("div")
         pane.className = "pane"
-        pane.innerHTML = `
-                <div class="pane-label">${u.name} (${u.id})</div>
-                <iframe src="lobby.html?userId=${encodeURIComponent(u.id)}&userName=${encodeURIComponent(u.name)}"></iframe>
-            `
-        document.body.appendChild(pane)
+        const label = document.createElement("div")
+        label.className = "pane-label"
+        label.textContent = `${u.name}（诊断视窗）`
+        const frame = document.createElement("iframe")
+        frame.src = "/lobby"
+        frame.title = `${u.name}大厅视窗`
+        pane.append(label, frame)
+        workspace.appendChild(pane)
       })
 
       // Hide third pane on portrait/mobile

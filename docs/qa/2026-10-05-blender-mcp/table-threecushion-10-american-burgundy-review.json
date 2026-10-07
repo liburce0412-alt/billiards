@@ -1,0 +1,12 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-threecushion-10-american-burgundy-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.6210135+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "1a394c567539f00034be364f1d21109350e9035df44b9e2c9cb3db97c1792ffe"
+}

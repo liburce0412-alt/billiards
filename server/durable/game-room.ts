@@ -3,11 +3,26 @@ import type { PlatformEnv } from "../env"
 
 type MemberRole = "host" | "player" | "spectator"
 type GameAttachment = {
+  roomId: string
   userId: string
+  username: string
   displayName: string
   avatarUrl: string | null
+  cueStyle: string
   memberRole: MemberRole
   connectedAt: number
+}
+
+type RuntimeState = {
+  room_id: string
+  revision: number
+  phase: "waiting" | "active" | "cancelled"
+  host_ready: number
+  player_ready: number
+  host_grace_until: number
+  player_grace_until: number
+  started_at: number | null
+  empty_expires_at: number
 }
 
 type StoredEvent = {
@@ -56,6 +71,19 @@ export class GameRoom extends DurableObject<PlatformEnv> {
           payload TEXT NOT NULL,
           updated_at INTEGER NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS room_runtime (
+          id INTEGER PRIMARY KEY CHECK(id = 1),
+          room_id TEXT NOT NULL DEFAULT '',
+          revision INTEGER NOT NULL DEFAULT 0,
+          phase TEXT NOT NULL DEFAULT 'waiting',
+          host_ready INTEGER NOT NULL DEFAULT 0,
+          player_ready INTEGER NOT NULL DEFAULT 0,
+          host_grace_until INTEGER NOT NULL DEFAULT 0,
+          player_grace_until INTEGER NOT NULL DEFAULT 0,
+          started_at INTEGER,
+          empty_expires_at INTEGER NOT NULL DEFAULT 0
+        );
+        INSERT OR IGNORE INTO room_runtime(id) VALUES (1);
       `)
     })
   }
@@ -65,25 +93,50 @@ export class GameRoom extends DurableObject<PlatformEnv> {
       return new Response("Expected WebSocket", { status: 426 })
     }
     const userId = request.headers.get("X-Platform-User-Id")
+    const encodedUsername = request.headers.get("X-Platform-Username")
     const encodedDisplayName = request.headers.get("X-Platform-Display-Name")
+    const cueStyle = request.headers.get("X-Platform-Cue-Style")
     const memberRole = request.headers.get(
       "X-Platform-Member-Role"
     ) as MemberRole | null
-    if (!userId || !encodedDisplayName || !memberRole) {
+    if (
+      !userId ||
+      !encodedUsername ||
+      !encodedDisplayName ||
+      !cueStyle ||
+      !memberRole
+    ) {
       return new Response("Unauthorized", { status: 401 })
     }
+    const username = decodeURIComponent(encodedUsername)
     const displayName = decodeURIComponent(encodedDisplayName)
+    const roomId = request.headers.get("X-Platform-Room-Id")
+    if (!roomId) return new Response("Missing room identity", { status: 400 })
     const pair = new WebSocketPair()
     const server = pair[1]
     const attachment: GameAttachment = {
+      roomId,
       userId,
+      username,
       displayName,
       avatarUrl: request.headers.get("X-Platform-Avatar"),
+      cueStyle,
       memberRole,
       connectedAt: Date.now(),
     }
     server.serializeAttachment(attachment)
     this.ctx.acceptWebSocket(server, [`user:${userId}`, `role:${memberRole}`])
+    this.ctx.storage.sql.exec(
+      `UPDATE room_runtime
+       SET room_id = CASE WHEN room_id = '' THEN ? ELSE room_id END,
+           host_grace_until = CASE WHEN ? = 'host' THEN 0 ELSE host_grace_until END,
+           player_grace_until = CASE WHEN ? = 'player' THEN 0 ELSE player_grace_until END,
+           empty_expires_at = 0
+       WHERE id = 1`,
+      roomId,
+      memberRole,
+      memberRole
+    )
     const latest = this.ctx.storage.sql
       .exec<StoredEvent>(
         "SELECT seq, sender_id, event_type, payload, created_at FROM events ORDER BY seq DESC LIMIT 1"
@@ -103,12 +156,10 @@ export class GameRoom extends DurableObject<PlatformEnv> {
           ? { seq: snapshot.seq, data: JSON.parse(snapshot.payload) }
           : null,
         members: this.memberSnapshot(),
+        roomState: this.roomStateSnapshot(),
       })
     )
-    this.broadcast({
-      type: "room.member_changed",
-      members: this.memberSnapshot(),
-    })
+    this.broadcastRoomState()
     return new Response(null, { status: 101, webSocket: pair[0] })
   }
 
@@ -123,6 +174,7 @@ export class GameRoom extends DurableObject<PlatformEnv> {
     }
     let message: {
       type?: string
+      ready?: boolean
       clientSeq?: number
       event?: { type?: string; [key: string]: unknown }
       sinceSeq?: number
@@ -135,6 +187,14 @@ export class GameRoom extends DurableObject<PlatformEnv> {
     }
     if (message.type === "game.resync") {
       this.sendHistory(socket, Math.max(0, Number(message.sinceSeq) || 0))
+      return
+    }
+    if (message.type === "room.ready.set") {
+      if (member.memberRole === "spectator") {
+        this.sendError(socket, "spectator_read_only", "观众不能准备")
+        return
+      }
+      await this.setReady(member.memberRole, message.ready === true)
       return
     }
     if (message.type !== "game.event" || !message.event?.type) {
@@ -151,10 +211,21 @@ export class GameRoom extends DurableObject<PlatformEnv> {
       return
     }
     const now = Date.now()
-    const stampedEvent = {
+    const stampedEvent: Record<string, unknown> = {
       ...message.event,
       clientId: member.userId,
       playername: member.displayName,
+    }
+    if (eventType === "CHAT") {
+      const text = String(message.event.message ?? "").trim()
+      if (!text || text.length > 240) {
+        this.sendError(socket, "invalid_chat", "消息需为 1–240 个字符")
+        return
+      }
+      stampedEvent.message = text
+      stampedEvent.sender = member.userId
+      stampedEvent.senderName = member.displayName
+      stampedEvent.createdAt = now
     }
     const payload = JSON.stringify(stampedEvent)
     const result = this.ctx.storage.sql
@@ -193,14 +264,87 @@ export class GameRoom extends DurableObject<PlatformEnv> {
   }
 
   override async webSocketClose(socket: WebSocket) {
+    const member = socket.deserializeAttachment() as GameAttachment | undefined
     try {
       socket.close(1000, "closed")
     } finally {
-      this.broadcast({
-        type: "room.member_changed",
-        members: this.memberSnapshot(),
-      })
+      if (member && member.memberRole !== "spectator") {
+        const stillConnected = this.ctx
+          .getWebSockets(`role:${member.memberRole}`)
+          .some((candidate) => candidate !== socket)
+        if (!stillConnected) {
+          const graceUntil = Date.now() + 30_000
+          const graceColumn =
+            member.memberRole === "host"
+              ? "host_grace_until"
+              : "player_grace_until"
+          this.ctx.storage.sql.exec(
+            `UPDATE room_runtime SET ${graceColumn} = ?, revision = revision + 1 WHERE id = 1`,
+            graceUntil
+          )
+        }
+      }
+      const remaining = this.ctx
+        .getWebSockets()
+        .filter((item) => item !== socket)
+      if (remaining.length === 0) {
+        const emptyExpiresAt = Date.now() + 5 * 60_000
+        this.ctx.storage.sql.exec(
+          "UPDATE room_runtime SET empty_expires_at = ? WHERE id = 1 AND phase = 'waiting'",
+          emptyExpiresAt
+        )
+      }
+      this.broadcastRoomState()
+      await this.scheduleNextAlarm()
     }
+  }
+
+  override async alarm(): Promise<void> {
+    const now = Date.now()
+    const state = this.runtimeState()
+    let changed = false
+    if (
+      state.host_grace_until > 0 &&
+      state.host_grace_until <= now &&
+      this.ctx.getWebSockets("role:host").length === 0
+    ) {
+      this.ctx.storage.sql.exec(
+        "UPDATE room_runtime SET host_ready = 0, host_grace_until = 0, revision = revision + 1 WHERE id = 1"
+      )
+      changed = true
+    }
+    if (
+      state.player_grace_until > 0 &&
+      state.player_grace_until <= now &&
+      this.ctx.getWebSockets("role:player").length === 0
+    ) {
+      this.ctx.storage.sql.exec(
+        "UPDATE room_runtime SET player_ready = 0, player_grace_until = 0, revision = revision + 1 WHERE id = 1"
+      )
+      changed = true
+    }
+    const latest = this.runtimeState()
+    if (
+      latest.phase === "waiting" &&
+      latest.empty_expires_at > 0 &&
+      latest.empty_expires_at <= now &&
+      this.ctx.getWebSockets().length === 0
+    ) {
+      this.ctx.storage.sql.exec(
+        "UPDATE room_runtime SET phase = 'cancelled', revision = revision + 1 WHERE id = 1"
+      )
+      await this.env.DB.batch([
+        this.env.DB.prepare(
+          "UPDATE game_rooms SET status = 'cancelled', ended_at = ? WHERE id = ? AND status = 'waiting'"
+        ).bind(now, latest.room_id),
+        this.env.DB.prepare(
+          "UPDATE match_invites SET status = 'expired', responded_at = ? WHERE room_id = ? AND status = 'pending'"
+        ).bind(now, latest.room_id),
+      ])
+      return
+    }
+    if (changed) this.broadcastRoomState()
+    await this.scheduleNextAlarm()
   }
 
   async revokeUser(userId: string, reason: string): Promise<number> {
@@ -238,10 +382,113 @@ export class GameRoom extends DurableObject<PlatformEnv> {
     }
     return [...users.values()].map((member) => ({
       userId: member.userId,
+      username: member.username || member.displayName,
       displayName: member.displayName,
       avatarUrl: member.avatarUrl,
+      cueStyle: member.cueStyle || "heritage",
       role: member.memberRole,
     }))
+  }
+
+  private runtimeState(): RuntimeState {
+    return this.ctx.storage.sql
+      .exec<RuntimeState>("SELECT * FROM room_runtime WHERE id = 1")
+      .one()
+  }
+
+  private roomStateSnapshot() {
+    const state = this.runtimeState()
+    const ready = {
+      host: state.host_ready === 1,
+      player: state.player_ready === 1,
+    }
+    return {
+      version: 1,
+      revision: state.revision,
+      phase: state.phase,
+      ready,
+      startedAt: state.started_at,
+      members: this.memberSnapshot().map((member) => ({
+        ...member,
+        connected: true,
+        ready: this.readyForRole(member.role, ready),
+      })),
+    }
+  }
+
+  private readyForRole(
+    role: MemberRole,
+    ready: { host: boolean; player: boolean }
+  ) {
+    if (role === "host") return ready.host
+    if (role === "player") return ready.player
+    return false
+  }
+
+  private async setReady(role: "host" | "player", ready: boolean) {
+    const state = this.runtimeState()
+    if (state.phase !== "waiting") return
+    const column = role === "host" ? "host_ready" : "player_ready"
+    this.ctx.storage.sql.exec(
+      `UPDATE room_runtime SET ${column} = ?, revision = revision + 1 WHERE id = 1 AND phase = 'waiting'`,
+      ready ? 1 : 0
+    )
+    this.broadcastRoomState()
+    await this.startWhenReady()
+  }
+
+  private async startWhenReady() {
+    const state = this.runtimeState()
+    const hostSockets = this.ctx.getWebSockets("role:host")
+    const playerSockets = this.ctx.getWebSockets("role:player")
+    if (
+      state.phase !== "waiting" ||
+      state.host_ready !== 1 ||
+      state.player_ready !== 1 ||
+      hostSockets.length === 0 ||
+      playerSockets.length === 0
+    ) {
+      return
+    }
+    const now = Date.now()
+    this.ctx.storage.sql.exec(
+      "UPDATE room_runtime SET phase = 'active', started_at = ?, revision = revision + 1, empty_expires_at = 0 WHERE id = 1 AND phase = 'waiting'",
+      now
+    )
+    const next = this.runtimeState()
+    if (next.phase !== "active" || next.started_at !== now) return
+    const host = hostSockets[0].deserializeAttachment() as GameAttachment
+    await this.env.DB.prepare(
+      "UPDATE game_rooms SET status = 'active', started_at = COALESCE(started_at, ?) WHERE id = ? AND status = 'waiting'"
+    )
+      .bind(now, next.room_id)
+      .run()
+    this.broadcast({
+      type: "room.started",
+      revision: next.revision,
+      startedAt: now,
+      breakerUserId: host.userId,
+      roomState: this.roomStateSnapshot(),
+    })
+    await this.scheduleNextAlarm()
+  }
+
+  private broadcastRoomState() {
+    this.broadcast({ type: "room.state", roomState: this.roomStateSnapshot() })
+  }
+
+  private async scheduleNextAlarm() {
+    const state = this.runtimeState()
+    const candidates = [
+      state.host_grace_until,
+      state.player_grace_until,
+      state.empty_expires_at,
+    ].filter((value) => value > Date.now())
+    if (candidates.length) {
+      await this.ctx.storage.setAlarm(Math.min(...candidates))
+    } else {
+      await this.ctx.storage.deleteAlarm()
+    }
   }
 
   private broadcast(event: unknown) {
@@ -256,6 +503,6 @@ export class GameRoom extends DurableObject<PlatformEnv> {
   }
 
   private sendError(socket: WebSocket, code: string, message: string) {
-    socket.send(JSON.stringify({ type: "error", code, message }))
+    socket.send(JSON.stringify({ type: "room.error", code, message }))
   }
 }

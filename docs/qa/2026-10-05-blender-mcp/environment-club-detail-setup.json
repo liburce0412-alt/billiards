@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:41:24.300342+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: INSPECTION_READY environment-club\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: INSPECTION_READY environment-club\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\environment-club.blend",
+    "sha256": "9f7a21094030c0fc03c63d307eda54742ab594d84741b09ad6b944ee5485ae79"
+  }
+}

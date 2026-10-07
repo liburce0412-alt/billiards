@@ -22,6 +22,7 @@ const selectedOption = (current: string | undefined, value: string) =>
 export class Menu {
   private static readonly settingsStorageVersion =
     "break-builder.controls-seen.v2"
+  private readonly listenerAbort = new AbortController()
   container: Container
   share: HTMLButtonElement
   diagram: HTMLButtonElement
@@ -55,9 +56,51 @@ export class Menu {
     }
 
     this.setShareVisible(false)
+    document
+      .getElementById("chalkCue")
+      ?.addEventListener("click", () => this.container.playChalk(), {
+        signal: this.listenerAbort.signal,
+      })
     this.setDiagramVisible(false)
     if (this.camera) {
-      this.camera.onclick = (_) => {
+      // Pointer activation remains responsive after a captured canvas gesture,
+      // even when the browser suppresses the following compatibility click.
+      let touchStart: { id: number; x: number; y: number } | undefined
+      this.camera.addEventListener(
+        "pointerdown",
+        (event) => {
+          if (event.pointerType === "touch")
+            touchStart = {
+              id: event.pointerId,
+              x: event.clientX,
+              y: event.clientY,
+            }
+        },
+        { signal: this.listenerAbort.signal }
+      )
+      this.camera.addEventListener(
+        "pointerup",
+        (event) => {
+          const start = touchStart
+          touchStart = undefined
+          if (event.pointerType !== "touch" || start?.id !== event.pointerId)
+            return
+          if (
+            Math.hypot(event.clientX - start.x, event.clientY - start.y) <= 12
+          )
+            this.adjustCamera()
+        },
+        { signal: this.listenerAbort.signal }
+      )
+      this.camera.addEventListener(
+        "pointercancel",
+        () => {
+          touchStart = undefined
+        },
+        { signal: this.listenerAbort.signal }
+      )
+      this.camera.onclick = (event) => {
+        if ("pointerType" in event && event.pointerType === "touch") return
         this.adjustCamera()
       }
     }
@@ -193,45 +236,78 @@ export class Menu {
       document.getElementById("tableSelector")?.setAttribute("hidden", "true")
       document.getElementById("gameSettingsClose")?.focus()
     }
+    this.container.lastEventTime = performance.now()
   }
 
   private initSettingsDrawer() {
     this.menu?.setAttribute("aria-controls", "gameSettingsDrawer")
     this.menu?.setAttribute("aria-expanded", "false")
-    document
-      .getElementById("gameSettingsClose")
-      ?.addEventListener("click", () => {
+    document.getElementById("gameSettingsClose")?.addEventListener(
+      "click",
+      () => {
         this.toggleSettingsDrawer(false)
         this.menu?.focus()
-      })
-    document.getElementById("settingsCamera")?.addEventListener("click", () => {
-      this.adjustCamera()
-    })
-    document.getElementById("settingsHelp")?.addEventListener("click", () => {
-      this.toggleSettingsDrawer(false)
-      this.showOverlay("help.html")
-    })
-    document.getElementById("settingsCue")?.addEventListener("click", () => {
-      this.toggleSettingsDrawer(false)
-      this.cueStyle?.click()
-    })
-    document.getElementById("settingsTable")?.addEventListener("click", () => {
-      this.toggleSettingsDrawer(false)
-      this.tableStyle?.click()
-    })
+      },
+      { signal: this.listenerAbort.signal }
+    )
+    document.getElementById("settingsCamera")?.addEventListener(
+      "click",
+      () => {
+        this.adjustCamera()
+      },
+      { signal: this.listenerAbort.signal }
+    )
+    document.getElementById("settingsHelp")?.addEventListener(
+      "click",
+      () => {
+        this.toggleSettingsDrawer(false)
+        this.showOverlay("help.html")
+      },
+      { signal: this.listenerAbort.signal }
+    )
+    document.getElementById("settingsCue")?.addEventListener(
+      "click",
+      () => {
+        this.toggleSettingsDrawer(false)
+        this.cueStyle?.click()
+      },
+      { signal: this.listenerAbort.signal }
+    )
+    document.getElementById("settingsTable")?.addEventListener(
+      "click",
+      () => {
+        this.toggleSettingsDrawer(false)
+        this.tableStyle?.click()
+      },
+      { signal: this.listenerAbort.signal }
+    )
     const environment = document.getElementById(
       "settingsEnvironment"
     ) as HTMLSelectElement | null
     if (environment) {
       environment.innerHTML = ENVIRONMENT_STYLES.map(
-        (style) =>
-          `<option value="${style.id}">${style.name} · ${style.description}</option>`
+        (style) => `<option value="${style.id}">${style.name}</option>`
       ).join("")
       environment.value = this.container.view.environmentStyleId
-      environment.addEventListener("change", () => {
-        this.container.view.setEnvironmentStyle(environment.value)
-        this.container.lastEventTime = performance.now()
-      })
+      const description = document.getElementById(
+        "settingsEnvironmentDescription"
+      )
+      const updateEnvironmentDescription = () => {
+        if (!description) return
+        description.textContent =
+          ENVIRONMENT_STYLES.find((style) => style.id === environment.value)
+            ?.description ?? ""
+      }
+      updateEnvironmentDescription()
+      environment.addEventListener(
+        "change",
+        () => {
+          this.container.view.setEnvironmentStyle(environment.value)
+          updateEnvironmentDescription()
+          this.container.lastEventTime = performance.now()
+        },
+        { signal: this.listenerAbort.signal }
+      )
     }
 
     const volume = document.getElementById(
@@ -243,14 +319,18 @@ export class Menu {
       )
       volume.value = String(Number.isFinite(stored) ? stored : 0.8)
       this.container.sound.listener?.setMasterVolume(Number(volume.value))
-      volume.addEventListener("input", () => {
-        const value = Number(volume.value)
-        this.container.sound.listener?.setMasterVolume(value)
-        globalThis.localStorage?.setItem(
-          "break-builder.master-volume",
-          String(value)
-        )
-      })
+      volume.addEventListener(
+        "input",
+        () => {
+          const value = Number(volume.value)
+          this.container.sound.listener?.setMasterVolume(value)
+          globalThis.localStorage?.setItem(
+            "break-builder.master-volume",
+            String(value)
+          )
+        },
+        { signal: this.listenerAbort.signal }
+      )
     }
 
     const quality = document.getElementById(
@@ -259,16 +339,24 @@ export class Menu {
     if (quality) {
       const params = new URLSearchParams(globalThis.location.search)
       quality.value = params.get("quality") ?? "balanced"
-      quality.addEventListener("change", () => {
-        const next = new URL(globalThis.location.href)
-        next.searchParams.set("quality", quality.value)
-        globalThis.location.assign(next)
-      })
+      quality.addEventListener(
+        "change",
+        () => {
+          const next = new URL(globalThis.location.href)
+          next.searchParams.set("quality", quality.value)
+          globalThis.location.assign(next)
+        },
+        { signal: this.listenerAbort.signal }
+      )
     }
 
-    document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") this.toggleSettingsDrawer(false)
-    })
+    document.addEventListener(
+      "keydown",
+      (event) => {
+        if (event.key === "Escape") this.toggleSettingsDrawer(false)
+      },
+      { signal: this.listenerAbort.signal }
+    )
   }
 
   private initControlTutorial() {
@@ -284,16 +372,22 @@ export class Menu {
     }
     if (!seen) {
       tutorial.removeAttribute("hidden")
+      document.body.classList.add("control-tutorial-open")
       close.focus()
     }
-    close.addEventListener("click", () => {
-      tutorial.setAttribute("hidden", "true")
-      try {
-        localStorage.setItem(Menu.settingsStorageVersion, "acknowledged")
-      } catch {
-        // Tutorial still closes when storage is unavailable.
-      }
-    })
+    close.addEventListener(
+      "click",
+      () => {
+        tutorial.setAttribute("hidden", "true")
+        document.body.classList.remove("control-tutorial-open")
+        try {
+          localStorage.setItem(Menu.settingsStorageVersion, "acknowledged")
+        } catch {
+          // Tutorial still closes when storage is unavailable.
+        }
+      },
+      { signal: this.listenerAbort.signal }
+    )
   }
 
   private initCueSelector() {
@@ -424,11 +518,13 @@ export class Menu {
       selector.toggleAttribute("hidden", !opening)
       if (opening) updateSelected()
     }
-    document
-      .getElementById("cueSelectorClose")
-      ?.addEventListener("click", () => {
+    document.getElementById("cueSelectorClose")?.addEventListener(
+      "click",
+      () => {
         selector.setAttribute("hidden", "true")
-      })
+      },
+      { signal: this.listenerAbort.signal }
+    )
     options.onclick = (event) => {
       const target = event.target as HTMLElement | null
       const customAction = target?.closest<HTMLElement>(
@@ -495,7 +591,11 @@ export class Menu {
     }
     ;["pointerdown", "mousedown", "touchstart", "click"].forEach(
       (eventName) => {
-        selector.addEventListener(eventName, (event) => event.stopPropagation())
+        selector.addEventListener(
+          eventName,
+          (event) => event.stopPropagation(),
+          { signal: this.listenerAbort.signal }
+        )
       }
     )
   }
@@ -552,11 +652,13 @@ export class Menu {
       selector.toggleAttribute("hidden", !opening)
       if (opening) updateSelected()
     }
-    document
-      .getElementById("tableSelectorClose")
-      ?.addEventListener("click", () => {
+    document.getElementById("tableSelectorClose")?.addEventListener(
+      "click",
+      () => {
         selector.setAttribute("hidden", "true")
-      })
+      },
+      { signal: this.listenerAbort.signal }
+    )
     options.onclick = (event) => {
       const button = (event.target as HTMLElement | null)?.closest(
         "[data-table-style]"
@@ -573,7 +675,11 @@ export class Menu {
     }
     ;["pointerdown", "mousedown", "touchstart", "click"].forEach(
       (eventName) => {
-        selector.addEventListener(eventName, (event) => event.stopPropagation())
+        selector.addEventListener(
+          eventName,
+          (event) => event.stopPropagation(),
+          { signal: this.listenerAbort.signal }
+        )
       }
     )
   }
@@ -587,5 +693,42 @@ export class Menu {
       }
       overlay.removeAttribute("hidden")
     }
+  }
+
+  dispose() {
+    this.listenerAbort.abort()
+    ;[
+      this.share,
+      this.diagram,
+      this.camera,
+      this.concede,
+      this.menu,
+      this.analysis,
+      this.cueStyle,
+      this.tableStyle,
+    ].forEach((button) => {
+      if (button) button.onclick = null
+    })
+    const helpClose = document.getElementById(
+      "helpClose"
+    ) as HTMLButtonElement | null
+    if (helpClose) helpClose.onclick = null
+    const cueOptions = document.getElementById(
+      "cueStyleOptions"
+    ) as HTMLElement | null
+    const tableOptions = document.getElementById(
+      "tableStyleOptions"
+    ) as HTMLElement | null
+    if (cueOptions) cueOptions.onclick = null
+    if (tableOptions) tableOptions.onclick = null
+    const drawer = document.getElementById("gameSettingsDrawer")
+    drawer?.setAttribute("hidden", "true")
+    drawer?.setAttribute("aria-hidden", "true")
+    this.menu?.setAttribute("aria-expanded", "false")
+    document.getElementById("cueSelector")?.setAttribute("hidden", "true")
+    document.getElementById("tableSelector")?.setAttribute("hidden", "true")
+    document.getElementById("helpOverlay")?.setAttribute("hidden", "true")
+    document.getElementById("controlTutorial")?.setAttribute("hidden", "true")
+    document.body.classList.remove("control-tutorial-open")
   }
 }

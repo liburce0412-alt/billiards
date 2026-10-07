@@ -916,3 +916,89 @@ describe("BotEventHandler Respot Logic", () => {
     expect(validTargetBalls).toContain(saguContainer.table.balls[3])
   })
 })
+
+describe("decisive AI ball outcomes", () => {
+  afterEach(() => Session.reset())
+
+  it("four-ball AI rules use the shared cue ball and accept the last nine", () => {
+    Ball.id = 0
+    Session.init("player", "Player", "table", false)
+    const container = new Container({
+      element: undefined,
+      log: () => {},
+      assets: Assets.localAssets("fourball"),
+      ruletype: "fourball",
+    })
+    const table = container.table
+    const nine = table.balls.find((ball) => ball.label === 9)!
+    for (const ball of table.balls) {
+      if (ball !== table.cueball && ball !== nine) ball.state = State.InPocket
+    }
+    const handler = createBotEventHandler(container, [])
+    expect(handler.botRules.cueball).toBe(table.cueball)
+    expect(
+      handler.botRules.foulReason([
+        Outcome.collision(table.cueball, nine, 1),
+        Outcome.cushion(nine, 1, 2),
+      ])
+    ).toBeNull()
+    handler.dispose()
+  })
+
+  it.each([7, 12])(
+    "AI legally pots black: player cannot win with %i recorded pots",
+    (score) => {
+      Ball.id = 0
+      Session.init("player", "Player", "table", false)
+      const session = Session.getInstance()
+      session.p1type = 1
+      session.addMyScore(score)
+      session.addOpponentScore(7)
+      const container = new Container({
+        element: undefined,
+        log: () => {},
+        assets: Assets.localAssets("eightball"),
+        ruletype: "eightball",
+      })
+      const table = container.table
+      const eight = table.balls.find((ball) => ball.label === 8)!
+      table.balls.forEach((ball) => {
+        if (ball !== table.cueball) ball.state = State.InPocket
+      })
+      table.outcome = [
+        Outcome.collision(table.cueball, eight, 1),
+        Outcome.pot(eight, 1),
+      ]
+      const end = jest.spyOn(container.rules, "handleGameEnd")
+      const handler = createBotEventHandler(container, [])
+      handler.handle(mockEvent(EventType.BEGIN))
+      expect(end).toHaveBeenCalledWith(false, "对手合法打进黑八")
+      handler.dispose()
+    }
+  )
+
+  it("AI scratches on black: player wins regardless of the pot count", () => {
+    Ball.id = 0
+    Session.init("player", "Player", "table", false)
+    Session.getInstance().p1type = 1
+    Session.getInstance().addOpponentScore(7)
+    const container = new Container({
+      element: undefined,
+      log: () => {},
+      assets: Assets.localAssets("eightball"),
+      ruletype: "eightball",
+    })
+    const table = container.table
+    const eight = table.balls.find((ball) => ball.label === 8)!
+    table.outcome = [
+      Outcome.collision(table.cueball, eight, 1),
+      Outcome.pot(eight, 1),
+      Outcome.pot(table.cueball, 1),
+    ]
+    const end = jest.spyOn(container.rules, "handleGameEnd")
+    const handler = createBotEventHandler(container, [])
+    handler.handle(mockEvent(EventType.BEGIN))
+    expect(end).toHaveBeenCalledWith(true, "对手违规打进黑八，本局判负")
+    handler.dispose()
+  })
+})

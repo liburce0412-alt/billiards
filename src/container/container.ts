@@ -50,6 +50,7 @@ import { ExportUtils } from "../utils/export-utils"
 import { FixedStepAccumulator } from "../utils/fixedstep"
 import { RejoinSnapshot } from "../events/rejoinevent"
 import { MotionWatchdog, RuntimeDiagnostics } from "../utils/runtimediagnostics"
+import { ShotPhysicsDiagnostics } from "../model/physics/shotdiagnostics"
 
 type ActivePlayer = 0 | 1 | 2
 
@@ -89,6 +90,7 @@ export class Container {
   relay: MessageRelay | null = null
   scoreReporter: ScoreReporter | null = null
   onStableState?: () => void
+  cameraModeOverride?: () => void
   frame: (timestamp: number) => void
   /** Multiplier applied to real elapsed time before it's converted to physics
    * steps in `advance()`. 1 everywhere except the shot-analysis view, which
@@ -116,6 +118,8 @@ export class Container {
   private wasReplay: boolean = false
   private readonly motionWatchdog = new MotionWatchdog()
   readonly diagnostics = new RuntimeDiagnostics()
+  readonly shotDiagnostics = new ShotPhysicsDiagnostics()
+  manualShotCount = 0
 
   lastShotInit?: string
   lastShotData?: string
@@ -126,6 +130,8 @@ export class Container {
     this.step,
     Number.POSITIVE_INFINITY
   )
+  private animationFrame?: number
+  private disposed = false
 
   broadcast: (event: GameEvent) => void = () => {}
   log: (text: string) => void
@@ -162,6 +168,16 @@ export class Container {
     this.table.cue.aimInputs = new AimInputs(this)
     if (keyboard) {
       this.keyboard = keyboard
+      this.view.onPrimaryTouchDrag = (dx, dy) => {
+        const twoAxis =
+          this.controller?.name === "PlaceBall" ||
+          this.controller?.name === "PlaceAllBalls"
+        keyboard.touchmove(dx, dy, twoAxis)
+        if (!twoAxis && Math.abs(dy) > 0) {
+          this.view.camera.adjustTouchPitch(dy)
+          this.lastEventTime = performance.now()
+        }
+      }
     }
     this.sound = assets.sound
     this.chat = new Chat(this.sendChat)
@@ -226,7 +242,28 @@ export class Container {
   }
 
   sendChat = (msg) => {
-    this.sendEvent(new ChatEvent(this.id, msg))
+    const text = String(msg ?? "")
+      .trim()
+      .slice(0, 240)
+    if (!text) return
+    const session = Session.getInstance()
+    const clientMessageId = globalThis.crypto?.randomUUID?.() ?? `${Date.now()}`
+    const createdAt = Date.now()
+    this.chat.showMessage({
+      id: clientMessageId,
+      senderId: session.clientId,
+      senderName: session.playername || "我",
+      body: text,
+      createdAt,
+      isMine: true,
+    })
+    this.sendEvent(
+      new ChatEvent(this.id, text, undefined, {
+        senderName: session.playername,
+        clientMessageId,
+        createdAt,
+      })
+    )
   }
 
   throttle = new Throttle(250, (event) => {
@@ -269,6 +306,7 @@ export class Container {
   setHudActivePlayer(active: ActivePlayer) {
     this.hudActivePlayer = active
     this.hud.setActivePlayer(active)
+    this.view?.robotPlayers?.setActivePlayer(active)
   }
 
   private ruleLabel(ruleType: string): string {
@@ -645,21 +683,76 @@ export class Container {
     this.notification.show(data, duration, actionHandlers)
   }
 
+  private chalkOwner?: Controller
+  private chalkCameraMode?: typeof this.view.camera.mode
+
+  playChalk() {
+    if (
+      !(this.controller instanceof Aim) ||
+      !this.table.allStationary() ||
+      !this.view.robotPlayers?.beginChalk()
+    )
+      return
+    this.chalkOwner = this.controller
+    this.chalkCameraMode = this.view.camera.mode
+    this.view.camera.forceMode(this.view.camera.aimView)
+    this.table.cue.aimInputs.setDisabled(true)
+  }
+
+  private finishChalk() {
+    if (!this.chalkOwner) return
+    this.view.robotPlayers?.cancelChalk()
+    if (this.chalkOwner === this.controller)
+      this.table.cue.aimInputs.setDisabled(false)
+    if (
+      this.chalkCameraMode &&
+      this.view.camera.mode === this.view.camera.aimView
+    )
+      this.view.camera.forceMode(this.chalkCameraMode)
+    this.chalkOwner = undefined
+    this.chalkCameraMode = undefined
+  }
+
+  private updateChalkControl() {
+    if (this.chalkOwner && !this.view.robotPlayers?.chalking) this.finishChalk()
+    const button = document.getElementById(
+      "chalkCue"
+    ) as HTMLButtonElement | null
+    if (button) {
+      button.disabled =
+        !(this.controller instanceof Aim) ||
+        !this.table.allStationary() ||
+        !this.view.robotPlayers?.readyToStrike
+      button.setAttribute(
+        "aria-pressed",
+        String(this.view.robotPlayers?.chalking ?? false)
+      )
+    }
+  }
+
   advance(elapsed) {
     this.frame?.(elapsed)
 
     const fixed = this.fixedStep.consume(elapsed, this.timeScale)
     const steps = fixed.steps
     const computedElapsed = fixed.elapsed
+    this.controller.updatePresentation(computedElapsed)
     const stateBefore = this.table.allStationary()
     for (let i = 0; i < steps; i++) {
       this.table.advance(this.step)
+      const anomaly = this.shotDiagnostics.inspect(this.table)
+      if (anomaly?.kind === "non-finite") {
+        throw new Error(anomaly.detail)
+      }
     }
     this.table.updateBallMesh(computedElapsed)
-    this.view.update(computedElapsed, this.table.cue.aim)
+    this.cameraModeOverride?.()
     this.table.cue.update(computedElapsed)
+    this.view.update(computedElapsed, this.table.cue.aim)
+    this.updateChalkControl()
     this.particles.update(computedElapsed)
     if (!stateBefore && this.table.allStationary()) {
+      this.shotDiagnostics.finish(this.table)
       this.eventQueue.push(new StationaryEvent())
       this.table.cue.hittingAnimation = false
     }
@@ -667,6 +760,11 @@ export class Container {
     if (
       this.motionWatchdog.update(!this.table.allStationary(), performance.now())
     ) {
+      this.shotDiagnostics.mark(
+        "watchdog",
+        this.table,
+        "Motion watchdog stopped a non-settling shot after 45 seconds"
+      )
       this.recoverPhysicsStep(
         new Error(
           "Motion watchdog stopped a non-settling shot after 45 seconds"
@@ -688,7 +786,11 @@ export class Container {
     }
 
     // only process events when stationary
-    if (this.table.allStationary()) {
+    if (
+      this.table.allStationary() &&
+      !this.controller.isPreparingShot &&
+      !this.view.robotPlayers?.finishingShot
+    ) {
       const event = this.eventQueue.shift()
       if (event) {
         this.lastEventTime = performance.now()
@@ -712,11 +814,13 @@ export class Container {
   private recoverPhysicsStep(error: unknown): void {
     const detail = error instanceof Error ? error.message : String(error)
     console.error("Physics step recovered without stopping rendering:", error)
+    this.shotDiagnostics.mark("physics-recovery", this.table, detail)
     this.diagnostics.recordPhysicsRecovery()
     this.log?.(`Physics recovery: ${detail}`)
 
     const wasMoving = !this.table.allStationary()
     this.table.halt()
+    this.shotDiagnostics.finish(this.table)
     this.motionWatchdog.reset()
     this.fixedStep.reset()
     this.table.cue.hittingAnimation = false
@@ -737,6 +841,7 @@ export class Container {
   }
 
   animate(timestamp): void {
+    if (this.disposed) return
     try {
       this.diagnostics.recordFrame(timestamp)
       // A suspended tab can resume with seconds of wall time. Never try to
@@ -759,10 +864,43 @@ export class Container {
       // Keep the browser responsive even if a renderer/DOM integration throws.
       // Physics failures are handled above; other failures remain visible in
       // the console while the next frame still gets a chance to render.
-      requestAnimationFrame((t) => {
-        this.animate(t)
-      })
+      if (!this.disposed) {
+        this.animationFrame = requestAnimationFrame((t) => {
+          this.animate(t)
+        })
+      }
     }
+  }
+
+  dispose(): void {
+    if (this.disposed) return
+    this.finishChalk()
+    this.disposed = true
+    if (this.animationFrame !== undefined) {
+      cancelAnimationFrame(this.animationFrame)
+      this.animationFrame = undefined
+    }
+    this.controller?.dispose()
+    this.keyboard?.dispose()
+    this.table.cue.aimInputs?.dispose()
+    this.menu.dispose()
+    this.chat.dispose()
+    this.comment.dispose()
+    this.ballTray.dispose()
+    this.notification.dispose()
+    this.sliders.dispose()
+    this.sound.dispose()
+    void this.lobbyIndicator.stop()
+    this.diagnostics.dispose()
+    this.throttle.dispose()
+    this.view.dispose()
+    this.particles.dispose()
+    this.inputQueue.length = 0
+    this.eventQueue.length = 0
+    this.onStableState = undefined
+    this.cameraModeOverride = undefined
+    this.broadcast = () => {}
+    this.relay = null
   }
 
   updateLastShot() {
@@ -774,9 +912,14 @@ export class Container {
   updateController(controller: Controller) {
     this.wasReplay = this.wasReplay || controller instanceof Replay
     if (controller !== this.controller) {
+      this.finishChalk()
       // a     const playerName = Session.getInstance().playername
       // b     this.log(`${playerName}: Transition to ${controller.name}`)
+      this.controller?.dispose()
       this.controller = controller
+      this.view.camera.setOpponentView(
+        controller instanceof WatchAim || controller instanceof WatchShot
+      )
       this.view.setPrimaryCameraOrbit(
         !(controller instanceof Aim || controller instanceof PlaceBall)
       )

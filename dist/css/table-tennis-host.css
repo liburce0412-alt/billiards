@@ -1,0 +1,139 @@
+.tt-mode-links,
+.tt-launcher {
+  display: flex;
+  gap: 1.2rem;
+}
+
+.tt-mode-links {
+  margin-bottom: 1.4rem;
+}
+
+.tt-mode-links a,
+.tt-mode-links span {
+  padding: 0.7rem 1.2rem;
+  border-radius: 999px;
+  background: rgb(26 52 67 / 8%);
+}
+
+.tt-scenes {
+  flex: 1.3;
+  display: grid;
+  gap: 1rem;
+}
+
+.tt-scene {
+  display: flex;
+  min-height: 210px;
+  padding: 2rem;
+  flex-direction: column;
+  align-items: start;
+  justify-content: end;
+  gap: 0.6rem;
+  color: white;
+  border: 3px solid transparent;
+  border-radius: 20px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tt-scene--cyber-arena {
+  background: linear-gradient(135deg, #071b31, #154960 60%, #48366e);
+}
+
+.tt-scene--sports-hall {
+  background: linear-gradient(135deg, #15384a, #445d61 50%, #986f43);
+}
+
+.tt-scene[aria-pressed="true"] {
+  border-color: #41d6e2;
+}
+
+.tt-scene strong {
+  font-size: 1.8rem;
+}
+
+.tt-config {
+  flex: 1;
+  padding: 1.6rem;
+  border-radius: 20px;
+  background: rgb(255 255 255 / 70%);
+}
+
+.tt-config label {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 1.2rem;
+}
+
+.tt-config input,
+.tt-config select,
+.tt-config button,
+.tt-route-message button {
+  min-height: 48px;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgb(32 61 77 / 22%);
+  border-radius: 10px;
+}
+
+.tt-launch {
+  width: 100%;
+  color: white;
+  background: #075765;
+  cursor: pointer;
+}
+
+.tt-history {
+  margin-top: 2rem;
+}
+
+body.app-table-tennis-route {
+  overflow: hidden;
+  background: #06101e;
+}
+
+.tt-route-game,
+.tt-game-host {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+}
+
+.tt-route-message {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  color: white;
+  background: #06101ef2;
+  text-align: center;
+}
+
+.tt-room-code {
+  position: fixed;
+  z-index: 2;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: rgb(0 0 0 / 45%);
+  color: white;
+  pointer-events: none;
+  font-size: 12px;
+}
+
+@media (width <= 700px) {
+  .tt-launcher {
+    flex-direction: column;
+  }
+
+  .tt-scene {
+    min-height: 160px;
+  }
+}

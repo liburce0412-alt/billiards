@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:39:57.574169+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 16:39:57 | INFO: Data are loaded, start creating Blender stuff\n16:39:57 | INFO: Blender create Mesh node 0\n16:39:57 | INFO: glTF import finished in 0.00s\nInfo: Saved as \"robot-prototype-armour.blend\"\n16:39:57 | INFO: Starting glTF 2.0 export\n16:39:57 | INFO: Extracting primitive: Mesh_0.017\n16:39:57 | INFO: Primitives created: 1\n16:39:57 | INFO: Finished glTF 2.0 export in 0.003141641616821289 s\n\nREFINED robot-prototype-armour ['welded seams + machined chamfer'] BOUNDS_PRESERVED\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 16:39:57 | INFO: Data are loaded, start creating Blender stuff\n16:39:57 | INFO: Blender create Mesh node 0\n16:39:57 | INFO: glTF import finished in 0.00s\nInfo: Saved as \"robot-prototype-armour.blend\"\n16:39:57 | INFO: Starting glTF 2.0 export\n16:39:57 | INFO: Extracting primitive: Mesh_0.017\n16:39:57 | INFO: Primitives created: 1\n16:39:57 | INFO: Finished glTF 2.0 export in 0.003141641616821289 s\n\nREFINED robot-prototype-armour ['welded seams + machined chamfer'] BOUNDS_PRESERVED\n"
+    },
+    "isError": false
+  }
+}

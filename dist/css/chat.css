@@ -1,85 +1,224 @@
-/* Chat Overlay */
+/* Hallmark · component: match chat · genre: technical · theme: existing spectra
+ * states: default · hover · focus · active · disabled · loading · error · success
+ * contrast: pass
+ */
 .chatarea {
   position: absolute;
-  top: 44px;
-  right: 10px;
-  max-width: 280px;
-  max-height: 400px;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  padding: 0;
-  z-index: 900;
-  overflow: hidden;
+  top: calc(var(--game-topbar-height, 86px) + 18px);
+  left: max(18px, env(safe-area-inset-left));
+  z-index: var(--game-z-hud, 20);
+  width: min(330px, calc(100vw - 36px));
+  display: grid;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.match-chat-toggle,
+.match-chat-compose {
+  min-height: 38px;
+  width: max-content;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--game-ink, #132235);
+  background: rgb(255 255 255 / 46%);
+  border: 1px solid rgb(255 255 255 / 84%);
+  border-radius: 999px;
+  box-shadow: 0 12px 34px rgb(45 68 102 / 15%);
+  backdrop-filter: blur(18px) saturate(145%);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.match-chat-toggle strong {
+  min-width: 20px;
+  height: 20px;
+  padding-inline: 5px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: var(--game-violet, #7357f5);
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+.match-chat-toggle:active,
+.match-chat-compose:active,
+#inputTextDiv button:active {
+  transform: scale(0.97);
+}
+
+.match-chat-toggle:focus-visible,
+.match-chat-compose:focus-visible,
+#inputText:focus-visible,
+#inputTextDiv button:focus-visible {
+  outline: 2px solid var(--color-focus, #2f77ff);
+  outline-offset: 2px;
 }
 
 .chatoutput {
-  max-height: 360px;
+  max-height: 186px;
+  display: grid;
+  align-content: end;
+  gap: 7px;
   overflow: hidden auto;
-  padding: 2px;
-  font-size: 16px;
-  color: #ccc;
-  text-shadow: 1px 1px 0 black;
+  scrollbar-width: thin;
+  pointer-events: auto;
+}
+
+.chatarea[data-chat-state="peek"] .chatoutput {
+  pointer-events: none;
+}
+
+.chatarea[data-chat-state="peek"] .match-chat-message:nth-last-child(n + 4) {
+  display: none;
+}
+
+.match-chat-message {
+  width: fit-content;
+  max-width: 100%;
+  padding: 9px 12px;
+  color: var(--game-ink, #132235);
+  background: rgb(255 255 255 / 68%);
+  border: 1px solid rgb(255 255 255 / 92%);
+  border-radius: 15px 15px 15px 5px;
+  box-shadow: 0 10px 30px rgb(42 64 98 / 16%);
+  backdrop-filter: blur(20px) saturate(150%);
   overflow-wrap: anywhere;
-  text-align: right;
 }
 
-.chatoutput a {
-  overflow-wrap: anywhere;
+.match-chat-message.is-mine {
+  justify-self: end;
+  background: rgb(221 250 251 / 76%);
+  border-radius: 15px 15px 5px;
 }
 
-.chatoutput::-webkit-scrollbar {
-  width: 8px;
+.match-chat-message header {
+  margin-bottom: 3px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--game-muted, #5c6d81);
+  font-size: 10px;
 }
 
-.chatoutput::-webkit-scrollbar-track {
-  background: #222;
+.match-chat-message__body {
+  font-size: 13px;
+  line-height: 1.45;
 }
 
-.chatoutput::-webkit-scrollbar-thumb {
-  background: #555;
-  border-radius: 4px;
+.match-chat-compose {
+  display: none;
 }
 
-.chatoutput::-webkit-scrollbar-thumb:hover {
-  background: #777;
+.chatarea[data-chat-state="open"] {
+  padding: 12px;
+  background: rgb(248 252 255 / 46%);
+  border: 1px solid rgb(255 255 255 / 86%);
+  border-radius: 22px;
+  box-shadow: 0 18px 52px rgb(42 65 100 / 19%);
+  backdrop-filter: blur(26px) saturate(150%);
+  pointer-events: auto;
+}
+
+.chatarea[data-chat-state="open"] .match-chat-compose {
+  display: inline-flex;
 }
 
 #inputTextDiv {
-  position: absolute;
-  top: 76%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1000;
+  position: fixed;
+  inset: auto max(12px, env(safe-area-inset-right))
+    calc(
+      max(12px, env(safe-area-inset-bottom)) + var(--bb-keyboard-height, 0px)
+    )
+    max(12px, env(safe-area-inset-left));
+  z-index: var(--game-z-modal, 60);
+  width: min(620px, calc(100vw - 24px));
+  margin: 0 auto;
+  padding: 14px;
   display: none;
-  align-items: center;
-  pointer-events: auto;
-  border: none;
-  background: transparent;
-  padding: 0;
-  margin: 0;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  color: var(--game-ink, #132235);
+  background: rgb(250 252 255 / 72%);
+  border: 1px solid rgb(255 255 255 / 94%);
+  border-radius: 22px;
+  box-shadow: 0 24px 70px rgb(38 58 92 / 26%);
+  backdrop-filter: blur(28px) saturate(150%);
 }
 
 #inputTextDiv[open] {
-  display: flex;
+  display: grid;
 }
 
 #inputTextDiv::backdrop {
-  background-color: rgb(0 0 0 / 30%);
-  backdrop-filter: blur(1px);
+  background: rgb(33 48 72 / 16%);
+  backdrop-filter: blur(2px);
+}
+
+.match-chat-composer__heading {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: space-between;
+  color: var(--game-muted, #5c6d81);
+  font-size: 12px;
 }
 
 #inputText {
-  width: 24ch;
-  font-size: 15px;
-  padding: 1px;
-  caret-color: black;
-  color: black;
-  background: white;
+  min-width: 0;
+  min-height: 46px;
+  padding: 0 14px;
+  color: var(--game-ink, #132235);
+  background: rgb(255 255 255 / 72%);
+  border: 1px solid rgb(78 105 140 / 18%);
+  border-radius: 14px;
+  font: inherit;
 }
 
 #inputTextDiv button {
-  font-size: 15px;
-  padding: 1px;
-  margin-left: 2px;
+  min-height: 46px;
+  padding: 0 16px;
+  color: var(--game-ink, #132235);
+  background: rgb(255 255 255 / 56%);
+  border: 1px solid rgb(255 255 255 / 88%);
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+#inputSend {
+  color: white !important;
+  background: linear-gradient(
+    135deg,
+    var(--game-cyan, #20bfd2),
+    var(--game-violet, #7357f5)
+  ) !important;
+}
+
+@media (orientation: portrait) and (pointer: coarse) {
+  .chatarea {
+    top: calc(var(--game-topbar-height, 64px) + 12px);
+    left: 8px;
+    width: calc(100vw - 16px);
+  }
+
+  .chatoutput {
+    max-height: 132px;
+  }
+
+  #inputTextDiv {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  #inputClose {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .match-chat-toggle,
+  .match-chat-compose,
+  #inputTextDiv button {
+    transition: none;
+  }
 }

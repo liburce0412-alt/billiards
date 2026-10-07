@@ -1,6 +1,7 @@
 import type { PlatformMe } from "./api"
 import { accountChip } from "./shell"
 import { mountSpectraFx } from "./fx"
+import { mountViewportCoordinator } from "./viewport"
 
 export type PageName = "play" | "lobby" | "account" | "admin"
 
@@ -11,6 +12,7 @@ export function mountPlatformPage(
   description: string
 ) {
   document.body.className = "platform-app"
+  mountViewportCoordinator()
   document.body.innerHTML = `
     <canvas class="platform-app__fx" aria-hidden="true"></canvas>
     <div class="platform-app__shell">

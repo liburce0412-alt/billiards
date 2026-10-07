@@ -70,6 +70,7 @@ export interface BotPlanRequest {
   balls: ShotSimulationBall[]
   candidates: ShotCandidate[]
   level: number
+  planningDeadlineMs?: number
   cushionModel?: "mathavan" | "stronge"
 }
 
@@ -88,6 +89,16 @@ function finalCuePosition(
   cueBallId: number
 ): { x: number; y: number } | undefined {
   return result.finalBalls.find((ball) => ball.id === cueBallId)?.pos
+}
+
+function firstContact(result: ShotSimulationResult, cueBallId: number) {
+  const collision = result.outcomes.find(
+    (outcome) =>
+      outcome.type === OutcomeType.Collision &&
+      (outcome.ballA === cueBallId || outcome.ballB === cueBallId)
+  )
+  if (!collision) return undefined
+  return collision.ballA === cueBallId ? collision.ballB : collision.ballA
 }
 
 type Position2D = { x: number; y: number }
@@ -159,11 +170,7 @@ function scoreCandidate(
 ): number {
   if (result.exhausted) return 100000
 
-  const firstCollision = result.outcomes.find(
-    (outcome) =>
-      outcome.type === OutcomeType.Collision &&
-      outcome.ballA === request.cueBallId
-  )
+  const contactId = firstContact(result, request.cueBallId)
   const cueBallPotted = result.outcomes.some(
     (outcome) =>
       outcome.type === OutcomeType.Pot && outcome.ballA === request.cueBallId
@@ -178,7 +185,7 @@ function scoreCandidate(
   ).length
 
   let score = candidate.geometryScore * 12
-  if (!firstCollision || firstCollision.ballB !== candidate.targetId) {
+  if (contactId !== candidate.targetId) {
     score += 1800
   }
   if (cueBallPotted) score += 2400
@@ -189,7 +196,7 @@ function scoreCandidate(
   score += positionScore(result, candidate, cuePos, profile)
   score += safetyScore(result, candidate, cuePos, profile, targetPotted)
   if (candidate.kind === "escape" || candidate.kind === "kick") {
-    score -= firstCollision ? 180 * profile.escapeWeight : 0
+    score -= contactId === candidate.targetId ? 180 * profile.escapeWeight : 0
   }
   return score
 }
@@ -237,7 +244,7 @@ function secondShotInput(
     shot: {
       cueBallId: request.cueBallId,
       angle: Math.atan2(target.pos.y - cue.pos.y, target.pos.x - cue.pos.x),
-      power: 0.42,
+      power: Math.max(2.4, candidate.aim.power * 0.65),
       offset: { x: 0, y: 0.08 },
       elevation: 0,
     },
@@ -265,14 +272,10 @@ function secondShotPenalty(
       (outcome) =>
         outcome.type === OutcomeType.Pot && outcome.ballA === targetId
     )
-    const firstCollision = result.outcomes.find(
-      (outcome) =>
-        outcome.type === OutcomeType.Collision &&
-        outcome.ballA === request.cueBallId
-    )
+    const contactId = firstContact(result, request.cueBallId)
     let penalty = 260
     if (targetPotted) penalty -= 420
-    if (firstCollision?.ballB === targetId) penalty -= 130
+    if (contactId === targetId) penalty -= 130
     if (cuePotted) penalty += 900
     if (result.exhausted) penalty += 600
     best = Math.min(best, penalty)
@@ -283,6 +286,8 @@ function secondShotPenalty(
 export function planBotShotSync(request: BotPlanRequest): BotPlanResult {
   const started = performance.now()
   const profile = botDifficultyProfile(request.level)
+  const planningDeadlineMs =
+    request.planningDeadlineMs ?? profile.planningDeadlineMs
   const candidates = request.candidates.slice(0, profile.candidateBudget)
   if (candidates.length === 0) {
     throw new Error("Bot planner received no candidates")
@@ -309,7 +314,7 @@ export function planBotShotSync(request: BotPlanRequest): BotPlanResult {
     })
     if (
       scored.length >= 3 &&
-      performance.now() - started >= profile.planningDeadlineMs
+      performance.now() - started >= planningDeadlineMs
     ) {
       break
     }
@@ -322,7 +327,7 @@ export function planBotShotSync(request: BotPlanRequest): BotPlanResult {
   )
   if (profile.lookaheadDepth === 2) {
     for (const entry of scored.slice(0, profile.lookaheadWidth)) {
-      if (performance.now() - started >= profile.planningDeadlineMs) break
+      if (performance.now() - started >= planningDeadlineMs) break
       entry.score += secondShotPenalty(request, entry.candidate, entry.result)
     }
     scored.sort(
@@ -339,7 +344,7 @@ export function planBotShotSync(request: BotPlanRequest): BotPlanResult {
     candidateId: best.candidate.id,
     candidateIndex: best.candidateIndex,
     score: best.score,
-    simulations: candidates.length,
+    simulations: scored.length,
     elapsedMs: performance.now() - started,
   }
 }

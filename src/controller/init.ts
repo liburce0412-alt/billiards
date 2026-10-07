@@ -37,6 +37,7 @@ export class Init extends ControllerBase {
   }
 
   override handleBegin(_: BeginEvent): Controller {
+    this.container.manualShotCount = 0
     if (!Session.getInstance().vsNotificationShown) {
       this.container.notification.clear()
     }

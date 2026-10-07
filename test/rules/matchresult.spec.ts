@@ -191,7 +191,7 @@ describe("MatchResult Construction", () => {
     expect(result.winnerScore).to.equal(7)
   })
 
-  it("MatchResultHelper should show Lostber subtext in bot mode loss", () => {
+  it("MatchResultHelper explains the decisive ball in a bot loss", () => {
     Session.init("test-client", "TestPlayer", "test-table", false, true)
     Session.getInstance().setMyScore(0)
     Session.getInstance().setOpponentScore(1)
@@ -199,7 +199,7 @@ describe("MatchResult Construction", () => {
     const result = (container.rules as any).handleGameEnd(false)
     expect(result.name).to.equal("End")
     const notification = document.getElementById("notification")
-    expect(notification?.innerHTML).to.contain("被龙虾击败了 🦞")
+    expect(notification?.innerHTML).to.contain("合法打进 9 号球决定本局胜负")
     expect(notification?.innerHTML).to.contain("新一局")
   })
 

@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:32:43.808556+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: Connected to client: ('127.0.0.1', 55453)\nClient handler started\nQueued command: get_addon_info\nConnected to client: ('127.0.0.1', 55464)\nClient handler started\nQueued command: get_addon_info\nInfo: Saved as \"sports-hall.blend\"\n16:32:43 | INFO: Starting glTF 2.0 export\n16:32:43 | INFO: Extracting primitive: Centre court identifier\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1704\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1717\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1712\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.2031\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1324\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1326\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1328\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1325\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1327\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1915\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1781\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1917\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1916\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1707\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Finished glTF 2.0 export in 0.12703418731689453 s\n\nASSET_READY sports-hall TRIANGLES 126448 ROOTS ['SportsHall']\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: Connected to client: ('127.0.0.1', 55453)\nClient handler started\nQueued command: get_addon_info\nConnected to client: ('127.0.0.1', 55464)\nClient handler started\nQueued command: get_addon_info\nInfo: Saved as \"sports-hall.blend\"\n16:32:43 | INFO: Starting glTF 2.0 export\n16:32:43 | INFO: Extracting primitive: Centre court identifier\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1704\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1717\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1712\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.2031\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1324\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1326\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1328\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1325\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1327\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1915\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1781\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1917\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1916\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Extracting primitive: Cube.1707\n16:32:43 | INFO: Primitives created: 1\n16:32:43 | INFO: Finished glTF 2.0 export in 0.12703418731689453 s\n\nASSET_READY sports-hall TRIANGLES 126448 ROOTS ['SportsHall']\n"
+    },
+    "isError": false
+  }
+}

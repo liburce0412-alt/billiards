@@ -1,0 +1,13 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-threecushion-5-chinese-ebony-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence.",
+    "Final 17:36 rebuild checked: six inherited crescent pocket ornaments are removed; pocketless cloth and rails are continuous."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.6715610+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "9c97a6235b0ebf1678182120bad1df6a044966c39de98e401bc2ed3a59949029"
+}

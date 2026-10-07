@@ -44,6 +44,9 @@ type AimSnapshot = {
 
 export class AnalysisPanel {
   private readonly container: Container
+  private readonly listenerAbort = new AbortController()
+  private panel: HTMLElement | null = null
+  private cameraButton: HTMLButtonElement | null = null
   private started = false
   private previewShown = false
   private pendingPreview = false
@@ -83,10 +86,14 @@ export class AnalysisPanel {
     document
       .getElementById("viewP1")
       ?.removeEventListener("dblclick", aimInputs.hit)
-    aimInputs.cueHitElement?.addEventListener("click", this.onHitOrRestore)
+    aimInputs.cueHitElement?.addEventListener("click", this.onHitOrRestore, {
+      signal: this.listenerAbort.signal,
+    })
     document
       .getElementById("viewP1")
-      ?.addEventListener("dblclick", this.onHitOrRestore)
+      ?.addEventListener("dblclick", this.onHitOrRestore, {
+        signal: this.listenerAbort.signal,
+      })
     document.getElementById("analysisPanel")?.addEventListener(
       "click",
       (e) => {
@@ -96,7 +103,7 @@ export class AnalysisPanel {
           this.restore()
         }
       },
-      { capture: true }
+      { capture: true, signal: this.listenerAbort.signal }
     )
 
     // Wait for the Aim controller to apply the URL's initShot and the balls to
@@ -390,6 +397,7 @@ export class AnalysisPanel {
       `</div>` +
       `<div id="analysisContent" class="analysis-content"></div>`
     document.body.appendChild(panel)
+    this.panel = panel
   }
 
   private buildCameraButton() {
@@ -399,9 +407,25 @@ export class AnalysisPanel {
     btn.title = "change camera angle"
     btn.setAttribute("aria-label", "Change camera angle")
     btn.textContent = "🎥"
-    btn.addEventListener("click", () => {
-      this.container.view.camera.toggleMode()
-    })
+    btn.addEventListener(
+      "click",
+      () => {
+        this.container.view.camera.toggleMode()
+      },
+      { signal: this.listenerAbort.signal }
+    )
     document.getElementById("viewP1")?.appendChild(btn)
+    this.cameraButton = btn
+  }
+
+  dispose() {
+    this.listenerAbort.abort()
+    this.handle?.stop()
+    this.handle = null
+    this.panel?.remove()
+    this.cameraButton?.remove()
+    this.panel = null
+    this.cameraButton = null
+    document.body.classList.remove("analysis-mode")
   }
 }

@@ -7,6 +7,7 @@ export interface RuntimeDiagnosticsSnapshot {
 }
 
 export class RuntimeDiagnostics {
+  private observer?: PerformanceObserver
   private lastFrame?: number
   private readonly frameTimes: number[] = []
   private readonly longTasks: number[] = []
@@ -55,9 +56,15 @@ export class RuntimeDiagnostics {
         }
       })
       observer.observe({ entryTypes: ["longtask"] })
+      this.observer = observer
     } catch {
       // Long-task entries are optional and unsupported in some browsers.
     }
+  }
+
+  dispose(): void {
+    this.observer?.disconnect()
+    this.observer = undefined
   }
 }
 

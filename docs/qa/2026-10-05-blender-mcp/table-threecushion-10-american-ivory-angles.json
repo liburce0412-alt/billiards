@@ -1,0 +1,31 @@
+{
+  "time": "2026-10-05T08:48:06.135279+00:00",
+  "tool": "look",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "image",
+        "mimeType": "image/png",
+        "annotations": null,
+        "meta": null,
+        "savedImage": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-10-05-blender-mcp\\table-threecushion-10-american-ivory-angles-0.png"
+      },
+      {
+        "type": "text",
+        "text": "Tiles left to right, top to bottom: front, right, back, three_quarter. Framed 50 objects, 3.28 x 1.77 x 0.72 m across, centred at [0.0, -0.0, -0.34].",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

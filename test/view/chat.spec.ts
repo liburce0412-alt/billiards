@@ -36,4 +36,50 @@ describe("Chat", () => {
       '<a class="pill" href="/test">upload</a>'
     )
   })
+
+  it("renders structured messages, deduplicates them and tracks unread", () => {
+    const chat = new Chat(jest.fn())
+    const message = {
+      id: "message-1",
+      senderId: "remote-user",
+      senderName: "远端玩家",
+      body: "准备好了吗？",
+      createdAt: Date.UTC(2026, 7, 17, 10, 30),
+      isMine: false,
+    }
+
+    chat.showMessage(message)
+    chat.showMessage(message)
+
+    expect(document.querySelectorAll(".match-chat-message")).toHaveLength(1)
+    expect(
+      document.querySelector(".match-chat-message strong")?.textContent
+    ).toBe("远端玩家")
+    expect(document.getElementById("matchChatUnread")?.textContent).toBe("1")
+
+    document.getElementById("matchChatToggle")?.click()
+    expect(
+      document.querySelector(".chatarea")?.getAttribute("data-chat-state")
+    ).toBe("open")
+    expect(document.getElementById("matchChatUnread")?.hidden).toBe(true)
+  })
+
+  it("clears messages and unread state when disposed", () => {
+    const chat = new Chat(jest.fn())
+    chat.showMessage({
+      id: "old-match-message",
+      senderName: "上一局玩家",
+      body: "上一局消息",
+      createdAt: Date.now(),
+      isMine: false,
+    })
+
+    chat.dispose()
+
+    expect(document.getElementById("chatoutput")?.childElementCount).toBe(0)
+    expect(document.getElementById("matchChatUnread")?.hidden).toBe(true)
+    expect(
+      document.querySelector(".chatarea")?.getAttribute("data-chat-state")
+    ).toBe("peek")
+  })
 })

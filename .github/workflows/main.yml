@@ -24,6 +24,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -89,23 +91,16 @@ jobs:
           name: dist-artifact
           path: dist/
 
-      - name: cleanup for deployment
+      - name: prepare production-site redirect
         run: |
-          cp dist/redirect.html index.html
-          cp dist/robots.txt robots.txt
-          cp dist/sitemap.xml sitemap.xml
-          cp dist/google2eba932626b1b383.html google2eba932626b1b383.html
-          cp dist/naver200febfca14870e645245d6808f2a89e.html naver200febfca14870e645245d6808f2a89e.html
-          echo "Removing unnecessary files for deployment"
-          rm -rf node_modules src test .github LICENSE yarn.lock
-          rm -rf dist/models/*.blend dist/models/d-snooker.gltf dist/models/p8.gltf dist/models/snooker.gltf dist/models/d-snooker.bin dist/models/p8.bin dist/models/snooker.bin
-          du -a * | sort -n
+          mkdir -p pages-site
+          cp .github/pages/index.html pages-site/index.html
 
       - name: Upload artifact
         if: github.ref == 'refs/heads/master' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
         uses: actions/upload-pages-artifact@v5
         with:
-          path: "./"
+          path: pages-site
 
       - name: Deploy to GitHub Pages
         id: deployment

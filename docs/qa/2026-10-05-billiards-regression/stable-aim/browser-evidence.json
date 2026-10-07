@@ -1,0 +1,431 @@
+{
+  "heightSpan": 0.0007540976293931023,
+  "carrying": {
+    "style": "aurora-prism",
+    "visible": true,
+    "tableCue": false
+  },
+  "samples": [
+    {
+      "walking": false,
+      "height": 0.20639970332587346,
+      "firstPerson": true,
+      "angle": 0.0000219229932554299
+    },
+    {
+      "walking": false,
+      "height": 0.20634239093843199,
+      "firstPerson": true,
+      "angle": 0.011897319927811623
+    },
+    {
+      "walking": false,
+      "height": 0.20628304928105348,
+      "firstPerson": true,
+      "angle": 0.023034343495965004
+    },
+    {
+      "walking": false,
+      "height": 0.20622870333592927,
+      "firstPerson": true,
+      "angle": 0.03274058178067207
+    },
+    {
+      "walking": false,
+      "height": 0.20618424895807644,
+      "firstPerson": true,
+      "angle": 0.04041251912713051
+    },
+    {
+      "walking": false,
+      "height": 0.20613822057612965,
+      "firstPerson": true,
+      "angle": 0.0455731637775898
+    },
+    {
+      "walking": false,
+      "height": 0.20610970844999363,
+      "firstPerson": true,
+      "angle": 0.04790171608328819
+    },
+    {
+      "walking": false,
+      "height": 0.2060828198667584,
+      "firstPerson": true,
+      "angle": 0.04725324735045433
+    },
+    {
+      "walking": false,
+      "height": 0.20605337879081717,
+      "firstPerson": true,
+      "angle": 0.0436682254076004
+    },
+    {
+      "walking": false,
+      "height": 0.2060296977417317,
+      "firstPerson": true,
+      "angle": 0.03736939653754234
+    },
+    {
+      "walking": false,
+      "height": 0.2060037686863259,
+      "firstPerson": true,
+      "angle": 0.028748607262969017
+    },
+    {
+      "walking": false,
+      "height": 0.20598291254523146,
+      "firstPerson": true,
+      "angle": 0.01834162510931492
+    },
+    {
+      "walking": false,
+      "height": 0.2059632439984839,
+      "firstPerson": true,
+      "angle": 0.006795726716518402
+    },
+    {
+      "walking": false,
+      "height": 0.20594170834621922,
+      "firstPerson": true,
+      "angle": -0.005171406082808971
+    },
+    {
+      "walking": false,
+      "height": 0.2059188339949627,
+      "firstPerson": true,
+      "angle": -0.016815632581710815
+    },
+    {
+      "walking": false,
+      "height": 0.20590023438571742,
+      "firstPerson": true,
+      "angle": -0.02741304412484169
+    },
+    {
+      "walking": false,
+      "height": 0.20588527371443002,
+      "firstPerson": true,
+      "angle": -0.03630455583333969
+    },
+    {
+      "walking": false,
+      "height": 0.20586441473884973,
+      "firstPerson": true,
+      "angle": -0.04293755069375038
+    },
+    {
+      "walking": false,
+      "height": 0.20585149371669673,
+      "firstPerson": true,
+      "angle": -0.04689949378371239
+    },
+    {
+      "walking": false,
+      "height": 0.20583930844584097,
+      "firstPerson": true,
+      "angle": -0.04794410988688469
+    },
+    {
+      "walking": false,
+      "height": 0.20582596644557694,
+      "firstPerson": true,
+      "angle": -0.046006396412849426
+    },
+    {
+      "walking": false,
+      "height": 0.20581523475344113,
+      "firstPerson": true,
+      "angle": -0.041206926107406616
+    },
+    {
+      "walking": false,
+      "height": 0.205800272048901,
+      "firstPerson": true,
+      "angle": -0.033843979239463806
+    },
+    {
+      "walking": false,
+      "height": 0.20579100345198034,
+      "firstPerson": true,
+      "angle": -0.02437550388276577
+    },
+    {
+      "walking": false,
+      "height": 0.20578085500111484,
+      "firstPerson": true,
+      "angle": -0.013389999978244305
+    },
+    {
+      "walking": false,
+      "height": 0.20577269205341672,
+      "firstPerson": true,
+      "angle": -0.001570633496157825
+    },
+    {
+      "walking": false,
+      "height": 0.20576499392183664,
+      "firstPerson": true,
+      "angle": 0.010347701609134674
+    },
+    {
+      "walking": false,
+      "height": 0.20575426077119408,
+      "firstPerson": true,
+      "angle": 0.021624069660902023
+    },
+    {
+      "walking": false,
+      "height": 0.20574761215718662,
+      "firstPerson": true,
+      "angle": 0.03155726566910744
+    },
+    {
+      "walking": false,
+      "height": 0.20574033240026593,
+      "firstPerson": true,
+      "angle": 0.039529770612716675
+    },
+    {
+      "walking": false,
+      "height": 0.20573447689820099,
+      "firstPerson": true,
+      "angle": 0.045045915991067886
+    },
+    {
+      "walking": false,
+      "height": 0.20572895482124667,
+      "firstPerson": true,
+      "angle": 0.04776265099644661
+    },
+    {
+      "walking": false,
+      "height": 0.20572290854184472,
+      "firstPerson": true,
+      "angle": 0.047511156648397446
+    },
+    {
+      "walking": false,
+      "height": 0.20571648641368556,
+      "firstPerson": true,
+      "angle": 0.04430690407752991
+    },
+    {
+      "walking": false,
+      "height": 0.2057112644481337,
+      "firstPerson": true,
+      "angle": 0.03834929317235947
+    },
+    {
+      "walking": false,
+      "height": 0.2057070641389194,
+      "firstPerson": true,
+      "angle": 0.030008655041456223
+    },
+    {
+      "walking": false,
+      "height": 0.2057024651006781,
+      "firstPerson": true,
+      "angle": 0.019803637638688087
+    },
+    {
+      "walking": false,
+      "height": 0.20569876584557772,
+      "firstPerson": true,
+      "angle": 0.008368609473109245
+    },
+    {
+      "walking": false,
+      "height": 0.20569527723416378,
+      "firstPerson": true,
+      "angle": -0.0035853395238518715
+    },
+    {
+      "walking": false,
+      "height": 0.20569145745412307,
+      "firstPerson": true,
+      "angle": -0.015314984135329723
+    },
+    {
+      "walking": false,
+      "height": 0.2056883849985233,
+      "firstPerson": true,
+      "angle": -0.026091108098626137
+    },
+    {
+      "walking": false,
+      "height": 0.20568502087934132,
+      "firstPerson": true,
+      "angle": -0.03524363413453102
+    },
+    {
+      "walking": false,
+      "height": 0.20568231493640515,
+      "firstPerson": true,
+      "angle": -0.042203474789857864
+    },
+    {
+      "walking": false,
+      "height": 0.20567854216467965,
+      "firstPerson": true,
+      "angle": -0.04653794690966606
+    },
+    {
+      "walking": false,
+      "height": 0.2056762051339441,
+      "firstPerson": true,
+      "angle": -0.047977615147829056
+    },
+    {
+      "walking": false,
+      "height": 0.20567400117885654,
+      "firstPerson": true,
+      "angle": -0.046432845294475555
+    },
+    {
+      "walking": false,
+      "height": 0.2056715880056322,
+      "firstPerson": true,
+      "angle": -0.04199977219104767
+    },
+    {
+      "walking": false,
+      "height": 0.2056696469599418,
+      "firstPerson": true,
+      "angle": -0.03495396673679352
+    },
+    {
+      "walking": false,
+      "height": 0.20566752165370775,
+      "firstPerson": true,
+      "angle": -0.025733599439263344
+    },
+    {
+      "walking": false,
+      "height": 0.20566581215500088,
+      "firstPerson": true,
+      "angle": -0.014911791309714317
+    },
+    {
+      "walking": false,
+      "height": 0.20566419999889404,
+      "firstPerson": true,
+      "angle": -0.003161547239869833
+    },
+    {
+      "walking": false,
+      "height": 0.2056624348032363,
+      "firstPerson": true,
+      "angle": 0.00878672581166029
+    },
+    {
+      "walking": false,
+      "height": 0.20566101496093503,
+      "firstPerson": true,
+      "angle": 0.020189985632896423
+    },
+    {
+      "walking": false,
+      "height": 0.20565946033514274,
+      "firstPerson": true,
+      "angle": 0.03033924661576748
+    },
+    {
+      "walking": false,
+      "height": 0.20565820986556854,
+      "firstPerson": true,
+      "angle": 0.03860361874103546
+    },
+    {
+      "walking": false,
+      "height": 0.2056570306004703,
+      "firstPerson": true,
+      "angle": 0.04446903616189957
+    },
+    {
+      "walking": false,
+      "height": 0.20565573938951257,
+      "firstPerson": true,
+      "angle": 0.04757111892104149
+    },
+    {
+      "walking": false,
+      "height": 0.20565470079873108,
+      "firstPerson": true,
+      "angle": 0.047716688364744186
+    },
+    {
+      "walking": false,
+      "height": 0.20565356361609108,
+      "firstPerson": true,
+      "angle": 0.04489686340093613
+    },
+    {
+      "walking": false,
+      "height": 0.20565264891861296,
+      "firstPerson": true,
+      "angle": 0.03928697109222412
+    },
+    {
+      "walking": false,
+      "height": 0.20565178630601236,
+      "firstPerson": true,
+      "angle": 0.03123573213815689
+    },
+    {
+      "walking": false,
+      "height": 0.20565084180689688,
+      "firstPerson": true,
+      "angle": 0.021243758499622345
+    },
+    {
+      "walking": false,
+      "height": 0.20565008209519484,
+      "firstPerson": true,
+      "angle": 0.009932326152920723
+    },
+    {
+      "walking": false,
+      "height": 0.2056492502652052,
+      "firstPerson": true,
+      "angle": -0.0019952557049691677
+    },
+    {
+      "walking": false,
+      "height": 0.20564858117937238,
+      "firstPerson": true,
+      "angle": -0.01379740983247757
+    },
+    {
+      "walking": false,
+      "height": 0.2056479501927521,
+      "firstPerson": true,
+      "angle": -0.0247404333204031
+    },
+    {
+      "walking": false,
+      "height": 0.2056472593075224,
+      "firstPerson": true,
+      "angle": -0.03414381295442581
+    },
+    {
+      "walking": false,
+      "height": 0.20564670359118006,
+      "firstPerson": true,
+      "angle": -0.04142289608716965
+    },
+    {
+      "walking": false,
+      "height": 0.20564609512152238,
+      "firstPerson": true,
+      "angle": -0.0461251363158226
+    },
+    {
+      "walking": false,
+      "height": 0.20564560569648035,
+      "firstPerson": true,
+      "angle": -0.04795820638537407
+    }
+  ],
+  "errors": []
+}

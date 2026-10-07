@@ -1,0 +1,6136 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-05T10:03:01.737Z",
+  "sourceUnit": "metres",
+  "sourceUpAxis": "Z",
+  "assetUpAxis": "Y",
+  "runtimeRootRotationX": 1.5707963267948966,
+  "sourceBallRadius": 0.03275,
+  "families": {
+    "robots": {
+      "count": 2,
+      "poses": [
+        "standing",
+        "aiming"
+      ],
+      "prototypeShapes": [
+        "sphere",
+        "box",
+        "cylinder",
+        "armour",
+        "helmet"
+      ],
+      "contract": "Refine prototype geometries in their original local coordinates; runtime InstancedMesh matrices retain all animation timing. Static expanded posed exports are references, not replacement skeletal rigs."
+    },
+    "cues": {
+      "count": 11,
+      "styles": [
+        "heritage",
+        "obsidian",
+        "jade",
+        "royal",
+        "glacier",
+        "ivory",
+        "porcelain-wave",
+        "amber-tiger",
+        "aurora-prism",
+        "holo-laser",
+        "custom"
+      ],
+      "contract": "Local +Y points to tip; keep cueRole/cuePattern/cueRingCount/cueEnergyRing/cueDimensions extras for runtime appearance and carry-cue updates. Custom exports default colours; runtime custom colours remain configurable."
+    },
+    "environments": {
+      "count": 8,
+      "styles": [
+        "spectra",
+        "galaxy",
+        "nebula",
+        "club",
+        "aurora-hall",
+        "sky-temple",
+        "abyss-palace",
+        "lunar-observatory"
+      ],
+      "contract": "Visible architecture and decor exported together. Preserve floor/central table clearance. Runtime sky/caustics/meteor shaders remain separate; GLB shader proxies are labelled and not a replacement for shader rendering."
+    },
+    "balls": {
+      "variants": [
+        "ball-dotted-ffffff",
+        "ball-pool-1",
+        "ball-pool-2",
+        "ball-pool-3",
+        "ball-pool-4",
+        "ball-pool-5",
+        "ball-pool-6",
+        "ball-pool-7",
+        "ball-pool-8",
+        "ball-pool-9",
+        "ball-pool-10",
+        "ball-pool-11",
+        "ball-pool-12",
+        "ball-pool-13",
+        "ball-pool-14",
+        "ball-pool-15",
+        "ball-dotted-ffd700",
+        "ball-dotted-ff0000",
+        "ball-dotted-008000",
+        "ball-dotted-6a2500",
+        "ball-dotted-005cb1",
+        "ball-dotted-ff80b3",
+        "ball-dotted-010000",
+        "ball-dotted-ee0000"
+      ],
+      "contract": "Actual Rack palette and appearances, not approximate colours. Canonical radius in manifest; runtime scales geometry to current physical R. Numbered PBR maps embedded; dotted shader restored at runtime. No invented solid-snooker replacement."
+    },
+    "tables": {
+      "styles": [
+        "american-ivory",
+        "american-walnut",
+        "american-graphite",
+        "american-burgundy",
+        "chinese-ebony",
+        "chinese-ivory",
+        "chinese-jade",
+        "chinese-violet"
+      ],
+      "rules": [
+        "eightball",
+        "nineball",
+        "fourball",
+        "snooker",
+        "threecushion"
+      ],
+      "dimensions": [
+        5,
+        10
+      ],
+      "contract": "Keep top/cushion/pocket contact surfaces and all original local origins fixed; appearance refinements must not move physical edges. Exports cover each style and distinct rule geometry, including compact-size variants."
+    }
+  },
+  "assets": [
+    {
+      "id": "robot-ivory-cyan-standing",
+      "category": "robot-reference",
+      "file": "robot-ivory-cyan-standing.glb",
+      "pose": "standing",
+      "runtimeMaterials": [],
+      "meshCount": 144,
+      "bounds": {
+        "min": [
+          -0.14749999716877937,
+          -0.4350700043141842,
+          0.010999999940395355
+        ],
+        "max": [
+          0.3619999894872308,
+          0.41947000846266747,
+          1.6974999457597733
+        ],
+        "size": [
+          0.5094999866560102,
+          0.8545400127768517,
+          1.686499945819378
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.14749999716877937,
+          -0.4350700043141842,
+          0.010999999940395355
+        ],
+        "max": [
+          0.3619999894872308,
+          0.41947000846266747,
+          1.6974999457597733
+        ],
+        "size": [
+          0.5094999866560102,
+          0.8545400127768517,
+          1.686499945819378
+        ]
+      },
+      "triangles": 15516,
+      "bytes": 101672,
+      "sha256": "46d12e9d4794f7aa9269a7ebcd596908c35d2710a6cd948d41b2929e5a9537ae",
+      "exportedNodes": 156,
+      "exportedMeshes": 10,
+      "embeddedImages": 0
+    },
+    {
+      "id": "robot-ivory-cyan-aiming",
+      "category": "robot-reference",
+      "file": "robot-ivory-cyan-aiming.glb",
+      "pose": "aiming",
+      "runtimeMaterials": [],
+      "meshCount": 144,
+      "bounds": {
+        "min": [
+          -0.2900000065565109,
+          -0.34387001022696495,
+          0.010999999940395355
+        ],
+        "max": [
+          0.9519999930635095,
+          0.386685816287092,
+          1.0686449442582082
+        ],
+        "size": [
+          1.2419999996200204,
+          0.7305558265140569,
+          1.0576449443178129
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.2900000065565109,
+          -0.34387001022696495,
+          0.010999999940395355
+        ],
+        "max": [
+          0.9519999930635095,
+          0.3866858184337616,
+          1.0686449445784092
+        ],
+        "size": [
+          1.2419999996200204,
+          0.7305558286607265,
+          1.0576449446380138
+        ]
+      },
+      "triangles": 15516,
+      "bytes": 102664,
+      "sha256": "0cbd7b8c2b4cba9cbc440a592e62329d2e78d7c9d845bfa69e45617e2cd3717e",
+      "exportedNodes": 156,
+      "exportedMeshes": 10,
+      "embeddedImages": 0
+    },
+    {
+      "id": "robot-graphite-amber-standing",
+      "category": "robot-reference",
+      "file": "robot-graphite-amber-standing.glb",
+      "pose": "standing",
+      "runtimeMaterials": [],
+      "meshCount": 144,
+      "bounds": {
+        "min": [
+          -0.14749999716877937,
+          -0.4350700043141842,
+          0.010999999940395355
+        ],
+        "max": [
+          0.3619999894872308,
+          0.41947000846266747,
+          1.6974999457597733
+        ],
+        "size": [
+          0.5094999866560102,
+          0.8545400127768517,
+          1.686499945819378
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.14749999716877937,
+          -0.4350700043141842,
+          0.010999999940395355
+        ],
+        "max": [
+          0.3619999894872308,
+          0.41947000846266747,
+          1.6974999457597733
+        ],
+        "size": [
+          0.5094999866560102,
+          0.8545400127768517,
+          1.686499945819378
+        ]
+      },
+      "triangles": 15516,
+      "bytes": 101664,
+      "sha256": "2677d9d7bab2280f06c512489b365d42baa2a051423fdf3d181b0ec892b60235",
+      "exportedNodes": 156,
+      "exportedMeshes": 10,
+      "embeddedImages": 0
+    },
+    {
+      "id": "robot-graphite-amber-aiming",
+      "category": "robot-reference",
+      "file": "robot-graphite-amber-aiming.glb",
+      "pose": "aiming",
+      "runtimeMaterials": [],
+      "meshCount": 144,
+      "bounds": {
+        "min": [
+          -0.2900000065565109,
+          -0.34387001022696495,
+          0.010999999940395355
+        ],
+        "max": [
+          0.9519999930635095,
+          0.386685816287092,
+          1.0686449442582082
+        ],
+        "size": [
+          1.2419999996200204,
+          0.7305558265140569,
+          1.0576449443178129
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.2900000065565109,
+          -0.34387001022696495,
+          0.010999999940395355
+        ],
+        "max": [
+          0.9519999930635095,
+          0.3866858184337616,
+          1.0686449445784092
+        ],
+        "size": [
+          1.2419999996200204,
+          0.7305558286607265,
+          1.0576449446380138
+        ]
+      },
+      "triangles": 15516,
+      "bytes": 102656,
+      "sha256": "a2b336a9c5997b24131c9a25422b9c860bcd566f3f2dfe9df44766f77aa0b1ec",
+      "exportedNodes": 156,
+      "exportedMeshes": 10,
+      "embeddedImages": 0
+    },
+    {
+      "id": "robot-prototype-sphere",
+      "category": "robot-prototype",
+      "file": "robot-prototype-sphere.glb",
+      "shape": "sphere",
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -1,
+          -1,
+          -1
+        ],
+        "max": [
+          1,
+          1,
+          1
+        ],
+        "size": [
+          2,
+          2,
+          2
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1,
+          -1,
+          -1
+        ],
+        "max": [
+          1,
+          1,
+          1
+        ],
+        "size": [
+          2,
+          2,
+          2
+        ]
+      },
+      "triangles": 168,
+      "bytes": 6320,
+      "sha256": "78ffa87ef7679e462990332ffaf2e95b5244fd9fe69b96b94ad9f9f92df21230",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "robot-prototype-box",
+      "category": "robot-prototype",
+      "file": "robot-prototype-box.glb",
+      "shape": "box",
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "size": [
+          1,
+          1,
+          1
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "size": [
+          1,
+          1,
+          1
+        ]
+      },
+      "triangles": 300,
+      "bytes": 30176,
+      "sha256": "7da058cbc6eb57356b1eea99fadfc424abe3685d6ffac33c72c81e42a864fe47",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "robot-prototype-cylinder",
+      "category": "robot-prototype",
+      "file": "robot-prototype-cylinder.glb",
+      "shape": "cylinder",
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.9510565400123596,
+          -0.5,
+          -1
+        ],
+        "max": [
+          0.9510565400123596,
+          0.5,
+          1
+        ],
+        "size": [
+          1.9021130800247192,
+          1,
+          2
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.9510565400123596,
+          -0.5,
+          -1
+        ],
+        "max": [
+          0.9510565400123596,
+          0.5,
+          1
+        ],
+        "size": [
+          1.9021130800247192,
+          1,
+          2
+        ]
+      },
+      "triangles": 40,
+      "bytes": 3892,
+      "sha256": "cfc138ecc89d17d8b53c233c60e5a08376fa731bb6fbc267227cd95b020547f0",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "robot-prototype-armour",
+      "category": "robot-prototype",
+      "file": "robot-prototype-armour.glb",
+      "shape": "armour",
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "size": [
+          1,
+          1,
+          1
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "size": [
+          1,
+          1,
+          1
+        ]
+      },
+      "triangles": 92,
+      "bytes": 10284,
+      "sha256": "e82ab5747dbe71f59b8ae930459cdbea6bd135847bfeffa4f212d6b497631b9a",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "robot-prototype-helmet",
+      "category": "robot-prototype",
+      "file": "robot-prototype-helmet.glb",
+      "shape": "helmet",
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "size": [
+          1,
+          1,
+          1
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.5,
+          -0.5,
+          -0.5
+        ],
+        "max": [
+          0.5,
+          0.5,
+          0.5
+        ],
+        "size": [
+          1,
+          1,
+          1
+        ]
+      },
+      "triangles": 336,
+      "bytes": 10064,
+      "sha256": "ab4d40e3e8d58de8bcb7a1b568c567b741c254b96e0b017c8ce3800777c703dc",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "cue-heritage",
+      "category": "cue",
+      "file": "cue-heritage.glb",
+      "style": "heritage",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 13,
+      "bounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "triangles": 5364,
+      "bytes": 546804,
+      "sha256": "720c612ea1702073d44eb8d29c9a531aabe156e26821c840d2f7b2e2d33d91b4",
+      "exportedNodes": 15,
+      "exportedMeshes": 13,
+      "embeddedImages": 11
+    },
+    {
+      "id": "cue-obsidian",
+      "category": "cue",
+      "file": "cue-obsidian.glb",
+      "style": "obsidian",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 13,
+      "bounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "triangles": 5624,
+      "bytes": 561372,
+      "sha256": "85c21758eeab0289e00be0d1778d05f1387711e789bc1de513c25c209802b752",
+      "exportedNodes": 15,
+      "exportedMeshes": 13,
+      "embeddedImages": 11
+    },
+    {
+      "id": "cue-jade",
+      "category": "cue",
+      "file": "cue-jade.glb",
+      "style": "jade",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 13,
+      "bounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "triangles": 5624,
+      "bytes": 586980,
+      "sha256": "8cc935e313409bc43a071c0a04bce7f07fa534a48de0ad4b808417215932fb21",
+      "exportedNodes": 15,
+      "exportedMeshes": 13,
+      "embeddedImages": 11
+    },
+    {
+      "id": "cue-royal",
+      "category": "cue",
+      "file": "cue-royal.glb",
+      "style": "royal",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 13,
+      "bounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "triangles": 5364,
+      "bytes": 590116,
+      "sha256": "6a81a477bd5da8790230c32f294f508eeacf4b5b67c4964b87dbae61879ae401",
+      "exportedNodes": 15,
+      "exportedMeshes": 13,
+      "embeddedImages": 11
+    },
+    {
+      "id": "cue-glacier",
+      "category": "cue",
+      "file": "cue-glacier.glb",
+      "style": "glacier",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 13,
+      "bounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "triangles": 5240,
+      "bytes": 534900,
+      "sha256": "94e2e4e40f1248619b67efe826431d0b71f6c866d3b183de0f9e558228e04de8",
+      "exportedNodes": 15,
+      "exportedMeshes": 13,
+      "embeddedImages": 11
+    },
+    {
+      "id": "cue-ivory",
+      "category": "cue",
+      "file": "cue-ivory.glb",
+      "style": "ivory",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 13,
+      "bounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "triangles": 5644,
+      "bytes": 588892,
+      "sha256": "d206fff8dec90fdf2c43c2edd476f28650241b250c383cf7f3f57c60bdd6d404",
+      "exportedNodes": 15,
+      "exportedMeshes": 13,
+      "embeddedImages": 11
+    },
+    {
+      "id": "cue-porcelain-wave",
+      "category": "cue",
+      "file": "cue-porcelain-wave.glb",
+      "style": "porcelain-wave",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 13,
+      "bounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "triangles": 5648,
+      "bytes": 576240,
+      "sha256": "d3935e4c8214d0408ed516b449ed91ffd52b750bf167f92cea808a64e9c12f42",
+      "exportedNodes": 15,
+      "exportedMeshes": 13,
+      "embeddedImages": 11
+    },
+    {
+      "id": "cue-amber-tiger",
+      "category": "cue",
+      "file": "cue-amber-tiger.glb",
+      "style": "amber-tiger",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 13,
+      "bounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "triangles": 5380,
+      "bytes": 551196,
+      "sha256": "605cfd976b2003b49a68e09edf5d3424d2cfb076df24d84b2084778299667e25",
+      "exportedNodes": 15,
+      "exportedMeshes": 13,
+      "embeddedImages": 11
+    },
+    {
+      "id": "cue-aurora-prism",
+      "category": "cue",
+      "file": "cue-aurora-prism.glb",
+      "style": "aurora-prism",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 9,
+      "bounds": {
+        "min": [
+          -0.0241633839905262,
+          -0.703420877456665,
+          -0.021090999245643616
+        ],
+        "max": [
+          0.0241633839905262,
+          0.706892667557165,
+          0.02643907442688942
+        ],
+        "size": [
+          0.0483267679810524,
+          1.41031354501383,
+          0.047530073672533035
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.0241633839905262,
+          -0.70412500042665,
+          -0.021090999245643616
+        ],
+        "max": [
+          0.0241633839905262,
+          0.706892667557165,
+          0.02643907442688942
+        ],
+        "size": [
+          0.0483267679810524,
+          1.4110176679838151,
+          0.047530073672533035
+        ]
+      },
+      "triangles": 1880,
+      "bytes": 167628,
+      "sha256": "fce595ab200d8372ae0873bad57913fb278a42719f2a54e2ff45c3602e7ac9d9",
+      "exportedNodes": 11,
+      "exportedMeshes": 9,
+      "embeddedImages": 3
+    },
+    {
+      "id": "cue-holo-laser",
+      "category": "cue",
+      "file": "cue-holo-laser.glb",
+      "style": "holo-laser",
+      "length": 1.40825,
+      "runtimeMaterials": [],
+      "meshCount": 8,
+      "bounds": {
+        "min": [
+          -0.02643907442688942,
+          -0.703420877456665,
+          -0.02643907442688942
+        ],
+        "max": [
+          0.02643907442688942,
+          0.706892667557165,
+          0.02643907442688942
+        ],
+        "size": [
+          0.05287814885377884,
+          1.41031354501383,
+          0.05287814885377884
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.02643907442688942,
+          -0.70412500042665,
+          -0.02643907442688942
+        ],
+        "max": [
+          0.02643907442688942,
+          0.706892667557165,
+          0.02643907442688942
+        ],
+        "size": [
+          0.05287814885377884,
+          1.4110176679838151,
+          0.05287814885377884
+        ]
+      },
+      "triangles": 1952,
+      "bytes": 173164,
+      "sha256": "3807208f366b22776452f36e77a6b571415f3374a000476df02fc929b854d2a2",
+      "exportedNodes": 10,
+      "exportedMeshes": 8,
+      "embeddedImages": 3
+    },
+    {
+      "id": "cue-custom",
+      "category": "cue",
+      "file": "cue-custom.glb",
+      "style": "custom",
+      "length": 1.40825,
+      "includeHidden": true,
+      "runtimeMaterials": [],
+      "meshCount": 31,
+      "bounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.015937460586428642,
+          -0.70412500042665,
+          -0.015937460586428642
+        ],
+        "max": [
+          0.015937460586428642,
+          0.706892667557165,
+          0.015937460586428642
+        ],
+        "size": [
+          0.031874921172857285,
+          1.4110176679838151,
+          0.031874921172857285
+        ]
+      },
+      "triangles": 6792,
+      "bytes": 715904,
+      "sha256": "eb1d7672230a721e2ab3f1eac922ce05a8a12df08602850e12e2f5b257d27fe5",
+      "exportedNodes": 33,
+      "exportedMeshes": 31,
+      "embeddedImages": 11
+    },
+    {
+      "id": "environment-spectra",
+      "category": "environment",
+      "file": "environment-spectra.glb",
+      "style": "spectra",
+      "architecture": "spectral-ribs",
+      "runtimeMaterials": [
+        {
+          "node": "/environment-layer/spectra-environment-instance/spectra-environment/spectra-environment-dome",
+          "kind": "ShaderMaterial",
+          "sourceHash": "884210a46d79c113026540c65843b0246670bce4f2bf75e9a487576f5bf79e02"
+        },
+        {
+          "node": "/environment-layer/spectra-environment-instance/spectra-environment/spectra-cue-caustic",
+          "kind": "ShaderMaterial",
+          "sourceHash": "abc49f7c2e85a8c9460bfb716bd19b2ca89a9cb47548296343417ecaf382d3ed"
+        }
+      ],
+      "meshCount": 9,
+      "bounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "triangles": 7966,
+      "bytes": 626492,
+      "sha256": "588afb970d1dc8cfcb6d60e1c2a777a64e6431f2c4c3fbc61381e08698209a84",
+      "exportedNodes": 18,
+      "exportedMeshes": 9,
+      "embeddedImages": 3
+    },
+    {
+      "id": "environment-galaxy",
+      "category": "environment",
+      "file": "environment-galaxy.glb",
+      "style": "galaxy",
+      "architecture": "observation-deck",
+      "runtimeMaterials": [
+        {
+          "node": "/environment-layer/galaxy-environment/galaxy-dome",
+          "kind": "ShaderMaterial",
+          "sourceHash": "c29a339314e856304dad97ff39187339b1a3b756ddc9badaa71141afcd4976e6"
+        }
+      ],
+      "meshCount": 7,
+      "bounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "triangles": 16184,
+      "bytes": 1312104,
+      "sha256": "48ca33f1f8731d7640d8a67af0923c89414c5dc256606383d31f49c2592218e4",
+      "exportedNodes": 15,
+      "exportedMeshes": 7,
+      "embeddedImages": 3
+    },
+    {
+      "id": "environment-nebula",
+      "category": "environment",
+      "file": "environment-nebula.glb",
+      "style": "nebula",
+      "architecture": "prism-gallery",
+      "runtimeMaterials": [
+        {
+          "node": "/environment-layer/nebula-environment/nebula-dome",
+          "kind": "ShaderMaterial",
+          "sourceHash": "c29a339314e856304dad97ff39187339b1a3b756ddc9badaa71141afcd4976e6"
+        }
+      ],
+      "meshCount": 7,
+      "bounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "triangles": 19952,
+      "bytes": 1673820,
+      "sha256": "314ead656418887489fcb903af3ea42248619fb696b1376a271c234e6472b47c",
+      "exportedNodes": 15,
+      "exportedMeshes": 7,
+      "embeddedImages": 3
+    },
+    {
+      "id": "environment-club",
+      "category": "environment",
+      "file": "environment-club.glb",
+      "style": "club",
+      "architecture": "champion-gallery",
+      "runtimeMaterials": [
+        {
+          "node": "/environment-layer/club-environment/club-dome",
+          "kind": "ShaderMaterial",
+          "sourceHash": "c29a339314e856304dad97ff39187339b1a3b756ddc9badaa71141afcd4976e6"
+        }
+      ],
+      "meshCount": 7,
+      "bounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "triangles": 23072,
+      "bytes": 2012992,
+      "sha256": "41762c49c266173f07294b049a1a8c7dc12d929fe1ecbf42061a985605d09f68",
+      "exportedNodes": 15,
+      "exportedMeshes": 7,
+      "embeddedImages": 4
+    },
+    {
+      "id": "environment-aurora-hall",
+      "category": "environment",
+      "file": "environment-aurora-hall.glb",
+      "style": "aurora-hall",
+      "architecture": "ice-court",
+      "runtimeMaterials": [
+        {
+          "node": "/environment-layer/aurora-hall-environment/aurora-hall-dome",
+          "kind": "ShaderMaterial",
+          "sourceHash": "c29a339314e856304dad97ff39187339b1a3b756ddc9badaa71141afcd4976e6"
+        }
+      ],
+      "meshCount": 5,
+      "bounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          25.21434820647419,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          50.10434759612263,
+          49.779998779296875
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          25.21434820647419,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          50.10434759612263,
+          49.779998779296875
+        ]
+      },
+      "triangles": 14908,
+      "bytes": 1178908,
+      "sha256": "a61a08680fddaaa64cbffc5c87ab52ca1813a9bb228344ad8858b0c645da21a8",
+      "exportedNodes": 13,
+      "exportedMeshes": 5,
+      "embeddedImages": 1
+    },
+    {
+      "id": "environment-sky-temple",
+      "category": "environment",
+      "file": "environment-sky-temple.glb",
+      "style": "sky-temple",
+      "architecture": "sky-temple",
+      "runtimeMaterials": [
+        {
+          "node": "/environment-layer/sky-temple-environment/sky-temple-dome",
+          "kind": "ShaderMaterial",
+          "sourceHash": "c29a339314e856304dad97ff39187339b1a3b756ddc9badaa71141afcd4976e6"
+        }
+      ],
+      "meshCount": 4,
+      "bounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "triangles": 45630,
+      "bytes": 4136380,
+      "sha256": "8cd1d7a0dd7242b9d20085c2b586deb29e012212293c93c5fca326bdb5742f93",
+      "exportedNodes": 12,
+      "exportedMeshes": 4,
+      "embeddedImages": 3
+    },
+    {
+      "id": "environment-abyss-palace",
+      "category": "environment",
+      "file": "environment-abyss-palace.glb",
+      "style": "abyss-palace",
+      "architecture": "glass-palace",
+      "runtimeMaterials": [
+        {
+          "node": "/environment-layer/abyss-palace-environment/abyss-palace-dome",
+          "kind": "ShaderMaterial",
+          "sourceHash": "c29a339314e856304dad97ff39187339b1a3b756ddc9badaa71141afcd4976e6"
+        }
+      ],
+      "meshCount": 7,
+      "bounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "triangles": 38352,
+      "bytes": 3440960,
+      "sha256": "4b4e22cecccaa5636323b91c247014016c77ba1cfe72bdd4c9f2aa46fd546e4b",
+      "exportedNodes": 15,
+      "exportedMeshes": 7,
+      "embeddedImages": 3
+    },
+    {
+      "id": "environment-lunar-observatory",
+      "category": "environment",
+      "file": "environment-lunar-observatory.glb",
+      "style": "lunar-observatory",
+      "architecture": "lunar-deck",
+      "runtimeMaterials": [
+        {
+          "node": "/environment-layer/lunar-observatory-environment/lunar-observatory-dome",
+          "kind": "ShaderMaterial",
+          "sourceHash": "c29a339314e856304dad97ff39187339b1a3b756ddc9badaa71141afcd4976e6"
+        },
+        {
+          "node": "/environment-layer/lunar-observatory-environment/lunar-earth-with-continents-and-clouds",
+          "kind": "ShaderMaterial",
+          "sourceHash": "9a1c11130aefeb97a93630b4e8f7821a324765508e2b949c70fad45bf9882d05"
+        }
+      ],
+      "meshCount": 8,
+      "bounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -24.889999389648438,
+          -24.889999389648438,
+          -24.889999389648438
+        ],
+        "max": [
+          24.889999389648438,
+          24.889999389648438,
+          24.889999389648438
+        ],
+        "size": [
+          49.779998779296875,
+          49.779998779296875,
+          49.779998779296875
+        ]
+      },
+      "triangles": 30024,
+      "bytes": 2423492,
+      "sha256": "a141b6fefadbac9714ae3f83c4c5fd2239a8007442f39175b6de09fcdaf54023",
+      "exportedNodes": 16,
+      "exportedMeshes": 8,
+      "embeddedImages": 2
+    },
+    {
+      "id": "ball-dotted-ffffff",
+      "category": "ball",
+      "file": "ball-dotted-ffffff.glb",
+      "colour": "ffffff",
+      "appearance": "texturedDots",
+      "radius": 0.03275,
+      "runtimeMaterials": [
+        {
+          "node": "/ball",
+          "kind": "onBeforeCompile",
+          "cacheKey": "shared-ball-marker-mask-v2"
+        }
+      ],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 117032,
+      "sha256": "7fa94f4fd3db62bb88b55aa0aec056849cc63d4533dddb35a8ad8dbf2ca318eb",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "ball-pool-1",
+      "category": "ball",
+      "file": "ball-pool-1.glb",
+      "colour": "e8bb27",
+      "label": 1,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 131508,
+      "sha256": "bd3d7ab693bc2874827a5457da4b081cfc3802731fe4934e0cd841f5934e6cfc",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-2",
+      "category": "ball",
+      "file": "ball-pool-2.glb",
+      "colour": "1767a3",
+      "label": 2,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 134336,
+      "sha256": "b19e189e776a39225392bb13e1a016a279af7e1b053f3413c43c30d6c1b58589",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-3",
+      "category": "ball",
+      "file": "ball-pool-3.glb",
+      "colour": "c82f3a",
+      "label": 3,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 135340,
+      "sha256": "39d034c69cf036dbde0e546a150e2eea677007103276573ac9fd34c8391b0b99",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-4",
+      "category": "ball",
+      "file": "ball-pool-4.glb",
+      "colour": "70438f",
+      "label": 4,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 132792,
+      "sha256": "0c59d89cc264a547de536124cfb94d4156717afec54be0ce700a859fd2dad2d5",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-5",
+      "category": "ball",
+      "file": "ball-pool-5.glb",
+      "colour": "df6a25",
+      "label": 5,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 134476,
+      "sha256": "ce9576ae5f9fae92d1ab55ab0d0155dce9e65ee7aae1b6a666e30c4bade1a22f",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-6",
+      "category": "ball",
+      "file": "ball-pool-6.glb",
+      "colour": "238052",
+      "label": 6,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 135772,
+      "sha256": "be70e4e7c8b848f6f3221faf569126380b5f776a8f402f052d4c048e940dcd10",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-7",
+      "category": "ball",
+      "file": "ball-pool-7.glb",
+      "colour": "743244",
+      "label": 7,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 132700,
+      "sha256": "e6386950f8a698b2284d28b6e9296484d164eefb0d55c26f0fe47bd3d4617238",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-8",
+      "category": "ball",
+      "file": "ball-pool-8.glb",
+      "colour": "111214",
+      "label": 8,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 134892,
+      "sha256": "e10401df100e89f3f9d4ea9a0b04c11369add6a7d49cfc1993d4e04be38f8f74",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-9",
+      "category": "ball",
+      "file": "ball-pool-9.glb",
+      "colour": "e8bb27",
+      "label": 9,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 135800,
+      "sha256": "96a472bcecc20e066b0ece1fcf4d052dd28aa086e29b1e21b3bf4e6812a12a4d",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-10",
+      "category": "ball",
+      "file": "ball-pool-10.glb",
+      "colour": "1767a3",
+      "label": 10,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 135420,
+      "sha256": "baed762a7a4d2a3fee875ec9ddd85859b042b7dc3a7e84ebccf6e8d236b6b434",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-11",
+      "category": "ball",
+      "file": "ball-pool-11.glb",
+      "colour": "c82f3a",
+      "label": 11,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 132388,
+      "sha256": "c84ebdc707a544c33ee57d402ca31d9d077ba2b91867e776d30983b4f3822a80",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-12",
+      "category": "ball",
+      "file": "ball-pool-12.glb",
+      "colour": "70438f",
+      "label": 12,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 135024,
+      "sha256": "e417985280613f9e53964dd8c6ee2c91ef1beb2a8a986ca6cb7c96db1a0feedb",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-13",
+      "category": "ball",
+      "file": "ball-pool-13.glb",
+      "colour": "df6a25",
+      "label": 13,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 135688,
+      "sha256": "fdab84bf4210cf16d7787e0f8a3ae468168253fe3455066c622d4db50b0d7cf0",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-14",
+      "category": "ball",
+      "file": "ball-pool-14.glb",
+      "colour": "238052",
+      "label": 14,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 133148,
+      "sha256": "a7de064df9294185aa30d5080be29a59dfa33c60d2091da637b66ac5a6cd67e2",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-pool-15",
+      "category": "ball",
+      "file": "ball-pool-15.glb",
+      "colour": "743244",
+      "label": 15,
+      "appearance": "projected",
+      "radius": 0.03275,
+      "runtimeMaterials": [],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 135032,
+      "sha256": "f616a732865869546cad99ad140f6b594758819d13ef37abb15b1d329bed40f2",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 1
+    },
+    {
+      "id": "ball-dotted-ffd700",
+      "category": "ball",
+      "file": "ball-dotted-ffd700.glb",
+      "colour": "ffd700",
+      "appearance": "texturedDots",
+      "radius": 0.03275,
+      "runtimeMaterials": [
+        {
+          "node": "/ball",
+          "kind": "onBeforeCompile",
+          "cacheKey": "shared-ball-marker-mask-v2"
+        }
+      ],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 117076,
+      "sha256": "2d9138ae980144c36aaa005e6e792a99e7445a0e18eee734bf5ba19c7ef21439",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "ball-dotted-ff0000",
+      "category": "ball",
+      "file": "ball-dotted-ff0000.glb",
+      "colour": "ff0000",
+      "appearance": "texturedDots",
+      "radius": 0.03275,
+      "runtimeMaterials": [
+        {
+          "node": "/ball",
+          "kind": "onBeforeCompile",
+          "cacheKey": "shared-ball-marker-mask-v2"
+        }
+      ],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 117060,
+      "sha256": "c27dba3afabf48312e36652e6bb60d617f1675b87836f7d7dd88246cc1e8ab1d",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "ball-dotted-008000",
+      "category": "ball",
+      "file": "ball-dotted-008000.glb",
+      "colour": "008000",
+      "appearance": "texturedDots",
+      "radius": 0.03275,
+      "runtimeMaterials": [
+        {
+          "node": "/ball",
+          "kind": "onBeforeCompile",
+          "cacheKey": "shared-ball-marker-mask-v2"
+        }
+      ],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 117076,
+      "sha256": "cbc8852df0d669c93ec3e56bf90f19732128d24b2781df0b6ac6c4bf31972d7e",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "ball-dotted-6a2500",
+      "category": "ball",
+      "file": "ball-dotted-6a2500.glb",
+      "colour": "6a2500",
+      "appearance": "texturedDots",
+      "radius": 0.03275,
+      "runtimeMaterials": [
+        {
+          "node": "/ball",
+          "kind": "onBeforeCompile",
+          "cacheKey": "shared-ball-marker-mask-v2"
+        }
+      ],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 117096,
+      "sha256": "affd678c96e32f9d84f9c144f90f4fd56adcba023cc3ecdfd0f940192aac08f5",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "ball-dotted-005cb1",
+      "category": "ball",
+      "file": "ball-dotted-005cb1.glb",
+      "colour": "005cb1",
+      "appearance": "texturedDots",
+      "radius": 0.03275,
+      "runtimeMaterials": [
+        {
+          "node": "/ball",
+          "kind": "onBeforeCompile",
+          "cacheKey": "shared-ball-marker-mask-v2"
+        }
+      ],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 117092,
+      "sha256": "04a47f4e5bbf787f88fbf20f9f1081420803fc7472bc48448e1c2237353d1be9",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "ball-dotted-ff80b3",
+      "category": "ball",
+      "file": "ball-dotted-ff80b3.glb",
+      "colour": "ff80b3",
+      "appearance": "texturedDots",
+      "radius": 0.03275,
+      "runtimeMaterials": [
+        {
+          "node": "/ball",
+          "kind": "onBeforeCompile",
+          "cacheKey": "shared-ball-marker-mask-v2"
+        }
+      ],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 117092,
+      "sha256": "cfae3527f66613840e993ee2d4f5d16af117b27d5d124145be8ae51c7da241c9",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "ball-dotted-010000",
+      "category": "ball",
+      "file": "ball-dotted-010000.glb",
+      "colour": "010000",
+      "appearance": "texturedDots",
+      "radius": 0.03275,
+      "runtimeMaterials": [
+        {
+          "node": "/ball",
+          "kind": "onBeforeCompile",
+          "cacheKey": "shared-ball-marker-mask-v2"
+        }
+      ],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 117080,
+      "sha256": "50b87529fc4bc422c909d0705973c7e850a110c2c8991172a3cf692a9fc01662",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "ball-dotted-ee0000",
+      "category": "ball",
+      "file": "ball-dotted-ee0000.glb",
+      "colour": "ee0000",
+      "appearance": "texturedDots",
+      "radius": 0.03275,
+      "runtimeMaterials": [
+        {
+          "node": "/ball",
+          "kind": "onBeforeCompile",
+          "cacheKey": "shared-ball-marker-mask-v2"
+        }
+      ],
+      "meshCount": 1,
+      "bounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.032749999314546585,
+          -0.032749999314546585,
+          -0.032749999314546585
+        ],
+        "max": [
+          0.032749999314546585,
+          0.032749999314546585,
+          0.032749999314546585
+        ],
+        "size": [
+          0.06549999862909317,
+          0.06549999862909317,
+          0.06549999862909317
+        ]
+      },
+      "triangles": 4992,
+      "bytes": 117072,
+      "sha256": "add86cfcb7ada88a85443e461a8b27c27b532abfdbb66374a5dfe087596588f4",
+      "exportedNodes": 3,
+      "exportedMeshes": 1,
+      "embeddedImages": 0
+    },
+    {
+      "id": "table-eightball-10-american-ivory",
+      "category": "table",
+      "file": "table-eightball-10-american-ivory.glb",
+      "rule": "eightball",
+      "size": 10,
+      "style": "american-ivory",
+      "sourceAsset": "models/p8.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 42,
+      "bounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.01729904684087699
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6245177971394963
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.01729904684087699
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6245177971394963
+        ]
+      },
+      "triangles": 2150,
+      "bytes": 233380,
+      "sha256": "e802307d847f6cfc4a36b589e883916121ba6ba33b796a5ffe1f42f6b1009fac",
+      "exportedNodes": 48,
+      "exportedMeshes": 42,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-eightball-10-american-walnut",
+      "category": "table",
+      "file": "table-eightball-10-american-walnut.glb",
+      "rule": "eightball",
+      "size": 10,
+      "style": "american-walnut",
+      "sourceAsset": "models/p8.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.01729904684087699
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6245177971394963
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.01729904684087699
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6245177971394963
+        ]
+      },
+      "triangles": 1654,
+      "bytes": 201680,
+      "sha256": "43ccaf701191acdb36e6da6b10ee13994299348d1c158227c3204ea062bd8a7c",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-eightball-10-american-graphite",
+      "category": "table",
+      "file": "table-eightball-10-american-graphite.glb",
+      "rule": "eightball",
+      "size": 10,
+      "style": "american-graphite",
+      "sourceAsset": "models/p8.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.01729904684087699
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6245177971394963
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.01729904684087699
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6245177971394963
+        ]
+      },
+      "triangles": 1654,
+      "bytes": 162076,
+      "sha256": "72b87a60ec8642257f1303d53f1dc95c3de666e8ec944ac14f7d7c4ce391eb04",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 4
+    },
+    {
+      "id": "table-eightball-10-american-burgundy",
+      "category": "table",
+      "file": "table-eightball-10-american-burgundy.glb",
+      "rule": "eightball",
+      "size": 10,
+      "style": "american-burgundy",
+      "sourceAsset": "models/p8.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.01729904684087699
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6245177971394963
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.01729904684087699
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6245177971394963
+        ]
+      },
+      "triangles": 1654,
+      "bytes": 201688,
+      "sha256": "b5846bf45e1cffa8c664812f3d593156d7e5b9582312fb68bde55d3b892456a1",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-eightball-10-chinese-ebony",
+      "category": "table",
+      "file": "table-eightball-10-chinese-ebony.glb",
+      "rule": "eightball",
+      "size": 10,
+      "style": "chinese-ebony",
+      "sourceAsset": "models/chinese-pool.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 31,
+      "bounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.014669455251582003
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6218882055502013
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.014669455251582003
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6218882055502013
+        ]
+      },
+      "triangles": 4310,
+      "bytes": 237792,
+      "sha256": "fe6ca1a20ae969ca39ac4e8fe6905a464c5a54debefa6e8573aff6f2b4cc5053",
+      "exportedNodes": 36,
+      "exportedMeshes": 31,
+      "embeddedImages": 4
+    },
+    {
+      "id": "table-eightball-10-chinese-ivory",
+      "category": "table",
+      "file": "table-eightball-10-chinese-ivory.glb",
+      "rule": "eightball",
+      "size": 10,
+      "style": "chinese-ivory",
+      "sourceAsset": "models/chinese-pool.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 31,
+      "bounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.014669455251582003
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6218882055502013
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.014669455251582003
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6218882055502013
+        ]
+      },
+      "triangles": 4310,
+      "bytes": 237696,
+      "sha256": "9926c1e9a501d18cbaba2bce553e7adb44e80e9a24d40957a7a1b3cb1b452630",
+      "exportedNodes": 36,
+      "exportedMeshes": 31,
+      "embeddedImages": 4
+    },
+    {
+      "id": "table-eightball-10-chinese-jade",
+      "category": "table",
+      "file": "table-eightball-10-chinese-jade.glb",
+      "rule": "eightball",
+      "size": 10,
+      "style": "chinese-jade",
+      "sourceAsset": "models/chinese-pool.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 31,
+      "bounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.014669455251582003
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6218882055502013
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.014669455251582003
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6218882055502013
+        ]
+      },
+      "triangles": 4310,
+      "bytes": 277408,
+      "sha256": "d2ab805ff2bf8254e4b876242f8ceab49bebac9fbbd18c6a0226e189ea8851d3",
+      "exportedNodes": 36,
+      "exportedMeshes": 31,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-eightball-10-chinese-violet",
+      "category": "table",
+      "file": "table-eightball-10-chinese-violet.glb",
+      "rule": "eightball",
+      "size": 10,
+      "style": "chinese-violet",
+      "sourceAsset": "models/chinese-pool.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 1.228725,
+        "halfY": 0.600075,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 31,
+      "bounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.014669455251582003
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6218882055502013
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.43602008579,
+          -0.80719317225,
+          -0.6072187502986193
+        ],
+        "max": [
+          1.4360198480379989,
+          0.8072007574711769,
+          0.014669455251582003
+        ],
+        "size": [
+          2.872039933827999,
+          1.614393929721177,
+          0.6218882055502013
+        ]
+      },
+      "triangles": 4310,
+      "bytes": 237788,
+      "sha256": "46921b160cf969e77f25b3cdfb88224387cb934c5d480622b62373fcfe1f5861",
+      "exportedNodes": 36,
+      "exportedMeshes": 31,
+      "embeddedImages": 4
+    },
+    {
+      "id": "table-eightball-5-american-ivory",
+      "category": "table",
+      "file": "table-eightball-5-american-ivory.glb",
+      "rule": "eightball",
+      "size": 5,
+      "style": "american-ivory",
+      "sourceAsset": "models/p8.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 42,
+      "bounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.01729904684087699
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6245177971394963
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.01729904684087699
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6245177971394963
+        ]
+      },
+      "triangles": 2150,
+      "bytes": 258380,
+      "sha256": "a453c747c59de4b8a008bf2d7c1038b10e48e1d207d75e360b7020be6a3b344c",
+      "exportedNodes": 48,
+      "exportedMeshes": 42,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-eightball-5-american-walnut",
+      "category": "table",
+      "file": "table-eightball-5-american-walnut.glb",
+      "rule": "eightball",
+      "size": 5,
+      "style": "american-walnut",
+      "sourceAsset": "models/p8.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.01729904684087699
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6245177971394963
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.01729904684087699
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6245177971394963
+        ]
+      },
+      "triangles": 1654,
+      "bytes": 453588,
+      "sha256": "f39caf5315e210fd40b21b3c681fe4be30ddf97bbf191cb85c19017c04ba0bda",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-eightball-5-american-graphite",
+      "category": "table",
+      "file": "table-eightball-5-american-graphite.glb",
+      "rule": "eightball",
+      "size": 5,
+      "style": "american-graphite",
+      "sourceAsset": "models/p8.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.01729904684087699
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6245177971394963
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.01729904684087699
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6245177971394963
+        ]
+      },
+      "triangles": 1654,
+      "bytes": 413984,
+      "sha256": "fddbc9038b55e659da574d1f0f939b964d2889293072f27596d013cc29c192f2",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-eightball-5-american-burgundy",
+      "category": "table",
+      "file": "table-eightball-5-american-burgundy.glb",
+      "rule": "eightball",
+      "size": 5,
+      "style": "american-burgundy",
+      "sourceAsset": "models/p8.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.01729904684087699
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6245177971394963
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.01729904684087699
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6245177971394963
+        ]
+      },
+      "triangles": 1654,
+      "bytes": 453596,
+      "sha256": "6b89a54e7422c8097a79a3c1a444fe9f8f29c05498c595fe80d0c755e9111276",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-eightball-5-chinese-ebony",
+      "category": "table",
+      "file": "table-eightball-5-chinese-ebony.glb",
+      "rule": "eightball",
+      "size": 5,
+      "style": "chinese-ebony",
+      "sourceAsset": "models/chinese-pool.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 31,
+      "bounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.014669455251582003
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6218882055502013
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.014669455251582003
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6218882055502013
+        ]
+      },
+      "triangles": 4310,
+      "bytes": 486968,
+      "sha256": "4cd76bbe6d58d8ac13df98077bbd36707e5a870e0c29b58a857c9d87ad872063",
+      "exportedNodes": 36,
+      "exportedMeshes": 31,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-eightball-5-chinese-ivory",
+      "category": "table",
+      "file": "table-eightball-5-chinese-ivory.glb",
+      "rule": "eightball",
+      "size": 5,
+      "style": "chinese-ivory",
+      "sourceAsset": "models/chinese-pool.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 31,
+      "bounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.014669455251582003
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6218882055502013
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.014669455251582003
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6218882055502013
+        ]
+      },
+      "triangles": 4310,
+      "bytes": 486872,
+      "sha256": "0823ba26ec2915ff5cdd32bc27e81a6fb5cd6415ea11284f941c7d0aef51021a",
+      "exportedNodes": 36,
+      "exportedMeshes": 31,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-eightball-5-chinese-jade",
+      "category": "table",
+      "file": "table-eightball-5-chinese-jade.glb",
+      "rule": "eightball",
+      "size": 5,
+      "style": "chinese-jade",
+      "sourceAsset": "models/chinese-pool.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 31,
+      "bounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.014669455251582003
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6218882055502013
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.014669455251582003
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6218882055502013
+        ]
+      },
+      "triangles": 4310,
+      "bytes": 526584,
+      "sha256": "c1d8f63da3153b7d4494500ecbe23cefbdff6da57b2c85ac1d8909b2a951742c",
+      "exportedNodes": 36,
+      "exportedMeshes": 31,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-eightball-5-chinese-violet",
+      "category": "table",
+      "file": "table-eightball-5-chinese-violet.glb",
+      "rule": "eightball",
+      "size": 5,
+      "style": "chinese-violet",
+      "sourceAsset": "models/chinese-pool.min.gltf",
+      "ballRadius": 0.028575,
+      "compatibleRules": [
+        "eightball",
+        "nineball",
+        "fourball"
+      ],
+      "physicalTable": {
+        "halfX": 0.6143625,
+        "halfY": 0.3000375,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 31,
+      "bounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.014669455251582003
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6218882055502013
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.821657569112571,
+          -0.5071556805282125,
+          -0.6072187502986193
+        ],
+        "max": [
+          0.821657374159912,
+          0.5071632443497184,
+          0.014669455251582003
+        ],
+        "size": [
+          1.643314943272483,
+          1.014318924877931,
+          0.6218882055502013
+        ]
+      },
+      "triangles": 4310,
+      "bytes": 486964,
+      "sha256": "84ab29dabdfa5c3cee59b02642d87cdb80655226a8b6c695ced51a34622267e7",
+      "exportedNodes": 36,
+      "exportedMeshes": 31,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-10-american-ivory",
+      "category": "table",
+      "file": "table-snooker-10-american-ivory.glb",
+      "rule": "snooker",
+      "size": 10,
+      "style": "american-ivory",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 42,
+      "bounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 2084,
+      "bytes": 242432,
+      "sha256": "c5bd534ccc11831f0b06910860d1f59673c60c0eba2a06f025ed26c0113649eb",
+      "exportedNodes": 48,
+      "exportedMeshes": 42,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-10-american-walnut",
+      "category": "table",
+      "file": "table-snooker-10-american-walnut.glb",
+      "rule": "snooker",
+      "size": 10,
+      "style": "american-walnut",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 1588,
+      "bytes": 212116,
+      "sha256": "59f190c739a3a0b31c5970204b9b5596aa18f2f94b991b4dbc7947fe87e37432",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-snooker-10-american-graphite",
+      "category": "table",
+      "file": "table-snooker-10-american-graphite.glb",
+      "rule": "snooker",
+      "size": 10,
+      "style": "american-graphite",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 1588,
+      "bytes": 172512,
+      "sha256": "10e8d04cdcd31341a2f6ccfb3f031107c6fcb6a8b7078ab626706bce41838a3e",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-10-american-burgundy",
+      "category": "table",
+      "file": "table-snooker-10-american-burgundy.glb",
+      "rule": "snooker",
+      "size": 10,
+      "style": "american-burgundy",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 1588,
+      "bytes": 212124,
+      "sha256": "73e8797a2cb1fc89151a01b3100e226f7ade33402f87e3a9e2d2f4c9c6dba43a",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-snooker-10-chinese-ebony",
+      "category": "table",
+      "file": "table-snooker-10-chinese-ebony.glb",
+      "rule": "snooker",
+      "size": 10,
+      "style": "chinese-ebony",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 32,
+      "bounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 4324,
+      "bytes": 252452,
+      "sha256": "b8d714b44d4880ab2fafadd9d4e752986c1358bb010d62d0a9da0afde32d76e9",
+      "exportedNodes": 37,
+      "exportedMeshes": 32,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-10-chinese-ivory",
+      "category": "table",
+      "file": "table-snooker-10-chinese-ivory.glb",
+      "rule": "snooker",
+      "size": 10,
+      "style": "chinese-ivory",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 32,
+      "bounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 4324,
+      "bytes": 252352,
+      "sha256": "00de40c2a95d306f66171167402c7aced46cb83adbe75867393e73135f699b46",
+      "exportedNodes": 37,
+      "exportedMeshes": 32,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-10-chinese-jade",
+      "category": "table",
+      "file": "table-snooker-10-chinese-jade.glb",
+      "rule": "snooker",
+      "size": 10,
+      "style": "chinese-jade",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 32,
+      "bounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 4324,
+      "bytes": 292068,
+      "sha256": "c037345e2ecba178c417231e0639b5d9314d8094adae425e32c2ef5840c00486",
+      "exportedNodes": 37,
+      "exportedMeshes": 32,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-snooker-10-chinese-violet",
+      "category": "table",
+      "file": "table-snooker-10-chinese-violet.glb",
+      "rule": "snooker",
+      "size": 10,
+      "style": "chinese-violet",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 1.40825,
+        "halfY": 0.6877500000000001,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 32,
+      "bounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6458322943,
+          -0.9251295325000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.6458320218108302,
+          0.9251382259730899,
+          0.01683682612274995
+        ],
+        "size": [
+          3.2916643161108303,
+          1.85026775847309,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 4324,
+      "bytes": 252448,
+      "sha256": "12b1f304575837900fb5082e111d1660f0e9ddc552a094bb3b8857a92a20970c",
+      "exportedNodes": 37,
+      "exportedMeshes": 32,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-5-american-ivory",
+      "category": "table",
+      "file": "table-snooker-5-american-ivory.glb",
+      "rule": "snooker",
+      "size": 5,
+      "style": "american-ivory",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 42,
+      "bounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 2084,
+      "bytes": 261068,
+      "sha256": "da837db66ec3b6de23d734145fb41e6f169b1f405cb02684ac7aeb59fc50f5bc",
+      "exportedNodes": 48,
+      "exportedMeshes": 42,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-5-american-walnut",
+      "category": "table",
+      "file": "table-snooker-5-american-walnut.glb",
+      "rule": "snooker",
+      "size": 5,
+      "style": "american-walnut",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 1588,
+      "bytes": 230704,
+      "sha256": "3b633514987f34ba9b3024ad15936d4d78ecb4d8150a7e81a27e0a2f1dd3dec4",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-snooker-5-american-graphite",
+      "category": "table",
+      "file": "table-snooker-5-american-graphite.glb",
+      "rule": "snooker",
+      "size": 5,
+      "style": "american-graphite",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 1588,
+      "bytes": 191100,
+      "sha256": "a24cf7f9b615fea6088810a0999c02d8518eef24cc8005e5f39aa9b768f7ecd9",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-5-american-burgundy",
+      "category": "table",
+      "file": "table-snooker-5-american-burgundy.glb",
+      "rule": "snooker",
+      "size": 5,
+      "style": "american-burgundy",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 22,
+      "bounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 1588,
+      "bytes": 230712,
+      "sha256": "f40f1837a4b1d273d72eb9ba897ce4b514c131f463c588eec5800166ae32b62c",
+      "exportedNodes": 26,
+      "exportedMeshes": 22,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-snooker-5-chinese-ebony",
+      "category": "table",
+      "file": "table-snooker-5-chinese-ebony.glb",
+      "rule": "snooker",
+      "size": 5,
+      "style": "chinese-ebony",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 32,
+      "bounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 4324,
+      "bytes": 271064,
+      "sha256": "2fa7618b7b4661f9022d1e334af95bdee64f2dfe79eb77f71d210e4ad5fc588e",
+      "exportedNodes": 37,
+      "exportedMeshes": 32,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-5-chinese-ivory",
+      "category": "table",
+      "file": "table-snooker-5-chinese-ivory.glb",
+      "rule": "snooker",
+      "size": 5,
+      "style": "chinese-ivory",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 32,
+      "bounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 4324,
+      "bytes": 270964,
+      "sha256": "75b6e906421e60c2c514f2758c5d9119c5ed9cb87d2bfc67f0320fe66e180be6",
+      "exportedNodes": 37,
+      "exportedMeshes": 32,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-snooker-5-chinese-jade",
+      "category": "table",
+      "file": "table-snooker-5-chinese-jade.glb",
+      "rule": "snooker",
+      "size": 5,
+      "style": "chinese-jade",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 32,
+      "bounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 4324,
+      "bytes": 310680,
+      "sha256": "f4bbc04fbf93a4a57c3230a06cee7c9ce8340a0151ad115e207142a34905f323",
+      "exportedNodes": 37,
+      "exportedMeshes": 32,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-snooker-5-chinese-violet",
+      "category": "table",
+      "file": "table-snooker-5-chinese-violet.glb",
+      "rule": "snooker",
+      "size": 5,
+      "style": "chinese-violet",
+      "sourceAsset": "models/d-snooker.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "snooker"
+      ],
+      "physicalTable": {
+        "halfX": 0.704125,
+        "halfY": 0.34387500000000004,
+        "hasPockets": true
+      },
+      "runtimeMaterials": [],
+      "meshCount": 32,
+      "bounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.9417072751858864,
+          -0.5812545419877152,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.9417070517493309,
+          0.5812632109344978,
+          0.01683682612274995
+        ],
+        "size": [
+          1.8834143269352173,
+          1.162517752922213,
+          0.7127743260005603
+        ]
+      },
+      "triangles": 4324,
+      "bytes": 271060,
+      "sha256": "f6f84f8131bc3f4bbc80da6937a496b794b1a1a33937efcb1944986aac574af0",
+      "exportedNodes": 37,
+      "exportedMeshes": 32,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-threecushion-10-american-ivory",
+      "category": "table",
+      "file": "table-threecushion-10-american-ivory.glb",
+      "rule": "threecushion",
+      "size": 10,
+      "style": "american-ivory",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 40,
+      "bounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1878,
+      "bytes": 224200,
+      "sha256": "733c9a2bd3551b9b357e3f4e8c13f4f7c04cbb884e32cf27ccf75fe0f8946a83",
+      "exportedNodes": 46,
+      "exportedMeshes": 40,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-threecushion-10-american-walnut",
+      "category": "table",
+      "file": "table-threecushion-10-american-walnut.glb",
+      "rule": "threecushion",
+      "size": 10,
+      "style": "american-walnut",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 20,
+      "bounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1382,
+      "bytes": 192252,
+      "sha256": "21f44c484e21b06181a15f50549e1621bba6f7da5186f511de997b530edab612",
+      "exportedNodes": 24,
+      "exportedMeshes": 20,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-threecushion-10-american-graphite",
+      "category": "table",
+      "file": "table-threecushion-10-american-graphite.glb",
+      "rule": "threecushion",
+      "size": 10,
+      "style": "american-graphite",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 20,
+      "bounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1382,
+      "bytes": 152844,
+      "sha256": "fcbc677dd6b285b1ae4382af35a1092bba192ab5775c4eab374edb595f6123e8",
+      "exportedNodes": 24,
+      "exportedMeshes": 20,
+      "embeddedImages": 4
+    },
+    {
+      "id": "table-threecushion-10-american-burgundy",
+      "category": "table",
+      "file": "table-threecushion-10-american-burgundy.glb",
+      "rule": "threecushion",
+      "size": 10,
+      "style": "american-burgundy",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 20,
+      "bounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1382,
+      "bytes": 192264,
+      "sha256": "68f86bf287c5540ff43ab2d4951bb1695866c5dc54e767254ed275f58c56bce4",
+      "exportedNodes": 24,
+      "exportedMeshes": 20,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-threecushion-10-chinese-ebony",
+      "category": "table",
+      "file": "table-threecushion-10-chinese-ebony.glb",
+      "rule": "threecushion",
+      "size": 10,
+      "style": "chinese-ebony",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 24,
+      "bounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1430,
+      "bytes": 158448,
+      "sha256": "9f9041f79dec8ce0d7d16beb5eb404f198861f451260ac5eb80574c65c417352",
+      "exportedNodes": 29,
+      "exportedMeshes": 24,
+      "embeddedImages": 4
+    },
+    {
+      "id": "table-threecushion-10-chinese-ivory",
+      "category": "table",
+      "file": "table-threecushion-10-chinese-ivory.glb",
+      "rule": "threecushion",
+      "size": 10,
+      "style": "chinese-ivory",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 24,
+      "bounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1430,
+      "bytes": 158368,
+      "sha256": "bc46adb3b581ceaf48b067a64adda974a44417118e88af0717682074705bef5c",
+      "exportedNodes": 29,
+      "exportedMeshes": 24,
+      "embeddedImages": 4
+    },
+    {
+      "id": "table-threecushion-10-chinese-jade",
+      "category": "table",
+      "file": "table-threecushion-10-chinese-jade.glb",
+      "rule": "threecushion",
+      "size": 10,
+      "style": "chinese-jade",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 24,
+      "bounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1430,
+      "bytes": 197864,
+      "sha256": "4b33fbcad3a02bf2efcca5f72b055a28d2bd3533fee4349736feb8fa8963355e",
+      "exportedNodes": 29,
+      "exportedMeshes": 24,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-threecushion-10-chinese-violet",
+      "category": "table",
+      "file": "table-threecushion-10-chinese-violet.glb",
+      "rule": "threecushion",
+      "size": 10,
+      "style": "chinese-violet",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 1.479645,
+        "halfY": 0.7234475,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 24,
+      "bounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -1.6410826535,
+          -0.8847326695000001,
+          -0.6959374998778104
+        ],
+        "max": [
+          1.64108295845359,
+          0.8846677263233599,
+          0.019658388385879993
+        ],
+        "size": [
+          3.28216561195359,
+          1.76940039582336,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1430,
+      "bytes": 158444,
+      "sha256": "ddf0b55fbe14f44873dd9298e36401dffa5d77aeba0db9ab1a6bc9a8b15a4e5a",
+      "exportedNodes": 29,
+      "exportedMeshes": 24,
+      "embeddedImages": 4
+    },
+    {
+      "id": "table-threecushion-5-american-ivory",
+      "category": "table",
+      "file": "table-threecushion-5-american-ivory.glb",
+      "rule": "threecushion",
+      "size": 5,
+      "style": "american-ivory",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 40,
+      "bounds": {
+        "min": [
+          -0.8740975260734558,
+          -0.49599875019669537,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8740975260734558,
+          0.49599875019669537,
+          0.019658388385879993
+        ],
+        "size": [
+          1.7481950521469116,
+          0.9919975003933907,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.8740975260734558,
+          -0.49599875019669537,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8740975260734558,
+          0.49599875019669537,
+          0.019658388385879993
+        ],
+        "size": [
+          1.7481950521469116,
+          0.9919975003933907,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1878,
+      "bytes": 224668,
+      "sha256": "b3633c8364238f4d98b460acb242242cf577b273e6ad645e6028b9e2b5747e4d",
+      "exportedNodes": 46,
+      "exportedMeshes": 40,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-threecushion-5-american-walnut",
+      "category": "table",
+      "file": "table-threecushion-5-american-walnut.glb",
+      "rule": "threecushion",
+      "size": 5,
+      "style": "american-walnut",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 20,
+      "bounds": {
+        "min": [
+          -0.8385932359385,
+          -0.4618304534790001,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8385933917697845,
+          0.46179655314079404,
+          0.019658388385879993
+        ],
+        "size": [
+          1.6771866277082845,
+          0.9236270066197941,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.8385932359385,
+          -0.4618304534790001,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8385933917697845,
+          0.46179655314079404,
+          0.019658388385879993
+        ],
+        "size": [
+          1.6771866277082845,
+          0.9236270066197941,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1382,
+      "bytes": 419564,
+      "sha256": "863e61945ba6d414f9545fc9d857e2d4075468d62173505c7332a9a5e78f8dd8",
+      "exportedNodes": 24,
+      "exportedMeshes": 20,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-threecushion-5-american-graphite",
+      "category": "table",
+      "file": "table-threecushion-5-american-graphite.glb",
+      "rule": "threecushion",
+      "size": 5,
+      "style": "american-graphite",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 20,
+      "bounds": {
+        "min": [
+          -0.8385932359385,
+          -0.4618304534790001,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8385933917697845,
+          0.46179655314079404,
+          0.019658388385879993
+        ],
+        "size": [
+          1.6771866277082845,
+          0.9236270066197941,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.8385932359385,
+          -0.4618304534790001,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8385933917697845,
+          0.46179655314079404,
+          0.019658388385879993
+        ],
+        "size": [
+          1.6771866277082845,
+          0.9236270066197941,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1382,
+      "bytes": 380152,
+      "sha256": "efc540730f0f547ed9bb7a2d6825d1f1b7c7b8940a3acb83138b297fcc5ab4c1",
+      "exportedNodes": 24,
+      "exportedMeshes": 20,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-threecushion-5-american-burgundy",
+      "category": "table",
+      "file": "table-threecushion-5-american-burgundy.glb",
+      "rule": "threecushion",
+      "size": 5,
+      "style": "american-burgundy",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 20,
+      "bounds": {
+        "min": [
+          -0.8385932359385,
+          -0.4618304534790001,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8385933917697845,
+          0.46179655314079404,
+          0.019658388385879993
+        ],
+        "size": [
+          1.6771866277082845,
+          0.9236270066197941,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.8385932359385,
+          -0.4618304534790001,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8385933917697845,
+          0.46179655314079404,
+          0.019658388385879993
+        ],
+        "size": [
+          1.6771866277082845,
+          0.9236270066197941,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1382,
+      "bytes": 419572,
+      "sha256": "06aac0ca3c24d129eee08bf3f7edcec896e0ffb5df74a95379ce8d58b51a1a06",
+      "exportedNodes": 24,
+      "exportedMeshes": 20,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-threecushion-5-chinese-ebony",
+      "category": "table",
+      "file": "table-threecushion-5-chinese-ebony.glb",
+      "rule": "threecushion",
+      "size": 5,
+      "style": "chinese-ebony",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 24,
+      "bounds": {
+        "min": [
+          -0.8544474840164185,
+          -0.47634875774383545,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8544474840164185,
+          0.47634875774383545,
+          0.019658388385879993
+        ],
+        "size": [
+          1.708894968032837,
+          0.9526975154876709,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.8544474840164185,
+          -0.47634875774383545,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8544474840164185,
+          0.47634875774383545,
+          0.019658388385879993
+        ],
+        "size": [
+          1.708894968032837,
+          0.9526975154876709,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1430,
+      "bytes": 385760,
+      "sha256": "dd353b635133b91f72a1e706de7148286733646f9680a83eb3c6177eff114c99",
+      "exportedNodes": 29,
+      "exportedMeshes": 24,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-threecushion-5-chinese-ivory",
+      "category": "table",
+      "file": "table-threecushion-5-chinese-ivory.glb",
+      "rule": "threecushion",
+      "size": 5,
+      "style": "chinese-ivory",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 24,
+      "bounds": {
+        "min": [
+          -0.8544474840164185,
+          -0.47634875774383545,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8544474840164185,
+          0.47634875774383545,
+          0.019658388385879993
+        ],
+        "size": [
+          1.708894968032837,
+          0.9526975154876709,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.8544474840164185,
+          -0.47634875774383545,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8544474840164185,
+          0.47634875774383545,
+          0.019658388385879993
+        ],
+        "size": [
+          1.708894968032837,
+          0.9526975154876709,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1430,
+      "bytes": 385680,
+      "sha256": "0338df528c38cdf6d096fdda5488035f5c7293a824129ebec1df4292eec10b2d",
+      "exportedNodes": 29,
+      "exportedMeshes": 24,
+      "embeddedImages": 5
+    },
+    {
+      "id": "table-threecushion-5-chinese-jade",
+      "category": "table",
+      "file": "table-threecushion-5-chinese-jade.glb",
+      "rule": "threecushion",
+      "size": 5,
+      "style": "chinese-jade",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 24,
+      "bounds": {
+        "min": [
+          -0.8544474840164185,
+          -0.47634875774383545,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8544474840164185,
+          0.47634875774383545,
+          0.019658388385879993
+        ],
+        "size": [
+          1.708894968032837,
+          0.9526975154876709,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.8544474840164185,
+          -0.47634875774383545,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8544474840164185,
+          0.47634875774383545,
+          0.019658388385879993
+        ],
+        "size": [
+          1.708894968032837,
+          0.9526975154876709,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1430,
+      "bytes": 425180,
+      "sha256": "8acf40e0018d24a2b1bfc4bb98d11aa7a09c66c0759e476e3de1473f44e358f6",
+      "exportedNodes": 29,
+      "exportedMeshes": 24,
+      "embeddedImages": 6
+    },
+    {
+      "id": "table-threecushion-5-chinese-violet",
+      "category": "table",
+      "file": "table-threecushion-5-chinese-violet.glb",
+      "rule": "threecushion",
+      "size": 5,
+      "style": "chinese-violet",
+      "sourceAsset": "models/threecushion.min.gltf",
+      "ballRadius": 0.03275,
+      "compatibleRules": [
+        "threecushion"
+      ],
+      "physicalTable": {
+        "halfX": 0.7398225,
+        "halfY": 0.36172375,
+        "hasPockets": false
+      },
+      "runtimeMaterials": [],
+      "meshCount": 24,
+      "bounds": {
+        "min": [
+          -0.8544474840164185,
+          -0.47634875774383545,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8544474840164185,
+          0.47634875774383545,
+          0.019658388385879993
+        ],
+        "size": [
+          1.708894968032837,
+          0.9526975154876709,
+          0.7155958882636904
+        ]
+      },
+      "sourceBounds": {
+        "min": [
+          -0.8544474840164185,
+          -0.47634875774383545,
+          -0.6959374998778104
+        ],
+        "max": [
+          0.8544474840164185,
+          0.47634875774383545,
+          0.019658388385879993
+        ],
+        "size": [
+          1.708894968032837,
+          0.9526975154876709,
+          0.7155958882636904
+        ]
+      },
+      "triangles": 1430,
+      "bytes": 385760,
+      "sha256": "086dfa0ba89069b3a7890a10864659722b6771cdd2861c3e3c4407fdec0948c0",
+      "exportedNodes": 29,
+      "exportedMeshes": 24,
+      "embeddedImages": 5
+    }
+  ],
+  "runtimeExceptions": [
+    {
+      "kind": "render-support",
+      "reason": "PMREM reflection studio is a lighting implementation detail, not visible scenery; retained at runtime."
+    },
+    {
+      "kind": "input-guides",
+      "reason": "Cue aiming cone, placement arrows, cue contact shadow, traces and spin axes express interaction state; their existing runtime geometry stays unchanged."
+    },
+    {
+      "kind": "shader-effects",
+      "reason": "Animated environment shaders and dotted-ball material shader cannot be encoded as glTF PBR; geometry is exported with explicit runtime material slots and original shader source hashes."
+    }
+  ],
+  "verification": {
+    "containers": 100,
+    "boundsRoundtrip": [
+      {
+        "id": "robot-ivory-cyan-standing",
+        "roundtripErrorMetres": 1.6653345369377348e-16
+      },
+      {
+        "id": "robot-ivory-cyan-aiming",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "robot-graphite-amber-standing",
+        "roundtripErrorMetres": 1.6653345369377348e-16
+      },
+      {
+        "id": "robot-graphite-amber-aiming",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "robot-prototype-sphere",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "robot-prototype-box",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "robot-prototype-cylinder",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "robot-prototype-armour",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "robot-prototype-helmet",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "cue-heritage",
+        "roundtripErrorMetres": 9.71445146547012e-17
+      },
+      {
+        "id": "cue-obsidian",
+        "roundtripErrorMetres": 9.71445146547012e-17
+      },
+      {
+        "id": "cue-jade",
+        "roundtripErrorMetres": 9.71445146547012e-17
+      },
+      {
+        "id": "cue-royal",
+        "roundtripErrorMetres": 9.71445146547012e-17
+      },
+      {
+        "id": "cue-glacier",
+        "roundtripErrorMetres": 9.71445146547012e-17
+      },
+      {
+        "id": "cue-ivory",
+        "roundtripErrorMetres": 9.71445146547012e-17
+      },
+      {
+        "id": "cue-porcelain-wave",
+        "roundtripErrorMetres": 9.71445146547012e-17
+      },
+      {
+        "id": "cue-amber-tiger",
+        "roundtripErrorMetres": 9.71445146547012e-17
+      },
+      {
+        "id": "cue-aurora-prism",
+        "roundtripErrorMetres": 1.1449174941446927e-16
+      },
+      {
+        "id": "cue-holo-laser",
+        "roundtripErrorMetres": 7.632783294297951e-17
+      },
+      {
+        "id": "cue-custom",
+        "roundtripErrorMetres": 9.71445146547012e-17
+      },
+      {
+        "id": "environment-spectra",
+        "roundtripErrorMetres": 3.552713678800501e-15
+      },
+      {
+        "id": "environment-galaxy",
+        "roundtripErrorMetres": 3.552713678800501e-15
+      },
+      {
+        "id": "environment-nebula",
+        "roundtripErrorMetres": 3.552713678800501e-15
+      },
+      {
+        "id": "environment-club",
+        "roundtripErrorMetres": 3.552713678800501e-15
+      },
+      {
+        "id": "environment-aurora-hall",
+        "roundtripErrorMetres": 3.552713678800501e-15
+      },
+      {
+        "id": "environment-sky-temple",
+        "roundtripErrorMetres": 3.552713678800501e-15
+      },
+      {
+        "id": "environment-abyss-palace",
+        "roundtripErrorMetres": 3.552713678800501e-15
+      },
+      {
+        "id": "environment-lunar-observatory",
+        "roundtripErrorMetres": 3.552713678800501e-15
+      },
+      {
+        "id": "ball-dotted-ffffff",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-1",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-2",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-3",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-4",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-5",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-6",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-7",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-8",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-9",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-10",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-11",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-12",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-13",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-14",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-pool-15",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-dotted-ffd700",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-dotted-ff0000",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-dotted-008000",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-dotted-6a2500",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-dotted-005cb1",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-dotted-ff80b3",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-dotted-010000",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "ball-dotted-ee0000",
+        "roundtripErrorMetres": 6.938893903907228e-18
+      },
+      {
+        "id": "table-eightball-10-american-ivory",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-10-american-walnut",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-10-american-graphite",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-10-american-burgundy",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-10-chinese-ebony",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-10-chinese-ivory",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-10-chinese-jade",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-10-chinese-violet",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-5-american-ivory",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-5-american-walnut",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-5-american-graphite",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-5-american-burgundy",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-5-chinese-ebony",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-5-chinese-ivory",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-5-chinese-jade",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-eightball-5-chinese-violet",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-snooker-10-american-ivory",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "table-snooker-10-american-walnut",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "table-snooker-10-american-graphite",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "table-snooker-10-american-burgundy",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "table-snooker-10-chinese-ebony",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "table-snooker-10-chinese-ivory",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "table-snooker-10-chinese-jade",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "table-snooker-10-chinese-violet",
+        "roundtripErrorMetres": 2.220446049250313e-16
+      },
+      {
+        "id": "table-snooker-5-american-ivory",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-snooker-5-american-walnut",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-snooker-5-american-graphite",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-snooker-5-american-burgundy",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-snooker-5-chinese-ebony",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-snooker-5-chinese-ivory",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-snooker-5-chinese-jade",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-snooker-5-chinese-violet",
+        "roundtripErrorMetres": 1.1102230246251565e-16
+      },
+      {
+        "id": "table-threecushion-10-american-ivory",
+        "roundtripErrorMetres": 1.3877787807814457e-16
+      },
+      {
+        "id": "table-threecushion-10-american-walnut",
+        "roundtripErrorMetres": 1.3877787807814457e-16
+      },
+      {
+        "id": "table-threecushion-10-american-graphite",
+        "roundtripErrorMetres": 1.3877787807814457e-16
+      },
+      {
+        "id": "table-threecushion-10-american-burgundy",
+        "roundtripErrorMetres": 1.3877787807814457e-16
+      },
+      {
+        "id": "table-threecushion-10-chinese-ebony",
+        "roundtripErrorMetres": 1.3877787807814457e-16
+      },
+      {
+        "id": "table-threecushion-10-chinese-ivory",
+        "roundtripErrorMetres": 1.3877787807814457e-16
+      },
+      {
+        "id": "table-threecushion-10-chinese-jade",
+        "roundtripErrorMetres": 1.3877787807814457e-16
+      },
+      {
+        "id": "table-threecushion-10-chinese-violet",
+        "roundtripErrorMetres": 1.3877787807814457e-16
+      },
+      {
+        "id": "table-threecushion-5-american-ivory",
+        "roundtripErrorMetres": 5.551115123125783e-17
+      },
+      {
+        "id": "table-threecushion-5-american-walnut",
+        "roundtripErrorMetres": 5.551115123125783e-17
+      },
+      {
+        "id": "table-threecushion-5-american-graphite",
+        "roundtripErrorMetres": 5.551115123125783e-17
+      },
+      {
+        "id": "table-threecushion-5-american-burgundy",
+        "roundtripErrorMetres": 5.551115123125783e-17
+      },
+      {
+        "id": "table-threecushion-5-chinese-ebony",
+        "roundtripErrorMetres": 5.551115123125783e-17
+      },
+      {
+        "id": "table-threecushion-5-chinese-ivory",
+        "roundtripErrorMetres": 5.551115123125783e-17
+      },
+      {
+        "id": "table-threecushion-5-chinese-jade",
+        "roundtripErrorMetres": 5.551115123125783e-17
+      },
+      {
+        "id": "table-threecushion-5-chinese-violet",
+        "roundtripErrorMetres": 5.551115123125783e-17
+      }
+    ],
+    "refinedAvailable": 96,
+    "pending": []
+  }
+}

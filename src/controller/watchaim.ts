@@ -15,7 +15,7 @@ export class WatchAim extends ControllerBase {
     super(container)
     this.container.table.cueball = this.container.rules.otherPlayersCueBall()
     this.container.table.cue.moveTo(this.container.table.cueball.pos)
-    this.container.view.camera.suggestMode(this.container.view.camera.topView)
+    this.container.view.camera.beginAimTurn(false)
   }
 
   override onFirst() {

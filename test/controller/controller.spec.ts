@@ -1,3 +1,4 @@
+import { powerRatioFromControl } from "../../src/view/powercontrol"
 import { expect as chaiExpect } from "chai"
 const expect = globalThis.expect
 import { HitEvent, Input } from "../../src/controller/controller"
@@ -31,6 +32,7 @@ import { Spectate } from "../../src/controller/spectate"
 import { Init } from "../../src/controller/init"
 import { ScoreEvent } from "../../src/events/scoreevent"
 import { maxPower } from "../../src/model/physics/constants"
+import { PlaceAllBalls } from "../../src/controller/placeallballs"
 
 initDom()
 
@@ -55,6 +57,39 @@ describe("Controller", () => {
     container.animate(0)
     chaiExpect(container).to.be.not.null
     done()
+  })
+
+  it("clears the previous full-power shot when a new aim turn begins", () => {
+    container.table.cue.aim.power = maxPower
+    container.table.cue.updateAimInput()
+    container.updateController(new Aim(container))
+    expect(container.table.cue.aim.power).toBe(0)
+    expect(Number(container.table.cue.aimInputs.cuePowerElement.value)).toBe(0)
+    expect(
+      document
+        .getElementById("powerSliderContainer")
+        ?.getAttribute("aria-valuenow")
+    ).toBe("0")
+  })
+
+  it("disposes state-specific pointer listeners when the controller changes", () => {
+    const removeListener = jest.spyOn(
+      container.view.element as HTMLElement,
+      "removeEventListener"
+    )
+    container.updateController(new PlaceAllBalls(container))
+
+    container.updateController(new End(container))
+
+    expect(removeListener.mock.calls.map(([type]) => type)).toEqual(
+      expect.arrayContaining([
+        "pointerdown",
+        "pointermove",
+        "pointerup",
+        "pointercancel",
+      ])
+    )
+    removeListener.mockRestore()
   })
 
   it("keeps the animation loop alive after a physics failure", () => {
@@ -82,9 +117,13 @@ describe("Controller", () => {
     }
   })
 
-  it("Container chat enques message", (done) => {
-    container.chat.sendClicked({})
+  it("Container chat enqueues a non-empty structured message", (done) => {
+    container.sendChat("  准备开球  ")
     chaiExpect(broadcastEvents).to.be.lengthOf(1)
+    chaiExpect(broadcastEvents[0]).to.include({
+      type: "CHAT",
+      message: "准备开球",
+    })
     done()
   })
 
@@ -124,6 +163,12 @@ describe("Controller", () => {
     chaiExpect(
       document.getElementById("p2Score")?.classList.contains("is-active")
     ).to.be.false
+    chaiExpect(document.getElementById("panel")?.dataset.actionMode).to.equal(
+      "placement"
+    )
+    chaiExpect(
+      document.querySelector("#cueHit .shot-label")?.textContent
+    ).to.equal("确认母球")
     done()
   })
 
@@ -260,7 +305,10 @@ describe("Controller", () => {
     chaiExpect(visualSpy.mock.calls).to.not.be.empty
     const powerArgs = powerSpy.mock.calls[powerSpy.mock.calls.length - 1]
     const visualArgs = visualSpy.mock.calls[visualSpy.mock.calls.length - 1]
-    chaiExpect(powerArgs[0]).to.be.approximately(0.4, 0.0001)
+    chaiExpect(powerRatioFromControl(powerArgs[0])).to.be.approximately(
+      0.4,
+      0.0001
+    )
     chaiExpect(visualArgs[0]).to.be.approximately(0.1, 0.0001)
     chaiExpect(visualArgs[1]).to.be.approximately(-0.15, 0.0001)
     done()
@@ -297,7 +345,10 @@ describe("Controller", () => {
     chaiExpect(visualSpy.mock.calls).to.not.be.empty
     const powerArgs = powerSpy.mock.calls[powerSpy.mock.calls.length - 1]
     const visualArgs = visualSpy.mock.calls[visualSpy.mock.calls.length - 1]
-    chaiExpect(powerArgs[0]).to.be.approximately(0.25, 0.0001)
+    chaiExpect(powerRatioFromControl(powerArgs[0])).to.be.approximately(
+      0.25,
+      0.0001
+    )
     chaiExpect(visualArgs[0]).to.be.approximately(0.05, 0.0001)
     chaiExpect(visualArgs[1]).to.be.approximately(-0.2, 0.0001)
     done()

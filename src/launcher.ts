@@ -1,30 +1,42 @@
 import {
   buildGameUrl,
   buildInviteUrl,
+  applyRoomDemoOptions,
   generateRoomCode,
   LauncherOpponent,
   LauncherOnlineAction,
   LauncherQuality,
   LauncherRule,
   LauncherSelection,
+  RoomLaunchDescriptor,
+  AnyRoomLaunchDescriptor,
+  tableTennisRoomUrl,
   normaliseRoomCode,
   shouldShowLauncher,
 } from "./launcherconfig"
-import { CUE_STYLES, saveCueStyleId, savedCueStyleId } from "./view/cuestyle"
+import { saveCueStyleId, savedCueStyleId } from "./view/cuestyle"
 import {
   saveTableStyleId,
   savedTableStyleId,
   TABLE_STYLES,
 } from "./view/tablestyle"
 import {
-  ENVIRONMENT_STYLES,
   saveEnvironmentStyleId,
   savedEnvironmentStyleId,
 } from "./view/environmentstyle"
+import {
+  CUE_APPEARANCE_CATALOG,
+  ENVIRONMENT_APPEARANCE_CATALOG,
+} from "./appearancecatalog"
 import { apiJson, type PlatformMe } from "./platform/api"
 import { accountChip, approvalLabel, platformGate } from "./platform/shell"
 import { mountSpectraFx } from "./platform/fx"
 import { publishVerifiedGameIdentity } from "./platform/gameidentity"
+import { mountViewportCoordinator } from "./platform/viewport"
+import {
+  saveRenderQualityMode,
+  serverQualityForRenderMode,
+} from "./view/renderquality"
 
 const storageKey = "billiards-launcher-selection"
 
@@ -88,16 +100,17 @@ const levelNames = [
 ]
 
 const qualityNames: Record<LauncherQuality, string> = {
-  low: "省电",
-  balanced: "均衡",
-  high: "高画质",
+  adaptive: "观感优先自适应",
+  high: "锁定展示画质",
+  balanced: "兼容均衡",
+  low: "兼容省电",
 }
 
 const defaultSelection: LauncherSelection = {
   rule: "eightball",
   opponent: "ai",
   botLevel: 4,
-  quality: "high",
+  quality: "adaptive",
   player1Name: "玩家一",
   player2Name: "玩家二",
   player1Cue: "heritage",
@@ -240,7 +253,7 @@ function ruleOptions(selection: LauncherSelection) {
 }
 
 function cueOptions(selected: string | undefined) {
-  return CUE_STYLES.map(
+  return CUE_APPEARANCE_CATALOG.map(
     (style) =>
       `<option value="${style.id}" ${
         selected === style.id ? "selected" : ""
@@ -258,7 +271,7 @@ function tableOptions(selected: string | undefined) {
 }
 
 function environmentOptions(selected: string | undefined) {
-  return ENVIRONMENT_STYLES.map(
+  return ENVIRONMENT_APPEARANCE_CATALOG.map(
     (style) =>
       `<option value="${style.id}" ${
         selected === style.id ? "selected" : ""
@@ -337,9 +350,10 @@ function launcherMarkup(selection: LauncherSelection, session: PlatformMe) {
                 <fieldset class="launcher-fieldset">
                   <legend>画质</legend>
                   <div class="segment-control">
-                    <label>${checked("quality", "low", selection.quality)}<span>省电</span></label>
-                    <label>${checked("quality", "balanced", selection.quality)}<span>均衡</span></label>
-                    <label>${checked("quality", "high", selection.quality)}<span>高画质</span></label>
+                    <label>${checked("quality", "adaptive", selection.quality)}<span>观感优先自适应</span></label>
+                    <label>${checked("quality", "high", selection.quality)}<span>锁定展示画质</span></label>
+                    <label>${checked("quality", "balanced", selection.quality)}<span>兼容均衡</span></label>
+                    <label>${checked("quality", "low", selection.quality)}<span>兼容省电</span></label>
                   </div>
                 </fieldset>
                 <label class="launcher-input">
@@ -376,18 +390,18 @@ function launcherMarkup(selection: LauncherSelection, session: PlatformMe) {
               <fieldset id="onlineSettings" class="launcher-fieldset launcher-detail-panel" data-approved="${session.capabilities.online}" hidden>
                 <legend>联机房间</legend>
                 <div class="online-config-grid">
-                  <div class="segment-control segment-control--two">
+                  <div class="segment-control segment-control--two online-config-grid__action">
                     <label>${checked("onlineAction", "create", selection.onlineAction ?? "create")}<span>创建房间</span></label>
                     <label>${checked("onlineAction", "join", selection.onlineAction ?? "create")}<span>加入房间</span></label>
                   </div>
-                  <label class="launcher-input">
+                  <label class="launcher-input online-config-grid__identity">
                     <span>在线身份</span>
                     <input name="onlinePlayerName" maxlength="24" value="${escapeAttribute(session.user.displayName)}" readonly />
                   </label>
-                  <label class="launcher-input">
+                  <label class="launcher-input online-config-grid__code">
                     <span>自定义房间码</span>
                     <div class="room-code-entry">
-                      <input id="roomCode" name="roomCode" maxlength="96" autocomplete="off" placeholder="中文、表情和符号均可" value="${escapeAttribute(selection.roomCode)}" />
+                      <input id="roomCode" name="roomCode" minlength="3" maxlength="24" autocomplete="off" placeholder="3–24 个字符" value="${escapeAttribute(selection.roomCode)}" />
                       <button id="randomRoomCode" type="button">随机</button>
                     </div>
                   </label>
@@ -443,6 +457,7 @@ function selectionFromForm(form: HTMLFormElement): LauncherSelection {
 
 function saveSelection(selection: LauncherSelection) {
   try {
+    saveRenderQualityMode(selection.quality)
     localStorage.setItem(storageKey, JSON.stringify(selection))
   } catch {
     // Local storage can be unavailable in private browsing. The launcher still works.
@@ -499,7 +514,10 @@ function syncOpponentSettings(
   }
 }
 
-function initialiseLauncher(params: URLSearchParams, session: PlatformMe) {
+export function initialiseLauncher(
+  params: URLSearchParams,
+  session: PlatformMe
+) {
   document.documentElement.classList.add("launcher-mode")
   document.title = "Break Builder — 选择模式"
   const launcher = document.querySelector<HTMLElement>("#gameLauncher")!
@@ -511,7 +529,7 @@ function initialiseLauncher(params: URLSearchParams, session: PlatformMe) {
   launcher.innerHTML = launcherMarkup(selection, session)
   launcher.hidden = false
   mountSpectraFx(launcher.querySelector<HTMLCanvasElement>(".launcher-fx")!, {
-    quality: selection.quality,
+    quality: serverQualityForRenderMode(selection.quality),
     interactive: true,
   })
 
@@ -582,37 +600,45 @@ function initialiseLauncher(params: URLSearchParams, session: PlatformMe) {
         }
         const code = normaliseRoomCode(current.roomCode ?? "")
         if (current.onlineAction === "join") {
-          const lookup = await apiJson<{
-            room: {
-              id: string
-              code: string
-              host_table_style: string
-              host_environment_style: string
+          const lookup = await apiJson<{ room: AnyRoomLaunchDescriptor }>(
+            `/api/rooms/code/${encodeURIComponent(code)}`
+          )
+          const joined = await apiJson<{ room: AnyRoomLaunchDescriptor }>(
+            `/api/rooms/${lookup.room.id}/join`,
+            {
+              method: "POST",
+              body: JSON.stringify({}),
             }
-          }>(`/api/rooms/code/${encodeURIComponent(code)}`)
-          await apiJson(`/api/rooms/${lookup.room.id}/join`, {
-            method: "POST",
-            body: JSON.stringify({}),
-          })
-          current.roomInstanceId = lookup.room.id
-          current.roomCode = lookup.room.code
-          current.tableStyle = lookup.room.host_table_style
-          current.environmentStyle = lookup.room.host_environment_style
+          )
+          if (joined.room.gameType === "table-tennis") {
+            globalThis.location.assign(tableTennisRoomUrl(joined.room))
+            return
+          }
+          current.roomInstanceId = joined.room.id
+          current.roomCode = joined.room.code
+          current.rule = joined.room.ruleType
+          current.tableStyle = joined.room.tableStyle
+          current.environmentStyle = joined.room.environmentStyle
+          applyRoomDemoOptions(current, joined.room, session.user.id)
         } else {
-          const created = await apiJson<{
-            room: { id: string; code: string }
-          }>("/api/rooms", {
-            method: "POST",
-            body: JSON.stringify({
-              ruleType: current.rule,
-              code: code || undefined,
-              options: { quality: current.quality },
-              tableStyle: current.tableStyle,
-              environmentStyle: current.environmentStyle,
-            }),
-          })
+          const created = await apiJson<{ room: RoomLaunchDescriptor }>(
+            "/api/rooms",
+            {
+              method: "POST",
+              body: JSON.stringify({
+                ruleType: current.rule,
+                code: code || undefined,
+                options: {
+                  quality: serverQualityForRenderMode(current.quality),
+                },
+                tableStyle: current.tableStyle,
+                environmentStyle: current.environmentStyle,
+              }),
+            }
+          )
           current.roomInstanceId = created.room.id
           current.roomCode = created.room.code
+          applyRoomDemoOptions(current, created.room, session.user.id)
         }
       }
       status.textContent = "正在加载 3D 球桌"
@@ -639,7 +665,7 @@ function loadScript(source: string) {
   })
 }
 
-async function loadGame() {
+export async function loadGame() {
   for (const source of [
     "three_core.js",
     "three_module.js",
@@ -661,7 +687,9 @@ async function syncLauncherPersonalisation(
         cueStyle: current.cueStyle,
         tableStyle: current.tableStyle,
         environmentStyle: current.environmentStyle,
-        preferences: { quality: current.quality },
+        preferences: {
+          quality: serverQualityForRenderMode(current.quality),
+        },
       }),
     })
     session.user = updated.user
@@ -671,7 +699,8 @@ async function syncLauncherPersonalisation(
   }
 }
 
-async function bootstrap() {
+export async function bootstrapLauncher() {
+  mountViewportCoordinator()
   const session = await platformGate()
   if (!session) return
   publishVerifiedGameIdentity(session)
@@ -687,4 +716,4 @@ async function bootstrap() {
   }
 }
 
-void bootstrap()
+if (!document.querySelector("#appRoot")) void bootstrapLauncher()

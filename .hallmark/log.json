@@ -1,5 +1,29 @@
 [
   {
+    "date": "2026-09-01",
+    "macrostructure": "Split Match Desk",
+    "theme": "custom",
+    "theme_axes": "dark / geometric-sans / cool-cyan",
+    "vibe": "night arena control deck, precise, restrained",
+    "enrichment": "shared ambient scene",
+    "scope": "platform-pages",
+    "nav": "system-rail",
+    "footer": "Ft1",
+    "brief": "Break Builder platform pages dark arena refinement with mission-control split and task dossiers"
+  },
+  {
+    "date": "2026-08-26",
+    "macrostructure": "Workbench",
+    "theme": "custom",
+    "theme_axes": "light / geometric-sans / cool-cyan",
+    "vibe": "holographic transparent chamber, precise, kinetic",
+    "enrichment": "shared optical environment",
+    "scope": "app",
+    "nav": "system-rail",
+    "footer": "Ft1",
+    "brief": "Break Builder full-site React and Android game redesign"
+  },
+  {
     "date": "2026-07-23",
     "macrostructure": "Long Document",
     "theme": "Midnight",

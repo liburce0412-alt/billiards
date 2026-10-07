@@ -41,6 +41,7 @@ export class Notification {
   overlay: HTMLDivElement | null
   timeoutId: number | null = null
   actionHandlers: NotificationActionHandlers = {}
+  private readonly listenerAbort = new AbortController()
 
   constructor() {
     this.overlay = id("notificationOverlay") as HTMLDivElement | null
@@ -226,28 +227,36 @@ export class Notification {
     }
     ;["pointerdown", "mousedown", "touchstart", "click"].forEach(
       (eventName) => {
-        this.element.addEventListener(eventName, (event) => {
-          event.stopPropagation()
-        })
+        this.element.addEventListener(
+          eventName,
+          (event) => {
+            event.stopPropagation()
+          },
+          { signal: this.listenerAbort.signal }
+        )
       }
     )
-    this.element.addEventListener("click", (event) => {
-      const target = event.target as HTMLElement | null
-      const uploadButton = target?.closest(
-        "[data-notification-upload-url]"
-      ) as HTMLElement | null
-      const uploadUrl = uploadButton?.dataset.notificationUploadUrl
-      if (uploadUrl) {
-        globalThis.location.replace(uploadUrl)
-        return
-      }
-      const button = target?.closest(
-        "[data-notification-action]"
-      ) as HTMLElement | null
-      const action = button?.dataset.notificationAction
-      if (!action) return
-      this.handleAction(action, button.dataset.notificationUrl)
-    })
+    this.element.addEventListener(
+      "click",
+      (event) => {
+        const target = event.target as HTMLElement | null
+        const uploadButton = target?.closest(
+          "[data-notification-upload-url]"
+        ) as HTMLElement | null
+        const uploadUrl = uploadButton?.dataset.notificationUploadUrl
+        if (uploadUrl) {
+          globalThis.location.replace(uploadUrl)
+          return
+        }
+        const button = target?.closest(
+          "[data-notification-action]"
+        ) as HTMLElement | null
+        const action = button?.dataset.notificationAction
+        if (!action) return
+        this.handleAction(action, button.dataset.notificationUrl)
+      },
+      { signal: this.listenerAbort.signal }
+    )
   }
 
   private handleAction(action: string, _url?: string) {
@@ -311,5 +320,10 @@ export class Notification {
       globalThis.clearTimeout(this.timeoutId)
       this.timeoutId = null
     }
+  }
+
+  dispose() {
+    this.clear()
+    this.listenerAbort.abort()
   }
 }

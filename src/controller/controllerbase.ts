@@ -14,6 +14,40 @@ const flipP1type = (t: number) => (t === 1 ? 2 : 1)
 
 export abstract class ControllerBase extends Controller {
   readonly scale = 0.001
+  private preparation?: {
+    elapsed: number
+    immediate: boolean
+    onContact?: () => void
+  }
+
+  override get isPreparingShot() {
+    return this.preparation !== undefined
+  }
+
+  override updatePresentation(elapsed: number) {
+    const preparation = this.preparation
+    if (!preparation) return
+    const cue = this.container.table.cue
+    if (!this.container.view.robotPlayers?.readyToStrike) {
+      // Pause the same stroke instead of snapping back and drawing again.
+      return
+    }
+    if (!preparation.immediate) {
+      preparation.elapsed += Math.min(Math.max(elapsed, 0), 0.1)
+      // Automatic players need a visible preparation before contact.
+      cue.preStrokeProgress = Math.max(0, (preparation.elapsed - 0.45) / 0.65)
+      if (cue.preStrokeProgress < 1) return
+    }
+    this.preparation = undefined
+    cue.preStrokeProgress = undefined
+    preparation.onContact?.()
+    this.strike()
+  }
+
+  override dispose() {
+    if (this.preparation) this.container.table.cue.preStrokeProgress = undefined
+    this.preparation = undefined
+  }
 
   constructor(container) {
     super(container)
@@ -22,7 +56,14 @@ export abstract class ControllerBase extends Controller {
 
   override handleChat(chatevent: ChatEvent): Controller {
     if (chatevent.message) {
-      this.container.chat.showMessage(chatevent.message)
+      this.container.chat.showMessage({
+        id: chatevent.clientMessageId,
+        senderId: chatevent.sender,
+        senderName: chatevent.senderName ?? chatevent.playername ?? "对手",
+        body: chatevent.message,
+        createdAt: chatevent.createdAt ?? Date.now(),
+        isMine: chatevent.sender === Session.getInstance().clientId,
+      })
     }
     if (chatevent.line) {
       this.container.view.addLine(chatevent.line)
@@ -92,7 +133,21 @@ export abstract class ControllerBase extends Controller {
       : this
   }
 
-  hit() {
+  hit(onContact?: () => void, immediate = false) {
+    const players = this.container.view.robotPlayers
+    if (players && !(immediate && players.readyToStrike)) {
+      // Human release is already the shot command: wait only for arrival if
+      // needed, without resetting readiness or adding another aim/backswing.
+      if (!immediate) players.prepareShot()
+      this.preparation = { elapsed: 0, immediate, onContact }
+      this.container.table.cue.aimMode()
+      return
+    }
+    onContact?.()
+    this.strike()
+  }
+
+  private strike() {
     this.container.sound.lastOutcomeTime = -1
     this.container.table.outcome = [
       Outcome.hit(
@@ -102,7 +157,9 @@ export abstract class ControllerBase extends Controller {
       ),
     ]
     this.container.table.hit()
-    this.container.view.camera.suggestMode(this.container.view.camera.aimView)
+    this.container.shotDiagnostics.start(this.container.table)
+    this.container.view.camera.beginShot()
+    this.container.view.robotPlayers?.beginShot()
     this.container.table.cue.showHelper(false)
   }
 

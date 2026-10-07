@@ -186,4 +186,10 @@ export class PlaceAllBalls extends ControllerBase {
     this.container.view.camera.forceMode(this.container.view.camera.aimView)
     return new Aim(this.container)
   }
+
+  override dispose() {
+    this.removeListeners?.()
+    this.removeListeners = null
+    this.isDragging = false
+  }
 }

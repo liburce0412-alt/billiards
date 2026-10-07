@@ -1,0 +1,15 @@
+{
+  "reviewedAt": "2026-10-05T17:29:24.3568102+08:00",
+  "scope": "Blender full-length shape plus listed close-up images",
+  "passed": true,
+  "sha256": "5f2ac690b64b09b6feffec9c3b7ffff25061dd43057e6ed0f20ccf0b755e96f6",
+  "notes": [
+    "Four-angle full length view actually inspected: taper and color regions are coherent, shaft and butt have no visible breaks. Runtime hand alignment, chalk animation and phone appearance are outside this Blender review.",
+    "Only the exported default custom palette was reviewed; live custom recoloring is a separate runtime check.",
+    "No microtexture close-up was captured for this individual variant; only full-length shape and palette approved."
+  ],
+  "reviewer": "three_asset_inventory",
+  "evidence": [
+    "cue-custom-angles-0.png"
+  ]
+}

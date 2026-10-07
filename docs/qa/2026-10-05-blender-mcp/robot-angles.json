@@ -1,0 +1,31 @@
+{
+  "time": "2026-10-05T08:10:58.368536+00:00",
+  "tool": "look",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "image",
+        "mimeType": "image/png",
+        "annotations": null,
+        "meta": null,
+        "savedImage": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-10-05-blender-mcp\\robot-angles-0.png"
+      },
+      {
+        "type": "text",
+        "text": "Tiles left to right, top to bottom: front, back, right, three_quarter. Framed 156 objects, 0.81 x 0.34 x 1.81 m across, centred at [0.0, -0.03, 0.92].",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

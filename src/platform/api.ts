@@ -32,12 +32,16 @@ export interface PlatformMe {
     camera_mode: "aim" | "top" | "free"
     master_volume: number
     social_drawer_open: number
+    admin_demo_offline_enabled: number
+    admin_demo_online_enabled: number
+    admin_demo_level: number
   }
   capabilities: {
     offline: boolean
     online: boolean
     social: boolean
     admin: boolean
+    adminDemoAssist: boolean
   }
   turnstileSiteKey: string | null
   announcements: Array<{
@@ -128,8 +132,17 @@ export function demoSession(): PlatformMe {
       camera_mode: "top",
       master_volume: 0.8,
       social_drawer_open: 1,
+      admin_demo_offline_enabled: 0,
+      admin_demo_online_enabled: 0,
+      admin_demo_level: 11,
     },
-    capabilities: { offline: true, online: true, social: true, admin: true },
+    capabilities: {
+      offline: true,
+      online: true,
+      social: true,
+      admin: true,
+      adminDemoAssist: true,
+    },
     turnstileSiteKey: null,
     announcements: [],
   }

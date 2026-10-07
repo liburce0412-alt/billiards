@@ -2,13 +2,14 @@ import {
   normaliseDisplayRoomCode,
   ROOM_PROTOCOL_VERSION,
 } from "./network/client/roomidentity"
+import type { RenderQualityMode } from "./view/renderquality"
 
 export type LauncherRule =
   "nineball" | "eightball" | "fourball" | "snooker" | "threecushion"
 
 export type LauncherOpponent =
   "practice" | "ai" | "local" | "online" | "ClawBreak" | "TheFarJaw"
-export type LauncherQuality = "low" | "balanced" | "high"
+export type LauncherQuality = RenderQualityMode
 export type LauncherOnlineAction = "create" | "join"
 
 export interface LauncherSelection {
@@ -28,6 +29,51 @@ export interface LauncherSelection {
   onlinePlayerName?: string
   onlineUserId?: string
   roomInstanceId?: string
+  demoRoom?: boolean
+  adminDemoRoom?: boolean
+}
+
+export interface RoomLaunchDescriptor {
+  gameType?: "billiards"
+  id: string
+  code: string
+  status: "waiting" | "active"
+  ruleType: LauncherRule
+  options: Record<string, unknown>
+  tableStyle: string
+  environmentStyle: string
+  memberRole: "host" | "player" | null
+  createdAt: number
+}
+
+export interface TableTennisRoomDescriptor extends Omit<
+  RoomLaunchDescriptor,
+  "gameType" | "ruleType"
+> {
+  gameType: "table-tennis"
+  ruleType: "singles-11"
+}
+
+export type AnyRoomLaunchDescriptor =
+  RoomLaunchDescriptor | TableTennisRoomDescriptor
+
+export function tableTennisRoomUrl(room: TableTennisRoomDescriptor): string {
+  const params = new URLSearchParams({
+    mode: "online",
+    room: room.id,
+    code: room.code,
+    environment: room.environmentStyle,
+  })
+  return `/table-tennis?${params}`
+}
+
+export function applyRoomDemoOptions(
+  selection: LauncherSelection,
+  _room: RoomLaunchDescriptor,
+  _userId: string
+): void {
+  delete selection.demoRoom
+  delete selection.adminDemoRoom
 }
 
 export function normaliseRoomCode(value: string): string {
@@ -97,6 +143,9 @@ export async function buildGameUrl(
   url.searchParams.set("ruletype", selection.rule)
   url.searchParams.set("quality", selection.quality)
   url.searchParams.set("camera", "2d")
+  if (selection.cueStyle) {
+    url.searchParams.set("cueStyle", selection.cueStyle)
+  }
   if (selection.tableStyle) {
     url.searchParams.set("tableStyle", selection.tableStyle)
   }
@@ -126,27 +175,7 @@ export async function buildGameUrl(
     )
     url.searchParams.set("roomVersion", String(ROOM_PROTOCOL_VERSION))
     url.searchParams.set("roomInstance", selection.roomInstanceId)
-    url.searchParams.set(
-      "userName",
-      selection.onlinePlayerName?.trim() || "玩家"
-    )
-    if (selection.onlineUserId) {
-      url.searchParams.set("userId", selection.onlineUserId)
-    }
-    if (selection.onlineAction !== "join") {
-      url.searchParams.set("first", "true")
-      url.searchParams.set(
-        "roomInstance",
-        selection.roomInstanceId ||
-          globalThis.crypto?.randomUUID?.() ||
-          `room-${Date.now().toString(36)}-${generateRoomCode()}`
-      )
-      url.searchParams.set(
-        "matchId",
-        globalThis.crypto?.randomUUID?.() || `match-${generateRoomCode()}`
-      )
-      url.searchParams.set("rack", "1")
-    }
+    url.searchParams.set("rack", "1")
   } else {
     const level = Math.max(1, Math.min(11, Math.round(selection.botLevel)))
     url.searchParams.set("bot", level >= 6 ? "TheFarJaw" : "ClawBreak")

@@ -89,4 +89,9 @@ export abstract class Controller {
     return this
   }
   onFirst() {}
+  get isPreparingShot(): boolean {
+    return false
+  }
+  updatePresentation(_elapsed: number) {}
+  dispose() {}
 }

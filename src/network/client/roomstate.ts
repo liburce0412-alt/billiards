@@ -9,6 +9,8 @@ export interface PersistedRoomState {
   rackNumber: number
   revision: number
   savedAt: number
+  /** Local-only proof that this administrator manually played in this rack. */
+  adminAssistAuthorised?: boolean
   snapshot: RejoinSnapshot
   journal: string[]
 }

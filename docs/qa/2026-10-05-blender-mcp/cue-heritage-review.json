@@ -1,0 +1,14 @@
+{
+  "reviewedAt": "2026-10-05T17:29:24.3163539+08:00",
+  "scope": "Blender full-length shape plus listed close-up images",
+  "passed": true,
+  "sha256": "59fc3d684da9e08c26cd816ce9b8f17765ee48eb8cb9917ba94ce2c05758aa3e",
+  "notes": [
+    "Four-angle full length view actually inspected: taper and color regions are coherent, shaft and butt have no visible breaks. Runtime hand alignment, chalk animation and phone appearance are outside this Blender review.",
+    "No microtexture close-up was captured for this individual variant; only full-length shape and palette approved."
+  ],
+  "reviewer": "three_asset_inventory",
+  "evidence": [
+    "cue-heritage-angles-0.png"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "time": "2026-10-05T08:05:23.800874+00:00",
+  "tool": "look",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": {
+      "mcp-for-blender/viewport": {
+        "seq": 1,
+        "captured_at": 1791187523.7878757,
+        "source": "model",
+        "file": "",
+        "scene": "Scene",
+        "scene_count": 1,
+        "pickable": true,
+        "stale": false,
+        "blender_quiet": false,
+        "addon_outdated": false
+      }
+    },
+    "content": [
+      {
+        "type": "image",
+        "mimeType": "image/png",
+        "annotations": null,
+        "meta": null,
+        "savedImage": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-10-05-blender-mcp\\viewport-0.png"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

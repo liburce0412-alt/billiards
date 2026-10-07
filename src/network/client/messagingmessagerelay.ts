@@ -12,18 +12,38 @@ type GameSocketMessage =
     }
   | {
       type: "room.joined"
+      role: GameRoomMember["role"]
       lastSeq: number
       members?: GameRoomMember[]
+      roomState?: RoomStateSnapshot
     }
   | { type: "room.member_changed"; members?: GameRoomMember[] }
+  | { type: "room.state"; roomState: RoomStateSnapshot }
+  | {
+      type: "room.started"
+      breakerUserId: string
+      roomState: RoomStateSnapshot
+    }
+  | { type: "room.error"; code: string; message: string }
   | { type: "room.revoked"; reason: string }
   | { type: string }
 
 export interface GameRoomMember {
   userId: string
+  username: string
   displayName: string
   avatarUrl?: string | null
+  cueStyle: string
   role: "host" | "player" | "spectator"
+}
+
+export interface RoomStateSnapshot {
+  version: 1
+  revision: number
+  phase: "waiting" | "active" | "cancelled"
+  ready: { host: boolean; player: boolean }
+  startedAt: number | null
+  members: Array<GameRoomMember & { connected: boolean; ready: boolean }>
 }
 
 export class MessagingMessageRelay implements MessageRelay {
@@ -36,6 +56,10 @@ export class MessagingMessageRelay implements MessageRelay {
   private lastSeq = 0
   private clientSeq = 0
   onMembersChanged?: (members: GameRoomMember[]) => void
+  onRoomJoined?: (role: GameRoomMember["role"]) => void
+  onRoomState?: (state: RoomStateSnapshot) => void
+  onRoomStarted?: (breakerUserId: string, state: RoomStateSnapshot) => void
+  onRoomError?: (code: string, message: string) => void
 
   constructor(private readonly roomId?: string) {}
 
@@ -55,19 +79,26 @@ export class MessagingMessageRelay implements MessageRelay {
       clientSeq: ++this.clientSeq,
       event: JSON.parse(message),
     })
-    if (this.socket?.readyState === WebSocket.OPEN) {
-      this.socket.send(envelope)
-    } else {
-      this.queue.push(envelope)
-      this.connect()
-    }
+    this.sendOrQueue(envelope)
+  }
+
+  setReady(ready: boolean): void {
+    this.sendOrQueue(JSON.stringify({ type: "room.ready.set", ready }))
   }
 
   stop(): void {
     this.stopped = true
     if (this.reconnectTimer !== null) clearTimeout(this.reconnectTimer)
+    this.reconnectTimer = null
     this.socket?.close(1000, "client closed")
     this.socket = null
+    this.callback = null
+    this.queue.length = 0
+    this.onMembersChanged = undefined
+    this.onRoomJoined = undefined
+    this.onRoomState = undefined
+    this.onRoomStarted = undefined
+    this.onRoomError = undefined
   }
 
   private connect() {
@@ -104,29 +135,71 @@ export class MessagingMessageRelay implements MessageRelay {
 
   private receive(raw: unknown) {
     if (typeof raw !== "string") return
-    let message: GameSocketMessage
+    const message = this.parseMessage(raw)
+    if (!message) return
+    if (this.receiveGameMessage(message)) return
+    this.receiveRoomMessage(message)
+  }
+
+  private parseMessage(raw: string): GameSocketMessage | undefined {
     try {
-      message = JSON.parse(raw) as GameSocketMessage
+      return JSON.parse(raw) as GameSocketMessage
     } catch {
-      return
+      return undefined
     }
+  }
+
+  private receiveGameMessage(message: GameSocketMessage): boolean {
     if (message.type === "game.event" && "event" in message) {
       this.lastSeq = Math.max(this.lastSeq, message.seq)
       this.callback?.(JSON.stringify(message.event))
-    } else if (message.type === "game.resync" && "events" in message) {
-      for (const event of message.events) {
-        if (event.seq <= this.lastSeq) continue
-        this.lastSeq = event.seq
-        this.callback?.(JSON.stringify(event.event))
-      }
-    } else if (message.type === "room.revoked") {
+      return true
+    }
+    if (message.type !== "game.resync" || !("events" in message)) return false
+    for (const event of message.events) {
+      if (event.seq <= this.lastSeq) continue
+      this.lastSeq = event.seq
+      this.callback?.(JSON.stringify(event.event))
+    }
+    return true
+  }
+
+  private receiveRoomMessage(message: GameSocketMessage) {
+    if (message.type === "room.revoked") {
       this.stopped = true
-    } else if (
-      (message.type === "room.joined" ||
-        message.type === "room.member_changed") &&
-      "members" in message
-    ) {
+      return
+    }
+    if (message.type === "room.state" && "roomState" in message) {
+      this.onRoomState?.(message.roomState)
+      this.onMembersChanged?.(message.roomState.members)
+      return
+    }
+    if (message.type === "room.started" && "roomState" in message) {
+      this.onRoomStarted?.(message.breakerUserId, message.roomState)
+      return
+    }
+    if (message.type === "room.error" && "code" in message) {
+      this.onRoomError?.(message.code, message.message)
+      return
+    }
+    this.receiveMemberMessage(message)
+  }
+
+  private receiveMemberMessage(message: GameSocketMessage) {
+    if ("members" in message) {
       this.onMembersChanged?.(message.members ?? [])
+    }
+    if (message.type !== "room.joined" || !("role" in message)) return
+    this.onRoomJoined?.(message.role)
+    if (message.roomState) this.onRoomState?.(message.roomState)
+  }
+
+  private sendOrQueue(message: string) {
+    if (this.socket?.readyState === WebSocket.OPEN) {
+      this.socket.send(message)
+    } else {
+      this.queue.push(message)
+      this.connect()
     }
   }
 

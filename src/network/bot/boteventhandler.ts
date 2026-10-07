@@ -65,6 +65,7 @@ export class BotEventHandler {
   private allowLetStrokeOnNextTurn = true
   private ballInHandForNextShot = false
   private planning = false
+  private disposed = false
 
   constructor(
     logs: Logger,
@@ -89,6 +90,7 @@ export class BotEventHandler {
       container.rules.rulename,
       new BotContainer(container)
     )
+    this.botRules.cueball = this.container.table.cueball
     if (
       container.rules.rulename === "threecushion" ||
       container.rules.rulename === "sagu"
@@ -101,6 +103,7 @@ export class BotEventHandler {
    * Main entry point for the bot to handle game events.
    */
   public handle(event: GameEvent): void {
+    if (this.disposed) return
     this.logs.info(`Bot handling event: ${event.type}`)
     switch (event.type) {
       case EventType.STARTAIM:
@@ -132,7 +135,7 @@ export class BotEventHandler {
     const botType = this.botType()
     const isFourBall = this.container.rules.rulename === "fourball"
     if (!isFourBall && this.container.rules.isEndOfGame(outcome, botType)) {
-      this.handleGameEnd()
+      this.handleLegalGameEnd()
       return
     }
     if (this.handleFoulOutcome(outcome, botType)) return
@@ -184,6 +187,16 @@ export class BotEventHandler {
     }
     this.botRules.advanceState?.(outcome)
     return true
+  }
+
+  private handleLegalGameEnd(): void {
+    const rule = this.container.rules.rulename
+    if (rule === "eightball" || rule === "nineball") {
+      const decisiveBall = rule === "eightball" ? "黑八" : "9 号球"
+      this.handleGameEnd(false, `对手合法打进${decisiveBall}`)
+    } else {
+      this.handleGameEnd()
+    }
   }
 
   private shouldContinueAfterShot(
@@ -316,17 +329,13 @@ export class BotEventHandler {
     )
   }
 
-  private handleGameEnd(): void {
+  private handleGameEnd(playerWon?: boolean, reason?: string): void {
     const session = Session.getInstance()
     const { p1, p2 } = session.orderedScoresForHud()
-    const amIWinner = session.playerIndex === 0 ? p1 >= p2 : p2 >= p1
-
-    console.log("Bot handleGameEnd, p1=" + p1 + ", p2=" + p2)
-    console.log("Bot handleGameEnd, amIWinner=" + amIWinner)
-    console.log("Bot handleGameEnd, session", session)
+    const amIWinner =
+      playerWon ?? (session.playerIndex === 0 ? p1 >= p2 : p2 >= p1)
     this.container.updateController(
-      // here using player rules why?
-      this.container.rules.handleGameEnd(amIWinner)
+      this.container.rules.handleGameEnd(amIWinner, reason)
     )
   }
 
@@ -350,7 +359,7 @@ export class BotEventHandler {
       return true
     }
 
-    this.handleGameEnd()
+    this.handleGameEnd(true, "对手违规打进黑八，本局判负")
     return true
   }
 
@@ -581,7 +590,7 @@ export class BotEventHandler {
   }
 
   private planAndPublishShot(): void {
-    if (this.planning) return
+    if (this.planning || this.disposed) return
     const fallbackEvents = this.aim()
     if (!this.shotPlanner.available()) {
       this.publishSequenceToPlayer(fallbackEvents, this.shotPacingMs())
@@ -614,6 +623,7 @@ export class BotEventHandler {
     void this.shotPlanner
       .plan(request)
       .then((result) => {
+        if (this.disposed) return
         const selected = candidates[result.candidateIndex]
         this.logs.info(
           `AI 物理试打完成 · ${result.simulations} 条 · ${Math.round(
@@ -626,12 +636,20 @@ export class BotEventHandler {
         )
       })
       .catch((error) => {
+        if (this.disposed) return
         this.logs.info(`AI 物理试打回退: ${error.message}`)
         this.publishSequenceToPlayer(fallbackEvents, this.shotPacingMs())
       })
       .finally(() => {
         this.planning = false
       })
+  }
+
+  dispose(): void {
+    if (this.disposed) return
+    this.disposed = true
+    this.planning = false
+    this.shotPlanner.dispose()
   }
 
   private buildPlanRequest(

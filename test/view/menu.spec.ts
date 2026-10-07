@@ -37,7 +37,7 @@ describe("Menu", () => {
 
     const selector = document.getElementById("cueSelector")!
     expect(selector.hasAttribute("hidden")).to.be.false
-    expect(selector.querySelectorAll("[data-cue-style]")).to.have.lengthOf(6)
+    expect(selector.querySelectorAll("[data-cue-style]")).to.have.lengthOf(10)
 
     const obsidian = selector.querySelector(
       "[data-cue-style='obsidian']"
@@ -126,10 +126,28 @@ describe("Menu", () => {
     ).to.equal("acknowledged")
 
     const menu = document.getElementById("menu") as HTMLButtonElement
+    container.lastEventTime = 0
     fireEvent.click(menu)
     const drawer = document.getElementById("gameSettingsDrawer")!
     expect(drawer.hasAttribute("hidden")).to.be.false
     expect(menu.getAttribute("aria-expanded")).to.equal("true")
+    expect(container.lastEventTime).to.be.greaterThan(0)
+
+    const quality = document.getElementById(
+      "settingsQuality"
+    ) as HTMLSelectElement
+    expect(
+      quality.querySelector("option[value='adaptive']")?.textContent
+    ).to.equal("观感优先自适应")
+    const environment = document.getElementById(
+      "settingsEnvironment"
+    ) as HTMLSelectElement
+    expect(environment.selectedOptions[0]?.textContent).to.equal(
+      "SPECTRA 光谱空间"
+    )
+    expect(
+      document.getElementById("settingsEnvironmentDescription")?.textContent
+    ).to.contain("GLSL")
 
     fireEvent.click(
       document.getElementById("gameSettingsClose") as HTMLButtonElement
@@ -167,7 +185,7 @@ describe("Menu", () => {
     expect(container.controller.name).to.equal("End")
     const notification = document.getElementById("notification")
     expect(notification?.innerHTML).to.contain("你输了")
-    expect(notification?.innerHTML).to.contain("被龙虾击败了 🦞")
+    expect(notification?.innerHTML).to.contain("新一局")
 
     Session.reset()
     done()

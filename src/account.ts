@@ -1,9 +1,17 @@
 import { apiJson, isLocalDemo, type PlatformMe } from "./platform/api"
 import { avatarElement, mountPlatformPage, toast } from "./platform/page"
 import { applyPersonalisation, platformGate, signOut } from "./platform/shell"
-import { CUE_STYLES } from "./view/cuestyle"
-import { ENVIRONMENT_STYLES } from "./view/environmentstyle"
+import {
+  CUE_APPEARANCE_CATALOG,
+  ENVIRONMENT_APPEARANCE_CATALOG,
+} from "./appearancecatalog"
 import { TABLE_STYLES } from "./view/tablestyle"
+import {
+  RenderQualityMode,
+  renderQualityModeForPreference,
+  saveRenderQualityMode,
+  serverQualityForRenderMode,
+} from "./view/renderquality"
 
 class AccountPage {
   constructor(
@@ -50,7 +58,7 @@ class AccountPage {
               <label class="platform-field"><span>我的球杆</span><select name="cueStyle"></select></label>
               <label class="platform-field"><span>默认球台</span><select name="tableStyle"></select></label>
               <label class="platform-field account-span-two"><span>默认环境</span><select name="environmentStyle"></select></label>
-              <div class="account-appearance-preview account-span-two" aria-hidden="true"><span>SPECTRA PROFILE</span><strong id="accountPreviewLabel"></strong><i class="ph ph-wave-sine"></i></div>
+              <figure class="account-appearance-preview account-span-two"><img id="accountEnvironmentPreview" alt="" width="1440" height="900" loading="lazy" /><figcaption><span>环境实景 · 象牙球台示意</span><strong id="accountPreviewLabel"></strong></figcaption></figure>
               <div class="account-span-two account-form-actions"><p>联机时球杆保持个人选择；球台与环境由房主同步。</p><button class="platform-primary" type="submit"><span>保存外观</span><i class="ph ph-check"></i></button></div>
             </div>
           </form>
@@ -58,14 +66,14 @@ class AccountPage {
           <form id="accountControlForm" class="platform-panel account-form">
             <header class="platform-panel__header"><div><h2>操作与性能</h2><p>跨设备同步常用游玩偏好</p></div><i class="ph ph-sliders-horizontal account-section-icon"></i></header>
             <div class="platform-panel__body account-form-grid">
-              <label class="platform-field"><span>画质</span><select name="quality"><option value="low">省电</option><option value="balanced">均衡</option><option value="high">高画质</option></select></label>
+              <label class="platform-field"><span>画质</span><select name="quality"><option value="adaptive">观感优先自适应</option><option value="high">锁定展示画质</option><option value="balanced">兼容 · 均衡</option><option value="low">兼容 · 省电</option></select></label>
               <label class="platform-field"><span>默认镜头</span><select name="cameraMode"><option value="aim">瞄准视角</option><option value="top">俯视视角</option><option value="free">自由视角</option></select></label>
               <label class="platform-field"><span>桌面操作栏</span><select name="desktopShotDock"><option value="expanded">默认展开</option><option value="collapsed">默认收起</option></select></label>
               <label class="platform-field"><span>触屏操作栏</span><select name="touchShotDock"><option value="expanded">默认展开</option><option value="collapsed">默认收起</option></select></label>
               <label class="platform-field"><span>局内社交栏</span><select name="socialDrawerOpen"><option value="closed">默认收起</option><option value="open">默认展开</option></select></label>
               <label class="platform-field account-volume"><span>主音量 <output id="accountVolumeOutput"></output></span><input name="masterVolume" type="range" min="0" max="1" step="0.05" /></label>
               <label class="account-toggle"><input name="reducedMotion" type="checkbox" /><span><strong>减少动态</strong><small>停止流光动画并减少界面过渡</small></span></label>
-              <div class="account-span-two account-form-actions"><p>低画质与减少动态会暂停不必要的连续 shader 渲染。</p><button class="platform-primary" type="submit"><span>保存操作</span><i class="ph ph-check"></i></button></div>
+              <div class="account-span-two account-form-actions"><p>自适应从展示画质起步，只在持续压力且球桌静止时降档；锁定模式不会自动降档。</p><button class="platform-primary" type="submit"><span>保存操作</span><i class="ph ph-check"></i></button></div>
             </div>
           </form>
 
@@ -142,7 +150,7 @@ class AccountPage {
     }
     populateSelect(
       appearanceForm.elements.namedItem("cueStyle") as HTMLSelectElement,
-      CUE_STYLES.map((style) => [
+      CUE_APPEARANCE_CATALOG.map((style) => [
         style.id,
         `${style.name} · ${style.description}`,
       ]),
@@ -160,7 +168,7 @@ class AccountPage {
       appearanceForm.elements.namedItem(
         "environmentStyle"
       ) as HTMLSelectElement,
-      ENVIRONMENT_STYLES.map((style) => [
+      ENVIRONMENT_APPEARANCE_CATALOG.map((style) => [
         style.id,
         `${style.name} · ${style.description}`,
       ]),
@@ -168,7 +176,11 @@ class AccountPage {
     )
     this.updatePreview()
 
-    setValue(controlForm, "quality", this.session.preferences.quality)
+    setValue(
+      controlForm,
+      "quality",
+      renderQualityModeForPreference(this.session.preferences.quality)
+    )
     setValue(controlForm, "cameraMode", this.session.preferences.camera_mode)
     setValue(
       controlForm,
@@ -248,6 +260,8 @@ class AccountPage {
     )!.oninput = () => this.updateVolume()
     controlForm.onsubmit = (event) => {
       event.preventDefault()
+      const qualityMode = value(controlForm, "quality") as RenderQualityMode
+      const serverQuality = serverQualityForRenderMode(qualityMode)
       const reducedMotion = (
         controlForm.elements.namedItem("reducedMotion") as HTMLInputElement
       ).checked
@@ -255,7 +269,7 @@ class AccountPage {
         controlForm,
         {
           preferences: {
-            quality: value(controlForm, "quality"),
+            quality: serverQuality,
             cameraMode: value(controlForm, "cameraMode"),
             desktopShotDock: value(controlForm, "desktopShotDock"),
             touchShotDock: value(controlForm, "touchShotDock"),
@@ -266,11 +280,9 @@ class AccountPage {
         },
         "操作偏好已保存",
         () => {
+          saveRenderQualityMode(qualityMode)
           this.session.preferences.reduced_motion = Number(reducedMotion)
-          this.session.preferences.quality = value(
-            controlForm,
-            "quality"
-          ) as PlatformMe["preferences"]["quality"]
+          this.session.preferences.quality = serverQuality
           this.session.preferences.camera_mode = value(
             controlForm,
             "cameraMode"
@@ -362,10 +374,20 @@ class AccountPage {
     const form = this.root.querySelector<HTMLFormElement>(
       "#accountAppearanceForm"
     )!
-    const cue = CUE_STYLES.find((item) => item.id === value(form, "cueStyle"))
+    const cue = CUE_APPEARANCE_CATALOG.find(
+      (item) => item.id === value(form, "cueStyle")
+    )
     const table = TABLE_STYLES.find(
       (item) => item.id === value(form, "tableStyle")
     )
+    const environment = ENVIRONMENT_APPEARANCE_CATALOG.find(
+      (item) => item.id === value(form, "environmentStyle")
+    )
+    const preview = this.root.querySelector<HTMLImageElement>(
+      "#accountEnvironmentPreview"
+    )!
+    preview.src = `/images/environments/${environment?.id ?? "spectra"}.webp`
+    preview.alt = `${environment?.name ?? "光谱空间"}游戏实景`
     this.root.querySelector<HTMLElement>("#accountPreviewLabel")!.textContent =
       `${cue?.name ?? "球杆"} / ${table?.name ?? "球台"}`
   }
@@ -565,6 +587,12 @@ async function bootstrap() {
   new AccountPage(session, root).init()
 }
 
-void bootstrap().catch((error) =>
-  toast(error instanceof Error ? error.message : "账号页面加载失败", "error")
-)
+export function mountAccountInto(session: PlatformMe, root: HTMLElement) {
+  return new AccountPage(session, root).init()
+}
+
+if (!document.querySelector("#appRoot")) {
+  void bootstrap().catch((error) =>
+    toast(error instanceof Error ? error.message : "账号页面加载失败", "error")
+  )
+}

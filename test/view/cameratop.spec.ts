@@ -10,7 +10,7 @@ describe("View", () => {
   })
   it("wide screen scale to height", (done) => {
     const distance = CameraTop.viewPoint(1, fov)
-    expect(distance.z).to.be.approximately(5, 0.5)
+    expect(distance.z).to.be.approximately(6, 0.5)
     done()
   })
   it("mobile device render table vertically", (done) => {
@@ -20,7 +20,7 @@ describe("View", () => {
   })
   it("mobile device scale to width", (done) => {
     const distance = CameraTop.viewPoint(0.4, fov)
-    expect(distance.z).to.be.approximately(7, 1)
+    expect(distance.z).to.be.approximately(8.5, 0.5)
     done()
   })
 })

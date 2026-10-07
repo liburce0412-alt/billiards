@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:22:50.885634+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: CUE_CLOSEUP_READY grip WIDTH_M 0.57 TARGET [0.003226875327527523, -0.4541250467300415, 0.002394850365817547]\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: CUE_CLOSEUP_READY grip WIDTH_M 0.57 TARGET [0.003226875327527523, -0.4541250467300415, 0.002394850365817547]\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\cue-aurora-prism.blend",
+    "sha256": "49dd53203d13c9a0970c45617f59ed7c081cba30a58f16b5a5fb442c07757764"
+  }
+}

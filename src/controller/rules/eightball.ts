@@ -311,7 +311,7 @@ export class EightBall implements Rules {
     }
 
     if (this.isEndOfGame(outcome)) {
-      return this.handleGameEnd(true)
+      return this.handleGameEnd(true, "合法打进黑八，本局获胜")
     }
 
     if (pots.some((b) => b.label === 8)) {

@@ -10,7 +10,9 @@ body.platform-app {
 }
 
 body.platform-app {
-  overflow-x: hidden;
+  overflow: clip auto;
+  min-height: var(--bb-visual-height, 100dvh);
+  padding-bottom: var(--bb-keyboard-height, 0);
 }
 
 .platform-app__fx {
@@ -24,7 +26,7 @@ body.platform-app {
 
 .platform-app__shell {
   position: relative;
-  min-height: 100svh;
+  min-height: var(--bb-visual-height, 100svh);
   display: grid;
   grid-template-rows: auto 1fr auto;
   padding: 0 clamp(1rem, 4vw, 4rem);
@@ -493,7 +495,7 @@ body.platform-app {
   }
 
   .platform-app__main {
-    padding-bottom: 6rem;
+    padding-bottom: calc(6rem + env(safe-area-inset-bottom));
   }
 }
 

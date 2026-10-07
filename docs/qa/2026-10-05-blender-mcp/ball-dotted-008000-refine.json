@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:41:04.035362+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 16:41:03 | INFO: Data are loaded, start creating Blender stuff\n16:41:03 | INFO: Blender create Mesh node 0\n16:41:03 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"ball-dotted-008000.blend\"\n16:41:04 | INFO: Starting glTF 2.0 export\n16:41:04 | INFO: Extracting primitive: Mesh_0.037\n16:41:04 | INFO: Primitives created: 1\n16:41:04 | INFO: Finished glTF 2.0 export in 0.006998538970947266 s\n\nREFINED ball-dotted-008000 ['radial normals + polished phenolic finish; UV/radius unchanged'] BOUNDS_PRESERVED\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 16:41:03 | INFO: Data are loaded, start creating Blender stuff\n16:41:03 | INFO: Blender create Mesh node 0\n16:41:03 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"ball-dotted-008000.blend\"\n16:41:04 | INFO: Starting glTF 2.0 export\n16:41:04 | INFO: Extracting primitive: Mesh_0.037\n16:41:04 | INFO: Primitives created: 1\n16:41:04 | INFO: Finished glTF 2.0 export in 0.006998538970947266 s\n\nREFINED ball-dotted-008000 ['radial normals + polished phenolic finish; UV/radius unchanged'] BOUNDS_PRESERVED\n"
+    },
+    "isError": false
+  }
+}

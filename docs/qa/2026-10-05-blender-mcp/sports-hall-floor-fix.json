@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:44:01.280166+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: Info: Saved as \"sports-hall.blend\"\n16:44:01 | INFO: Starting glTF 2.0 export\n16:44:01 | INFO: Extracting primitive: Centre court identifier.001\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2539\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2552\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2547\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2866\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2159\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2161\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2163\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2160\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2162\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2750\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2616\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2752\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2751\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2542\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Finished glTF 2.0 export in 0.13101720809936523 s\n\nASSET_READY sports-hall TRIANGLES 126448 ROOTS ['SportsHall']\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: Info: Saved as \"sports-hall.blend\"\n16:44:01 | INFO: Starting glTF 2.0 export\n16:44:01 | INFO: Extracting primitive: Centre court identifier.001\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2539\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2552\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2547\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2866\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2159\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2161\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2163\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2160\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2162\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2750\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2616\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2752\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2751\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Extracting primitive: Cube.2542\n16:44:01 | INFO: Primitives created: 1\n16:44:01 | INFO: Finished glTF 2.0 export in 0.13101720809936523 s\n\nASSET_READY sports-hall TRIANGLES 126448 ROOTS ['SportsHall']\n"
+    },
+    "isError": false
+  }
+}

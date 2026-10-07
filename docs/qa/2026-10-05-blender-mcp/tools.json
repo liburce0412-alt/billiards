@@ -1,0 +1,714 @@
+{
+  "time": "2026-10-05T08:04:32.018328+00:00",
+  "tool": "list",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "nextCursor": null,
+    "tools": [
+      {
+        "name": "get_addon_status",
+        "title": null,
+        "description": "\n    Check the connected Blender: its version, whether the addon matches this server, and which\n    asset libraries and 3D generators are switched on. Call it once at the start.\n\n    `integrations` says which search_assets sources and generate_3d providers are available.\n    `premium_generators` lists the 3D generators MCP for Blender Premium has on; when it is\n    non-empty the reply ends with guidance on when to generate instead of using libraries.\n\n    If outdated, tells the user how to update via `uvx mcp-for-blender install-addon`\n    (then restart or re-enable the addon in Blender).\n\n    `telemetry_consent` reports whether data collection is on, off, or null if\n    Blender could not be reached. Use it to answer telemetry status questions.\n    ",
+        "inputSchema": {
+          "properties": {
+            "user_prompt": {
+              "default": "",
+              "title": "User Prompt",
+              "type": "string"
+            }
+          },
+          "title": "get_addon_statusArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "title": "Result",
+              "type": "string"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "title": "get_addon_statusOutput",
+          "type": "object"
+        },
+        "icons": null,
+        "annotations": null,
+        "meta": null,
+        "execution": null
+      },
+      {
+        "name": "disable_telemetry",
+        "title": null,
+        "description": "\n    Turn OFF collection of prompts, code, screenshots and scene data.\n\n    Use this whenever the user asks to stop data collection, opt out of\n    telemetry, or stop sharing their data. Takes effect immediately.\n\n    This tool can only turn collection OFF. Turning it back on is done by the\n    user in Blender under Preferences > Add-ons > Blender MCP.\n    ",
+        "inputSchema": {
+          "properties": {
+            "user_prompt": {
+              "default": "",
+              "title": "User Prompt",
+              "type": "string"
+            }
+          },
+          "title": "disable_telemetryArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "title": "Result",
+              "type": "string"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "title": "disable_telemetryOutput",
+          "type": "object"
+        },
+        "icons": null,
+        "annotations": null,
+        "meta": null,
+        "execution": null
+      },
+      {
+        "name": "get_scene_info",
+        "title": null,
+        "description": "\n    Compact summary of the open scene: render/frame settings, then one line per object with world\n    location, world-space size, whether it sits on the ground, faces, materials, modifiers and\n    animation.\n\n    By default lists top-level objects only. Pass root=\"Name\" to list that object and its whole\n    hierarchy, or query=\"chair\" to list every object whose name contains the text. For anything\n    deeper about one object, read it with execute_blender_code.\n\n    Parameters:\n    - query: Optional name filter across all objects.\n    - root: Optional object whose hierarchy to list.\n    - limit: Maximum object lines (default 50).\n    - user_prompt: The user's own words describing what they want, quoted verbatim.\n    ",
+        "inputSchema": {
+          "properties": {
+            "user_prompt": {
+              "default": "",
+              "title": "User Prompt",
+              "type": "string"
+            },
+            "query": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Query"
+            },
+            "root": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Root"
+            },
+            "limit": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          "title": "get_scene_infoArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "title": "Result",
+              "type": "string"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "title": "get_scene_infoOutput",
+          "type": "object"
+        },
+        "icons": null,
+        "annotations": null,
+        "meta": null,
+        "execution": null
+      },
+      {
+        "name": "execute_blender_code",
+        "title": null,
+        "description": "\n    Run Python in the user's live Blender (bpy, bmesh, mathutils). Whatever it prints is returned.\n\n    Work in small steps and print what you need to know. Check the result with look.\n\n    Parameters:\n    - code: The Python code to execute\n    - user_prompt: The user's own words describing what they want, quoted verbatim (do not paraphrase or summarise). Pass the same goal on every call in a multi-step task so each action is linked to the intent behind it. Never substitute your own sub-goal, plan step, or status text; if the user has given no new instruction, repeat their previous words unchanged.\n    ",
+        "inputSchema": {
+          "properties": {
+            "code": {
+              "title": "Code",
+              "type": "string"
+            },
+            "user_prompt": {
+              "default": "",
+              "title": "User Prompt",
+              "type": "string"
+            }
+          },
+          "required": [
+            "code"
+          ],
+          "title": "execute_blender_codeArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "title": "Result",
+              "type": "string"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "title": "execute_blender_codeOutput",
+          "type": "object"
+        },
+        "icons": null,
+        "annotations": null,
+        "meta": null,
+        "execution": null
+      },
+      {
+        "name": "record_trajectory_feedback",
+        "title": null,
+        "description": "\n    Record evaluation feedback for a captured trajectory step.\n\n    Call it when the user reacts to a result: \"accept\" when they keep it (\"looks good\"),\n    \"reject\" or \"undo\" when they reject it or ask to undo, and \"correction\" with their words\n    as correction_text when they correct you (\"too dark\", \"make it taller\").\n\n    Parameters:\n    - feedback: One of accept | reject | undo | correction\n    - correction_text: Optional free-text correction or follow-up (especially for correction)\n    - step_index: Optional 0-based step index; defaults to the last recorded step\n    - user_prompt: Optional goal/prompt context for the feedback row\n    ",
+        "inputSchema": {
+          "properties": {
+            "feedback": {
+              "title": "Feedback",
+              "type": "string"
+            },
+            "correction_text": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Correction Text"
+            },
+            "step_index": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Step Index"
+            },
+            "user_prompt": {
+              "default": "",
+              "title": "User Prompt",
+              "type": "string"
+            }
+          },
+          "required": [
+            "feedback"
+          ],
+          "title": "record_trajectory_feedbackArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "title": "Result",
+              "type": "string"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "title": "record_trajectory_feedbackOutput",
+          "type": "object"
+        },
+        "icons": null,
+        "annotations": null,
+        "meta": null,
+        "execution": null
+      },
+      {
+        "name": "look",
+        "title": null,
+        "description": "\n    See the scene. One image per call; pick the mode that answers your question.\n\n    Modes:\n    - viewport: exactly what the user's 3D viewport shows.\n    - angles: a contact sheet of the target from several sides (default front, right, top,\n      three_quarter), auto-framed. Best for checking shape, proportions, placement and clipping.\n    - camera: through the scene camera, at the render aspect ratio. Use for composition.\n    - topology: wireframe on matcap, plus per-mesh counts (tris/quads/ngons, non-manifold and\n      boundary edges, loose verts, poles). Use for retopo and cleanup.\n    - rig: X-ray with bones in front, plus armature stats and unweighted vertex counts.\n    - frames: a strip of animation frames (evenly spaced over the frame range, or `frames`), to\n      judge motion. Seen from the viewport, or `view=\"camera\"` or an angle name.\n\n    Parameters:\n    - target: Object names to frame (children included). Default: every visible object.\n    - views: For angles/topology/rig: any of front, back, left, right, top, three_quarter (max 6).\n      topology and rig default to a single three_quarter view of the target.\n    - shading: Override the viewport shading for this image: solid, material, rendered, wireframe.\n      Materials only show in material or rendered. Rendered can be slow in Cycles.\n    - frames / frame_count: For frames mode; explicit frame numbers, or how many to sample (2-12).\n    - view: For frames mode: \"camera\", an angle name, or omit for the user's viewport.\n    - max_size: Longest side of the image in pixels.\n    - user_prompt: The user's own words describing what they want, quoted verbatim.\n\n    Every setting changed to take the picture is restored afterwards.\n    ",
+        "inputSchema": {
+          "properties": {
+            "mode": {
+              "default": "viewport",
+              "title": "Mode",
+              "type": "string"
+            },
+            "target": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Target"
+            },
+            "views": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Views"
+            },
+            "shading": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Shading"
+            },
+            "frames": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Frames"
+            },
+            "frame_count": {
+              "default": 6,
+              "title": "Frame Count",
+              "type": "integer"
+            },
+            "view": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "View"
+            },
+            "max_size": {
+              "default": 1000,
+              "title": "Max Size",
+              "type": "integer"
+            },
+            "user_prompt": {
+              "default": "",
+              "title": "User Prompt",
+              "type": "string"
+            }
+          },
+          "title": "lookArguments",
+          "type": "object"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": null,
+        "meta": {
+          "ui": {
+            "resourceUri": "ui://mcp-for-blender/viewport-v2"
+          }
+        },
+        "execution": null
+      },
+      {
+        "name": "generate_3d",
+        "title": null,
+        "description": "\n    Generate one 3D object with textures from a text prompt or an image, and import it.\n\n    Use it for hero objects and anything custom or specific. Never for a whole scene, the ground,\n    or parts to assemble; generate an object once and duplicate it for repeats. Each call can cost\n    the user money or a monthly generation.\n\n    Waits up to wait_seconds, then imports. Generation usually takes 1-3 minutes: if it isn't done\n    in time you get a job handle; call generate_3d(job=..., name=...) again to keep waiting.\n\n    Parameters:\n    - prompt: Short English description of one object (\"weathered wooden treasure chest\").\n    - image: Instead of a prompt: an absolute image file path or an http(s) URL. Images attached in\n      chat can't be passed: ask the user for a path or URL, don't fall back to text without asking.\n    - name: Object name in the scene. Defaults to one made from the prompt.\n    - provider: auto (default), tripo, hunyuan3d or hyper3d. Auto prefers the user's MCP for\n      Blender Premium generators, then their own API keys.\n    - quality: \"standard\" or \"high\" (Premium). Omit for the user's default; \"high\" only when the\n      user asks for more detail.\n    - bbox_condition: hyper3d only: [length, width, height] proportions.\n    - job: A handle from an earlier call, to resume waiting for it.\n    - user_prompt: The user's own words describing what they want, quoted verbatim.\n    ",
+        "inputSchema": {
+          "properties": {
+            "prompt": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Prompt"
+            },
+            "image": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Image"
+            },
+            "name": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Name"
+            },
+            "provider": {
+              "default": "auto",
+              "title": "Provider",
+              "type": "string"
+            },
+            "quality": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Quality"
+            },
+            "bbox_condition": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Bbox Condition"
+            },
+            "job": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Job"
+            },
+            "wait_seconds": {
+              "default": 50,
+              "title": "Wait Seconds",
+              "type": "integer"
+            },
+            "user_prompt": {
+              "default": "",
+              "title": "User Prompt",
+              "type": "string"
+            }
+          },
+          "title": "generate_3dArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "title": "Result",
+              "type": "string"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "title": "generate_3dOutput",
+          "type": "object"
+        },
+        "icons": null,
+        "annotations": null,
+        "meta": null,
+        "execution": null
+      },
+      {
+        "name": "search_assets",
+        "title": null,
+        "description": "\n    Search a free asset library. Pick the source by what you need:\n    - polyhaven: HDRIs (lighting), PBR textures for surfaces, generic realistic models. All CC0.\n      Search understands intent and synonyms, so describe the thing (\"couch\" finds sofas).\n    - sketchfab: specific real-world or realistic models (a named car, a landmark). Check licence\n      and face count.\n    - polypizza: stylised low-poly models, very light. CC0 or CC-BY (credit the creator).\n    For custom or unusual objects, generate_3d is usually better than any library.\n\n    Parameters:\n    - source: polyhaven, sketchfab or polypizza.\n    - query: What you're looking for, in plain words.\n    - asset_type: polyhaven only: hdris, textures, models or all.\n    - category: Optional. polyhaven: a category path (\"Metal/Sheet & Corrugated\"). sketchfab:\n      comma-separated categories. polypizza: e.g. \"Furniture & Decor\", \"Nature\", \"Animals\".\n    - attributes: polyhaven only: filters like {\"weather\": \"clear\"}; an unknown key errors with the\n      valid ones.\n    - min_size_m: polyhaven only: minimum real-world size in metres. Use 2+ for walls, floors and\n      ground so textures don't visibly repeat.\n    - licence: polypizza only: \"CC0\" or \"CC-BY\".\n    - animated: polypizza only: animated models only.\n    - limit: Number of results.\n    - previews: Attach thumbnails of the first N results (max 6; polyhaven and sketchfab). Cheaper\n      than importing the wrong asset.\n    - user_prompt: The user's own words describing what they want, quoted verbatim.\n\n    Results include each asset's id; pass it to import_asset.\n    ",
+        "inputSchema": {
+          "properties": {
+            "source": {
+              "title": "Source",
+              "type": "string"
+            },
+            "query": {
+              "default": "",
+              "title": "Query",
+              "type": "string"
+            },
+            "asset_type": {
+              "default": "all",
+              "title": "Asset Type",
+              "type": "string"
+            },
+            "category": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Category"
+            },
+            "attributes": {
+              "anyOf": [
+                {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Attributes"
+            },
+            "min_size_m": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Min Size M"
+            },
+            "licence": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Licence"
+            },
+            "animated": {
+              "default": false,
+              "title": "Animated",
+              "type": "boolean"
+            },
+            "limit": {
+              "default": 20,
+              "title": "Limit",
+              "type": "integer"
+            },
+            "previews": {
+              "default": 0,
+              "title": "Previews",
+              "type": "integer"
+            },
+            "user_prompt": {
+              "default": "",
+              "title": "User Prompt",
+              "type": "string"
+            }
+          },
+          "required": [
+            "source"
+          ],
+          "title": "search_assetsArguments",
+          "type": "object"
+        },
+        "outputSchema": null,
+        "icons": null,
+        "annotations": null,
+        "meta": null,
+        "execution": null
+      },
+      {
+        "name": "import_asset",
+        "title": null,
+        "description": "\n    Download an asset found with search_assets and bring it into the scene.\n\n    Parameters:\n    - source: polyhaven, sketchfab or polypizza.\n    - id: The asset's id (UID for sketchfab) from search_assets.\n    - asset_type: polyhaven only, required: hdris (becomes the world lighting), textures (builds a\n      PBR material) or models.\n    - target_size: Size in metres of the model's largest dimension (chair 1.0, car 4.5, cup 0.12).\n      Required for sketchfab, recommended for polypizza; library models come at arbitrary scale.\n    - apply_to: polyhaven textures: object names to put the material on (replaces their materials).\n      Without it the material is created but unused, and is lost if the file is saved.\n    - resolution: polyhaven: 1k, 2k, 4k or 8k. 1k-2k for background, 4k for close-ups.\n    - file_format: polyhaven, optional: hdr/exr for HDRIs, jpg/png/exr for textures.\n    - user_prompt: The user's own words describing what they want, quoted verbatim.\n\n    Afterwards check the reported bounding box, put the object on the ground, and look at it.\n    ",
+        "inputSchema": {
+          "properties": {
+            "source": {
+              "title": "Source",
+              "type": "string"
+            },
+            "id": {
+              "title": "Id",
+              "type": "string"
+            },
+            "asset_type": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Asset Type"
+            },
+            "target_size": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Target Size"
+            },
+            "apply_to": {
+              "anyOf": [
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "Apply To"
+            },
+            "resolution": {
+              "default": "1k",
+              "title": "Resolution",
+              "type": "string"
+            },
+            "file_format": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "default": null,
+              "title": "File Format"
+            },
+            "user_prompt": {
+              "default": "",
+              "title": "User Prompt",
+              "type": "string"
+            }
+          },
+          "required": [
+            "source",
+            "id"
+          ],
+          "title": "import_assetArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "title": "Result",
+              "type": "string"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "title": "import_assetOutput",
+          "type": "object"
+        },
+        "icons": null,
+        "annotations": null,
+        "meta": null,
+        "execution": null
+      },
+      {
+        "name": "get_guide",
+        "title": null,
+        "description": "\n    Load a workflow guide before starting work in that area. Guides hold the know-how and\n    version pitfalls that aren't worth carrying in every conversation.\n\n    Topics:\n- animation: Keyframing from Python across Blender versions, easing, cycles, NLA, cameras, and checking motion with frame strips.\n- bpy: Version-proof scripting, API introspection, operator context, and the mistakes that break scripts on other people's machines.\n- level-design: Game levels in Blender - player metrics, blockout, modular kits, instancing, collisions, and export to game engines.\n- materials: Node-based materials that survive version and language changes, applying Poly Haven textures, real-world tiling, and procedural looks.\n- retopology: Turning generated or scanned meshes into clean, lighter geometry - cleanup, remeshing, decimation, UVs and baking detail back.\n- rigging: Armatures from Python, Rigify for characters, skinning with automatic weights and how to fix it, and verifying deformation.\n- scene: Building a believable scene - scale, grounding, composition, choosing between generated and library assets, lighting and camera.\n    ",
+        "inputSchema": {
+          "properties": {
+            "topic": {
+              "title": "Topic",
+              "type": "string"
+            }
+          },
+          "required": [
+            "topic"
+          ],
+          "title": "get_guideArguments",
+          "type": "object"
+        },
+        "outputSchema": {
+          "properties": {
+            "result": {
+              "title": "Result",
+              "type": "string"
+            }
+          },
+          "required": [
+            "result"
+          ],
+          "title": "get_guideOutput",
+          "type": "object"
+        },
+        "icons": null,
+        "annotations": null,
+        "meta": null,
+        "execution": null
+      }
+    ]
+  }
+}

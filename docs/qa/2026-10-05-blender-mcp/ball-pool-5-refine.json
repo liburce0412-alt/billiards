@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:38:18.182851+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 17:38:18 | INFO: Data are loaded, start creating Blender stuff\n17:38:18 | INFO: Blender create Mesh node 0\n17:38:18 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"ball-pool-5.blend\"\n17:38:18 | INFO: Starting glTF 2.0 export\n17:38:18 | INFO: Extracting primitive: Mesh_0.048\n17:38:18 | INFO: Primitives created: 1\n17:38:18 | INFO: Finished glTF 2.0 export in 0.014383554458618164 s\n\nREFINED ball-pool-5 ['radial normals + polished phenolic finish; UV/radius unchanged'] BOUNDS_PRESERVED\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 17:38:18 | INFO: Data are loaded, start creating Blender stuff\n17:38:18 | INFO: Blender create Mesh node 0\n17:38:18 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"ball-pool-5.blend\"\n17:38:18 | INFO: Starting glTF 2.0 export\n17:38:18 | INFO: Extracting primitive: Mesh_0.048\n17:38:18 | INFO: Primitives created: 1\n17:38:18 | INFO: Finished glTF 2.0 export in 0.014383554458618164 s\n\nREFINED ball-pool-5 ['radial normals + polished phenolic finish; UV/radius unchanged'] BOUNDS_PRESERVED\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\.tmp\\legacy-art-export\\ball-pool-5.glb",
+    "sha256": "ce9576ae5f9fae92d1ab55ab0d0155dce9e65ee7aae1b6a666e30c4bade1a22f"
+  }
+}

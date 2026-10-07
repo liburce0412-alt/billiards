@@ -9,6 +9,10 @@ import { constantTimeEqual, randomToken, sha256 } from "../crypto"
 import type { PlatformEnv } from "../env"
 import { HttpError, json, readJson } from "../http"
 import { verifyTurnstile } from "../turnstile"
+import {
+  containsAdminDemoPreference,
+  hasAdminDemoAssistCapability,
+} from "../admin-demo-assist"
 
 const registerSchema = z.object({
   username: z.string().trim().min(3).max(24),
@@ -45,6 +49,9 @@ const profileSchema = z.object({
       cameraMode: z.enum(["aim", "top", "free"]).optional(),
       masterVolume: z.number().min(0).max(1).optional(),
       socialDrawerOpen: z.boolean().optional(),
+      adminDemoOfflineEnabled: z.boolean().optional(),
+      adminDemoOnlineEnabled: z.boolean().optional(),
+      adminDemoLevel: z.number().int().min(1).max(11).optional(),
     })
     .optional(),
 })
@@ -109,13 +116,15 @@ async function persistRegisteredAccount(
     env.DB.prepare(
       `INSERT INTO profiles(
         user_id, display_name, role, approval_status, visibility,
+        admin_demo_assist,
         created_at, updated_at, approved_by, approved_at
-      ) VALUES (?, ?, ?, ?, 'online', ?, ?, ?, ?)`
+      ) VALUES (?, ?, ?, ?, 'online', ?, ?, ?, ?, ?)`
     ).bind(
       userId,
       displayName,
       isAdmin ? "admin" : "user",
       isAdmin ? "approved" : "pending",
+      Number(isAdmin),
       now,
       now,
       isAdmin ? userId : null,
@@ -240,6 +249,7 @@ export async function me(request: Request, env: PlatformEnv) {
       online: profile.approval_status === "approved",
       social: profile.approval_status === "approved",
       admin: profile.role === "admin" || profile.role === "moderator",
+      adminDemoAssist: hasAdminDemoAssistCapability(profile),
     },
     turnstileSiteKey: env.TURNSTILE_SITE_KEY || null,
     announcements: announcements.results,
@@ -247,7 +257,7 @@ export async function me(request: Request, env: PlatformEnv) {
 }
 
 export async function updateMe(request: Request, env: PlatformEnv) {
-  const { session } = await requireProfile(request, env)
+  const { session, profile } = await requireProfile(request, env)
   const input = profileSchema.parse(await readJson(request))
   const now = Date.now()
   const profileUpdates = [
@@ -277,6 +287,16 @@ export async function updateMe(request: Request, env: PlatformEnv) {
       .run()
   }
   if (input.preferences) {
+    if (
+      !hasAdminDemoAssistCapability(profile) &&
+      containsAdminDemoPreference(input.preferences)
+    ) {
+      throw new HttpError(
+        403,
+        "admin_demo_assist_forbidden",
+        "此账号没有管理员演示辅助权限"
+      )
+    }
     const mapping: Record<string, string> = {
       reducedMotion: "reduced_motion",
       quality: "quality",
@@ -285,6 +305,9 @@ export async function updateMe(request: Request, env: PlatformEnv) {
       cameraMode: "camera_mode",
       masterVolume: "master_volume",
       socialDrawerOpen: "social_drawer_open",
+      adminDemoOfflineEnabled: "admin_demo_offline_enabled",
+      adminDemoOnlineEnabled: "admin_demo_online_enabled",
+      adminDemoLevel: "admin_demo_level",
     }
     const entries = Object.entries(input.preferences).filter(
       ([, value]) => value !== undefined

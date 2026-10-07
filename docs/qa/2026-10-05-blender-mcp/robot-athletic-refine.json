@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T09:11:19.124528+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: Info: Saved as \"robot-player.blend\"\n17:11:18 | INFO: Starting glTF 2.0 export\n17:11:18 | INFO: Extracting primitive: Cube.420\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Cube.412\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Sphere.102\n17:11:18 | INFO: Primitives created: 5\n17:11:18 | INFO: Extracting primitive: Sphere.083\n17:11:18 | INFO: Primitives created: 1\n17:11:18 | INFO: Extracting primitive: Cone.122\n17:11:18 | INFO: Primitives created: 4\n17:11:18 | INFO: Extracting primitive: Cone.121\n17:11:18 | INFO: Primitives created: 1\n17:11:18 | INFO: Extracting primitive: Sphere.103\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Sphere.084\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Cone.112\n17:11:18 | INFO: Primitives created: 5\n17:11:18 | INFO: Extracting primitive: Cube.391\n17:11:18 | INFO: Primitives created: 2\n17:11:18 | INFO: Extracting primitive: Sphere.119\n17:11:18 | INFO: Primitives created: 4\n17:11:18 | INFO: Extracting primitive: Sphere.100\n17:11:18 | INFO: Primitives created: 4\n17:11:18 | INFO: Extracting primitive: Cone.160\n17:11:18 | INFO: Primitives created: 2\n17:11:18 | INFO: Extracting primitive: Cone.139\n17:11:18 | INFO: Primitives created: 2\n17:11:18 | INFO: Extracting primitive: Cube.392\n17:11:18 | INFO: Primitives created: 5\n17:11:18 | INFO: Extracting primitive: Sphere.101\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Sphere.082\n17:11:18 | INFO: Primitives created: 3\n17:11:19 | INFO: Finished glTF 2.0 export in 0.7983543872833252 s\n\nAthlete sample exported 17 semantic meshes 45 bones\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: Info: Saved as \"robot-player.blend\"\n17:11:18 | INFO: Starting glTF 2.0 export\n17:11:18 | INFO: Extracting primitive: Cube.420\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Cube.412\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Sphere.102\n17:11:18 | INFO: Primitives created: 5\n17:11:18 | INFO: Extracting primitive: Sphere.083\n17:11:18 | INFO: Primitives created: 1\n17:11:18 | INFO: Extracting primitive: Cone.122\n17:11:18 | INFO: Primitives created: 4\n17:11:18 | INFO: Extracting primitive: Cone.121\n17:11:18 | INFO: Primitives created: 1\n17:11:18 | INFO: Extracting primitive: Sphere.103\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Sphere.084\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Cone.112\n17:11:18 | INFO: Primitives created: 5\n17:11:18 | INFO: Extracting primitive: Cube.391\n17:11:18 | INFO: Primitives created: 2\n17:11:18 | INFO: Extracting primitive: Sphere.119\n17:11:18 | INFO: Primitives created: 4\n17:11:18 | INFO: Extracting primitive: Sphere.100\n17:11:18 | INFO: Primitives created: 4\n17:11:18 | INFO: Extracting primitive: Cone.160\n17:11:18 | INFO: Primitives created: 2\n17:11:18 | INFO: Extracting primitive: Cone.139\n17:11:18 | INFO: Primitives created: 2\n17:11:18 | INFO: Extracting primitive: Cube.392\n17:11:18 | INFO: Primitives created: 5\n17:11:18 | INFO: Extracting primitive: Sphere.101\n17:11:18 | INFO: Primitives created: 3\n17:11:18 | INFO: Extracting primitive: Sphere.082\n17:11:18 | INFO: Primitives created: 3\n17:11:19 | INFO: Finished glTF 2.0 export in 0.7983543872833252 s\n\nAthlete sample exported 17 semantic meshes 45 bones\n"
+    },
+    "isError": false
+  }
+}

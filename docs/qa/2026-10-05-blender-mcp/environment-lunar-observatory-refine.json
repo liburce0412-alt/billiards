@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:55:26.393251+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 17:55:25 | INFO: Data are loaded, start creating Blender stuff\n17:55:25 | INFO: Blender create Mesh node 0\n17:55:25 | INFO: Blender create Mesh node 1\n17:55:25 | INFO: Blender create Mesh node 2\n17:55:25 | INFO: Blender create Mesh node 3\n17:55:25 | INFO: Blender create Mesh node 4\n17:55:25 | INFO: Blender create Mesh node 5\n17:55:25 | INFO: Blender create Mesh node 6\n17:55:25 | INFO: Blender create Mesh node 7\n17:55:25 | INFO: glTF import finished in 0.06s\nInfo: Saved as \"environment-lunar-observatory.blend\"\n17:55:26 | INFO: Starting glTF 2.0 export\n17:55:26 | INFO: Extracting primitive: Mesh_6.002\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_1.006\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_2.006\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_3.006\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_4.006\n17:55:26 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_5.004\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Torus.003\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Cube.012\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Shielded antenna cable\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Closed parabolic reflector mesh\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_0.003\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_7\n17:55:26 | INFO: Primitives created: 0\n17:55:26 | WARNING: Mesh 'Mesh_7' has no primitives and will be omitted.\n17:55:26 | INFO: Finished glTF 2.0 export in 0.16284537315368652 s\n\nENVIRONMENT_REFINED environment-lunar-observatory TRIANGLES 54344 PROXIES_PRESERVED 2\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 17:55:25 | INFO: Data are loaded, start creating Blender stuff\n17:55:25 | INFO: Blender create Mesh node 0\n17:55:25 | INFO: Blender create Mesh node 1\n17:55:25 | INFO: Blender create Mesh node 2\n17:55:25 | INFO: Blender create Mesh node 3\n17:55:25 | INFO: Blender create Mesh node 4\n17:55:25 | INFO: Blender create Mesh node 5\n17:55:25 | INFO: Blender create Mesh node 6\n17:55:25 | INFO: Blender create Mesh node 7\n17:55:25 | INFO: glTF import finished in 0.06s\nInfo: Saved as \"environment-lunar-observatory.blend\"\n17:55:26 | INFO: Starting glTF 2.0 export\n17:55:26 | INFO: Extracting primitive: Mesh_6.002\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_1.006\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_2.006\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_3.006\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_4.006\n17:55:26 | WARNING: More than one shader node tex image used for a texture. The resulting glTF sampler will behave like the first shader node tex image.\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_5.004\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Torus.003\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Cube.012\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Shielded antenna cable\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Closed parabolic reflector mesh\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_0.003\n17:55:26 | INFO: Primitives created: 1\n17:55:26 | INFO: Extracting primitive: Mesh_7\n17:55:26 | INFO: Primitives created: 0\n17:55:26 | WARNING: Mesh 'Mesh_7' has no primitives and will be omitted.\n17:55:26 | INFO: Finished glTF 2.0 export in 0.16284537315368652 s\n\nENVIRONMENT_REFINED environment-lunar-observatory TRIANGLES 54344 PROXIES_PRESERVED 2\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\.tmp\\legacy-art-export\\environment-lunar-observatory.glb",
+    "sha256": "a141b6fefadbac9714ae3f83c4c5fd2239a8007442f39175b6de09fcdaf54023"
+  }
+}

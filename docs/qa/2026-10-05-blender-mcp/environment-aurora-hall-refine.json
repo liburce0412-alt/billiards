@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T10:00:32.573166+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 18:00:32 | INFO: Data are loaded, start creating Blender stuff\n18:00:32 | INFO: Blender create Mesh node 0\n18:00:32 | INFO: Blender create Mesh node 1\n18:00:32 | INFO: Blender create Mesh node 2\n18:00:32 | INFO: Blender create Mesh node 3\n18:00:32 | INFO: Blender create Mesh node 4\n18:00:32 | INFO: glTF import finished in 0.03s\nInfo: Saved as \"environment-aurora-hall.blend\"\n18:00:32 | INFO: Starting glTF 2.0 export\n18:00:32 | INFO: Extracting primitive: Ice vein at structural foot\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Continuous snow heightfield mesh\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_1.002\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_2.002\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_3.002\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_4.002\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_0.001\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Finished glTF 2.0 export in 0.0778188705444336 s\n\nENVIRONMENT_REFINED environment-aurora-hall TRIANGLES 27380 PROXIES_PRESERVED 1\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 18:00:32 | INFO: Data are loaded, start creating Blender stuff\n18:00:32 | INFO: Blender create Mesh node 0\n18:00:32 | INFO: Blender create Mesh node 1\n18:00:32 | INFO: Blender create Mesh node 2\n18:00:32 | INFO: Blender create Mesh node 3\n18:00:32 | INFO: Blender create Mesh node 4\n18:00:32 | INFO: glTF import finished in 0.03s\nInfo: Saved as \"environment-aurora-hall.blend\"\n18:00:32 | INFO: Starting glTF 2.0 export\n18:00:32 | INFO: Extracting primitive: Ice vein at structural foot\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Continuous snow heightfield mesh\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_1.002\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_2.002\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_3.002\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_4.002\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Extracting primitive: Mesh_0.001\n18:00:32 | INFO: Primitives created: 1\n18:00:32 | INFO: Finished glTF 2.0 export in 0.0778188705444336 s\n\nENVIRONMENT_REFINED environment-aurora-hall TRIANGLES 27380 PROXIES_PRESERVED 1\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\.tmp\\legacy-art-export\\environment-aurora-hall.glb",
+    "sha256": "a61a08680fddaaa64cbffc5c87ab52ca1813a9bb228344ad8858b0c645da21a8"
+  }
+}

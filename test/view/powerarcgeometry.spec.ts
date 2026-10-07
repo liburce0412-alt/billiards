@@ -23,4 +23,22 @@ describe("PowerArcGeometry", () => {
       expect(Math.hypot(normal.x, normal.y)).toBeCloseTo(1, 8)
     }
   })
+
+  it("uses pointer y for the vertical bowed rail", () => {
+    const vertical = new PowerArcGeometry(
+      80,
+      180,
+      undefined,
+      undefined,
+      undefined,
+      "vertical"
+    )
+    expect(vertical.pointAt(0)).toEqual({ x: 28, y: 20 })
+    expect(vertical.pointAt(0.5)).toEqual({ x: 48, y: 90 })
+    expect(vertical.pointAt(1)).toEqual({ x: 28, y: 160 })
+    expect(vertical.valueFromPointer(0, 20)).toBe(0)
+    expect(vertical.valueFromPointer(0, 90)).toBe(0.5)
+    expect(vertical.valueFromPointer(0, 160)).toBe(1)
+    expect(vertical.valueFromPointer(999, 90)).toBe(0.5)
+  })
 })

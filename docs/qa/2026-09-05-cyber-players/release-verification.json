@@ -1,0 +1,505 @@
+{
+  "checkedAt": "2026-09-05T14:22:05.416Z",
+  "origin": "https://play.campus3ai.xyz",
+  "assets": [
+    {
+      "file": "106.js",
+      "status": 200,
+      "bytes": 140304,
+      "sha256": "bd2f9408ffe8c5be850e122f20c5a918e6ec21d2287cf5b97cfeccda0b22c3e5",
+      "matches": true
+    },
+    {
+      "file": "312.js",
+      "status": 200,
+      "bytes": 29709,
+      "sha256": "6c08d70b243f36f64d279f669c3df515dad6287cbb5cdad2ed4f45bb3b1f4cfa",
+      "matches": true
+    },
+    {
+      "file": "335.js",
+      "status": 200,
+      "bytes": 14102,
+      "sha256": "57c92644768a85bac62639e7ce36c6fc2fbb393509710fb7b30ec9192f19984d",
+      "matches": true
+    },
+    {
+      "file": "419.js",
+      "status": 200,
+      "bytes": 32484,
+      "sha256": "e08167d132030db6564ccad638a21dbd2d027ca80d15a314ae24853f9ab56883",
+      "matches": true
+    },
+    {
+      "file": "index.html",
+      "status": 200,
+      "bytes": 27824,
+      "sha256": "95c70f3cd895b72f2c480c60a6a7271bb553528b3b6458c9ae8e75eb84638c58",
+      "matches": true
+    },
+    {
+      "file": "692.js",
+      "status": 200,
+      "bytes": 11883,
+      "sha256": "04db0d87113972540257ae499aac4ecc6051c3179594f26beff028fb15669ea3",
+      "matches": true
+    },
+    {
+      "file": "15.js",
+      "status": 200,
+      "bytes": 19471,
+      "sha256": "ba76ae06ff094fd210c0d8725f0679e1c9e74124d1fdd49883682d797da1c5a4",
+      "matches": true
+    },
+    {
+      "file": "185.js",
+      "status": 200,
+      "bytes": 462892,
+      "sha256": "d13ff916cc0a7d93f105f4b8beb3aed910f31add973a29da4d824128122734a9",
+      "matches": true
+    },
+    {
+      "file": "86.js",
+      "status": 200,
+      "bytes": 29460,
+      "sha256": "25b57c624d9aa4b11457e4f4dcf62f21c37a4b64e23291be482d4024437031bd",
+      "matches": true
+    },
+    {
+      "file": "868.js",
+      "status": 200,
+      "bytes": 98685,
+      "sha256": "0c3e0f19c3909530c8323ff360b1b9cbcf681a7fe8cf5860e80fa12f3db2c445",
+      "matches": true
+    },
+    {
+      "file": "761.js",
+      "status": 200,
+      "bytes": 549486,
+      "sha256": "d3c581778dab1ce9e8b9e2c77b05e1bb91103fe5552a807c0beeefb0c50e1fdd",
+      "matches": true
+    },
+    {
+      "file": "708.js",
+      "status": 200,
+      "bytes": 471588,
+      "sha256": "f3fbc142a051cd56a30536cf7309104a8d8e677da2fc813200d1727b0a59a9c9",
+      "matches": true
+    },
+    {
+      "file": "876.js",
+      "status": 200,
+      "bytes": 344986,
+      "sha256": "61473c7f851d9cd25f175a1d0b85bf0c3dea9c20a9df5795d746fa59f176b7c1",
+      "matches": true
+    },
+    {
+      "file": "account.js",
+      "status": 200,
+      "bytes": 57355,
+      "sha256": "75250abe75a2bc8e418a1b891385262ddcca163bc86084701728843e1a897e1a",
+      "matches": true
+    },
+    {
+      "file": "924.js",
+      "status": 200,
+      "bytes": 29751,
+      "sha256": "eafed3e5ff8664c5e51d8bd23d9e2e40835b136ae2a358834387551af1b7fa74",
+      "matches": true
+    },
+    {
+      "file": "admin.js",
+      "status": 200,
+      "bytes": 58001,
+      "sha256": "9d378489897a191a23ad4f6c210f1ca099d92af336be47b4a46585f42dff7aec",
+      "matches": true
+    },
+    {
+      "file": "999.js",
+      "status": 200,
+      "bytes": 22391,
+      "sha256": "4ecf664f8ad25ebae60a25a5382adb8a208b0bb1b1d64f01dae60eae2be08aab",
+      "matches": true
+    },
+    {
+      "file": "index.js",
+      "status": 200,
+      "bytes": 3960,
+      "sha256": "10e8eec0fd059375e74952b50ba69ffdd68b15de43eb94d69321e3861ec42e98",
+      "matches": true
+    },
+    {
+      "file": "launcher.js",
+      "status": 200,
+      "bytes": 60559,
+      "sha256": "86c6f16723c57bf169745a4ca4a1fd89abd396d2a1cf8d958ca7070ca20dcd01",
+      "matches": true
+    },
+    {
+      "file": "app.js",
+      "status": 200,
+      "bytes": 360376,
+      "sha256": "2476f5af04a33414510c958131a279320441549f96f2350946cd4358f7b1c207",
+      "matches": true
+    },
+    {
+      "file": "lobby.js",
+      "status": 200,
+      "bytes": 57382,
+      "sha256": "4ee8e24157129d3da4b9b436a9496aba367c12bd149268ecd9ba8fa598c6ed92",
+      "matches": true
+    },
+    {
+      "file": "compare.js",
+      "status": 200,
+      "bytes": 554199,
+      "sha256": "f068a44820868b5955bfe211234b254fd0cbe7467d7abaec97cc924a129180c5",
+      "matches": true
+    },
+    {
+      "file": "messaging.js",
+      "status": 200,
+      "bytes": 16211,
+      "sha256": "ad73a02af0cbaeb6096a3ee13304d4195317b89f55dbccad976a98102c0f8583",
+      "matches": true
+    },
+    {
+      "file": "diagram.js",
+      "status": 200,
+      "bytes": 563286,
+      "sha256": "a804679bdffd19c0dde54d323fc52df0b2415adae075f74d156685a57fa1b8eb",
+      "matches": true
+    },
+    {
+      "file": "rules.js",
+      "status": 200,
+      "bytes": 5517,
+      "sha256": "7e98e328b724b99c80bb6661eecba348a01a6696977357ba490f8c7614b6078d",
+      "matches": true
+    },
+    {
+      "file": "mathavan.js",
+      "status": 200,
+      "bytes": 40590,
+      "sha256": "dd806585f4f9debdacec76785c2e8af2af4b719933ac95db19031a8de6f8eef1",
+      "matches": true
+    },
+    {
+      "file": "sw.js",
+      "status": 200,
+      "bytes": 574,
+      "sha256": "67a8d44184772d61c81268336f02dcb5915604d3bc0633b9cb5c5bafdef67257",
+      "matches": true
+    },
+    {
+      "file": "three_examples.js",
+      "status": 200,
+      "bytes": 87868,
+      "sha256": "c53d170f61d5015c3b92742df4ac03d464809e22fb7ccfe2f7b85fa6f5ef4a34",
+      "matches": true
+    },
+    {
+      "file": "three_core.js",
+      "status": 200,
+      "bytes": 289295,
+      "sha256": "dad9d90510ab9fd38a2e3ab0f63a052ad008477d1c97161b49c199c721957ebf",
+      "matches": true
+    },
+    {
+      "file": "stronge.js",
+      "status": 200,
+      "bytes": 5996,
+      "sha256": "4aff69ccea8a65e7faa178f42c38b48e9c6ef8d0e447cbbb61c8f93ecfa2ed12",
+      "matches": true
+    },
+    {
+      "file": "tokens.css",
+      "status": 200,
+      "bytes": 5685,
+      "sha256": "22973a8d3040ab4fbc3fc699e7b7586b0ff0dc2cf978512c8ef5fa82986e9180",
+      "matches": true
+    },
+    {
+      "file": "ww-node.js",
+      "status": 200,
+      "bytes": 1548,
+      "sha256": "951e74605dcba9b5dfd3f801c6fafd21470f02a50d08e395a8925477cc98cd0a",
+      "matches": true
+    },
+    {
+      "file": "css/account.css",
+      "status": 200,
+      "bytes": 6956,
+      "sha256": "04602dad66c7a8ea5755de2452e089e2ba1429068fa1da8838a06e6e100f02d2",
+      "matches": true
+    },
+    {
+      "file": "ww.js",
+      "status": 200,
+      "bytes": 3045,
+      "sha256": "0b0f6f4b83e48161a773472096289b840aff8828578bc0e5d74dac9d440d6876",
+      "matches": true
+    },
+    {
+      "file": "three_module.js",
+      "status": 200,
+      "bytes": 359402,
+      "sha256": "8cef47734083ae512136a5780a02087cab74c9783af7bdec21c7c092ee188615",
+      "matches": true
+    },
+    {
+      "file": "worker.js",
+      "status": 200,
+      "bytes": 301745,
+      "sha256": "626558942f56f109cb15d0bb89b47cf10a48c1d43a8fd4cadf532f6076b3193b",
+      "matches": true
+    },
+    {
+      "file": "css/admin.css",
+      "status": 200,
+      "bytes": 10755,
+      "sha256": "3e14938e09955ee30c8e0a084885fa26fc9e67d75ecee7d60fd2a5164fe2da0b",
+      "matches": true
+    },
+    {
+      "file": "css/app.css",
+      "status": 200,
+      "bytes": 10364,
+      "sha256": "ef493ffea20da8109805c60f2d9e6c512231b08a0ffb02f9e9c350b84ae709e8",
+      "matches": true
+    },
+    {
+      "file": "css/ball-colors.css",
+      "status": 200,
+      "bytes": 3609,
+      "sha256": "aca140c5b36b8256026f304e2341e4548e701e334e4394a86f771ec5f30fe08b",
+      "matches": true
+    },
+    {
+      "file": "css/chat.css",
+      "status": 200,
+      "bytes": 4972,
+      "sha256": "933d59e4cfb3237287883aca768ae5a3e808dbc57575b2123bbd3008d0eba697",
+      "matches": true
+    },
+    {
+      "file": "css/diagrams.css",
+      "status": 200,
+      "bytes": 1228,
+      "sha256": "93a89964b08fa891a3bc7058099802a3bd75c588a18892fb9a80cff3d745ec30",
+      "matches": true
+    },
+    {
+      "file": "css/aiminputs.css",
+      "status": 200,
+      "bytes": 6975,
+      "sha256": "a2ae00eb8dad553a9834ba5ccf88cf8ced5e4c9d12365a40ef6df2bbc7fda6e2",
+      "matches": true
+    },
+    {
+      "file": "css/fonts.css",
+      "status": 200,
+      "bytes": 708,
+      "sha256": "c31b1bbd51d012642a64ec1499fe955c6d8b2bffed4c26e8e4c4af9e635852cb",
+      "matches": true
+    },
+    {
+      "file": "css/game-future.css",
+      "status": 200,
+      "bytes": 45940,
+      "sha256": "47bf8d32f0249e68a6785ba57301b3d3a01a102a76c8266ebf9b4ca4171e6ce8",
+      "matches": true
+    },
+    {
+      "file": "css/lab-tools.css",
+      "status": 200,
+      "bytes": 6503,
+      "sha256": "d266da604d9b44a24228ccf4112f8edeeca870c0ef2e858efe97e75b30c023ab",
+      "matches": true
+    },
+    {
+      "file": "css/launcher.css",
+      "status": 200,
+      "bytes": 20193,
+      "sha256": "a828ec5708e8b0117746d8f5f8e607ce8e457b2f3ecf416bf2b1fa997c2faa23",
+      "matches": true
+    },
+    {
+      "file": "css/game-react.css",
+      "status": 200,
+      "bytes": 42998,
+      "sha256": "dbd664ccef5f8e4727f9e344c0560550e75dd17b32c2cea2fd97286444c3251a",
+      "matches": true
+    },
+    {
+      "file": "css/menu.css",
+      "status": 200,
+      "bytes": 5669,
+      "sha256": "6a6c8958074284d1235af35c5341bb7c15e465441d34c115c426de0a2587bbe9",
+      "matches": true
+    },
+    {
+      "file": "css/lobby.css",
+      "status": 200,
+      "bytes": 1077,
+      "sha256": "59d42924d0d5b71c172ad19ec7c90b08faa108851583e9cffb7e474df421ce77",
+      "matches": true
+    },
+    {
+      "file": "css/notification.css",
+      "status": 200,
+      "bytes": 12404,
+      "sha256": "135f399096189962e5ff9786f6edfe5d3f74ece4c02afdf4a4e839b80a070f45",
+      "matches": true
+    },
+    {
+      "file": "css/platform.css",
+      "status": 200,
+      "bytes": 14766,
+      "sha256": "600f7a60442913a8ee45109371ac5288196bf8606db3cd199db1e313928dae1f",
+      "matches": true
+    },
+    {
+      "file": "css/powerinput.css",
+      "status": 200,
+      "bytes": 3166,
+      "sha256": "b048366833c265629cc91b0756f1b88172fbbd364520e6f494e4f1cb17d75535",
+      "matches": true
+    },
+    {
+      "file": "css/index.css",
+      "status": 200,
+      "bytes": 28674,
+      "sha256": "4039d7d77e7da6cb9d3cc1dd08f3d413bc0aace8727108d53dfb65dbb8cd735b",
+      "matches": true
+    },
+    {
+      "file": "css/social.css",
+      "status": 200,
+      "bytes": 6333,
+      "sha256": "6c6aab8c46a9165915736d8b5f06ff30532c755b7dc35c7afac9f368bc1ec6f8",
+      "matches": true
+    },
+    {
+      "file": "css/rules.css",
+      "status": 200,
+      "bytes": 7224,
+      "sha256": "bc5cb351c04a636a53770e2d6ee04605299234f9b4e0d02af1fa459e443ef6f4",
+      "matches": true
+    },
+    {
+      "file": "css/wood.css",
+      "status": 200,
+      "bytes": 830,
+      "sha256": "dd24f9f83ba4fb0c08a986f19a593f4cb126ba531751337bd81f4d3c1de1dd11",
+      "matches": true
+    },
+    {
+      "file": "css/tray.css",
+      "status": 200,
+      "bytes": 2657,
+      "sha256": "e387d532f150625c5ac22ba8d2f7100273196f8e27c9e2720b419adfd3626107",
+      "matches": true
+    },
+    {
+      "file": "css/react-app.css",
+      "status": 200,
+      "bytes": 42365,
+      "sha256": "55748a05ad5c8cde838b1f79eab739b88666519ffcbcb11e9f8988c160f7c6e6",
+      "matches": true
+    },
+    {
+      "file": "images/environments/galaxy.webp",
+      "status": 200,
+      "bytes": 59344,
+      "sha256": "9e9a0e6d8cf48d40f7c983d73605f0ba058aa1974d11af297469bdf5be80c1b7",
+      "matches": true
+    },
+    {
+      "file": "images/environments/lunar-observatory.webp",
+      "status": 200,
+      "bytes": 44846,
+      "sha256": "ea8e3d8a65b48519dd5709e9c2f6427239219c6b0796cbbdfddf9c7c40391879",
+      "matches": true
+    },
+    {
+      "file": "images/environments/aurora-hall.webp",
+      "status": 200,
+      "bytes": 53852,
+      "sha256": "82d36a9a0778f4235979857ea854db5e0f61d7c927e77e2816015bbbbcdaa9f7",
+      "matches": true
+    },
+    {
+      "file": "images/environments/club.webp",
+      "status": 200,
+      "bytes": 58806,
+      "sha256": "b931b636d4d29293e57c92f0a8d77a506d6dac5bed585d8b0f96af0f989a036d",
+      "matches": true
+    },
+    {
+      "file": "images/environments/nebula.webp",
+      "status": 200,
+      "bytes": 64044,
+      "sha256": "4487bd6183c78b55b1c55ae6d3ce8c2d92934bd782e7dd2d87189527ea6b9195",
+      "matches": true
+    },
+    {
+      "file": "images/environments/sky-temple.webp",
+      "status": 200,
+      "bytes": 73292,
+      "sha256": "6dfb47ad15a3bd3d3a97e9f2daa7027b749378642bcdecf580df99ee247ca904",
+      "matches": true
+    },
+    {
+      "file": "images/environments/spectra.webp",
+      "status": 200,
+      "bytes": 64056,
+      "sha256": "3b316016ff60406ab2c61b0019785a8da50d27d2fb57c0122659c785e9dfb490",
+      "matches": true
+    },
+    {
+      "file": "images/environments/abyss-palace.webp",
+      "status": 200,
+      "bytes": 57618,
+      "sha256": "0ec862a67346ec9b0500a358d9855e0a9ab2f93466dd90524a4a176084df7ccb",
+      "matches": true
+    }
+  ],
+  "routes": [
+    {
+      "route": "/",
+      "status": 200,
+      "contentType": "text/html"
+    },
+    {
+      "route": "/play",
+      "status": 200,
+      "contentType": "text/html"
+    },
+    {
+      "route": "/account",
+      "status": 200,
+      "contentType": "text/html"
+    },
+    {
+      "route": "/lobby",
+      "status": 200,
+      "contentType": "text/html"
+    },
+    {
+      "route": "/rules",
+      "status": 200,
+      "contentType": "text/html"
+    },
+    {
+      "route": "/help",
+      "status": 200,
+      "contentType": "text/html"
+    },
+    {
+      "route": "/api/me",
+      "status": 401,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ]
+}

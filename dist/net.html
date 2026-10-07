@@ -56,8 +56,21 @@
         color: #fff;
       }
     </style>
+    <link rel="stylesheet" href="/css/lab-tools.css" />
   </head>
-  <body>
+  <body class="lab-page lab-net">
+    <header class="lab-header">
+      <div class="lab-header__top">
+        <div>
+          <p class="lab-kicker">BREAK BUILDER / NETWORK TRACE</p>
+          <h1>网络事件诊断</h1>
+        </div>
+        <a class="lab-back" href="/tools">返回工具舱</a>
+      </div>
+      <p>
+        只展示当前链接传入的游戏与大厅事件，不读取账号、聊天正文或身份凭据。
+      </p>
+    </header>
     <h1>Network history</h1>
     <table id="histogram">
       <thead>
@@ -71,8 +84,16 @@
     <div id="log"></div>
     <script>
       const params = new URLSearchParams(window.location.search)
-      const game = JSON.parse(decodeURIComponent(params.get("game") || "[]"))
-      const lobby = JSON.parse(decodeURIComponent(params.get("lobby") || "[]"))
+      const safeEvents = (value) => {
+        try {
+          const parsed = JSON.parse(decodeURIComponent(value || "[]"))
+          return Array.isArray(parsed) ? parsed : []
+        } catch {
+          return []
+        }
+      }
+      const game = safeEvents(params.get("game"))
+      const lobby = safeEvents(params.get("lobby"))
 
       const combined = [
         ...game.map((e) => ({ ...e, type: "game" })),
@@ -122,6 +143,13 @@
       })
 
       const container = document.getElementById("log")
+      if (!collapsed.length) {
+        const empty = document.createElement("p")
+        empty.className = "lab-empty"
+        empty.textContent =
+          "当前没有可展示的网络事件。请从比赛内诊断入口打开本页。"
+        container.appendChild(empty)
+      }
       collapsed.forEach((e) => {
         const div = document.createElement("div")
         div.className = `log-entry ${e.type}`

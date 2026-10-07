@@ -1,19 +1,22 @@
 import {
   BoxGeometry,
+  ExtrudeGeometry,
   CanvasTexture,
   Group,
   LinearFilter,
+  LinearMipmapLinearFilter,
   Mesh,
   MeshPhysicalMaterial,
   MeshStandardMaterial,
   Object3D,
-  RingGeometry,
   RepeatWrapping,
   SRGBColorSpace,
+  Shape,
   TorusGeometry,
 } from "three"
 import { R } from "../model/physics/constants"
 import { TableGeometry } from "./tablegeometry"
+import { surfaceTexture } from "./surfacetextures"
 
 export type TableProfile = "american" | "chinese"
 
@@ -39,15 +42,15 @@ export const TABLE_STYLES: readonly TableStyle[] = [
     id: "american-ivory",
     name: "美式·光谱象牙",
     profile: "american",
-    description: "象牙白悬浮台框、冰川青台呢与冷银刻度",
-    cloth: 0x31a9c0,
-    clothShade: 0x187d96,
-    cushion: 0x16758c,
+    description: "象牙白倒角台框、深青精纺台呢与冷银刻度",
+    cloth: 0x16798d,
+    clothShade: 0x115261,
+    cushion: 0x12596a,
     frame: 0xdbe2e8,
     accent: 0x9eb8c5,
     pocket: 0x101820,
     frameMetalness: 0.18,
-    swatches: ["#dbe2e8", "#31a9c0", "#16758c", "#9eb8c5"],
+    swatches: ["#dbe2e8", "#16798d", "#12596a", "#9eb8c5"],
   },
   {
     id: "american-walnut",
@@ -195,9 +198,10 @@ export function applyTableStyle(root: Object3D, styleId: string): TableStyle {
   // Remove generated trim before traversing the imported table. Otherwise the
   // generic material pass sees "pocket" in our detail material names and turns
   // the silver/cyan collars into the same black material as the pocket void.
-  root.getObjectByName("spectra-ivory-table-details")?.removeFromParent()
+  removeGeneratedObject(root, "spectra-ivory-table-details")
+  removeGeneratedObject(root, "break-builder-table-support")
   if (style.profile !== "chinese") {
-    root.getObjectByName("chinese-steel-cushion-details")?.removeFromParent()
+    removeGeneratedObject(root, "chinese-steel-cushion-details")
   }
   root.traverse((object: any) => {
     if (!object.isMesh) return
@@ -215,10 +219,152 @@ export function applyTableStyle(root: Object3D, styleId: string): TableStyle {
     addSpectraTableBody(root)
     addSpectraTableDetails(root, style)
   } else {
-    root.getObjectByName("spectra-ivory-table-body")?.removeFromParent()
+    removeGeneratedObject(root, "spectra-ivory-table-body")
   }
   if (style.profile === "chinese") addChineseTableDetails(root, style)
+  addTableSupport(root, style)
   return style
+}
+
+function removeGeneratedObject(root: Object3D, name: string) {
+  const generated = root.getObjectByName(name)
+  if (!generated) return
+  generated.removeFromParent()
+  const materials = new Set<{ dispose?: () => void }>()
+  generated.traverse((object: any) => {
+    object.geometry?.dispose?.()
+    const objectMaterials = Array.isArray(object.material)
+      ? object.material
+      : [object.material]
+    for (const material of objectMaterials) {
+      if (material) materials.add(material)
+    }
+  })
+  for (const material of materials) material.dispose?.()
+}
+
+function preserveGeneratedWorldScale(root: Object3D, generated: Object3D) {
+  const inverse = (value: number) =>
+    Math.abs(value) > Number.EPSILON ? 1 / value : 1
+  generated.scale.set(
+    inverse(root.scale.x),
+    inverse(root.scale.y),
+    inverse(root.scale.z)
+  )
+}
+
+function bevelledBox(width: number, height: number, depth: number) {
+  const bevel = Math.min(R * 0.16, width / 5, height / 5, depth / 5)
+  const x = width / 2 - bevel
+  const y = height / 2 - bevel
+  const outline = new Shape()
+  outline.moveTo(-x, -y)
+  outline.lineTo(x, -y)
+  outline.lineTo(x, y)
+  outline.lineTo(-x, y)
+  outline.closePath()
+  const geometry = new ExtrudeGeometry(outline, {
+    depth: depth - bevel * 2,
+    steps: 1,
+    bevelEnabled: true,
+    bevelThickness: bevel,
+    bevelSize: bevel,
+    bevelSegments: 2,
+  })
+  geometry.translate(0, 0, -depth / 2 + bevel)
+  return geometry
+}
+
+function addTableSupport(root: Object3D, style: TableStyle) {
+  const support = new Group()
+  support.name = "break-builder-table-support"
+  const { metal, footMaterial, collarMaterial } = tableSupportMaterials(style)
+
+  const legTop = -R * 4.15
+  const legHeight = R * 16.2
+  const legWidth = R * 4.8
+  const legDepth = R * 4.2
+  // Keep the front supports near the apron so it cannot conceal the entire
+  // leg in the overview camera. Leave enough clearance for the pocket wells.
+  const xOffset = TableGeometry.X - R * 8
+  const yOffset = TableGeometry.Y - R * 4.8
+  for (const x of [-xOffset, xOffset]) {
+    for (const y of [-yOffset, yOffset]) {
+      const collar = new Mesh(
+        bevelledBox(legWidth * 1.34, legDepth * 1.34, R * 1.45),
+        collarMaterial
+      )
+      collar.position.set(x, y, legTop + R * 0.25)
+      collar.castShadow = true
+      collar.receiveShadow = true
+      support.add(collar)
+
+      const leg = new Mesh(bevelledBox(legWidth, legDepth, legHeight), metal)
+      leg.position.set(x, y, legTop - legHeight / 2)
+      leg.rotation.y = x > 0 ? -0.045 : 0.045
+      leg.rotation.x = y > 0 ? 0.045 : -0.045
+      leg.castShadow = true
+      leg.receiveShadow = true
+      support.add(leg)
+
+      const foot = new Mesh(
+        bevelledBox(R * 7.2, R * 6.2, R * 0.9),
+        footMaterial
+      )
+      foot.position.set(x, y, legTop - legHeight - R * 0.45)
+      foot.castShadow = true
+      foot.receiveShadow = true
+      support.add(foot)
+    }
+  }
+
+  const longBrace = new Mesh(
+    new BoxGeometry(xOffset * 1.72, R * 1.8, R * 2.1),
+    metal
+  )
+  longBrace.position.set(0, 0, -R * 11.6)
+  longBrace.castShadow = true
+  support.add(longBrace)
+  for (const x of [-xOffset, xOffset]) {
+    const sideBrace = new Mesh(
+      new BoxGeometry(R * 1.8, yOffset * 1.48, R * 1.65),
+      metal
+    )
+    sideBrace.position.set(x, 0, -R * 10.2)
+    sideBrace.castShadow = true
+    support.add(sideBrace)
+  }
+  preserveGeneratedWorldScale(root, support)
+  root.add(support)
+}
+
+function tableSupportMaterials(style: TableStyle) {
+  const ivory = style.id.includes("ivory")
+  const metal = new MeshPhysicalMaterial({
+    color: ivory ? 0x40556a : style.frame,
+    metalness: ivory ? 0.45 : Math.max(0.25, style.frameMetalness),
+    roughness: 0.36,
+    clearcoat: 0.58,
+    clearcoatRoughness: 0.16,
+  })
+  metal.name = "table-support-metal"
+  const footMaterial = new MeshStandardMaterial({
+    color: ivory ? 0x536674 : style.pocket,
+    metalness: 0.55,
+    roughness: 0.42,
+  })
+  footMaterial.name = "table-support-foot"
+
+  const collarMaterial = new MeshPhysicalMaterial({
+    color: ivory ? 0xe7f3f7 : style.accent,
+    emissive: ivory ? 0x0a5261 : 0x1e1208,
+    emissiveIntensity: 0.14,
+    metalness: 0.74,
+    roughness: 0.18,
+    clearcoat: 0.7,
+  })
+  collarMaterial.name = "table-support-collar"
+  return { metal, footMaterial, collarMaterial }
 }
 
 function styleTableMaterial(
@@ -239,11 +385,7 @@ function styleTableMaterial(
     return
   }
   if (name.includes("pocket")) {
-    if (style.id === "american-ivory") {
-      configure(material, 0x263d4d, 0.54, 0.3)
-    } else {
-      configure(material, style.pocket, 0.05, 0.82)
-    }
+    configure(material, style.pocket, 0, 0.9)
     return
   }
   if (name.includes("diamond")) {
@@ -261,12 +403,18 @@ function styleTableMaterial(
       style.frameMetalness,
       style.profile === "chinese" ? 0.28 : 0.38
     )
+    const wood = ["walnut", "burgundy", "jade"].some((id) =>
+      style.id.includes(id)
+    )
+    material.map = wood ? surfaceTexture("wood") : null
+    material.bumpMap = wood ? surfaceTexture("wood") : null
+    material.bumpScale = 0.00008
   }
 }
 
 function styleClothMaterial(material: MeshStandardMaterial, style: TableStyle) {
   configure(material, style.cloth, 0, 0.84)
-  if (style.id === "american-ivory") {
+  if (style.id === "american-ivory" && !material.userData.snookerMarkings) {
     material.map = spectraClothTexture()
     material.userData.spectraCloth = true
     material.color.setHex(0xffffff)
@@ -288,14 +436,14 @@ function spectraClothTexture(): CanvasTexture {
   canvas.height = 256
   const context = canvas.getContext("2d")
   if (context) {
-    context.fillStyle = "#31a9c0"
+    context.fillStyle = "#16798d"
     context.fillRect(0, 0, canvas.width, canvas.height)
-    context.globalAlpha = 0.16
+    context.globalAlpha = 0.045
     for (let y = 0; y < canvas.height; y += 4) {
       context.fillStyle = y % 8 === 0 ? "#d7fbff" : "#0d6478"
       context.fillRect(0, y, canvas.width, 1)
     }
-    context.globalAlpha = 0.08
+    context.globalAlpha = 0.025
     for (let x = 0; x < canvas.width; x += 6) {
       context.fillStyle = x % 12 === 0 ? "#ffffff" : "#07566a"
       context.fillRect(x, 0, 1, canvas.height)
@@ -306,13 +454,14 @@ function spectraClothTexture(): CanvasTexture {
   clothTexture.wrapS = clothTexture.wrapT = RepeatWrapping
   clothTexture.repeat.set(8, 4)
   clothTexture.magFilter = LinearFilter
-  clothTexture.minFilter = LinearFilter
+  clothTexture.minFilter = LinearMipmapLinearFilter
+  clothTexture.generateMipmaps = true
   clothTexture.userData.spectraCloth = true
   return clothTexture
 }
 
 function addSpectraTableBody(root: Object3D) {
-  root.getObjectByName("spectra-ivory-table-body")?.removeFromParent()
+  removeGeneratedObject(root, "spectra-ivory-table-body")
   const body = new Group()
   body.name = "spectra-ivory-table-body"
 
@@ -333,22 +482,28 @@ function addSpectraTableBody(root: Object3D) {
 
   const width = TableGeometry.X * 2 + R * 6.2
   const height = TableGeometry.Y * 2 + R * 6.2
-  const lower = new Mesh(new BoxGeometry(width, height, R * 1.65), graphite)
-  lower.position.z = -R * 2.3
-  lower.receiveShadow = true
-  body.add(lower)
-  const skirt = new Mesh(
-    new BoxGeometry(width - R * 0.8, height - R * 0.8, R * 0.48),
-    silver
-  )
-  skirt.position.z = -R * 1.34
-  skirt.receiveShadow = true
-  body.add(skirt)
+  // Perimeter aprons leave the pocket wells open. The old solid slabs filled
+  // all six holes just below the cloth and made them look like painted dots.
+  for (const side of [-1, 1]) {
+    for (const [w, h, x, y] of [
+      [width, R * 1.6, 0, side * (height / 2 - R * 0.8)],
+      [R * 1.6, height - R * 3.2, side * (width / 2 - R * 0.8), 0],
+    ]) {
+      const apron = new Mesh(bevelledBox(w, h, R * 3.4), graphite)
+      apron.position.set(x, y, -R * 3.2)
+      apron.castShadow = apron.receiveShadow = true
+      body.add(apron)
+      const trim = new Mesh(bevelledBox(w, h, R * 0.38), silver)
+      trim.position.set(x, y, -R * 1.55)
+      body.add(trim)
+    }
+  }
+  preserveGeneratedWorldScale(root, body)
   root.add(body)
 }
 
 function addSpectraTableDetails(root: Object3D, style: TableStyle) {
-  root.getObjectByName("spectra-ivory-table-details")?.removeFromParent()
+  removeGeneratedObject(root, "spectra-ivory-table-details")
   const details = new Group()
   details.name = "spectra-ivory-table-details"
 
@@ -375,22 +530,6 @@ function addSpectraTableDetails(root: Object3D, style: TableStyle) {
     clearcoatRoughness: 0.15,
   })
   ice.name = "spectra-ivory-inlay"
-  const pocketIce = new MeshPhysicalMaterial({
-    color: 0x91c5d3,
-    metalness: 0.36,
-    roughness: 0.24,
-    clearcoat: 0.9,
-    clearcoatRoughness: 0.1,
-  })
-  pocketIce.name = "spectra-pocket-ice"
-  const pocketGraphite = new MeshPhysicalMaterial({
-    color: 0x344858,
-    metalness: 0.74,
-    roughness: 0.3,
-    clearcoat: 0.46,
-  })
-  pocketGraphite.name = "spectra-pocket-graphite"
-
   const longLength = TableGeometry.X * 2 + R * 5.8
   const shortLength = TableGeometry.Y * 2 + R * 5.8
   const railThickness = R * 0.16
@@ -474,43 +613,7 @@ function addSpectraTableDetails(root: Object3D, style: TableStyle) {
     )
   }
 
-  for (const [x, y] of [
-    [-TableGeometry.X, -TableGeometry.Y],
-    [-TableGeometry.X, TableGeometry.Y],
-    [TableGeometry.X, -TableGeometry.Y],
-    [TableGeometry.X, TableGeometry.Y],
-    [0, -TableGeometry.Y],
-    [0, TableGeometry.Y],
-  ]) {
-    const silverPlate = new Mesh(
-      new RingGeometry(R * 0.82, R * 2.15, 48),
-      silver
-    )
-    silverPlate.position.set(x, y, R * 0.15)
-    silverPlate.renderOrder = 3
-    details.add(silverPlate)
-    const graphitePlate = new Mesh(
-      new RingGeometry(R * 0.72, R * 1.75, 48),
-      pocketGraphite
-    )
-    graphitePlate.position.set(x, y, R * 0.18)
-    graphitePlate.renderOrder = 4
-    details.add(graphitePlate)
-    const collar = new Mesh(
-      new TorusGeometry(R * 1.52, R * 0.28, 12, 40),
-      silver
-    )
-    collar.position.set(x, y, R * 0.2)
-    collar.renderOrder = 5
-    details.add(collar)
-    const seam = new Mesh(
-      new TorusGeometry(R * 1.12, R * 0.18, 10, 36),
-      pocketIce
-    )
-    seam.position.set(x, y, R * 0.24)
-    seam.renderOrder = 6
-    details.add(seam)
-  }
+  preserveGeneratedWorldScale(root, details)
   root.add(details)
 }
 
@@ -572,7 +675,7 @@ function addChineseTableDetails(root: Object3D, style: TableStyle) {
       [0, -TableGeometry.Y],
       [0, TableGeometry.Y],
     ]
-    for (const [x, y] of pocketPositions) {
+    for (const [x, y] of TableGeometry.hasPockets ? pocketPositions : []) {
       const collar = new Mesh(
         new TorusGeometry(R * 1.28, R * 0.1, 8, 28),
         material
@@ -580,6 +683,7 @@ function addChineseTableDetails(root: Object3D, style: TableStyle) {
       collar.position.set(x, y, -R * 0.08)
       details.add(collar)
     }
+    preserveGeneratedWorldScale(root, details)
     root.add(details)
   }
   details.traverse((object: any) => {

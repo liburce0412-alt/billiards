@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-05",
+  "target": "https://play.campus3ai.xyz/table-tennis",
+  "reportedDeployment": {
+    "versionId": "2a353ef1-040c-434c-8dbb-bc71adbf6521",
+    "assetVersion": "261005.18",
+    "source": "parent deployment result; not independently established by this browser attempt"
+  },
+  "status": "blocked_before_navigation",
+  "uiVerified": false,
+  "screenshots": [],
+  "completed": [
+    "Retried the previous in-app browser binding; runtime reported browser 2 unavailable",
+    "URL-based browser discovery selected the only available Chrome extension browser",
+    "Session naming and tab-list calls timed out with nodeRepl.fetch request failed",
+    "Repeated tab-list once after the documented two-second wait; same connection failure",
+    "Plugin read-only diagnostics confirmed Chrome running, extension installed and enabled, native-host manifest valid",
+    "Ran the documented open-chrome-window.js --browser chrome recovery: script reported opened, selected Default profile, new about:blank window; existing Chrome windows and configuration were preserved",
+    "Waited two seconds and retried the supported browser session once after opening the window; nodeRepl.fetch request failed again"
+  ],
+  "notVerified": [
+    "Production anonymous table-tennis entry UI",
+    "Production GLB loading inside a rendered browser page",
+    "Public platformDemo AI serve, swing, and exit",
+    "Production authenticated multiplayer"
+  ],
+  "scope": "No production accounts were created, no authentication state was read or exported, no access rules or plugin installation were changed. No alternate browser controller was used to bypass the failed extension connection.",
+  "recoveryDocumentation": "C:/Users/28219/.codex/plugins/cache/openai-bundled/browser/26.930.21537/docs/chrome-troubleshooting.md section 5",
+  "nextDocumentedRecovery": "The supported new-window recovery was exhausted. The documentation instructs the user to reinstall the Browser plugin from the ChatGPT plugin UI if the once-only retry still fails, and explicitly prohibits manually importing/running installManifest.mjs.",
+  "conclusion": "This is a browser-control transport blocker after the documented reversible recovery was attempted, not evidence of a production application defect. Earlier local screenshots and HTTP resource checks do not establish production UI acceptance."
+}

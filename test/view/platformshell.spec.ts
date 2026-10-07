@@ -24,6 +24,10 @@ describe("platform personalisation", () => {
 
     expect(document.documentElement.dataset.accent).toBe("jade")
     expect(document.documentElement.dataset.quality).toBe("balanced")
+    expect(document.documentElement.dataset.qualityMode).toBe("balanced")
+    expect(localStorage.getItem("break-builder.render-quality")).toBe(
+      "balanced"
+    )
     expect(localStorage.getItem("break-builder.cue-style")).toBe("carbon")
     expect(localStorage.getItem("break-builder.table-style")).toBe(
       "chinese-ivory"
@@ -35,5 +39,25 @@ describe("platform personalisation", () => {
     expect(localStorage.getItem("break-builder.master-volume")).toBe("0.45")
     expect(localStorage.getItem("break-builder.shot-dock")).toBe("collapsed")
     expect(localStorage.getItem("break-builder.social-drawer")).toBe("closed")
+  })
+
+  it("projects a legacy high default as adaptive until explicitly locked", () => {
+    const session = demoSession()
+
+    applyPersonalisation(session)
+
+    expect(document.documentElement.dataset.quality).toBe("high")
+    expect(document.documentElement.dataset.qualityMode).toBe("adaptive")
+    expect(localStorage.getItem("break-builder.render-quality")).toBe(
+      "adaptive"
+    )
+    expect(
+      JSON.parse(localStorage.getItem("billiards-launcher-selection") ?? "{}")
+        .quality
+    ).toBe("adaptive")
+
+    localStorage.setItem("break-builder.render-quality", "high")
+    applyPersonalisation(session)
+    expect(document.documentElement.dataset.qualityMode).toBe("high")
   })
 })

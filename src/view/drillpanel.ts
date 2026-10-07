@@ -18,6 +18,7 @@ export class DrillPanel {
   private readonly previewBtn: HTMLButtonElement
   private readonly analyseBtn: HTMLButtonElement
   private centerPanel!: HTMLDivElement
+  private readonly panelRoots: HTMLElement[] = []
   private previewActive = false
   private pendingPreview = false
   private ballsWerePlaced = false
@@ -149,6 +150,7 @@ export class DrillPanel {
     root?.appendChild(topPanel)
     root?.appendChild(centerPanel)
     root?.appendChild(rightPanel)
+    this.panelRoots.push(topPanel, centerPanel, rightPanel)
 
     const prevFrame = container.frame
     container.frame = (t: number) => {
@@ -304,5 +306,10 @@ export class DrillPanel {
     this.analyseBtn.disabled = !isAiming || !hasLastShot
 
     this.updatePreview(t, isAiming)
+  }
+
+  dispose() {
+    this.hidePreview()
+    this.panelRoots.splice(0).forEach((panel) => panel.remove())
   }
 }

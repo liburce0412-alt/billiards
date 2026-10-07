@@ -6,6 +6,14 @@ import {
   toast,
 } from "./platform/page"
 import { platformGate } from "./platform/shell"
+import {
+  buildGameUrl,
+  type LauncherSelection,
+  type RoomLaunchDescriptor,
+  type AnyRoomLaunchDescriptor,
+  tableTennisRoomUrl,
+} from "./launcherconfig"
+import { renderQualityModeForPreference } from "./view/renderquality"
 
 type SocialUser = {
   id: string
@@ -53,6 +61,7 @@ type Invite = {
   room_id: string
   room_code: string
   rule_type: string
+  game_type?: "billiards" | "table-tennis"
   expires_at: number
 }
 
@@ -801,7 +810,7 @@ class SocialPage {
       toast(`已向 ${friend.displayName} 发送八球邀请`, "success")
       return
     }
-    const created = await apiJson<{ room: { id: string; code: string } }>(
+    const created = await apiJson<{ room: RoomLaunchDescriptor }>(
       "/api/rooms",
       {
         method: "POST",
@@ -822,28 +831,69 @@ class SocialPage {
       }),
     })
     toast(`已向 ${friend.displayName} 发送比赛邀请`, "success")
-    await this.loadAll()
+    await this.enterWaitingRoom(created.room, "create")
   }
 
   private async actOnInvite(
     invite: Invite,
     action: "accept" | "decline" | "cancel"
   ) {
+    let acceptedRoom: AnyRoomLaunchDescriptor | undefined
     if (!isLocalDemo()) {
-      await apiJson(`/api/invites/${invite.id}`, {
+      const response = await apiJson<{
+        status: string
+        room?: AnyRoomLaunchDescriptor
+      }>(`/api/invites/${invite.id}`, {
         method: "PATCH",
         body: JSON.stringify({ action }),
       })
+      acceptedRoom = response.room
     }
     if (action === "accept") {
-      globalThis.location.assign(
-        `/?roomId=${encodeURIComponent(invite.room_id)}&tableId=${encodeURIComponent(invite.room_id)}&roomCode=${encodeURIComponent(invite.room_code)}&roomVersion=2&ruletype=${encodeURIComponent(invite.rule_type)}&practice=false&play=1`
-      )
+      if (!acceptedRoom) {
+        acceptedRoom = {
+          id: invite.room_id,
+          code: invite.room_code,
+          status: "waiting",
+          ruleType: invite.rule_type as RoomLaunchDescriptor["ruleType"],
+          options: {},
+          tableStyle: this.session.user.tableStyle,
+          environmentStyle: this.session.user.environmentStyle,
+          memberRole: "player",
+          createdAt: Date.now(),
+        }
+      }
+      await this.enterWaitingRoom(acceptedRoom, "join")
       return
     }
     this.invites = this.invites.filter((item) => item.id !== invite.id)
     this.renderInvites()
     toast("邀请已处理", "success")
+  }
+
+  private async enterWaitingRoom(
+    room: AnyRoomLaunchDescriptor,
+    onlineAction: "create" | "join"
+  ) {
+    if (room.gameType === "table-tennis") {
+      globalThis.location.assign(tableTennisRoomUrl(room))
+      return
+    }
+    const selection: LauncherSelection = {
+      rule: room.ruleType,
+      opponent: "online",
+      botLevel: 5,
+      quality: renderQualityModeForPreference(this.session.preferences.quality),
+      cueStyle: this.session.user.cueStyle,
+      tableStyle: room.tableStyle,
+      environmentStyle: room.environmentStyle,
+      onlineAction,
+      roomCode: room.code,
+      roomInstanceId: room.id,
+    }
+    globalThis.location.assign(
+      await buildGameUrl(selection, globalThis.location.href)
+    )
   }
 
   private async reportSelected() {
@@ -1008,6 +1058,7 @@ function ruleLabel(value: string) {
         fourball: "四球追分",
         snooker: "斯诺克",
         threecushion: "三库",
+        "singles-11": "乒乓球 · 11 分单打",
       } as Record<string, string>
     )[value] ?? value
   )
@@ -1022,6 +1073,7 @@ function ruleShort(value: string) {
         fourball: "4",
         snooker: "S",
         threecushion: "3",
+        "singles-11": "乒",
       } as Record<string, string>
     )[value] ?? "B"
   )
@@ -1039,6 +1091,12 @@ async function bootstrap() {
   await new SocialPage(session, root).init()
 }
 
-void bootstrap().catch((error) => {
-  toast(error instanceof Error ? error.message : "社交大厅加载失败", "error")
-})
+export function mountLobbyInto(session: PlatformMe, root: HTMLElement) {
+  return new SocialPage(session, root).init()
+}
+
+if (!document.querySelector("#appRoot")) {
+  void bootstrap().catch((error) => {
+    toast(error instanceof Error ? error.message : "社交大厅加载失败", "error")
+  })
+}

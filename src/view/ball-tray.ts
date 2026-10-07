@@ -25,6 +25,31 @@ export class BallTray {
   private readonly listElement: HTMLElement | null
   private readonly leftBtn: HTMLElement | null
   private readonly rightBtn: HTMLElement | null
+  private readonly history = id("matchHistory") as HTMLDetailsElement | null
+  private readonly dismissHistory = (event: Event) => {
+    if (!this.history) return
+    if (
+      event instanceof KeyboardEvent
+        ? event.key === "Escape"
+        : event.target instanceof Node && !this.history.contains(event.target)
+    ) {
+      this.history.open = false
+    }
+  }
+  private readonly stopInteraction = (event: Event) => {
+    if ((event.target as HTMLElement).closest("a")) return
+    event.stopPropagation()
+  }
+  private readonly scrollLeft = (event: Event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    this.scroll(-80)
+  }
+  private readonly scrollRight = (event: Event) => {
+    event.preventDefault()
+    event.stopPropagation()
+    this.scroll(80)
+  }
 
   constructor(container: Container) {
     this.container = container
@@ -33,29 +58,16 @@ export class BallTray {
     this.leftBtn = id("trayLeft")
     this.rightBtn = id("trayRight")
 
-    const stop = (e: Event) => {
-      if ((e.target as HTMLElement).closest("a")) {
-        return
-      }
-      e.stopPropagation()
-    }
+    this.leftBtn?.addEventListener("click", this.scrollLeft)
+    this.rightBtn?.addEventListener("click", this.scrollRight)
 
-    this.leftBtn?.addEventListener("click", (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-      this.scroll(-80)
-    })
-    this.rightBtn?.addEventListener("click", (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-      this.scroll(80)
-    })
-
-    this.trayElement?.addEventListener("click", stop)
-    this.trayElement?.addEventListener("mousedown", stop)
-    this.trayElement?.addEventListener("touchstart", stop)
+    this.trayElement?.addEventListener("click", this.stopInteraction)
+    this.trayElement?.addEventListener("mousedown", this.stopInteraction)
+    this.trayElement?.addEventListener("touchstart", this.stopInteraction)
 
     this.updateVisibility()
+    document.addEventListener("pointerdown", this.dismissHistory)
+    document.addEventListener("keydown", this.dismissHistory)
   }
 
   addShot(isPartOfBreak: boolean, potCount: number, balls: any[], state: any) {
@@ -215,5 +227,16 @@ export class BallTray {
         this.listElement.scrollLeft = this.listElement.scrollWidth
       }
     })
+  }
+
+  dispose() {
+    document.removeEventListener("pointerdown", this.dismissHistory)
+    document.removeEventListener("keydown", this.dismissHistory)
+    this.reset()
+    this.leftBtn?.removeEventListener("click", this.scrollLeft)
+    this.rightBtn?.removeEventListener("click", this.scrollRight)
+    this.trayElement?.removeEventListener("click", this.stopInteraction)
+    this.trayElement?.removeEventListener("mousedown", this.stopInteraction)
+    this.trayElement?.removeEventListener("touchstart", this.stopInteraction)
   }
 }

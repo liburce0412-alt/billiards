@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:23:32.745369+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: CUE_CLOSEUP_READY grip WIDTH_M 0.57 TARGET [0.0, -0.4541250467300415, 0.0]\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: CUE_CLOSEUP_READY grip WIDTH_M 0.57 TARGET [0.0, -0.4541250467300415, 0.0]\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\cue-holo-laser.blend",
+    "sha256": "2efcbbbd35cfc49d4d4e9bfd8705f823a07924a9b6c638e15eb4affb8bfbfd1b"
+  }
+}

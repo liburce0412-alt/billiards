@@ -1,0 +1,3 @@
+[submodule "packages/table-tennis"]
+	path = packages/table-tennis
+	url = https://github.com/zjqzdhs/psychic-funicular

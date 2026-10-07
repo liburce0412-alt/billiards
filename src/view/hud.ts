@@ -91,15 +91,21 @@ export class Hud {
     const avatar = document.createElement("span")
     avatar.className = "hud-avatar"
     avatar.dataset.playerKind = player.kind
+    const useInitials = () => {
+      avatar.replaceChildren()
+      avatar.textContent = this.initials(player.name)
+      avatar.setAttribute("aria-label", `${player.name}的姓名头像`)
+      avatar.dataset.fallback = "initials"
+    }
     if (player.avatarUrl) {
       const portrait = document.createElement("img")
       portrait.src = player.avatarUrl
       portrait.alt = `${player.name}的头像`
       portrait.referrerPolicy = "same-origin"
+      portrait.addEventListener("error", useInitials, { once: true })
       avatar.append(portrait)
     } else {
-      avatar.textContent = this.initials(player.name)
-      avatar.setAttribute("aria-label", `${player.name}的姓名头像`)
+      useInitials()
     }
     return avatar
   }
@@ -167,7 +173,11 @@ export class Hud {
     const copy = document.createElement("span")
     copy.textContent = presentation.turnLabel
     turn.append(dot, copy)
-    this.middleElement.append(rule, score, turn)
+    const status = document.createElement("span")
+    status.className = "hud-turn-status"
+    status.append(turn)
+    if (this.breakElement) status.append(this.breakElement)
+    this.middleElement.append(rule, score, status)
   }
 
   private updateTurnState(active: HudActivePlayer) {

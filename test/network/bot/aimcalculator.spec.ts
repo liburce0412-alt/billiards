@@ -49,6 +49,27 @@ describe("AimCalculator", () => {
   })
 
   describe("generateShot", () => {
+    it("plans a candidate without snapping the live cue aim", () => {
+      const cueball = new Ball(new Vector3(0, 0, 0))
+      const table = new Table([cueball])
+      table.cue.aim.angle = 0.75
+      table.cue.aim.power = 0.4
+      table.cue.aim.offset.set(0.1, -0.1, 0)
+      const before = table.cue.aim.copy()
+
+      calculator.generateShot(
+        table,
+        0.2,
+        AimCalculator.DEFAULT_SHOT_POWER,
+        new Vector3(2, 1, 0),
+        new Vector3(0, 0.2, 0)
+      )
+
+      expect(table.cue.aim.angle).toBe(before.angle)
+      expect(table.cue.aim.power).toBe(before.power)
+      expect(table.cue.aim.offset).toEqual(before.offset)
+    })
+
     it("should set spin to max top spin if cue intersects another ball", () => {
       const cueball = new Ball(new Vector3(0, 0, 0))
       const table = new Table([cueball])

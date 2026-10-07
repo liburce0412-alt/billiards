@@ -1,14 +1,14 @@
 {
-  "date": "2026-07-23",
-  "framework": "Vanilla HTML + TypeScript + Three.js",
-  "font_stack": "Tomorrow display + IBM Plex Sans body",
-  "palette": "Existing OKLCH Midnight tokens",
-  "motion": "Motion-cut; no animation library",
-  "spacing": "Existing 4pt CSS token scale",
+  "date": "2026-09-01",
+  "framework": "React 19 + TypeScript + imperative Three.js game adapter",
+  "font_stack": "Tomorrow display + IBM Plex Sans body + IBM Plex Mono diagnostics",
+  "palette": "Deep graphite platform tokens with cyan state and warm-orange energy; the live game remains luminous",
+  "motion": "Direct manipulation plus one paused-offscreen OpticalGlass WebGL context; reduced-motion fallback",
+  "spacing": "Locked semantic four-point token scale",
   "preserve": [
-    "game routes",
-    "gameplay UI",
-    "URL parameters",
-    "Midnight design tokens"
+    "deterministic game engine and physics",
+    "legacy URL and invitation parameters",
+    "server-authoritative identity and room state",
+    "luminous scene-first game readability"
   ]
 }

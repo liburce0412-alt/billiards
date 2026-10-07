@@ -40,8 +40,10 @@ export class Drawing {
     this.canvas.addEventListener("pointermove", this.onPointerMove)
     this.canvas.addEventListener("pointerup", this.onPointerUp)
     this.canvas.addEventListener("pointercancel", this.onPointerUp)
-    this.canvas.addEventListener("contextmenu", (e) => e.preventDefault())
+    this.canvas.addEventListener("contextmenu", this.preventContextMenu)
   }
+
+  private readonly preventContextMenu = (event: Event) => event.preventDefault()
 
   private toTable(clientX: number, clientY: number): Vector3 | null {
     const rect = this.canvas.getBoundingClientRect()
@@ -150,5 +152,18 @@ export class Drawing {
       ;(line.material as LineBasicMaterial).dispose()
     })
     this.lines.length = 0
+  }
+
+  dispose() {
+    this.canvas.removeEventListener("pointerdown", this.onPointerDown)
+    this.canvas.removeEventListener("pointermove", this.onPointerMove)
+    this.canvas.removeEventListener("pointerup", this.onPointerUp)
+    this.canvas.removeEventListener("pointercancel", this.onPointerUp)
+    this.canvas.removeEventListener("contextmenu", this.preventContextMenu)
+    this.isDrawing = false
+    this.startPoint = null
+    this.onLineDrawn = undefined
+    this.removePreview()
+    this.clear()
   }
 }

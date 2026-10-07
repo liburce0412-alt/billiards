@@ -1,5 +1,5 @@
 import { expect } from "chai"
-import { View } from "../../src/view/view"
+import { touchCameraMetrics, View } from "../../src/view/view"
 import { Table } from "../../src/model/table"
 import { Rack } from "../../src/utils/rack"
 import { initDom, canvas3d } from "./dom"
@@ -10,6 +10,19 @@ initDom()
 
 describe("View", () => {
   const table = new Table(Rack.diamond())
+
+  it("maps two-finger input to a stable camera centroid and pinch distance", () => {
+    const metrics = touchCameraMetrics([
+      { x: 40, y: 20 },
+      { x: 100, y: 100 },
+    ])
+    expect(metrics).to.deep.equal({
+      centroidX: 70,
+      centroidY: 60,
+      distance: 100,
+    })
+    expect(touchCameraMetrics([{ x: 0, y: 0 }])).to.be.undefined
+  })
 
   it("isInView", (done) => {
     table.hasPockets = true
@@ -39,9 +52,10 @@ describe("View", () => {
       .undefined
     expect(view.scene.getObjectByName("spectra-cue-caustic")).to.not.be
       .undefined
-    expect(view.scene.getObjectByName("spectra-cue-caustic-halo")).to.not.be
+    expect(view.scene.getObjectByName("spectra-cue-caustic-halo")).to.be
       .undefined
-    expect(view.scene.getObjectByName("spectra-cue-rainbow")).to.not.be
+    expect(view.scene.getObjectByName("spectra-cue-rainbow")).to.be.undefined
+    expect(view.scene.getObjectByName("spectra-architecture")).to.not.be
       .undefined
     expect(view.scene.getObjectByName("starfield")).to.be.undefined
   })

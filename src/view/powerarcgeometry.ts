@@ -4,6 +4,7 @@ export interface PowerArcPoint {
 }
 
 export type PowerArcNormal = PowerArcPoint
+export type PowerArcOrientation = "horizontal" | "vertical"
 
 /**
  * Geometry shared by the WebGL renderer, DOM readout and pointer input.
@@ -11,13 +12,31 @@ export type PowerArcNormal = PowerArcPoint
  * mouse and touch while retaining the deep bowed profile from the reference.
  */
 export class PowerArcGeometry {
+  readonly inset: number
+  readonly top: number
+  readonly sag: number
+
   constructor(
     readonly width: number,
     readonly height: number,
-    readonly inset: number = Math.min(34, width * 0.055),
-    readonly top: number = Math.max(16, height * 0.16),
-    readonly sag: number = Math.min(54, height * 0.44)
-  ) {}
+    inset?: number,
+    top?: number,
+    sag?: number,
+    readonly orientation: PowerArcOrientation = "horizontal"
+  ) {
+    this.inset =
+      inset ?? (orientation === "vertical" ? 20 : Math.min(34, width * 0.055))
+    this.top =
+      top ??
+      (orientation === "vertical"
+        ? Math.max(22, width - 52)
+        : Math.max(16, height * 0.16))
+    this.sag =
+      sag ??
+      (orientation === "vertical"
+        ? Math.min(20, width * 0.28)
+        : Math.min(54, height * 0.44))
+  }
 
   clamp(value: number): number {
     return Math.max(0, Math.min(1, Number.isFinite(value) ? value : 0))
@@ -25,8 +44,14 @@ export class PowerArcGeometry {
 
   pointAt(value: number): PowerArcPoint {
     const t = this.clamp(value)
-    const usable = Math.max(1, this.width - this.inset * 2)
     const centred = t * 2 - 1
+    if (this.orientation === "vertical") {
+      return {
+        x: this.top + this.sag * (1 - centred * centred),
+        y: this.inset + Math.max(1, this.height - this.inset * 2) * t,
+      }
+    }
+    const usable = Math.max(1, this.width - this.inset * 2)
     return {
       x: this.inset + usable * t,
       y: this.top + this.sag * (1 - centred * centred),
@@ -35,6 +60,12 @@ export class PowerArcGeometry {
 
   tangentAt(value: number): PowerArcPoint {
     const t = this.clamp(value)
+    if (this.orientation === "vertical") {
+      return {
+        x: -4 * this.sag * (t * 2 - 1),
+        y: Math.max(1, this.height - this.inset * 2),
+      }
+    }
     const usable = Math.max(1, this.width - this.inset * 2)
     return { x: usable, y: -4 * this.sag * (t * 2 - 1) }
   }
@@ -45,7 +76,12 @@ export class PowerArcGeometry {
     return { x: -tangent.y / length, y: tangent.x / length }
   }
 
-  valueFromPointer(x: number, _y?: number): number {
+  valueFromPointer(x: number, y = 0): number {
+    if (this.orientation === "vertical") {
+      return this.clamp(
+        (y - this.inset) / Math.max(1, this.height - this.inset * 2)
+      )
+    }
     return this.clamp(
       (x - this.inset) / Math.max(1, this.width - this.inset * 2)
     )

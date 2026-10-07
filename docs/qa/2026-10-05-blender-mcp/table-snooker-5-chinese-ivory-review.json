@@ -1,0 +1,13 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-snooker-5-chinese-ivory-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence.",
+    "Final 17:35–17:36 rebuild checked: duplicate legacy supports are removed, only one coherent leg system remains. Baulk marking is faintly visible; close-up contrast and rule dimensions were not measured from this overview."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.6106234+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "e11327a8e004730a19c8be05874655ecd4bf4d44def7da96b35d1e35996b0371"
+}

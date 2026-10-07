@@ -10,14 +10,29 @@ export interface LineData {
 
 export class ChatEvent extends GameEvent {
   sender
+  senderName?: string
   message
   line?: LineData
+  clientMessageId?: string
+  createdAt?: number
 
-  constructor(sender, message, line?: LineData) {
+  constructor(
+    sender,
+    message,
+    line?: LineData,
+    metadata: {
+      senderName?: string
+      clientMessageId?: string
+      createdAt?: number
+    } = {}
+  ) {
     super()
     this.sender = sender
     this.message = message
     this.line = line
+    this.senderName = metadata.senderName
+    this.clientMessageId = metadata.clientMessageId
+    this.createdAt = metadata.createdAt
     this.type = EventType.CHAT
   }
 
@@ -26,6 +41,10 @@ export class ChatEvent extends GameEvent {
   }
 
   static fromJson(json) {
-    return new ChatEvent(json.sender, json.message, json.line)
+    return new ChatEvent(json.sender, json.message, json.line, {
+      senderName: json.senderName,
+      clientMessageId: json.clientMessageId,
+      createdAt: json.createdAt,
+    })
   }
 }

@@ -15,25 +15,31 @@ export class BallMaterialFactory {
   > = new Map()
 
   static createTexturedDotsMaterial(color: Color): MeshPhysicalMaterial {
-    const key = `texturedDots_${color.getHex()}`
+    const quality = getRenderQuality()
+    const key = `texturedDots_${color.getHex()}_${quality.name}`
     if (this.materialCache.has(key)) {
       return this.materialCache.get(key) as MeshPhysicalMaterial
     }
 
-    const cubeTexture = BallCubeTextureFactory.getOrCreateTexture(color)
+    const cubeTexture = BallCubeTextureFactory.getOrCreateTexture(color, 256)
+    cubeTexture.anisotropy = quality.maxAnisotropy
+    const markerColour = new Color(
+      color.getHexString() === "ff0000" ? 0xffffff : 0xcc2c32
+    )
     const material = new MeshPhysicalMaterial({
       color: color,
-      roughness: 0.18,
+      roughness: 0.17,
       metalness: 0,
-      clearcoat: 1,
-      clearcoatRoughness: 0.035,
+      clearcoat: 0.72,
+      clearcoatRoughness: 0.065,
       ior: 1.53,
       reflectivity: 0.45,
-      envMapIntensity: 1.05,
+      envMapIntensity: quality.name === "low" ? 0.68 : 0.88,
     })
 
     material.onBeforeCompile = (shader: any) => {
       shader.uniforms.uCubeMap = { value: cubeTexture }
+      shader.uniforms.uMarkerColour = { value: markerColour }
 
       shader.vertexShader = `
         varying vec3 vLocalPos;
@@ -46,14 +52,17 @@ export class BallMaterialFactory {
 
       shader.fragmentShader = `
         uniform samplerCube uCubeMap;
+        uniform vec3 uMarkerColour;
         varying vec3 vLocalPos;
         ${shader.fragmentShader}
       `.replace(
         "#include <color_fragment>",
         `#include <color_fragment>
-        diffuseColor.rgb = textureCube(uCubeMap, normalize(vLocalPos)).rgb;`
+        float markerMask = textureCube(uCubeMap, normalize(vLocalPos)).r;
+        diffuseColor.rgb = mix(diffuseColor.rgb, uMarkerColour, markerMask);`
       )
     }
+    material.customProgramCacheKey = () => "shared-ball-marker-mask-v2"
 
     this.materialCache.set(key, material)
     return material
@@ -84,7 +93,8 @@ export class BallMaterialFactory {
     color: Color,
     size = 256
   ): MeshStandardMaterial {
-    const key = `projected_${label}_${color.getHex()}_${size}`
+    const quality = getRenderQuality()
+    const key = `projected_${label}_${color.getHex()}_${size}_${quality.name}`
     if (this.materialCache.has(key)) {
       return this.materialCache.get(key) as MeshStandardMaterial
     }
@@ -94,26 +104,27 @@ export class BallMaterialFactory {
       color,
       size
     )
+    numberTexture.anisotropy = quality.maxAnisotropy
 
     const material =
-      getRenderQuality().name === "low"
+      quality.name === "low"
         ? new MeshStandardMaterial({
             color: 0xffffff,
             map: numberTexture,
-            roughness: 0.26,
+            roughness: 0.3,
             metalness: 0,
-            envMapIntensity: 0.7,
+            envMapIntensity: 0.68,
           })
         : new MeshPhysicalMaterial({
             color: 0xffffff,
             map: numberTexture,
-            roughness: 0.2,
+            roughness: 0.17,
             metalness: 0,
-            clearcoat: 1,
-            clearcoatRoughness: 0.035,
+            clearcoat: 0.72,
+            clearcoatRoughness: 0.065,
             ior: 1.53,
             reflectivity: 0.45,
-            envMapIntensity: getRenderQuality().name === "high" ? 1.15 : 0.95,
+            envMapIntensity: 0.88,
           })
     this.materialCache.set(key, material)
     return material

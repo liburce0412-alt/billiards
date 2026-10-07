@@ -1,0 +1,29 @@
+{
+  "sha256": "09983f7a6fa50ce55b59196107084242d956978bf8659d0d448ad25e42ccc528",
+  "adopted": "environment-spectra",
+  "materials": [
+    {
+      "name": "spectra_Refined_Material_6",
+      "transmission": 0.9200000166893005,
+      "metalness": 0,
+      "thickness": 0.44999998807907104,
+      "roughness": 0.03500000014901161,
+      "ior": 1.4600000381469727,
+      "opacity": 1,
+      "visible": true,
+      "center": [
+        -1.9999998516708857,
+        2.399999945185728,
+        0.28427391165993116
+      ]
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:4193/models/legacy-refined/environment-spectra.glb?v=09983f7a6fa5",
+      "status": 200
+    }
+  ],
+  "errors": [],
+  "scope": "Local Chrome/WebGL high quality, no physical phone validation"
+}

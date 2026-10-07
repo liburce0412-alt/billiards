@@ -1,0 +1,680 @@
+{
+  "startedAt": "2026-10-05T09:45:32.591Z",
+  "steps": [
+    "Both authenticated browser contexts joined and began a rally",
+    "Mid-rally disconnect pauses authority and retains the seat",
+    "Same guest rejoined within 30 seconds; both ready and replay serve",
+    "Completed a normally scored best-of-three match on both browser clients",
+    "Local D1 contains exactly one authoritative match result"
+  ],
+  "errors": [],
+  "accounts": [
+    {
+      "id": "a04e3676-b243-449a-ab95-8e4b9a5cc823",
+      "username": "ttqa_0_muv2dr5b"
+    },
+    {
+      "id": "d81806b9-4412-4cd1-972b-e8628d888ae7",
+      "username": "ttqa_1_muv2dr5b"
+    }
+  ],
+  "roomId": "6d64b13d-10b0-4209-90ca-af77902f1505",
+  "protocol": [
+    {
+      "type": "tt.room",
+      "phase": "waiting",
+      "ready": [
+        false,
+        false
+      ],
+      "receivedAt": 1791193536668
+    },
+    {
+      "type": "tt.room",
+      "phase": "waiting",
+      "ready": [
+        true,
+        false
+      ],
+      "receivedAt": 1791193537423
+    },
+    {
+      "type": "tt.room",
+      "phase": "active",
+      "ready": [
+        true,
+        true
+      ],
+      "receivedAt": 1791193537464
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 4,
+      "serverTime": 1791193537505,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537506
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 8,
+      "serverTime": 1791193537535,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537535
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 12,
+      "serverTime": 1791193537566,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537567
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 16,
+      "serverTime": 1791193537598,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537599
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 20,
+      "serverTime": 1791193537629,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537630
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 24,
+      "serverTime": 1791193537689,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537690
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 28,
+      "serverTime": 1791193537720,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537720
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 32,
+      "serverTime": 1791193537751,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537751
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 36,
+      "serverTime": 1791193537782,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537782
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 40,
+      "serverTime": 1791193537813,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537814
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 44,
+      "serverTime": 1791193537843,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537844
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 48,
+      "serverTime": 1791193537875,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537876
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 52,
+      "serverTime": 1791193537907,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537908
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 56,
+      "serverTime": 1791193537937,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537938
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 60,
+      "serverTime": 1791193537968,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193537969
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 64,
+      "serverTime": 1791193537999,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538000
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 68,
+      "serverTime": 1791193538046,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538046
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 72,
+      "serverTime": 1791193538076,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538077
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 76,
+      "serverTime": 1791193538108,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538109
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 80,
+      "serverTime": 1791193538138,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538139
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 84,
+      "serverTime": 1791193538168,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538169
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 88,
+      "serverTime": 1791193538199,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538199
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 92,
+      "serverTime": 1791193538230,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538231
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 96,
+      "serverTime": 1791193538291,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538292
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 100,
+      "serverTime": 1791193538321,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538323
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 104,
+      "serverTime": 1791193538352,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538353
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 108,
+      "serverTime": 1791193538383,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538384
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 112,
+      "serverTime": 1791193538413,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538414
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 116,
+      "serverTime": 1791193538444,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538445
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 120,
+      "serverTime": 1791193538474,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538476
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 124,
+      "serverTime": 1791193538506,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538506
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 128,
+      "serverTime": 1791193538537,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538538
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 132,
+      "serverTime": 1791193538568,
+      "paused": false,
+      "phase": "rally",
+      "receivedAt": 1791193538569
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 136,
+      "serverTime": 1791193538600,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538601
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 140,
+      "serverTime": 1791193538630,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538631
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 144,
+      "serverTime": 1791193538662,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538663
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 148,
+      "serverTime": 1791193538723,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538724
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 152,
+      "serverTime": 1791193538754,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538755
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 156,
+      "serverTime": 1791193538784,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538785
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 160,
+      "serverTime": 1791193538815,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538815
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 164,
+      "serverTime": 1791193538846,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538847
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 168,
+      "serverTime": 1791193538877,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538877
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 172,
+      "serverTime": 1791193538907,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538908
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 176,
+      "serverTime": 1791193538938,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538938
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 180,
+      "serverTime": 1791193538968,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538969
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 184,
+      "serverTime": 1791193538998,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193538999
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 188,
+      "serverTime": 1791193539029,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539030
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 192,
+      "serverTime": 1791193539091,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539093
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 196,
+      "serverTime": 1791193539122,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539123
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 200,
+      "serverTime": 1791193539153,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539154
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 204,
+      "serverTime": 1791193539183,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539184
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 208,
+      "serverTime": 1791193539214,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539215
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 212,
+      "serverTime": 1791193539244,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539245
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 216,
+      "serverTime": 1791193539275,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539276
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 220,
+      "serverTime": 1791193539306,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539306
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 224,
+      "serverTime": 1791193539337,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539338
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 228,
+      "serverTime": 1791193539368,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539368
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 232,
+      "serverTime": 1791193539398,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539399
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 236,
+      "serverTime": 1791193539429,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539430
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 240,
+      "serverTime": 1791193539490,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539491
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 244,
+      "serverTime": 1791193539521,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539522
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 248,
+      "serverTime": 1791193539552,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539553
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 252,
+      "serverTime": 1791193539583,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539584
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 256,
+      "serverTime": 1791193539614,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539615
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 260,
+      "serverTime": 1791193539644,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539646
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 264,
+      "serverTime": 1791193539676,
+      "paused": false,
+      "phase": "point",
+      "receivedAt": 1791193539677
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 268,
+      "serverTime": 1791193539706,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193539706
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 272,
+      "serverTime": 1791193539753,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193539754
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 276,
+      "serverTime": 1791193539784,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193539784
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 280,
+      "serverTime": 1791193539815,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193539816
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 284,
+      "serverTime": 1791193539847,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193539855
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 288,
+      "serverTime": 1791193539878,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193539879
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 292,
+      "serverTime": 1791193539908,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193539909
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 296,
+      "serverTime": 1791193539939,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193539940
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 300,
+      "serverTime": 1791193539970,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193539971
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 304,
+      "serverTime": 1791193540000,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193540001
+    },
+    {
+      "type": "tt.snapshot",
+      "tick": 308,
+      "serverTime": 1791193540031,
+      "paused": false,
+      "phase": "serve",
+      "receivedAt": 1791193540032
+    }
+  ],
+  "pointsBeforeDisconnect": "1:0",
+  "pointsAfterReconnect": "1:0",
+  "finalGames": "2 : 0",
+  "localHits": 11,
+  "persistedResults": [
+    {
+      "room_id": "6d64b13d-10b0-4209-90ca-af77902f1505",
+      "reason": "completed",
+      "score_json": "{\"games\":[2,0],\"scores\":[11,0],\"bestRally\":2}"
+    }
+  ],
+  "passed": true,
+  "endedAt": "2026-10-05T09:46:40.958Z"
+}

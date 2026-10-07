@@ -1,0 +1,12 @@
+{
+  "reviewer": "three_asset_inventory",
+  "notes": [
+    "Inspected 17:21 regenerated four-angle image. The cylinder now has a continuous round silhouette and rolled rim; helmet and sphere no longer have the prior coarse polygon outline. No holes or detached geometry visible.",
+    "HDR material-preview reflection mottling remains visible; this is approval of reusable body prototype geometry, not a complete robot, assembled grip, animation or production rendering acceptance."
+  ],
+  "sha256": "83bb5d627570b7ac584b3f9f7e295697098bf9d91db0bd741477106c5fd4dc80",
+  "reviewedAt": "2026-10-05T17:25:29.9363575+08:00",
+  "passed": true,
+  "scope": "Blender close full-object silhouette inspection",
+  "evidence": "robot-prototype-sphere-angles-0.png"
+}

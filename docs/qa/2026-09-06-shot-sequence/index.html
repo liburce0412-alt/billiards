@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>完整击球流程 · Break Builder</title>
+  <style>
+    body { margin: 0; background: #101a24; color: #edf5f7; font: 16px/1.7 system-ui, sans-serif; }
+    main { max-width: 1100px; margin: auto; padding: 36px 20px 60px; }
+    h1 { line-height: 1.3; }
+    p { color: #adc5ce; }
+    .sequence { padding: 16px 20px; border: 1px solid #355362; border-radius: 12px; color: #8de0e6; }
+    figure { margin: 30px 0; }
+    img { display: block; width: 100%; border: 1px solid #355362; border-radius: 12px; }
+    figcaption { margin-top: 10px; }
+    a { color: #70dce9; }
+  </style>
+  <main>
+    <h1>先到位，再出杆</h1>
+    <p class="sequence">走到击球点 → 俯身稳定 → 瞄准 → 拉杆并前送 → 接触时母球运动 → 停留 1 秒 → 起身</p>
+    <p>AI、管理员演示和手动击球共用同一个击球准备流程。以下为实际本地 WebGL 截图；手机横屏触控模拟，尚未完成手机真机验收。</p>
+    <figure>
+      <img src="bot-standing.png" alt="AI 击球时使用整桌俯视旁观视角，两个球手位于球桌两侧" />
+      <figcaption>对手回合：整桌俯视旁观，相机不会进入对手机器人的身体。走位、俯身及拉杆准备期间球保持静止。</figcaption>
+    </figure>
+    <figure>
+      <img src="admin-standing.png" alt="管理员演示击球后第一人称起身观看球桌" />
+      <figcaption>管理员演示：机器人准备完成后才触发实际击球。击球后先停留，再用第一人称起身。</figcaption>
+    </figure>
+    <figure>
+      <img src="chalk.png" alt="顶部擦粉按钮开启第一人称擦巧粉动画，机器人一手持球杆，另一手持巧粉" />
+      <figcaption>顶部「擦粉」：使用当前所选球杆，手持巧粉擦拭杆头。约 2.4 秒后恢复原视角和击球操作；动画不改变角度、力度、旋转或球位。</figcaption>
+    </figure>
+    <p>验证：838 项单元测试通过；21 项相关浏览器用例覆盖真实 AI、管理员演示、触控擦粉、击球时序、视角、移动端操作与生命周期。</p>
+    <p><a href="bot.json">AI 逐帧采样</a> · <a href="admin.json">演示逐帧采样</a> · <a href="release-verification.json">线上资源核验</a> · <a href="README.md">发布记录</a></p>
+  </main>
+</html>

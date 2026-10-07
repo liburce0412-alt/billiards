@@ -3,14 +3,21 @@ export class LiquidGlassFx {
   private readonly parent: HTMLElement
   private readonly context: WebGL2RenderingContext
   private readonly program: WebGLProgram
+  private vertexBuffer?: WebGLBuffer
   private readonly timeLocation: WebGLUniformLocation | null
   private readonly resolutionLocation: WebGLUniformLocation | null
   private readonly pointerLocation: WebGLUniformLocation | null
+  private readonly sceneLocation: WebGLUniformLocation | null
+  private readonly sceneBoundsLocation: WebGLUniformLocation | null
+  private readonly hasSceneLocation: WebGLUniformLocation | null
+  private readonly sceneTexture: WebGLTexture | null
+  private readonly sourceCanvas: HTMLCanvasElement | null
   private frame = 0
   private observer?: ResizeObserver
   private startedAt = performance.now()
   private pointerX = 0.28
   private pointerY = 0.58
+  private lastDrawAt = 0
 
   static mount(parent: HTMLElement | null): LiquidGlassFx | undefined {
     if (
@@ -64,6 +71,51 @@ export class LiquidGlassFx {
       "uResolution"
     )
     this.pointerLocation = context.getUniformLocation(this.program, "uPointer")
+    this.sceneLocation = context.getUniformLocation(this.program, "uScene")
+    this.sceneBoundsLocation = context.getUniformLocation(
+      this.program,
+      "uSceneBounds"
+    )
+    this.hasSceneLocation = context.getUniformLocation(
+      this.program,
+      "uHasScene"
+    )
+    this.sourceCanvas =
+      document.querySelector<HTMLCanvasElement>("#viewP1 > canvas")
+    this.sceneTexture = context.createTexture()
+    context.activeTexture(context.TEXTURE0)
+    context.bindTexture(context.TEXTURE_2D, this.sceneTexture)
+    context.texParameteri(
+      context.TEXTURE_2D,
+      context.TEXTURE_MIN_FILTER,
+      context.LINEAR
+    )
+    context.texParameteri(
+      context.TEXTURE_2D,
+      context.TEXTURE_MAG_FILTER,
+      context.LINEAR
+    )
+    context.texParameteri(
+      context.TEXTURE_2D,
+      context.TEXTURE_WRAP_S,
+      context.CLAMP_TO_EDGE
+    )
+    context.texParameteri(
+      context.TEXTURE_2D,
+      context.TEXTURE_WRAP_T,
+      context.CLAMP_TO_EDGE
+    )
+    context.texImage2D(
+      context.TEXTURE_2D,
+      0,
+      context.RGBA,
+      1,
+      1,
+      0,
+      context.RGBA,
+      context.UNSIGNED_BYTE,
+      new Uint8Array([238, 246, 250, 255])
+    )
   }
 
   private shader(type: number, source: string): WebGLShader {
@@ -93,6 +145,9 @@ export class LiquidGlassFx {
       uniform float uTime;
       uniform vec2 uResolution;
       uniform vec2 uPointer;
+      uniform sampler2D uScene;
+      uniform vec4 uSceneBounds;
+      uniform float uHasScene;
       out vec4 outColor;
 
       float softBand(float value, float center, float width) {
@@ -146,18 +201,29 @@ export class LiquidGlassFx {
         float radialTicks = pow(max(0.0, cos(radial * 24.0)), 22.0);
         float radialMask = 1.0 - smoothstep(0.38, 0.78, length(p - vec2(aspect * 0.5, -0.5)));
         float lightFog = smoothstep(0.22, 1.05, fogNoise) * (0.38 + peach * 0.62);
-        vec3 colour = vec3(0.91, 0.96, 0.99);
-        colour = mix(colour, vec3(0.05, 0.88, 0.98), cyan * 0.48);
-        colour = mix(colour, vec3(0.46, 0.24, 0.98), violet * 0.38);
-        colour = mix(colour, vec3(1.0, 0.36, 0.08), peach * 0.62);
-        colour += glint * vec3(0.78, 0.94, 1.0) * 0.10;
-        colour += lensEdge * vec3(0.36, 0.74, 1.0) * pointerLens * 0.14;
-        colour += arcGlow * vec3(0.03, 0.23, 0.38) * 0.48;
-        colour += radialTicks * radialMask * vec3(0.10, 0.86, 0.98) * 0.22;
-        colour = mix(colour, vec3(1.0, 0.32, 0.055), lightFog * 0.68);
-        colour += vec3(1.0, 0.88, 0.72) * lightFog * 0.16;
-        float alpha = 0.038 + cyan * 0.038 + violet * 0.034 + peach * 0.145;
-        alpha += lightFog * 0.13;
+        vec2 sceneUv = uSceneBounds.xy + uv * uSceneBounds.zw;
+        vec2 refraction = vec2(
+          sin((uv.y + fogNoise * 0.12) * 13.0 + t) + pointerLens * (pointer.x - p.x),
+          cos((uv.x - fogNoise * 0.08) * 9.0 - t * 0.8) + pointerLens * (pointer.y - p.y)
+        ) * vec2(0.0048, 0.0085);
+        float chroma = 0.0022 + pointerLens * 0.0016;
+        vec3 refracted = vec3(
+          texture(uScene, clamp(sceneUv + refraction + vec2(chroma, 0.0), 0.001, 0.999)).r,
+          texture(uScene, clamp(sceneUv + refraction, 0.001, 0.999)).g,
+          texture(uScene, clamp(sceneUv + refraction - vec2(chroma, 0.0), 0.001, 0.999)).b
+        );
+        vec3 colour = mix(vec3(0.91, 0.96, 0.99), refracted, uHasScene * 0.94);
+        colour = mix(colour, vec3(0.05, 0.88, 0.98), cyan * 0.18);
+        colour = mix(colour, vec3(0.46, 0.24, 0.98), violet * 0.12);
+        colour = mix(colour, vec3(1.0, 0.36, 0.08), peach * 0.24);
+        colour += glint * vec3(0.78, 0.94, 1.0) * 0.055;
+        colour += lensEdge * vec3(0.36, 0.74, 1.0) * pointerLens * 0.09;
+        colour += arcGlow * vec3(0.03, 0.23, 0.38) * 0.30;
+        colour += radialTicks * radialMask * vec3(0.10, 0.86, 0.98) * 0.14;
+        colour = mix(colour, vec3(1.0, 0.32, 0.055), lightFog * 0.22);
+        colour += vec3(1.0, 0.88, 0.72) * lightFog * 0.07;
+        float alpha = mix(0.025, 0.16, uHasScene) + cyan * 0.018 + violet * 0.014 + peach * 0.038;
+        alpha += lightFog * 0.045;
         outColor = vec4(colour, alpha);
       }`
     )
@@ -172,6 +238,11 @@ export class LiquidGlassFx {
       throw new Error(this.context.getProgramInfoLog(program) ?? "Link failed")
     }
     const vertices = this.context.createBuffer()
+    if (!vertices) {
+      this.context.deleteProgram(program)
+      throw new Error("Unable to create liquid glass buffer")
+    }
+    this.vertexBuffer = vertices
     this.context.bindBuffer(this.context.ARRAY_BUFFER, vertices)
     this.context.bufferData(
       this.context.ARRAY_BUFFER,
@@ -222,8 +293,10 @@ export class LiquidGlassFx {
   }
 
   private render = (timestamp: number) => {
-    if (!document.hidden) {
+    if (!document.hidden && timestamp - this.lastDrawAt >= 1000 / 30) {
+      this.lastDrawAt = timestamp
       this.context.useProgram(this.program)
+      this.captureScene()
       this.context.uniform1f(
         this.timeLocation,
         (timestamp - this.startedAt) / 1000
@@ -234,9 +307,48 @@ export class LiquidGlassFx {
         this.canvas.height
       )
       this.context.uniform2f(this.pointerLocation, this.pointerX, this.pointerY)
+      this.context.uniform1i(this.sceneLocation, 0)
       this.context.drawArrays(this.context.TRIANGLES, 0, 6)
     }
     this.frame = requestAnimationFrame(this.render)
+  }
+
+  private captureScene() {
+    const source = this.sourceCanvas
+    let hasScene = 0
+    if (source?.width && source.height && this.sceneTexture) {
+      try {
+        this.context.activeTexture(this.context.TEXTURE0)
+        this.context.bindTexture(this.context.TEXTURE_2D, this.sceneTexture)
+        this.context.pixelStorei(this.context.UNPACK_FLIP_Y_WEBGL, true)
+        this.context.texImage2D(
+          this.context.TEXTURE_2D,
+          0,
+          this.context.RGBA,
+          this.context.RGBA,
+          this.context.UNSIGNED_BYTE,
+          source
+        )
+        hasScene = 1
+      } catch {
+        // Cross-origin-tainted scenes retain the translucent CSS fallback.
+      }
+    }
+    const parentRect = this.canvas.getBoundingClientRect()
+    const sourceRect = source?.getBoundingClientRect()
+    if (sourceRect?.width && sourceRect.height) {
+      this.context.uniform4f(
+        this.sceneBoundsLocation,
+        (parentRect.left - sourceRect.left) / sourceRect.width,
+        (sourceRect.bottom - parentRect.bottom) / sourceRect.height,
+        parentRect.width / sourceRect.width,
+        parentRect.height / sourceRect.height
+      )
+    } else {
+      this.context.uniform4f(this.sceneBoundsLocation, 0, 0, 1, 1)
+    }
+    this.context.uniform1f(this.hasSceneLocation, hasScene)
+    this.parent.classList.toggle("optical-glass-active", hasScene === 1)
   }
 
   private start() {
@@ -265,7 +377,9 @@ export class LiquidGlassFx {
       "webglcontextrestored",
       this.contextRestored
     )
+    if (this.vertexBuffer) this.context.deleteBuffer(this.vertexBuffer)
     this.context.deleteProgram(this.program)
+    if (this.sceneTexture) this.context.deleteTexture(this.sceneTexture)
     this.canvas.remove()
   }
 }

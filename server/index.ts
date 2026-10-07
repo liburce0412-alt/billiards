@@ -26,6 +26,7 @@ import {
   joinRoom,
   listInvites,
   roomByCode,
+  roomById,
 } from "./api/rooms"
 import {
   actOnFriendRequest,
@@ -43,6 +44,7 @@ import {
 import { createAuth, requireProfile } from "./auth"
 import { sha256 } from "./crypto"
 import { GameRoom } from "./durable/game-room"
+import { TableTennisRoom } from "./durable/table-tennis-room"
 import { PasswordKdf } from "./durable/password-kdf"
 import { RateLimitBucket } from "./durable/rate-limit"
 import { SocialRoom } from "./durable/social-room"
@@ -52,6 +54,7 @@ import { verifyTurnstile } from "./turnstile"
 import { staticAsset } from "./assets"
 
 export { GameRoom, PasswordKdf, RateLimitBucket, SocialRoom }
+export { TableTennisRoom }
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"])
 const AUTH_PREFIX = "/api/auth/"
@@ -85,6 +88,18 @@ function oneMethod(method: string, handler: RouteHandler): RouteHandler {
 }
 
 const requestRoutes: readonly Route[] = [
+  {
+    pattern: /^\/api\/table-tennis\/results$/,
+    handler: oneMethod("GET", async (request, env) => {
+      const { session } = await requireProfile(request, env)
+      const result = await env.DB.prepare(
+        "SELECT id, winner_id, reason, score_json, started_at, ended_at FROM table_tennis_results WHERE host_id = ? OR guest_id = ? ORDER BY ended_at DESC LIMIT 20"
+      )
+        .bind(session.user.id, session.user.id)
+        .all()
+      return json({ results: result.results })
+    }),
+  },
   {
     pattern: /^\/api\/config$/,
     handler: oneMethod("GET", (_request, env) => configResponse(env)),
@@ -171,6 +186,12 @@ const requestRoutes: readonly Route[] = [
     pattern: /^\/api\/rooms\/code\/([^/]+)$/,
     handler: oneMethod("GET", (request, env, match) =>
       roomByCode(request, env, decoded(match[1]))
+    ),
+  },
+  {
+    pattern: /^\/api\/rooms\/([^/]+)$/,
+    handler: oneMethod("GET", (request, env, match) =>
+      roomById(request, env, decoded(match[1]))
     ),
   },
   {
@@ -365,12 +386,12 @@ async function gameSocket(request: Request, env: PlatformEnv, roomId: string) {
     online: true,
   })
   const member = await env.DB.prepare(
-    `SELECT grm.member_role, gr.status
+    `SELECT grm.member_role, gr.status, gr.game_type
      FROM game_room_members grm JOIN game_rooms gr ON gr.id = grm.room_id
      WHERE grm.room_id = ? AND grm.user_id = ?`
   )
     .bind(roomId, session.user.id)
-    .first<{ member_role: string; status: string }>()
+    .first<{ member_role: string; status: string; game_type?: string }>()
   if (!member || !["waiting", "active"].includes(member.status)) {
     throw new HttpError(403, "room_membership_required", "你不是这个房间的成员")
   }
@@ -379,13 +400,21 @@ async function gameSocket(request: Request, env: PlatformEnv, roomId: string) {
     session.user.id,
     profile.display_name
   )
+  headers.set(
+    "X-Platform-Username",
+    encodeURIComponent(session.user.username ?? session.user.name)
+  )
+  headers.set("X-Platform-Cue-Style", profile.cue_style)
   headers.set("X-Platform-Member-Role", member.member_role)
+  headers.set("X-Platform-Room-Id", roomId)
   if (profile.avatar_key) {
     headers.set("X-Platform-Avatar", `/media/avatar/${session.user.id}`)
   }
-  return env.GAME_ROOMS.getByName(roomId).fetch(
-    new Request(request, { headers })
-  )
+  const rooms =
+    member.game_type === "table-tennis"
+      ? env.TABLE_TENNIS_ROOMS
+      : env.GAME_ROOMS
+  return rooms.getByName(roomId).fetch(new Request(request, { headers }))
 }
 
 function platformHeaders(

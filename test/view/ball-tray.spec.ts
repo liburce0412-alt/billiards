@@ -101,6 +101,16 @@ describe("BallTray", () => {
     expect(trayList.innerHTML).toBe("")
   })
 
+  test("dispose clears entries left by the previous match", () => {
+    tray.addShot(true, 1, [], {})
+
+    tray.dispose()
+
+    expect(tray.entries).toHaveLength(0)
+    expect(trayList.childElementCount).toBe(0)
+    expect(document.getElementById("ballTray")?.style.display).toBe("none")
+  })
+
   test("replay link events bubble, but other tray clicks stop", () => {
     tray.addShot(true, 1, [], {})
     const link = trayList.querySelector(".ball-item") as HTMLElement

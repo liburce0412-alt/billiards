@@ -42,7 +42,7 @@ export class PlaceBall extends ControllerBase {
     this.container.table.cue.placeBallMode()
     this.container.table.cue.showHelper(false)
     this.container.table.cue.moveTo(this.container.table.cueball.pos)
-    this.container.table.cue.aimInputs.setButtonText("Place\nBall")
+    this.container.table.cue.aimInputs.setButtonText("Confirm cue ball")
     this.container.table.cue.aimInputs.setDisabled(false)
     this.container.table.cue.aimInputs.hideRepositionCueBall()
     this.showPlacementLine()
@@ -99,6 +99,14 @@ export class PlaceBall extends ControllerBase {
 
   placed() {
     if (this.container.table.overlapsAny(this.container.table.cueball.pos)) {
+      this.container.notifyLocal(
+        {
+          type: "Info",
+          title: "母球位置不可用",
+          subtext: "请把母球移开其他球，再确认位置",
+        },
+        1600
+      )
       return this
     }
     this.container.table.cueball.fround()

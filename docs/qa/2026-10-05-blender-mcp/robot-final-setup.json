@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T10:04:03.726519+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: INSPECTION_READY robot-player\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: INSPECTION_READY robot-player\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\packages\\table-tennis\\assets\\sources\\robot-player.blend",
+    "sha256": "bac6929a0d08ce46dd0dba520df4afe625c1d3a5f937cf6a4068980044ad977e"
+  }
+}

@@ -4,7 +4,16 @@ import { AimEvent } from "../events/aimevent"
 import { CameraTop } from "./cameratop"
 import { R } from "../model/physics/constants"
 
+export type PlayerCameraFrame = {
+  eye: Vector3
+  position: Vector3
+  walking: boolean
+}
+
 type CameraModePreference = "2d" | "3d" | "free"
+
+export const SHOT_HOLD_SECONDS = 1
+export const SHOT_RISE_SECONDS = 1.1
 
 /** Preserve the feel of an old per-frame lerp while making it refresh-rate independent. */
 export function frameRateIndependentLerp(
@@ -17,19 +26,21 @@ export function frameRateIndependentLerp(
 }
 
 export class Camera {
-  static defaultHeight = R * 13
-  static defaultDistance = R * 15
+  static defaultHeight = R * 21
+  static defaultDistance = R * 48
   static defaultFovOffset = 0
 
   static configureForRule(ruleType: string) {
-    Camera.defaultHeight = R * 13
-    Camera.defaultDistance = R * 15
+    // Keep enough shaft and fore-end in the default shot composition that the
+    // cue reads as a physical tool rather than a detached tip behind the ball.
+    Camera.defaultHeight = R * 21
+    Camera.defaultDistance = R * 48
     Camera.defaultFovOffset = 0
-    CameraTop.zoomFactor = 0.94
+    CameraTop.zoomFactor = 1.13
 
     if (ruleType === "threecushion" || ruleType === "sagu") {
-      Camera.defaultHeight = R * 23
-      Camera.defaultDistance = R * 22
+      Camera.defaultHeight = R * 25
+      Camera.defaultDistance = R * 32
       Camera.defaultFovOffset = 6
       CameraTop.zoomFactor = 0.92
     }
@@ -46,6 +57,7 @@ export class Camera {
       this.preferredMode = this.freeView
       this.orbitInitialised = true
     }
+    this.updateModeButton()
   }
 
   camera: PerspectiveCamera
@@ -61,10 +73,90 @@ export class Camera {
   private distance = Camera.defaultDistance
   private fovOffset = Camera.defaultFovOffset
   savedDistance?: number
-  private orbitAzimuth = Math.PI
-  private orbitElevation = MathUtils.degToRad(64)
-  private orbitDistance = R * 52
+  private orbitAzimuth = Math.PI * 1.08
+  private orbitElevation = MathUtils.degToRad(28)
+  private orbitDistance = R * 175
   private orbitInitialised = false
+  private readonly orbitTarget = new Vector3(0, 0, R * 22)
+  private cueBallPosition?: Vector3
+  private playerFrame?: PlayerCameraFrame
+  private shotView?: {
+    elapsed: number
+    position: Vector3
+    lookAt: Vector3
+    eyeOffset?: Vector3
+  }
+  private returningToAim = false
+  opponentView = false
+
+  setOpponentView(value: boolean) {
+    if (value === this.opponentView) return
+    this.finishShotView()
+    this.opponentView = value
+  }
+
+  /** Watch the strike from the player's stance before standing up. The
+   * observation point stays at the shot, rather than chasing the moving ball. */
+  beginShot() {
+    if (this.opponentView) return
+    this.suggestMode(this.aimView)
+    if (this.mode !== this.aimView) return
+    this.returningToAim = false
+    this.shotView = {
+      elapsed: 0,
+      position: this.camera.position.clone(),
+      lookAt: this.lookTarget.clone(),
+      eyeOffset: this.playerFrame
+        ? this.camera.position.clone().sub(this.playerFrame.eye)
+        : undefined,
+    }
+  }
+
+  private finishShotView() {
+    if (this.shotView) this.returningToAim = true
+    this.shotView = undefined
+  }
+
+  private updateShotView() {
+    const shot = this.shotView!
+    shot.elapsed += Math.max(0, this.elapsed)
+    // Hold for one second, then stand up over 1.1 seconds with zero speed
+    // at either end. Neither phase depends on frame rate or ball position.
+    const progress = MathUtils.clamp(
+      (shot.elapsed - SHOT_HOLD_SECONDS) / SHOT_RISE_SECONDS,
+      0,
+      1
+    )
+    if (progress === 0) return
+    const eased = progress * progress * (3 - 2 * progress)
+    if (this.playerFrame && shot.eyeOffset) {
+      this.camera.position
+        .copy(this.playerFrame.eye)
+        .addScaledVector(shot.eyeOffset, 1 - eased)
+    } else {
+      this.camera.position.copy(shot.position)
+      this.camera.position.z += R * 15 * eased
+    }
+    this.camera.lookAt(shot.lookAt)
+  }
+
+  /** Free inspection is temporary on touch: each new turn returns behind the
+   * current cue ball. An explicitly selected 2D overview remains 2D. */
+  beginAimTurn(
+    touch = globalThis.matchMedia?.("(pointer: coarse)").matches === true
+  ) {
+    this.finishShotView()
+    if (touch && this.preferredMode !== this.topView) {
+      this.restoreSavedDistance()
+      this.height = Camera.defaultHeight
+      this.distance = Camera.defaultDistance
+      this.fovOffset = Camera.defaultFovOffset
+      this.orbitInitialised = false
+      this.selectMode(this.aimView)
+    } else {
+      this.suggestMode(this.aimView)
+    }
+  }
 
   elapsed: number = 1 / 60
   private t = 0
@@ -95,6 +187,7 @@ export class Camera {
   }
 
   private selectMode(mode) {
+    this.finishShotView()
     if (mode !== this.aimView) {
       this.restoreSavedDistance()
     }
@@ -104,12 +197,50 @@ export class Camera {
     if (mode === this.topView) storedMode = "2d"
     else if (mode === this.freeView) storedMode = "free"
     this.rememberMode(storedMode)
+    this.updateModeButton()
   }
 
-  update(elapsed, aim: AimEvent) {
+  private updateModeButton() {
+    if (typeof document === "undefined") return
+    const button = document.getElementById("camera")
+    const top = this.preferredMode === this.topView
+    button?.setAttribute("data-camera-mode", top ? "2d" : "3d")
+    button?.setAttribute(
+      "aria-label",
+      top ? "切换到 3D 视角" : "切换到 2D 俯视"
+    )
+  }
+
+  adjustTouchPitch(deltaY: number) {
+    if (!Number.isFinite(deltaY) || deltaY === 0) return
+    if (this.shotView) this.beginFreeOrbit()
+    if (this.preferredMode === this.freeView) {
+      this.orbitByPixels(0, deltaY)
+      return
+    }
+    if (this.preferredMode === this.topView) this.height = R * 100
+    this.height = MathUtils.clamp(
+      this.height - deltaY * R * 0.65,
+      R * 6,
+      R * 105
+    )
+    this.selectMode(this.aimView)
+  }
+
+  update(
+    elapsed,
+    aim: AimEvent,
+    cueBallPosition?: Vector3,
+    playerFrame?: PlayerCameraFrame
+  ) {
+    this.playerFrame = playerFrame
+    this.cueBallPosition = cueBallPosition
     this.elapsed = elapsed
     this.t += elapsed
-    this.mode(aim)
+    if (this.opponentView && this.mode !== this.freeView)
+      this.topView(aim, 0.08)
+    else if (this.shotView) this.updateShotView()
+    else this.mode(aim)
   }
 
   orbitView(_: AimEvent) {
@@ -158,7 +289,7 @@ export class Camera {
     this.camera.lookAt(this.lookTarget)
   }
 
-  topView(_: AimEvent) {
+  topView(_: AimEvent, fraction = 0.9) {
     this.camera.fov = CameraTop.fov
     const targetPosition = CameraTop.viewPoint(
       this.camera.aspect,
@@ -175,49 +306,113 @@ export class Camera {
     }
     this.camera.position.lerp(
       targetPosition,
-      frameRateIndependentLerp(0.9, this.elapsed)
+      frameRateIndependentLerp(fraction, this.elapsed)
     )
     this.camera.up = up
     this.camera.lookAt(this.lookTarget.set(0, R * 2.5, -R * 0.2))
   }
 
+  private setPlayerViewPosition(
+    cuePosition: Vector3,
+    forward: Vector3,
+    h: number
+  ) {
+    if (this.playerFrame) {
+      if (this.playerFrame.walking) {
+        const outward = this.tempVec2
+          .copy(this.playerFrame.position)
+          .setZ(0)
+          .normalize()
+        this.target
+          .copy(this.playerFrame.position)
+          .addScaledVector(outward, R * 60)
+        this.target.z += R * 75
+      } else {
+        this.target
+          .copy(this.playerFrame.eye)
+          .addScaledVector(forward, -(this.distance - Camera.defaultDistance))
+        this.target.z += h - Camera.defaultHeight
+      }
+    } else {
+      this.target.copy(cuePosition).addScaledVector(forward, -this.distance)
+      this.target.z = h
+    }
+  }
+
   aimView(aim: AimEvent, fraction = 0.08) {
+    const cuePosition = this.cueBallPosition ?? aim.pos
     const h = this.height
     const portrait = this.camera.aspect < 0.8
-    this.camera.fov = (portrait ? 60 : 40) + this.fovOffset
+    this.camera.fov = (portrait ? 60 : 44) + this.fovOffset
     if (h < 10 * R) {
       const factor = 100 * (10 * R - h)
       this.camera.fov -= factor * (portrait ? 3 : 1)
     }
-    this.target
-      .copy(aim.pos)
-      .addScaledVector(unitAtAngle(aim.angle, this.tempVec), -this.distance)
+    const forward = unitAtAngle(aim.angle, this.tempVec)
+    this.setPlayerViewPosition(cuePosition, forward, h)
     this.camera.position.lerp(
       this.target,
       frameRateIndependentLerp(fraction, this.elapsed)
     )
-    this.camera.position.z = h
+    if (!this.returningToAim && !this.playerFrame) this.camera.position.z = h
     this.camera.up = up
-    this.lookTarget.copy(aim.pos).addScaledVector(up, h / 2)
+    // Aim past the cue ball and into the playable table. Looking directly at
+    // the cue ball left the wide desktop camera staring into the near apron,
+    // so rails, balls and the shot line disappeared behind the environment.
+    const lookAhead = Math.min(this.distance * 0.42, R * 22)
+    if (this.playerFrame?.walking) {
+      this.tempVec2
+        .copy(this.playerFrame.position)
+        .multiplyScalar(0.6)
+        .addScaledVector(cuePosition, 0.4)
+        .setZ(R * 8)
+    } else {
+      this.tempVec2
+        .copy(cuePosition)
+        .addScaledVector(forward, lookAhead)
+        .addScaledVector(up, R * 2.25)
+    }
+    if (this.returningToAim) {
+      this.lookTarget.lerp(
+        this.tempVec2,
+        frameRateIndependentLerp(fraction, this.elapsed)
+      )
+      if (
+        this.camera.position.distanceTo(this.target) < 0.001 &&
+        this.lookTarget.distanceTo(this.tempVec2) < 0.001
+      )
+        this.returningToAim = false
+    } else this.lookTarget.copy(this.tempVec2)
     this.camera.lookAt(this.lookTarget)
   }
 
   freeView(_: AimEvent) {
     const horizontalDistance =
       Math.cos(this.orbitElevation) * this.orbitDistance
-    this.camera.fov = 45 + this.fovOffset
-    this.camera.position.set(
-      Math.sin(this.orbitAzimuth) * horizontalDistance,
-      Math.cos(this.orbitAzimuth) * horizontalDistance,
-      Math.sin(this.orbitElevation) * this.orbitDistance
-    )
+    this.camera.fov = 60 + this.fovOffset
+    this.camera.position
+      .set(
+        Math.sin(this.orbitAzimuth) * horizontalDistance,
+        Math.cos(this.orbitAzimuth) * horizontalDistance,
+        Math.sin(this.orbitElevation) * this.orbitDistance
+      )
+      .add(this.orbitTarget)
     this.camera.up.copy(up)
-    this.camera.lookAt(zero)
+    // Overview includes the themed architecture above the table. Aiming and
+    // top cameras retain their close, gameplay-focused framing.
+    this.camera.lookAt(this.lookTarget.copy(this.orbitTarget))
   }
 
   private beginFreeOrbit() {
     if (!this.orbitInitialised) {
-      const offset = this.tempVec.copy(this.camera.position)
+      this.orbitTarget.copy(
+        this.shotView
+          ? this.lookTarget
+          : (this.cueBallPosition ?? this.lookTarget)
+      )
+      const offset = this.tempVec
+        .copy(this.camera.position)
+        .sub(this.orbitTarget)
       const currentDistance = offset.length()
       if (currentDistance >= R * 4) {
         this.orbitDistance = MathUtils.clamp(currentDistance, R * 14, R * 180)
@@ -253,6 +448,10 @@ export class Camera {
   }
 
   adjustHeight(delta) {
+    if (this.shotView) {
+      this.orbitByPixels(0, -delta / R)
+      return
+    }
     delta = this.height < 10 * R ? delta / 8 : delta
     this.height = MathUtils.clamp(this.height + delta, R * 6, R * 120)
     if (this.height > R * 110) {
@@ -264,10 +463,15 @@ export class Camera {
   }
 
   adjustFov(delta: number) {
+    if (this.shotView) this.beginFreeOrbit()
     this.fovOffset = MathUtils.clamp(this.fovOffset + delta, -30, 60)
   }
 
   adjustDistance(delta: number) {
+    if (this.shotView) {
+      this.zoomByWheel(delta * 100)
+      return
+    }
     delta = this.distance < 10 * R ? delta / 8 : delta
     this.distance = MathUtils.clamp(this.distance + delta, R * 2, R * 100)
   }
@@ -383,6 +587,7 @@ export class Camera {
   }
 
   forceMode(mode) {
+    this.finishShotView()
     if (mode !== this.aimView) {
       this.restoreSavedDistance()
     }

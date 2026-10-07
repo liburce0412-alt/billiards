@@ -1,24 +1,4 @@
-import {
-  AdditiveBlending,
-  BufferGeometry,
-  Color,
-  DirectionalLight,
-  EquirectangularReflectionMapping,
-  Float32BufferAttribute,
-  Frustum,
-  HemisphereLight,
-  Line,
-  LineBasicMaterial,
-  Matrix4,
-  PMREMGenerator,
-  Points,
-  PointsMaterial,
-  Scene,
-  SRGBColorSpace,
-  TextureLoader,
-  WebGLRenderer,
-  WebGLRenderTarget,
-} from "three"
+import { Frustum, Matrix4, Scene, WebGLRenderer } from "three"
 import { Camera } from "./camera"
 import { Drawing } from "./drawing"
 import { LineData } from "../events/chatevent"
@@ -28,16 +8,37 @@ import { Grid } from "./grid"
 import { renderer } from "../utils/webgl"
 import { Assets } from "./assets"
 import { Snooker } from "../controller/rules/snooker"
-import { getRenderQuality } from "./renderquality"
-import { R } from "../model/physics/constants"
-import { TableGeometry } from "./tablegeometry"
 import {
-  EnvironmentStyle,
+  AdaptiveRenderQuality,
+  getRenderQuality,
+  pixelRatioForViewport,
+  renderQualityControllerFor,
+  renderQualityDiagnostics,
+} from "./renderquality"
+import {
   environmentStyleById,
   saveEnvironmentStyleId,
   savedEnvironmentStyleId,
 } from "./environmentstyle"
-import { SpectraEnvironment } from "./spectraenvironment"
+import { EnvironmentManager } from "./environmentmanager"
+import { RobotPlayers } from "./robotplayers"
+import { disposeRefinedArt } from "./refinedart"
+import { mountGlassOverlay } from "../../packages/table-tennis/src/browser/glass"
+import {
+  mobileCameraMetrics,
+  MobileGestureCoordinator,
+  MobileGestureState,
+} from "../events/mobilegesturecoordinator"
+
+export function touchCameraMetrics(points: Iterable<{ x: number; y: number }>) {
+  const metrics = mobileCameraMetrics(points)
+  if (!metrics) return
+  return {
+    centroidX: metrics.x,
+    centroidY: metrics.y,
+    distance: metrics.distance,
+  }
+}
 
 export class View {
   readonly scene = new Scene()
@@ -53,22 +54,24 @@ export class View {
   loadAssets = true
   assets: Assets
   drawing: Drawing
-  private environmentTarget?: WebGLRenderTarget
+  private readonly environmentManager: EnvironmentManager
+  readonly robotPlayers?: RobotPlayers
+  private readonly renderQualityController?: AdaptiveRenderQuality
+  private disposeQualityListener?: () => void
+  private resizeObserver?: ResizeObserver
+  private controlCanvas?: HTMLCanvasElement
   private primaryCameraOrbit = false
   private orbitPointerId?: number
   private orbitPointerX = 0
   private orbitPointerY = 0
-  private spaceTime = 0
-  private meteor?: Line
-  private meteorMaterial?: LineBasicMaterial
-  private starfield?: Points
-  private spectraEnvironment?: SpectraEnvironment
-  private environmentLoadToken = 0
+  private mobileGestureCoordinator?: MobileGestureCoordinator
   environmentStyleId = savedEnvironmentStyleId()
   onCameraInteraction?: () => void
+  onPrimaryTouchDrag?: (dx: number, dy: number) => void
   onContextLost?: () => void
   onContextRestored?: () => void
   private contextLost = false
+  private glass?: ReturnType<typeof mountGlassOverlay>
 
   // Reuse objects to reduce garbage collection pressure in high-frequency rendering
   private readonly frustum = new Frustum()
@@ -79,6 +82,22 @@ export class View {
     this.table = table
     this.assets = assets
     this.renderer = renderer(element)
+    if (this.renderer) {
+      this.robotPlayers = new RobotPlayers()
+    }
+    this.renderQualityController = renderQualityControllerFor(this.renderer)
+    this.environmentManager = new EnvironmentManager(
+      this.scene,
+      this.renderer,
+      this.renderQualityController?.profile ?? getRenderQuality()
+    )
+    this.disposeQualityListener = this.renderQualityController?.onChange(
+      (quality) => {
+        this.environmentManager.applyQuality(quality)
+        this.warmup()
+        this.render()
+      }
+    )
 
     if (element) {
       this.cachedWidth = element.offsetWidth
@@ -87,11 +106,11 @@ export class View {
       this.windowHeight = element.offsetHeight
 
       if (typeof ResizeObserver !== "undefined") {
-        const observer = new ResizeObserver(() => {
+        this.resizeObserver = new ResizeObserver(() => {
           this.cachedWidth = element.offsetWidth
           this.cachedHeight = element.offsetHeight
         })
-        observer.observe(element)
+        this.resizeObserver.observe(element)
       }
     }
 
@@ -105,6 +124,9 @@ export class View {
     )
     this.addCameraControls()
     this.initialiseScene()
+    // The sky uses depthTest=false with insertion-order rendering. Add actors
+    // after the environment, otherwise its dome paints over their colours.
+    if (this.robotPlayers) this.scene.add(this.robotPlayers.root)
   }
 
   addLine(data: LineData) {
@@ -124,80 +146,153 @@ export class View {
   }
 
   update(elapsed, aim: AimEvent) {
-    this.camera.update(elapsed, aim)
-    this.spectraEnvironment?.update(
+    if (this.robotPlayers) {
+      this.robotPlayers.root.visible = !this.table.cue.placerMesh.visible
+      this.robotPlayers.update(
+        elapsed,
+        this.table.cue,
+        this.camera.camera,
+        this.table.allStationary(),
+        this.camera.mode === this.camera.aimView && !this.camera.opponentView
+      )
+    }
+    this.camera.update(
       elapsed,
-      this.windowWidth,
-      this.windowHeight,
-      this.table.cueball.pos.x,
-      this.table.cueball.pos.y
+      aim,
+      this.table.cueball.onTable() ? this.table.cueball.pos : undefined,
+      this.robotPlayers?.root.visible
+        ? this.robotPlayers.cameraFrame
+        : undefined
     )
-    this.updateMeteor(elapsed)
+    this.robotPlayers?.updateChalkView(this.camera.camera, this.table.cue)
+    this.renderQualityController?.observeFrame(
+      elapsed * 1000,
+      this.table.allStationary()
+    )
+    this.environmentManager.update({
+      elapsed,
+      width: this.windowWidth,
+      height: this.windowHeight,
+      cueX: this.table.cueball.pos.x,
+      cueY: this.table.cueball.pos.y,
+    })
+  }
+
+  getRenderDiagnostics() {
+    return {
+      quality: renderQualityDiagnostics(this.renderer),
+      environment: this.environmentManager.diagnostics(),
+    }
   }
 
   setPrimaryCameraOrbit(enabled: boolean) {
     this.primaryCameraOrbit = enabled
   }
 
+  getMobileInputState() {
+    return (
+      this.mobileGestureCoordinator?.getSnapshot() ?? {
+        state: "idle" as const,
+        pointerCount: 0,
+        aimSensitivity: {
+          normal: 0.003,
+          precision: 0.00065,
+        },
+      }
+    )
+  }
+
   private addCameraControls() {
     const canvas = this.renderer?.domElement
     if (!canvas) return
+    this.controlCanvas = canvas
 
-    canvas.addEventListener("contextmenu", (event) => event.preventDefault())
-    canvas.addEventListener("webglcontextlost", (event) => {
-      event.preventDefault()
-      this.contextLost = true
-      this.onContextLost?.()
-    })
-    canvas.addEventListener("webglcontextrestored", () => {
-      this.contextLost = false
-      this.warmup()
-      this.onContextRestored?.()
-      this.render()
-    })
-    canvas.addEventListener("pointerdown", (event) => {
-      const isOrbitButton =
-        event.button === 1 ||
-        event.button === 2 ||
-        (event.button === 0 && this.primaryCameraOrbit)
-      if (!isOrbitButton) return
-      event.preventDefault()
-      event.stopPropagation()
-      this.orbitPointerId = event.pointerId
-      this.orbitPointerX = event.clientX
-      this.orbitPointerY = event.clientY
-      canvas.setPointerCapture?.(event.pointerId)
-      this.element?.classList.add("is-camera-orbiting")
-    })
-    canvas.addEventListener("pointermove", (event) => {
-      if (event.pointerId !== this.orbitPointerId) return
-      event.preventDefault()
-      event.stopPropagation()
-      const deltaX = event.clientX - this.orbitPointerX
-      const deltaY = event.clientY - this.orbitPointerY
-      this.orbitPointerX = event.clientX
-      this.orbitPointerY = event.clientY
-      this.camera.orbitByPixels(deltaX, deltaY)
-      this.onCameraInteraction?.()
-    })
-    const stopOrbit = (event: PointerEvent) => {
-      if (event.pointerId !== this.orbitPointerId) return
-      this.orbitPointerId = undefined
-      canvas.releasePointerCapture?.(event.pointerId)
-      this.element?.classList.remove("is-camera-orbiting")
-    }
-    canvas.addEventListener("pointerup", stopOrbit)
-    canvas.addEventListener("pointercancel", stopOrbit)
-    canvas.addEventListener(
-      "wheel",
-      (event) => {
-        event.preventDefault()
-        event.stopPropagation()
-        this.camera.zoomByWheel(event.deltaY)
+    this.mobileGestureCoordinator = new MobileGestureCoordinator(canvas, {
+      onPrimaryDrag: (dx, dy) => this.onPrimaryTouchDrag?.(dx, dy),
+      onCameraDrag: ({ x, y, distance }) => {
+        this.camera.orbitByPixels(x, y)
+        this.camera.zoomByWheel(distance * 2.4)
         this.onCameraInteraction?.()
       },
-      { passive: false }
-    )
+      onStateChange: (state) => this.setMobileGestureState(state),
+      onReset: () => this.setMobileGestureState("idle"),
+    })
+
+    canvas.addEventListener("contextmenu", this.preventContextMenu)
+    canvas.addEventListener("webglcontextlost", this.handleContextLost)
+    canvas.addEventListener("webglcontextrestored", this.handleContextRestored)
+    canvas.addEventListener("pointerdown", this.handleOrbitStart)
+    canvas.addEventListener("pointermove", this.handleOrbitMove)
+    canvas.addEventListener("pointerup", this.handleOrbitStop)
+    canvas.addEventListener("pointercancel", this.handleOrbitStop)
+    canvas.addEventListener("wheel", this.handleWheel, { passive: false })
+  }
+
+  private readonly preventContextMenu = (event: Event) => event.preventDefault()
+
+  private readonly handleContextLost = (event: Event) => {
+    event.preventDefault()
+    this.contextLost = true
+    this.renderQualityController?.emergencyFallback()
+    this.onContextLost?.()
+  }
+
+  private readonly handleContextRestored = () => {
+    this.contextLost = false
+    this.environmentManager.contextRestored()
+    this.warmup()
+    this.onContextRestored?.()
+    this.render()
+  }
+
+  private readonly handleOrbitStart = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return
+    const isOrbitButton =
+      event.button === 1 ||
+      event.button === 2 ||
+      (event.button === 0 && this.primaryCameraOrbit)
+    if (!isOrbitButton) return
+    event.preventDefault()
+    event.stopPropagation()
+    this.orbitPointerId = event.pointerId
+    this.orbitPointerX = event.clientX
+    this.orbitPointerY = event.clientY
+    this.controlCanvas?.setPointerCapture?.(event.pointerId)
+    this.element?.classList.add("is-camera-orbiting")
+  }
+
+  private readonly handleOrbitMove = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return
+    if (event.pointerId !== this.orbitPointerId) return
+    event.preventDefault()
+    event.stopPropagation()
+    const deltaX = event.clientX - this.orbitPointerX
+    const deltaY = event.clientY - this.orbitPointerY
+    this.orbitPointerX = event.clientX
+    this.orbitPointerY = event.clientY
+    this.camera.orbitByPixels(deltaX, deltaY)
+    this.onCameraInteraction?.()
+  }
+
+  private readonly handleOrbitStop = (event: PointerEvent) => {
+    if (event.pointerType === "touch") return
+    if (event.pointerId !== this.orbitPointerId) return
+    this.orbitPointerId = undefined
+    this.controlCanvas?.releasePointerCapture?.(event.pointerId)
+    this.element?.classList.remove("is-camera-orbiting")
+  }
+
+  private readonly handleWheel = (event: WheelEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+    this.camera.zoomByWheel(event.deltaY)
+    this.onCameraInteraction?.()
+  }
+
+  private setMobileGestureState(state: MobileGestureState) {
+    const camera = state === "camera" || state === "cameraDrain"
+    this.element?.classList.toggle("is-camera-orbiting", camera)
+    this.element?.classList.toggle("is-touch-camera", camera)
   }
 
   sizeChanged() {
@@ -243,6 +338,13 @@ export class View {
       const width = this.windowWidth
       const height = this.windowHeight
 
+      if (this.renderer) {
+        const quality =
+          this.renderQualityController?.profile ?? getRenderQuality()
+        this.renderer.setPixelRatio(
+          pixelRatioForViewport(quality, width, height)
+        )
+      }
       this.renderer?.setSize(width, height)
       this.renderer?.setViewport(0, 0, width, height)
       this.renderer?.setScissor(0, 0, width, height)
@@ -257,6 +359,31 @@ export class View {
     }
 
     this.renderer?.render(this.scene, cam.camera)
+    if (this.renderer && this.element?.id === "viewP1") {
+      if (!this.glass) {
+        document
+          .querySelectorAll<HTMLElement>(
+            ".tray-score-container,#gameSettingsDrawer"
+          )
+          .forEach((panel) => {
+            panel.dataset.glass = "optical"
+          })
+        document
+          .querySelector<HTMLElement>("#panel")
+          ?.setAttribute("data-glass", "ambient")
+        this.glass = mountGlassOverlay(
+          document.body,
+          this.renderer.domElement,
+          {
+            quality: getRenderQuality().name,
+            inGame: true,
+            selector:
+              "[data-glass],.game-settings button,.shot-dock button,.tray-score-container button,.game-overflow-menu button",
+          }
+        )
+      }
+      this.glass.render()
+    }
   }
 
   warmup() {
@@ -268,12 +395,9 @@ export class View {
 
   private configureTextureFiltering() {
     if (!this.renderer) return
-    const quality = getRenderQuality()
+    const quality = this.renderQualityController?.profile ?? getRenderQuality()
     const hardwareLimit = this.renderer.capabilities.getMaxAnisotropy()
-    let qualityLimit = 4
-    if (quality.name === "high") qualityLimit = 8
-    else if (quality.name === "low") qualityLimit = 1
-    const anisotropy = Math.min(hardwareLimit, qualityLimit)
+    const anisotropy = Math.min(hardwareLimit, quality.maxAnisotropy)
     this.scene.traverse((object: any) => {
       if (!object.isMesh) return
       const materials = Array.isArray(object.material)
@@ -294,45 +418,15 @@ export class View {
   }
 
   private initialiseScene() {
-    const quality = getRenderQuality()
+    const quality = this.renderQualityController?.profile ?? getRenderQuality()
     const requestedEnvironment = new URLSearchParams(
       globalThis.location?.search ?? ""
     ).get("environment")
-    this.setEnvironmentStyle(
-      requestedEnvironment ?? this.environmentStyleId,
-      false
+    const style = environmentStyleById(
+      requestedEnvironment ?? this.environmentStyleId
     )
-    this.scene.add(new HemisphereLight(0xf4fbff, 0x617988, 0.32))
-
-    const keyLight = new DirectionalLight(0xf8fdff, 0.68)
-    keyLight.position.set(-R * 20, -R * 12, R * 65)
-    keyLight.castShadow = quality.dynamicShadows
-    if (quality.dynamicShadows) {
-      const shadow = keyLight.shadow
-      shadow.mapSize.set(quality.shadowMapSize, quality.shadowMapSize)
-      shadow.camera.left = -TableGeometry.X
-      shadow.camera.right = TableGeometry.X
-      shadow.camera.top = TableGeometry.Y
-      shadow.camera.bottom = -TableGeometry.Y
-      shadow.camera.near = R
-      shadow.camera.far = R * 140
-      shadow.bias = -0.00008
-      shadow.normalBias = R * 0.015
-    }
-    this.scene.add(keyLight)
-
-    if (quality.environmentLighting && this.renderer) {
-      const pmrem = new PMREMGenerator(this.renderer)
-      import("three/addons/environments/RoomEnvironment.js").then(
-        ({ RoomEnvironment }) => {
-          this.environmentTarget = pmrem.fromScene(new RoomEnvironment(), 0.04)
-          this.scene.environment = this.environmentTarget.texture
-          pmrem.dispose()
-          this.warmup()
-        }
-      )
-    }
-
+    this.environmentStyleId = style.id
+    this.environmentManager.setStyle(style)
     this.scene.add(this.assets.table)
     if (this.assets.sound?.listener) {
       this.camera.camera.add(this.assets.sound.listener)
@@ -353,178 +447,10 @@ export class View {
     this.environmentStyleId = persist
       ? saveEnvironmentStyleId(style.id)
       : style.id
-    const quality = getRenderQuality()
-    const token = ++this.environmentLoadToken
-
-    if (!this.spectraEnvironment) {
-      this.spectraEnvironment = new SpectraEnvironment()
-      this.scene.add(this.spectraEnvironment.root)
-    }
-    this.spectraEnvironment.root.visible = style.id === "spectra"
-
-    if (this.starfield) {
-      this.scene.remove(this.starfield)
-      this.starfield.geometry.dispose()
-      ;(this.starfield.material as PointsMaterial).dispose()
-    }
-    const starCounts: Record<string, number> = {
-      spectra: 0,
-      club: 180,
-      galaxy: 900,
-      nebula: 900,
-    }
-    let starCount = starCounts[style.id] ?? 180
-    if (quality.name === "low") starCount = Math.ceil(starCount * 0.52)
-    if (quality.name === "high") starCount = Math.ceil(starCount * 1.66)
-    if (starCount > 0) {
-      this.starfield = this.createStarfield(starCount, style.starTint)
-      this.scene.add(this.starfield)
-    } else {
-      this.starfield = undefined
-    }
-
-    this.scene.background = new Color(style.background)
-    this.scene.backgroundIntensity = style.intensity
-    this.scene.environmentIntensity =
-      style.id === "spectra" ? 0.36 : style.intensity
-    if (style.backdrop && quality.name !== "low" && this.renderer) {
-      this.loadEnvironmentBackdrop(style, token)
-    }
-
-    if (style.meteor && quality.name !== "low") {
-      if (!this.meteor) {
-        this.meteor = this.createMeteor()
-        this.scene.add(this.meteor)
-      }
-      this.meteor.visible = true
-    } else if (this.meteor) {
-      this.meteor.visible = false
-    }
+    this.environmentManager.setStyle(style)
+    this.warmup()
     this.render()
     return this.environmentStyleId
-  }
-
-  private loadEnvironmentBackdrop(
-    style: EnvironmentStyle,
-    token: number
-  ): void {
-    new TextureLoader().load(
-      style.backdrop!,
-      (texture) => {
-        if (token !== this.environmentLoadToken) {
-          texture.dispose()
-          return
-        }
-        texture.mapping = EquirectangularReflectionMapping
-        texture.colorSpace = SRGBColorSpace
-        texture.anisotropy = Math.min(
-          this.renderer?.capabilities.getMaxAnisotropy() ?? 1,
-          4
-        )
-        this.scene.background = texture
-        this.scene.backgroundIntensity = style.intensity
-        this.scene.backgroundRotation.z = style.id === "nebula" ? 1.12 : 0
-        this.warmup()
-        this.render()
-      },
-      undefined,
-      (error) => {
-        console.warn(
-          "Environment backdrop could not be loaded; using stars.",
-          error
-        )
-      }
-    )
-  }
-
-  private createMeteor(): Line {
-    const geometry = new BufferGeometry()
-    geometry.setAttribute(
-      "position",
-      new Float32BufferAttribute([0, 0, 0, -R * 42, -R * 13, R * 3], 3)
-    )
-    this.meteorMaterial = new LineBasicMaterial({
-      color: 0xbfeaff,
-      transparent: true,
-      opacity: 0,
-      depthWrite: false,
-      depthTest: false,
-      blending: AdditiveBlending,
-      toneMapped: false,
-    })
-    const meteor = new Line(geometry, this.meteorMaterial)
-    meteor.name = "shooting-star"
-    meteor.frustumCulled = false
-    meteor.renderOrder = -1
-    return meteor
-  }
-
-  private updateMeteor(elapsed: number): void {
-    if (!this.meteor || !this.meteorMaterial) return
-    this.spaceTime += elapsed
-    const cycleSeconds = 13
-    const activeSeconds = 1.15
-    const phase = this.spaceTime % cycleSeconds
-    const progress = phase / activeSeconds
-    if (progress >= 1) {
-      this.meteorMaterial.opacity = 0
-      return
-    }
-
-    const cycle = Math.floor(this.spaceTime / cycleSeconds)
-    const angle = (cycle * 2.3999632297 + 0.55) % (Math.PI * 2)
-    const radius = R * 285
-    this.meteor.position.set(
-      Math.cos(angle) * radius + Math.cos(angle + 0.7) * R * 52 * progress,
-      Math.sin(angle) * radius + Math.sin(angle + 0.7) * R * 52 * progress,
-      R * (125 - 24 * progress)
-    )
-    this.meteor.rotation.z = angle + 0.7
-    this.meteorMaterial.opacity = Math.sin(progress * Math.PI) * 0.78
-  }
-
-  private createStarfield(
-    count: number,
-    tint: [number, number, number]
-  ): Points {
-    const positions = new Float32Array(count * 3)
-    const colors = new Float32Array(count * 3)
-    let seed = 0x51f15e
-    const random = () => {
-      seed = (seed * 1664525 + 1013904223) >>> 0
-      return seed / 0x100000000
-    }
-
-    for (let i = 0; i < count; i++) {
-      const azimuth = random() * Math.PI * 2
-      const z = random() * 2 - 1
-      const radius = R * (360 + random() * 430)
-      const horizontal = Math.sqrt(1 - z * z)
-      positions[i * 3] = Math.cos(azimuth) * horizontal * radius
-      positions[i * 3 + 1] = Math.sin(azimuth) * horizontal * radius
-      positions[i * 3 + 2] = z * radius
-
-      const warmth = random()
-      colors[i * 3] = Math.min(1, tint[0] * (0.82 + warmth * 0.22))
-      colors[i * 3 + 1] = Math.min(1, tint[1] * (0.84 + warmth * 0.18))
-      colors[i * 3 + 2] = Math.min(1, tint[2] * (0.9 + warmth * 0.1))
-    }
-
-    const geometry = new BufferGeometry()
-    geometry.setAttribute("position", new Float32BufferAttribute(positions, 3))
-    geometry.setAttribute("color", new Float32BufferAttribute(colors, 3))
-    const material = new PointsMaterial({
-      size: R * 0.5,
-      sizeAttenuation: true,
-      transparent: true,
-      opacity: 0.9,
-      depthWrite: false,
-      vertexColors: true,
-    })
-    const stars = new Points(geometry, material)
-    stars.name = "starfield"
-    stars.frustumCulled = false
-    return stars
   }
 
   ballToCheck = 0
@@ -544,5 +470,59 @@ export class View {
       )
     )
     return this.frustum
+  }
+
+  dispose(): void {
+    this.glass?.dispose()
+    this.glass = undefined
+    document
+      .querySelectorAll<HTMLElement>(
+        ".tray-score-container,#gameSettingsDrawer,#panel"
+      )
+      .forEach((panel) => panel.removeAttribute("data-glass"))
+    this.mobileGestureCoordinator?.dispose()
+    this.mobileGestureCoordinator = undefined
+    this.resizeObserver?.disconnect()
+    this.resizeObserver = undefined
+    this.disposeQualityListener?.()
+    this.disposeQualityListener = undefined
+    const canvas = this.controlCanvas
+    if (canvas) {
+      canvas.removeEventListener("contextmenu", this.preventContextMenu)
+      canvas.removeEventListener("webglcontextlost", this.handleContextLost)
+      canvas.removeEventListener(
+        "webglcontextrestored",
+        this.handleContextRestored
+      )
+      canvas.removeEventListener("pointerdown", this.handleOrbitStart)
+      canvas.removeEventListener("pointermove", this.handleOrbitMove)
+      canvas.removeEventListener("pointerup", this.handleOrbitStop)
+      canvas.removeEventListener("pointercancel", this.handleOrbitStop)
+      canvas.removeEventListener("wheel", this.handleWheel)
+      canvas.remove()
+    }
+    this.controlCanvas = undefined
+    this.element?.classList.remove("is-camera-orbiting", "is-touch-camera")
+    this.drawing.dispose()
+    this.environmentManager.dispose()
+    this.robotPlayers?.dispose()
+    if (this.table.cue.cueBody?.userData.refinedCueStyle)
+      disposeRefinedArt(this.table.cue.cueBody)
+    for (const ball of this.table.balls) {
+      const mesh = ball.ballmesh?.mesh
+      if (!mesh?.userData.refinedArtId) continue
+      mesh.geometry.dispose()
+      if (ball.label !== undefined) {
+        const materials = Array.isArray(mesh.material)
+          ? mesh.material
+          : [mesh.material]
+        materials.forEach((material) => material.dispose())
+      }
+    }
+    this.renderer?.dispose()
+    this.onCameraInteraction = undefined
+    this.onPrimaryTouchDrag = undefined
+    this.onContextLost = undefined
+    this.onContextRestored = undefined
   }
 }

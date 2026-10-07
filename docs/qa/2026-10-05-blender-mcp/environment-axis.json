@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:51:29.369243+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: WORLD <Matrix 4x4 (1.1461,  0.0000,  0.0000, 0.0000)\n            (0.0000, -0.0000,  1.1461, 0.0000)\n            (0.0000, -1.1461, -0.0000, 0.0000)\n            (0.0000,  0.0000,  0.0000, 1.0000)>\nLOCAL <Matrix 4x4 (1.1461, 0.0000, 0.0000, 0.0000)\n            (0.0000, 1.1461, 0.0000, 0.0000)\n            (0.0000, 0.0000, 1.1461, 0.0000)\n            (0.0000, 0.0000, 0.0000, 1.0000)>\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: WORLD <Matrix 4x4 (1.1461,  0.0000,  0.0000, 0.0000)\n            (0.0000, -0.0000,  1.1461, 0.0000)\n            (0.0000, -1.1461, -0.0000, 0.0000)\n            (0.0000,  0.0000,  0.0000, 1.0000)>\nLOCAL <Matrix 4x4 (1.1461, 0.0000, 0.0000, 0.0000)\n            (0.0000, 1.1461, 0.0000, 0.0000)\n            (0.0000, 0.0000, 1.1461, 0.0000)\n            (0.0000, 0.0000, 0.0000, 1.0000)>\n"
+    },
+    "isError": false
+  }
+}

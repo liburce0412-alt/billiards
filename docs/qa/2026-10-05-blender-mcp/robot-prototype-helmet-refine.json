@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:21:15.305622+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: 17:21:15 | INFO: Data are loaded, start creating Blender stuff\n17:21:15 | INFO: Blender create Mesh node 0\n17:21:15 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"robot-prototype-helmet.blend\"\n17:21:15 | INFO: Starting glTF 2.0 export\n17:21:15 | INFO: Extracting primitive: Mesh_0.064\n17:21:15 | INFO: Primitives created: 1\n17:21:15 | INFO: Finished glTF 2.0 export in 0.009998798370361328 s\n\nREFINED robot-prototype-helmet ['subdivision + original-bounds projection'] BOUNDS_PRESERVED\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: 17:21:15 | INFO: Data are loaded, start creating Blender stuff\n17:21:15 | INFO: Blender create Mesh node 0\n17:21:15 | INFO: glTF import finished in 0.01s\nInfo: Saved as \"robot-prototype-helmet.blend\"\n17:21:15 | INFO: Starting glTF 2.0 export\n17:21:15 | INFO: Extracting primitive: Mesh_0.064\n17:21:15 | INFO: Primitives created: 1\n17:21:15 | INFO: Finished glTF 2.0 export in 0.009998798370361328 s\n\nREFINED robot-prototype-helmet ['subdivision + original-bounds projection'] BOUNDS_PRESERVED\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\.tmp\\legacy-art-export\\robot-prototype-helmet.glb",
+    "sha256": "ab4d40e3e8d58de8bcb7a1b568c567b741c254b96e0b017c8ce3800777c703dc"
+  }
+}

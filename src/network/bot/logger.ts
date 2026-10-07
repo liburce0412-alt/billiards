@@ -14,6 +14,10 @@ export class Logger {
   visible: boolean = false
   expanded: boolean = false
   maxEntries: number = 50
+  private readonly clearButton = document.getElementById("botDebugClear")
+  private readonly toggleButton = document.getElementById("botDebugToggle")
+  private readonly handleClear = () => this.clear()
+  private readonly handleToggle = () => this.toggleExpanded()
 
   constructor() {
     this.element = id("botDebugOverlay") as HTMLDivElement
@@ -24,19 +28,8 @@ export class Logger {
       this.info("Bot mode activated")
     }
 
-    const clearButton = document.getElementById("botDebugClear")
-    if (clearButton) {
-      clearButton.addEventListener("click", () => {
-        this.clear()
-      })
-    }
-
-    const toggleButton = document.getElementById("botDebugToggle")
-    if (toggleButton) {
-      toggleButton.addEventListener("click", () => {
-        this.toggleExpanded()
-      })
-    }
+    this.clearButton?.addEventListener("click", this.handleClear)
+    this.toggleButton?.addEventListener("click", this.handleToggle)
 
     this.updateExpandedState()
   }
@@ -141,5 +134,11 @@ export class Logger {
     })
 
     this.logElement.scrollTop = this.logElement.scrollHeight
+  }
+
+  dispose() {
+    this.clearButton?.removeEventListener("click", this.handleClear)
+    this.toggleButton?.removeEventListener("click", this.handleToggle)
+    this.entries.length = 0
   }
 }

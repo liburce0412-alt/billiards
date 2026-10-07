@@ -1,0 +1,79 @@
+{
+  "startedAt": "2026-10-05T10:00:46.911Z",
+  "method": "Two authenticated Chromium contexts, real local Worker, each WS direction delayed by target RTT / 2; no protocol or state replacement",
+  "scenarios": [
+    {
+      "rttMs": 50,
+      "errors": [],
+      "roomId": "2c4c322f-cc22-4f9f-a5c6-0bb091e0b40c",
+      "server": 1,
+      "commonIdenticalSnapshots": 65,
+      "bestRally": 2,
+      "inputs": [
+        [
+          {
+            "seq": 0,
+            "kind": "swing",
+            "at": 1791194451388
+          }
+        ],
+        [
+          {
+            "seq": 0,
+            "kind": "serve",
+            "at": 1791194450559
+          }
+        ]
+      ],
+      "acks": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "roomPhases": [
+        [
+          "waiting",
+          "waiting",
+          "active"
+        ],
+        [
+          "waiting",
+          "waiting",
+          "waiting",
+          "active"
+        ]
+      ],
+      "visibleScores": [
+        "1:0",
+        "0:1"
+      ],
+      "passed": true
+    },
+    {
+      "rttMs": 100,
+      "errors": [],
+      "roomId": "456fc5ab-2b11-4557-bad1-6a3fc68d8d77",
+      "failure": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '准备比赛', exact: true })\u001b[22m\n\u001b[2m    - locator resolved to <button class=\"tt-primary tt-action\">准备比赛</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is not enabled\u001b[22m\n\u001b[2m  2 × retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m      - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m  58 × retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\u001b[2m       - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m  - retrying click action\u001b[22m\n\u001b[2m    - waiting 500ms\u001b[22m\n",
+      "passed": false,
+      "page0": "123 ms\nBREAK BUILDER · TABLE TENNIS\n联机验证甲\n0 局\n0:0\n第 1 局 · 三局两胜\n联机验证乙\n0 局\nREADY TO RALLY\n等待对手发球\n向上滑动挥拍 · 左右滑动控制落点\n松手挥拍",
+      "page1": "126 ms\nBREAK BUILDER · TABLE TENNIS\n联机验证乙\n0 局\n0:0\n第 1 局 · 三局两胜\n联机验证甲\n0 局\nREADY TO RALLY\n你的发球\n向上滑动挥拍 · 左右滑动控制落点\n松手挥拍\n发球"
+    },
+    {
+      "rttMs": 150,
+      "errors": [],
+      "roomId": "d031e053-0a6e-4bda-9820-48c421fd1e25",
+      "server": 1,
+      "failure": "Visible client scores did not converge to the authority",
+      "passed": false,
+      "page0": "173 ms\nBREAK BUILDER · TABLE TENNIS\n联机验证甲\n0 局\n1:1\n第 1 局 · 三局两胜\n联机验证乙\n0 局\nREADY TO RALLY\n你的发球\n向上滑动挥拍 · 左右滑动控制落点\n松手挥拍\n发球",
+      "page1": "164 ms\nBREAK BUILDER · TABLE TENNIS\n联机验证乙\n0 局\n1:1\n第 1 局 · 三局两胜\n联机验证甲\n0 局\nREADY TO RALLY\n等待对手发球\n向上滑动挥拍 · 左右滑动控制落点\n松手挥拍"
+    }
+  ],
+  "passed": false,
+  "endedAt": "2026-10-05T10:01:42.678Z"
+}

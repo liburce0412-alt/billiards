@@ -1,0 +1,102 @@
+{
+  "samples": 192,
+  "maximumErrorMm": 0,
+  "worst": [
+    {
+      "identity": 0,
+      "firstPerson": false,
+      "clip": "Ready",
+      "time": 0.05,
+      "height": 0.86,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": true,
+      "clip": "Ready",
+      "time": 0.05,
+      "height": 0.86,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": false,
+      "clip": "Ready",
+      "time": 0.05,
+      "height": 1.05,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": true,
+      "clip": "Ready",
+      "time": 0.05,
+      "height": 1.05,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": false,
+      "clip": "Ready",
+      "time": 0.05,
+      "height": 1.4,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": true,
+      "clip": "Ready",
+      "time": 0.05,
+      "height": 1.4,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": false,
+      "clip": "Ready",
+      "time": 0.05,
+      "height": 1.75,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": true,
+      "clip": "Ready",
+      "time": 0.05,
+      "height": 1.75,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": false,
+      "clip": "Ready",
+      "time": 0.15,
+      "height": 0.86,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": true,
+      "clip": "Ready",
+      "time": 0.15,
+      "height": 0.86,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": false,
+      "clip": "Ready",
+      "time": 0.15,
+      "height": 1.05,
+      "errorMm": 0
+    },
+    {
+      "identity": 0,
+      "firstPerson": true,
+      "clip": "Ready",
+      "time": 0.15,
+      "height": 1.05,
+      "errorMm": 0
+    }
+  ]
+}

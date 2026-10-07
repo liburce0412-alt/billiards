@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Break Builder · 稳定瞄准与随身球杆</title>
+  <style>
+    body {
+      margin: 0;
+      background: #10191f;
+      color: #e0ecef;
+      font:
+        16px/1.7 system-ui,
+        sans-serif;
+    }
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 36px 20px 64px;
+    }
+    h1 {
+      line-height: 1.3;
+    }
+    p {
+      color: #a9c0c8;
+    }
+    figure {
+      margin: 32px 0;
+    }
+    img {
+      display: block;
+      width: 100%;
+      border: 1px solid #304750;
+      border-radius: 12px;
+    }
+    figcaption {
+      margin-top: 10px;
+    }
+    a {
+      color: #6bdded;
+    }
+  </style>
+  <main>
+    <h1>稳定瞄准 · 球杆随人到位</h1>
+    <p>
+      2026-09-06 · 915 × 412 横屏触控模拟。截图来自实际 WebGL
+      渲染，尚未进行手机真机验收。
+    </p>
+    <figure>
+      <img src="aim.png" alt="第一人称瞄准，母球与球杆位于前方" />
+      <figcaption>
+        连续左右触控微调保持俯身姿态。70
+        次采样均未进入行走，第一人称相机高度变化不足 0.7 毫米。
+      </figcaption>
+    </figure>
+    <figure>
+      <img src="carry-prism.png" alt="机器人行走时手持所选 aurora-prism 球杆" />
+      <figcaption>
+        走位时手持 aurora-prism 所选模型，台边的击球球杆隐藏，不会抢先出现。
+      </figcaption>
+    </figure>
+    <figure>
+      <img
+        src="carry-laser.png"
+        alt="机器人手中的球杆已同步切换为 holo-laser"
+      />
+      <figcaption>
+        切换 holo-laser
+        后，随身球杆同步使用对应模型与材质。机器人到位并俯身后，再切换为击球球杆。
+      </figcaption>
+    </figure>
+    <p>
+      验证：823 项单元测试、14 项浏览器回归通过；30 / 60 / 120 FPS
+      下验证微调与蓄力不触发反复起身。
+    </p>
+    <p>
+      <a href="browser-evidence.json">浏览器采样</a> ·
+      <a href="release-verification.json">线上资源校验</a> ·
+      <a href="README.md">发布记录</a>
+    </p>
+  </main>
+</html>

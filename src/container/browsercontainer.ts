@@ -12,6 +12,7 @@ import {
 import { strongeAdapter } from "../model/physics/stronge"
 import JSONCrush from "jsoncrush"
 import { Assets } from "../view/assets"
+import { clearRefinedArtCache } from "../view/refinedart"
 import { SnookerConfig } from "../utils/snookerconfig"
 import { ThreeCushionConfig } from "../utils/threecushionconfig"
 import { Session } from "../network/client/session"
@@ -19,6 +20,7 @@ import { MessageRelay } from "../network/client/messagerelay"
 import {
   GameRoomMember,
   MessagingMessageRelay,
+  RoomStateSnapshot,
 } from "../network/client/messagingmessagerelay"
 import { BotRelay } from "../network/bot/botrelay"
 import { ScoreReporter } from "../network/client/scorereporter"
@@ -37,6 +39,7 @@ import { EventSequenceWindow } from "../network/client/eventsequence"
 import { RoomControlEvent, RoomSettings } from "../events/roomcontrolevent"
 import { RuleDecisionEvent } from "../events/ruledecisionevent"
 import { tableStyleById } from "../view/tablestyle"
+import { cueStyleById } from "../view/cuestyle"
 import {
   appendRoomJournal,
   clearRoomState,
@@ -44,6 +47,9 @@ import {
   saveRoomState,
 } from "../network/client/roomstate"
 import { verifiedGameIdentity } from "../platform/gameidentity"
+import { AdminDemoAssist } from "../controller/adminassist"
+import { setGameDebugSource } from "../platform/webmcp"
+import { maxPower } from "../model/physics/constants"
 
 /**
  * Integrate game container into HTML page
@@ -105,18 +111,68 @@ export class BrowserContainer {
   private rematchTimeout?: ReturnType<typeof globalThis.setTimeout>
   private connectionState: "connected" | "offline" | "reconnecting" =
     "connected"
+  private adminDemoAssist?: AdminDemoAssist
+  private modePanel?: AnalysisPanel | DrillPanel
+  private clearDebugSource?: () => void
+  private disposed = false
+  private readonly handleRematchRequest = () => this.requestRematch()
+  private readonly handleRuleDecision = (rawEvent: Event) => {
+    const event = rawEvent as CustomEvent<{
+      decision?: string
+      value?: string
+    }>
+    if (!event.detail?.decision || this.disposed) return
+    const decision = new RuleDecisionEvent(
+      event.detail.decision,
+      event.detail.value ?? ""
+    )
+    this.container.eventQueue.push(decision)
+    this.broadcast(decision)
+    this.container.notification.clear()
+  }
+  private readonly handleOffline = () => {
+    if (this.disposed) return
+    this.connectionState = "offline"
+    this.container.setHudConnectionState("offline")
+    this.container.notifyLocal(
+      {
+        type: "Info",
+        title: "网络已断开",
+        subtext: "比赛已保留，恢复网络后会自动同步球台",
+      },
+      0
+    )
+  }
+  private readonly handleOnline = () => {
+    if (this.disposed) return
+    this.connectionState = "reconnecting"
+    this.container.setHudConnectionState("reconnecting")
+    this.container.notifyLocal(
+      {
+        type: "Info",
+        title: "正在重新连接",
+        subtext: "等待对手返回最新球位、比分与轮次",
+      },
+      0
+    )
+    this.subscribeNetwork()
+    this.broadcast(new RejoinEvent(this.connectionStream))
+  }
   constructor(canvas3d, params) {
     this.now = Date.now()
     const platformIdentity = verifiedGameIdentity()
     this.playername =
+      platformIdentity?.displayName ??
       params.get("userName") ??
       params.get("name") ??
       params.get("playername") ??
-      platformIdentity?.displayName ??
       "玩家"
     this.tableId = params.get("tableId") ?? "default"
     this.clientId =
-      params.get("userId") ?? params.get("clientId") ?? `G_${getUID()}`
+      platformIdentity?.userId ??
+      params.get("userId") ??
+      params.get("clientId") ??
+      `G_${getUID()}`
     this.replay = params.get("state")
     this.ruletype = params.get("ruletype") ?? "nineball"
     applyPhysicsProfileForRule(this.ruletype)
@@ -126,8 +182,8 @@ export class BrowserContainer {
     this.canvas3d = canvas3d
     this.cushionModel = this.cushion(params.get("cushionModel"))
     this.spectator = params.has("spectator")
-    this.first = params.has("first")
     this.roomProtocolV2 = params.get("roomVersion") === "2"
+    this.first = this.roomProtocolV2 ? false : params.has("first")
     this.roomCode = params.get("roomCode") ?? this.tableId
     this.roomInstanceId = params.get("roomInstance") ?? ""
     this.matchId = params.get("matchId") ?? ""
@@ -163,9 +219,11 @@ export class BrowserContainer {
     )
     if (this.localVersus) {
       Session.getInstance().enableLocalVersus(
-        params.get("p1Name") ?? this.playername,
+        platformIdentity?.displayName ??
+          params.get("p1Name") ??
+          this.playername,
         params.get("p2Name") ?? "玩家二",
-        params.get("p1Cue") ?? "heritage",
+        platformIdentity?.cueStyle ?? params.get("p1Cue") ?? "heritage",
         params.get("p2Cue") ?? "jade"
       )
     }
@@ -221,30 +279,33 @@ export class BrowserContainer {
       )
     )
     container.setHudContext(
-      this.initialHudContext(identity?.avatarUrl, effectiveRuletype, botLevel)
+      this.initialHudContext(identity, effectiveRuletype, botLevel)
     )
     return container
   }
 
   private initialHudContext(
-    avatarUrl: string | null | undefined,
+    identity: ReturnType<typeof verifiedGameIdentity>,
     ruleType: string,
     botLevel: number
   ) {
+    const playerIdentity = identity
+      ? `@${identity.username} · ID ${identity.userId.slice(0, 8)} · ${cueStyleById(identity.cueStyle).name}`
+      : undefined
     let playerKind: "human" | "local" = "human"
-    let playerDetail = "本地玩家"
+    let playerDetail = playerIdentity ?? "本地玩家"
     let opponentKind: "human" | "ai" | "local" = "human"
     let opponentDetail = "本地玩家"
     if (this.localVersus) {
       playerKind = "local"
-      playerDetail = "同设备玩家"
+      playerDetail = playerIdentity ?? "同设备玩家"
       opponentKind = "local"
       opponentDetail = "同设备玩家"
     } else if (this.botMode) {
       opponentKind = "ai"
       opponentDetail = `AI 难度 ${botLevel}/11`
     } else if (this.wss) {
-      playerDetail = "已验证在线玩家"
+      playerDetail = playerIdentity ?? "已验证在线玩家"
       opponentDetail = "在线对手"
     }
     let targetLabel: string | undefined
@@ -252,7 +313,7 @@ export class BrowserContainer {
       targetLabel = `先到 ${ThreeCushionConfig.raceTo} 分`
     }
     return {
-      playerAvatarUrl: avatarUrl,
+      playerAvatarUrl: identity?.avatarUrl,
       playerKind,
       playerDetail,
       opponentKind,
@@ -323,6 +384,15 @@ export class BrowserContainer {
     this.messageRelay = relay
     this.container = this.createContainer(scoreReporter)
     relay.onMembersChanged = (members) => this.updateHudRoomMembers(members)
+    relay.onRoomJoined = (role) => this.handleAuthoritativeRoomJoin(role)
+    relay.onRoomState = (state) => this.handleAuthoritativeRoomState(state)
+    relay.onRoomStarted = (breakerUserId, state) =>
+      this.handleAuthoritativeRoomStart(breakerUserId, state)
+    relay.onRoomError = (_code, message) =>
+      this.container.notifyLocal(
+        { type: "Info", title: "房间操作失败", subtext: message },
+        2600
+      )
     this.container.init()
   }
 
@@ -336,12 +406,13 @@ export class BrowserContainer {
     session.setOpponentClientId(opponent.userId)
     this.container.setHudContext({
       opponentAvatarUrl: opponent.avatarUrl,
-      opponentDetail: "在线对手",
+      opponentDetail: `@${opponent.username} · ID ${opponent.userId.slice(0, 8)} · ${cueStyleById(opponent.cueStyle).name}`,
       connection: "connected",
     })
   }
 
   onAssetsReady() {
+    if (this.disposed) return
     console.log(`${this.playername} assets ready`)
     const scoreReporter = new ScoreReporter()
 
@@ -364,12 +435,14 @@ export class BrowserContainer {
     this.container.onStableState = () => {
       this.flushStateSyncResponse()
       this.persistStableRoomState()
+      this.adminDemoAssist?.sync()
     }
+    this.adminDemoAssist = new AdminDemoAssist(this.container)
     this.installConnectionMonitoring()
     if (this.analysisMode) {
-      new AnalysisPanel(this.container)
+      this.modePanel = new AnalysisPanel(this.container)
     } else if (this.drillMode) {
-      new DrillPanel(this.container)
+      this.modePanel = new DrillPanel(this.container)
     }
     this.setReplayLink()
 
@@ -386,6 +459,38 @@ export class BrowserContainer {
     globalThis.container = this.container
     ;(globalThis as any).breakBuilderDiagnostics = () =>
       this.container.diagnostics.snapshot()
+    ;(globalThis as any).breakBuilderPhysicsState = () =>
+      this.container.shotDiagnostics.state(this.container.table)
+    ;(globalThis as any).breakBuilderLastShotRepro = () =>
+      this.container.shotDiagnostics.lastShot()
+    this.clearDebugSource?.()
+    this.clearDebugSource = setGameDebugSource({
+      getMobileInputState: () => this.container.view.getMobileInputState(),
+      getPowerState: () => ({
+        ...this.container.table.cue.aimInputs.getPowerGestureState(),
+        normalisedPower:
+          maxPower > 0 ? this.container.table.cue.aim.power / maxPower : 0,
+        cueSpeedMps: this.container.table.cue.aim.power,
+        maxCueSpeedMps: maxPower,
+      }),
+      getPhysicsState: () =>
+        this.container.shotDiagnostics.state(this.container.table),
+      exportLastShotRepro: () => this.container.shotDiagnostics.lastShot(),
+      getRenderQuality: () =>
+        this.container.view.getRenderDiagnostics().quality,
+      getRenderStats: () => {
+        const diagnostics = this.container.view.getRenderDiagnostics()
+        return {
+          pixelRatio: diagnostics.quality?.pixelRatio ?? null,
+          drawCalls: diagnostics.quality?.drawCalls ?? null,
+          triangles: diagnostics.quality?.triangles ?? null,
+          textures: diagnostics.quality?.textures ?? null,
+          geometries: diagnostics.quality?.geometries ?? null,
+          programs: diagnostics.quality?.programs ?? null,
+          environment: diagnostics.environment,
+        }
+      },
+    })
   }
 
   private initGameLoop() {
@@ -393,7 +498,6 @@ export class BrowserContainer {
       this.subscribeNetwork()
       this.broadcast(new RejoinEvent(this.connectionStream))
       if (this.roomProtocolV2) {
-        this.sendRoomHello()
         if (this.restoredRoomState) {
           this.container.notifyLocal(
             {
@@ -403,12 +507,15 @@ export class BrowserContainer {
             },
             0
           )
-        } else if (
-          new URLSearchParams(globalThis.location.search).has("rematch")
-        ) {
-          this.markRoomReady()
         } else {
-          this.showRoomReadyPrompt()
+          this.container.notifyLocal(
+            {
+              type: "Info",
+              title: "正在进入等待房",
+              subtext: "正在确认房间成员身份",
+            },
+            0
+          )
         }
         return
       }
@@ -458,14 +565,25 @@ export class BrowserContainer {
     )
   }
 
-  private showRoomReadyPrompt(): void {
+  private showRoomReadyPrompt(state?: RoomStateSnapshot): void {
     const role = this.first ? "房主" : "访客"
+    const host = state?.members.find((member) => member.role === "host")
+    const player = state?.members.find((member) => member.role === "player")
+    const hostStatus = this.memberReadyLabel(
+      !!host,
+      state?.ready.host === true,
+      "房主"
+    )
+    const playerStatus = this.memberReadyLabel(
+      !!player,
+      state?.ready.player === true,
+      "访客"
+    )
     this.container.notifyLocal(
       {
         type: "Info",
         title: `${role} · 房间 ${this.roomCode}`,
-        subtext:
-          "网络已连接 · 房主 1/1 · 访客等待加入 · 双方准备后开始，规则和物理球台由房主锁定",
+        subtext: `${hostStatus} · ${playerStatus} · 双方准备后自动开局`,
         extra:
           '<button class="notification-btn" data-notification-action="room-ready">准备</button>' +
           '<button class="notification-btn" data-notification-action="copy-room">复制房间码</button>' +
@@ -479,6 +597,15 @@ export class BrowserContainer {
           this.copyRoomText(this.currentRoomInviteUrl(), "邀请链接已复制"),
       }
     )
+  }
+
+  private memberReadyLabel(
+    connected: boolean,
+    ready: boolean,
+    label: "房主" | "访客"
+  ) {
+    if (!connected) return `等待${label}${label === "访客" ? "加入" : "连接"}`
+    return `${label}${ready ? "已准备" : "未准备"}`
   }
 
   private copyRoomText(value: string, title: string): void {
@@ -509,7 +636,6 @@ export class BrowserContainer {
 
   private markRoomReady(): void {
     this.roomLifecycle = "ready"
-    this.readyClients.add(this.clientId)
     this.container.notifyLocal(
       {
         type: "Info",
@@ -518,13 +644,53 @@ export class BrowserContainer {
       },
       0
     )
-    this.broadcast(
-      new RoomControlEvent("READY", this.roomInstanceId, {
-        matchId: this.matchId,
-        rackNumber: this.rackNumber,
-      })
-    )
-    this.startRoomWhenReady()
+    ;(this.messageRelay as MessagingMessageRelay | null)?.setReady(true)
+  }
+
+  private handleAuthoritativeRoomJoin(role: GameRoomMember["role"]): void {
+    if (!this.roomProtocolV2 || role === "spectator") return
+    this.first = role === "host"
+    Session.getInstance().first = this.first
+    this.roomLifecycle = "waiting"
+  }
+
+  private handleAuthoritativeRoomState(state: RoomStateSnapshot): void {
+    if (!this.roomProtocolV2) return
+    this.roomRevision = Math.max(this.roomRevision, state.revision)
+    if (state.phase === "active") {
+      const breakerUserId = state.members.find(
+        (member) => member.role === "host"
+      )?.userId
+      if (breakerUserId) {
+        this.handleAuthoritativeRoomStart(breakerUserId, state)
+      }
+      return
+    }
+    if (state.phase === "cancelled") {
+      this.roomLifecycle = "ended"
+      this.container.notifyLocal(
+        {
+          type: "Info",
+          title: "等待房已关闭",
+          subtext: "房间长时间无人连接，请重新创建或接受新的邀请",
+        },
+        0
+      )
+      return
+    }
+    this.roomLifecycle = "waiting"
+    this.showRoomReadyPrompt(state)
+  }
+
+  private handleAuthoritativeRoomStart(
+    breakerUserId: string,
+    state: RoomStateSnapshot
+  ): void {
+    if (!this.roomProtocolV2 || this.roomLifecycle === "playing") return
+    this.roomRevision = Math.max(this.roomRevision, state.revision)
+    this.first = breakerUserId === this.clientId
+    Session.getInstance().first = this.first
+    this.startRoomMatch()
   }
 
   private startRoomWhenReady(): void {
@@ -674,6 +840,7 @@ export class BrowserContainer {
     this.matchId = state.matchId
     this.rackNumber = state.rackNumber
     this.roomRevision = state.revision
+    this.container.manualShotCount = state.adminAssistAuthorised ? 1 : 0
     const next = this.container.applyRejoinSnapshot(state.snapshot)
     this.container.updateController(next)
     for (const serialised of state.journal) {
@@ -729,32 +896,24 @@ export class BrowserContainer {
       rackNumber: this.rackNumber,
       revision: this.roomRevision,
       savedAt: Date.now(),
+      adminAssistAuthorised: this.container.manualShotCount > 0,
       snapshot: this.decorateRoomSnapshot(snapshot),
       journal: [],
     })
   }
 
   private installRematchHandling(): void {
-    globalThis.addEventListener("break-builder-rematch", () => {
-      this.requestRematch()
-    })
+    globalThis.addEventListener(
+      "break-builder-rematch",
+      this.handleRematchRequest
+    )
   }
 
   private installRuleDecisionHandling(): void {
-    globalThis.addEventListener("break-builder-rule-decision", (rawEvent) => {
-      const event = rawEvent as CustomEvent<{
-        decision?: string
-        value?: string
-      }>
-      if (!event.detail?.decision) return
-      const decision = new RuleDecisionEvent(
-        event.detail.decision,
-        event.detail.value ?? ""
-      )
-      this.container.eventQueue.push(decision)
-      this.broadcast(decision)
-      this.container.notification.clear()
-    })
+    globalThis.addEventListener(
+      "break-builder-rule-decision",
+      this.handleRuleDecision
+    )
   }
 
   private requestRematch(): void {
@@ -870,32 +1029,8 @@ export class BrowserContainer {
 
   private installConnectionMonitoring() {
     if (!this.wss || typeof globalThis.addEventListener !== "function") return
-    globalThis.addEventListener("offline", () => {
-      this.connectionState = "offline"
-      this.container.setHudConnectionState("offline")
-      this.container.notifyLocal(
-        {
-          type: "Info",
-          title: "网络已断开",
-          subtext: "比赛已保留，恢复网络后会自动同步球台",
-        },
-        0
-      )
-    })
-    globalThis.addEventListener("online", () => {
-      this.connectionState = "reconnecting"
-      this.container.setHudConnectionState("reconnecting")
-      this.container.notifyLocal(
-        {
-          type: "Info",
-          title: "正在重新连接",
-          subtext: "等待对手返回最新球位、比分与轮次",
-        },
-        0
-      )
-      this.subscribeNetwork()
-      this.broadcast(new RejoinEvent(this.connectionStream))
-    })
+    globalThis.addEventListener("offline", this.handleOffline)
+    globalThis.addEventListener("online", this.handleOnline)
   }
 
   private parseNetworkEvent(message: string): GameEvent | undefined {
@@ -1133,5 +1268,40 @@ export class BrowserContainer {
 
   offerUpload() {
     this.container.chat.showMessage("本局成绩已保存在当前回放中")
+  }
+
+  dispose(): void {
+    if (this.disposed) return
+    this.disposed = true
+    if (this.rematchTimeout) globalThis.clearTimeout(this.rematchTimeout)
+    this.rematchTimeout = undefined
+    globalThis.removeEventListener(
+      "break-builder-rematch",
+      this.handleRematchRequest
+    )
+    globalThis.removeEventListener(
+      "break-builder-rule-decision",
+      this.handleRuleDecision
+    )
+    globalThis.removeEventListener("offline", this.handleOffline)
+    globalThis.removeEventListener("online", this.handleOnline)
+    this.adminDemoAssist?.dispose()
+    this.adminDemoAssist = undefined
+    this.clearDebugSource?.()
+    this.clearDebugSource = undefined
+    this.messageRelay?.stop?.()
+    this.messageRelay = null
+    this.modePanel?.dispose()
+    this.modePanel = undefined
+    if (this.container) this.container.dispose()
+    else this.assets?.sound?.dispose()
+    this.assets?.dispose()
+    clearRefinedArtCache()
+    if ((globalThis as any).container === this.container) {
+      delete (globalThis as any).container
+      delete (globalThis as any).breakBuilderDiagnostics
+      delete (globalThis as any).breakBuilderPhysicsState
+      delete (globalThis as any).breakBuilderLastShotRepro
+    }
   }
 }

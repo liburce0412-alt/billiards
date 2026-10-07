@@ -223,7 +223,15 @@ export class Table {
       b.pos.z = 0
       b.vel.copy(zero)
       b.rvel.copy(zero)
-      b.state = State.Stationary
+      // The legacy compact replay format stores XY only. At a stable turn
+      // boundary a centre inside a pocket belongs below the cloth, not back
+      // on the table as a new lowest-numbered target after ball-in-hand.
+      const pocket = Pocket.findPocket(PocketGeometry.pocketCenters, b, 0)
+      b.state = pocket ? State.InPocket : State.Stationary
+      if (pocket) {
+        b.pocket = pocket
+        b.pos.z = -R * (4 + b.id / 4)
+      }
     })
   }
 
@@ -272,7 +280,8 @@ export class Table {
     this.balls.forEach((b) => {
       b.vel.copy(zero)
       b.rvel.copy(zero)
-      b.state = State.Stationary
+      // Recovery must not resurrect balls hidden inside the pockets.
+      b.state = b.onTable() ? State.Stationary : State.InPocket
     })
   }
 

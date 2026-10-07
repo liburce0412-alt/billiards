@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:26:27.557511+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: CUE_CLOSEUP_READY tip WIDTH_M 0.145 TARGET [0.0, 0.655396580696106, -9.452924132347107e-08]\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: CUE_CLOSEUP_READY tip WIDTH_M 0.145 TARGET [0.0, 0.655396580696106, -9.452924132347107e-08]\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\cue-holo-laser.blend",
+    "sha256": "c13a53c1682e90884869a729199e427e70c40be958af2e174214aaf85a6dd934"
+  }
+}

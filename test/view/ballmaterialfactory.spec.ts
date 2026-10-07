@@ -12,6 +12,7 @@ describe("BallMaterialFactory", () => {
     expect(material.color.getHex()).to.equal(0xffffff)
     expect(material.map).to.exist
     expect(material.map!.image.width).to.equal(material.map!.image.height * 2)
+    expect(material.map!.flipY).to.equal(true)
   })
 
   it("caches materials", () => {
@@ -42,8 +43,20 @@ describe("BallMaterialFactory", () => {
     expect(shader.uniforms.uCubeMap).to.exist
     expect(shader.vertexShader).to.contain("varying vec3 vLocalPos;")
     expect(shader.fragmentShader).to.contain("uniform samplerCube uCubeMap;")
+    expect(shader.fragmentShader).to.contain("uniform vec3 uMarkerColour;")
     expect(shader.fragmentShader).to.contain(
-      "textureCube(uCubeMap, normalize(vLocalPos))"
+      "mix(diffuseColor.rgb, uMarkerColour, markerMask)"
     )
+  })
+
+  it("uses a restrained resin clearcoat that preserves number contrast", () => {
+    const material = BallMaterialFactory.createProjectedMaterial(
+      10,
+      new Color(0x245ca6),
+      512
+    ) as MeshPhysicalMaterial
+    expect(material.clearcoat).to.be.closeTo(0.72, 0.0001)
+    expect(material.clearcoatRoughness).to.be.closeTo(0.065, 0.0001)
+    expect(material.envMapIntensity).to.be.closeTo(0.88, 0.0001)
   })
 })

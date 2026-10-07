@@ -4,14 +4,20 @@ import {
   SRGBColorSpace,
   WebGLRenderer,
 } from "three"
-import { getRenderQuality } from "../view/renderquality"
+import {
+  AdaptiveRenderQuality,
+  pixelRatioForViewport,
+  registerRenderQualityController,
+  renderQualityMode,
+} from "../view/renderquality"
 
 export function renderer(element: HTMLElement) {
   if (typeof process !== "undefined") {
     return undefined
   }
 
-  const quality = getRenderQuality()
+  const qualityController = new AdaptiveRenderQuality(renderQualityMode())
+  const quality = qualityController.profile
   const renderer = new WebGLRenderer({
     antialias: quality.antialias,
     depth: true,
@@ -28,9 +34,15 @@ export function renderer(element: HTMLElement) {
   renderer.toneMappingExposure = 0.88
   renderer.sortObjects = false
   renderer.setSize(element.offsetWidth, element.offsetHeight)
-  renderer.setPixelRatio(
-    Math.min(globalThis.devicePixelRatio || 1, quality.maxPixelRatio)
-  )
+  const applyQuality = (profile = qualityController.profile) => {
+    renderer.shadowMap.enabled = profile.dynamicShadows
+    renderer.setPixelRatio(
+      pixelRatioForViewport(profile, element.offsetWidth, element.offsetHeight)
+    )
+  }
+  applyQuality()
+  qualityController.onChange(applyQuality)
+  registerRenderQualityController(renderer, qualityController)
   renderer.domElement.draggable = false
   renderer.domElement.style.userSelect = "none"
   renderer.domElement.addEventListener("dragstart", (e) => e.preventDefault())

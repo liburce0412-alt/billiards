@@ -392,6 +392,129 @@
   }
 }
 
+.admin-demo-panel {
+  overflow: clip;
+}
+
+.admin-demo-controls {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.admin-demo-scope {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.admin-demo-copy,
+.admin-demo-switch,
+.admin-demo-level {
+  display: grid;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+}
+
+.admin-demo-copy {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.admin-demo-copy > i {
+  color: var(--color-accent);
+  font-size: var(--text-xl);
+}
+
+.admin-demo-copy div,
+.admin-demo-switch > span,
+.admin-demo-level > span {
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.admin-demo-copy span,
+.admin-demo-switch small,
+.admin-demo-level small,
+.admin-demo-note {
+  color: var(--color-muted);
+  line-height: 1.55;
+}
+
+.admin-demo-switch {
+  grid-template-columns: minmax(0, 1fr) auto;
+  cursor: pointer;
+}
+
+.admin-demo-switch input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.admin-demo-switch > i {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-capsule);
+  background: var(--color-paper-3);
+  transition: background var(--dur-micro) var(--ease-out);
+}
+
+.admin-demo-switch > i::after {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-round);
+  background: var(--color-muted);
+  content: "";
+  transition: transform var(--dur-micro) var(--ease-out);
+}
+
+.admin-demo-switch input:checked + i {
+  background: var(--color-accent);
+}
+
+.admin-demo-switch input:checked + i::after {
+  transform: translateX(22px);
+  background: var(--surface-solid);
+}
+
+.admin-demo-switch input:focus-visible + i {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.admin-demo-level {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.admin-demo-level output {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.admin-demo-level input {
+  width: 100%;
+  grid-column: 1 / -1;
+  accent-color: var(--color-energy);
+}
+
+.admin-demo-note {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0 var(--space-xs);
+  font-size: var(--text-sm);
+}
+
 @media (width <= 1100px) {
   .admin-metrics {
     grid-template-columns: repeat(2, 1fr);
@@ -399,6 +522,10 @@
 }
 
 @media (width <= 800px) {
+  .admin-demo-scope {
+    grid-template-columns: 1fr;
+  }
+
   .admin-layout {
     grid-template-columns: 1fr;
   }

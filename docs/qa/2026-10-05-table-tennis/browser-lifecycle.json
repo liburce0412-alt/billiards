@@ -1,0 +1,155 @@
+{
+  "source": "Codex in-app browser, Windows desktop, 915x412 viewport; not real mobile hardware",
+  "cycles": 20,
+  "forcedGC": false,
+  "samples": [
+    {
+      "cycle": 5,
+      "sample": {
+        "result": {
+          "type": "object",
+          "value": {
+            "canvases": 0,
+            "documentListeners": {
+              "codex:annotation-surface-available": 1,
+              "codex:annotation-surface-request": 1,
+              "codex:annotation-surfaces-remove": 1
+            },
+            "gameRoots": 0,
+            "heapBytes": 98174857,
+            "windowListeners": {
+              "__playwright_global_listeners_check__": 1,
+              "auxclick": 1,
+              "beforeunload": 1,
+              "click": 1,
+              "contextmenu": 1,
+              "dblclick": 1,
+              "error": 1,
+              "mousedown": 1,
+              "mousemove": 1,
+              "mouseup": 1,
+              "pagehide": 1,
+              "pointerdown": 1,
+              "pointerup": 1,
+              "touchcancel": 1,
+              "touchend": 1,
+              "touchstart": 1,
+              "unhandledrejection": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "cycle": 10,
+      "sample": {
+        "result": {
+          "type": "object",
+          "value": {
+            "canvases": 0,
+            "documentListeners": {
+              "codex:annotation-surface-available": 1,
+              "codex:annotation-surface-request": 1,
+              "codex:annotation-surfaces-remove": 1
+            },
+            "gameRoots": 0,
+            "heapBytes": 97348799,
+            "windowListeners": {
+              "__playwright_global_listeners_check__": 1,
+              "auxclick": 1,
+              "beforeunload": 1,
+              "click": 1,
+              "contextmenu": 1,
+              "dblclick": 1,
+              "error": 1,
+              "mousedown": 1,
+              "mousemove": 1,
+              "mouseup": 1,
+              "pagehide": 1,
+              "pointerdown": 1,
+              "pointerup": 1,
+              "touchcancel": 1,
+              "touchend": 1,
+              "touchstart": 1,
+              "unhandledrejection": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "cycle": 15,
+      "sample": {
+        "result": {
+          "type": "object",
+          "value": {
+            "canvases": 0,
+            "documentListeners": {
+              "codex:annotation-surface-available": 1,
+              "codex:annotation-surface-request": 1,
+              "codex:annotation-surfaces-remove": 1
+            },
+            "gameRoots": 0,
+            "heapBytes": 99932976,
+            "windowListeners": {
+              "__playwright_global_listeners_check__": 1,
+              "auxclick": 1,
+              "beforeunload": 1,
+              "click": 1,
+              "contextmenu": 1,
+              "dblclick": 1,
+              "error": 1,
+              "mousedown": 1,
+              "mousemove": 1,
+              "mouseup": 1,
+              "pagehide": 1,
+              "pointerdown": 1,
+              "pointerup": 1,
+              "touchcancel": 1,
+              "touchend": 1,
+              "touchstart": 1,
+              "unhandledrejection": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "cycle": 20,
+      "sample": {
+        "result": {
+          "type": "object",
+          "value": {
+            "canvases": 0,
+            "documentListeners": {
+              "codex:annotation-surface-available": 1,
+              "codex:annotation-surface-request": 1,
+              "codex:annotation-surfaces-remove": 1
+            },
+            "gameRoots": 0,
+            "heapBytes": 98623820,
+            "windowListeners": {
+              "__playwright_global_listeners_check__": 1,
+              "auxclick": 1,
+              "beforeunload": 1,
+              "click": 1,
+              "contextmenu": 1,
+              "dblclick": 1,
+              "error": 1,
+              "mousedown": 1,
+              "mousemove": 1,
+              "mouseup": 1,
+              "pagehide": 1,
+              "pointerdown": 1,
+              "pointerup": 1,
+              "touchcancel": 1,
+              "touchend": 1,
+              "touchstart": 1,
+              "unhandledrejection": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

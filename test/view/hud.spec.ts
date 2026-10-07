@@ -67,4 +67,26 @@ describe("Hud presentation", () => {
       "CB"
     )
   })
+
+  it("falls back to initials when an avatar cannot be loaded", () => {
+    const hud = mountHud()
+    hud.updateMatch({
+      playerOne: {
+        name: "未来玩家",
+        score: 0,
+        avatarUrl: "/media/avatar/missing",
+        kind: "human",
+      },
+      playerTwo: { name: "Claw Break", score: 0, kind: "ai" },
+      ruleLabel: "九球",
+      turnLabel: "等待开球",
+      activePlayer: 0,
+    })
+
+    document.querySelector("#p1Score img")?.dispatchEvent(new Event("error"))
+
+    const avatar = document.querySelector<HTMLElement>("#p1Score .hud-avatar")
+    expect(avatar?.textContent).toBe("未来")
+    expect(avatar?.dataset.fallback).toBe("initials")
+  })
 })

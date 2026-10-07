@@ -5,4 +5,5 @@ export interface MessageRelay {
     prefix?: string
   ): void
   publish(channel: string, message: string, prefix?: string): void
+  stop?(): void
 }

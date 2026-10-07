@@ -1,0 +1,364 @@
+{
+  "retained": [
+    {
+      "Algorithm": "SHA256",
+      "Hash": "3DFBA1917B643D6FE4B63BC6982B1881654B498DF0D8126D03FA49F5480D33A4",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\src\\view\\robotplayers.ts"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "163A9F1008C13ECDD7D077F84D2D899805C0C5DB8F12EB43576189DE6A5BD0C8",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\src\\controller\\controllerbase.ts"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "ECF073F20F7443326C59095E43467870E9D72C71F989763CDFC7DE7B050022AD",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\index.html"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "084E870978888D431D69E99E029959E0509C6433A31EEBBA095A48E63A2D55E9",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-09-06-shot-sequence\\chalk.png"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "2CDDA8D5AA26EDA9B06B65EEF59C0A3CB49B6B26488C78932822596B1CD4F300",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-09-06-shot-sequence\\bot.json"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "BDFB518C06A6B34626BC0B6EF7BF615E56A121A90C811819EF26A30D4E1664A1",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-09-06-shot-sequence\\admin.json"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "1939619AB3732050D686D24A25223F0AF81A9AF41466596F18B9F4B7EF3ADE5E",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\docs\\qa\\2026-09-06-shot-sequence\\release-verification.json"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "BD2F9408FFE8C5BE850E122F20C5A918E6EC21D2287CF5B97CFECCDA0B22C3E5",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\106.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "BA76AE06FF094FD210C0D8725F0679E1C9E74124D1FDD49883682D797DA1C5A4",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\15.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "D13FF916CC0A7D93F105F4B8BEB3AED910F31ADD973A29DA4D824128122734A9",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\185.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "6C08D70B243F36F64D279F669C3DF515DAD6287CBB5CDAD2ED4F45BB3B1F4CFA",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\312.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "57C92644768A85BAC62639E7CE36C6FC2FBB393509710FB7B30EC9192F19984D",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\335.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "E08167D132030DB6564CCAD638A21DBD2D027CA80D15A314AE24853F9AB56883",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\419.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "04DB0D87113972540257AE499AAC4ECC6051C3179594F26BEFF028FB15669EA3",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\692.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "F3FBC142A051CD56A30536CF7309104A8D8E677DA2FC813200D1727B0A59A9C9",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\708.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "162BE9D8BB9BAB9F9689AE96A894B53E6D584FEBC1D35FE3A20CB742B6C85682",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\761.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "25B57C624D9AA4B11457E4F4DCF62F21C37A4B64E23291BE482D4024437031BD",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\86.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "0C3E0F19C3909530C8323FF360B1B9CBCF681A7FE8CF5860E80FA12F3DB2C445",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\868.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "61473C7F851D9CD25F175A1D0B85BF0C3DEA9C20A9DF5795D746FA59F176B7C1",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\876.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "EAFED3E5FF8664C5E51D8BD23D9E2E40835B136AE2A358834387551AF1B7FA74",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\924.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "4ECF664F8AD25EBAE60A25A5382ADB8A208B0BB1B1D64F01DAE60EAE2BE08AAB",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\999.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "75250ABE75A2BC8E418A1B891385262DDCCA163BC86084701728843E1A897E1A",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\account.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "9D378489897A191A23AD4F6C210F1CA099D92AF336BE47B4A46585F42DFF7AEC",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\admin.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "2476F5AF04A33414510C958131A279320441549F96F2350946CD4358F7B1C207",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\app.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "3F0CBBAF87F84DEF9058E3A926D46D105287CCC4F6A2CB8ABF066003F234A569",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\compare.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "CCAD7C558A8CF91BBA2C249F4CDC82D3169B1689A9BE2106BD4540E374C362BC",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\diagram.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "10E8EEC0FD059375E74952B50BA69FFDD68B15DE43EB94D69321E3861EC42E98",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\index.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "86C6F16723C57BF169745A4CA4A1FD89ABD396D2A1CF8D958CA7070CA20DCD01",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\launcher.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "4EE8E24157129D3DA4B9B436A9496ABA367C12BD149268ECD9BA8FA598C6ED92",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\lobby.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "DD806585F4F9DEBDACEC76785C2E8AF2AF4B719933AC95DB19031A8DE6F8EEF1",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\mathavan.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "AD73A02AF0CBAEB6096A3EE13304D4195317B89F55DBCCAD976A98102C0F8583",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\messaging.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "7E98E328B724B99C80BB6661EECBA348A01A6696977357BA490F8C7614B6078D",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\rules.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "4AFF69CCEA8A65E7FAA178F42C38B48E9C6EF8D0E447CBBB61C8F93ECFA2ED12",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\stronge.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "67A8D44184772D61C81268336F02DCB5915604D3BC0633B9CB5C5BAFDEF67257",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\sw.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "DAD9D90510AB9FD38A2E3AB0F63A052AD008477D1C97161B49C199C721957EBF",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\three_core.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "C53D170F61D5015C3B92742DF4AC03D464809E22FB7CCFE2F7B85FA6F5EF4A34",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\three_examples.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "8CEF47734083AE512136A5780A02087CAB74C9783AF7BDEC21C7C092EE188615",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\three_module.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "E4913EB8DC29B09C0458D8C06A7EE8E7789ACD221AE584AF431408D36919CAAB",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\worker.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "951E74605DCBA9B5DFD3F801C6FAFD21470F02A50D08E395A8925477CC98CD0A",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\ww-node.js"
+    },
+    {
+      "Algorithm": "SHA256",
+      "Hash": "0B0F6F4B83E48161A773472096289B840AFF8828578BC0E5D74DAC9D440D6876",
+      "Path": "C:\\Users\\28219\\Desktop\\ball\\dist\\ww.js"
+    }
+  ],
+  "files": [
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\0.pack",
+      "Length": 6527492
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\1.pack",
+      "Length": 1801537
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\10.pack",
+      "Length": 8398015
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\11.pack",
+      "Length": 14682723
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\12.pack",
+      "Length": 25375152
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\13.pack",
+      "Length": 60822
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\14.pack",
+      "Length": 13220861
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\15.pack",
+      "Length": 17744867
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\16.pack",
+      "Length": 6175449
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\17.pack",
+      "Length": 2667237
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\18.pack",
+      "Length": 35498185
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\19.pack",
+      "Length": 41890683
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\2.pack",
+      "Length": 2074405
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\20.pack",
+      "Length": 14351977
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\21.pack",
+      "Length": 8964655
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\22.pack",
+      "Length": 77929
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\23.pack",
+      "Length": 899326
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\24.pack",
+      "Length": 6552486
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\25.pack",
+      "Length": 1446987
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\26.pack",
+      "Length": 2722005
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\27.pack",
+      "Length": 373
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\28.pack",
+      "Length": 48345
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\29.pack",
+      "Length": 50109
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\3.pack",
+      "Length": 2491366
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\30.pack",
+      "Length": 18171
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\31.pack",
+      "Length": 396997
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\32.pack",
+      "Length": 8281
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\33.pack",
+      "Length": 15311
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\34.pack",
+      "Length": 14547456
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\35.pack",
+      "Length": 353289
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\4.pack",
+      "Length": 1782309
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\5.pack",
+      "Length": 1524553
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\6.pack",
+      "Length": 20518855
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\7.pack",
+      "Length": 1113909
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\8.pack",
+      "Length": 22510
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\9.pack",
+      "Length": 2673653
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\index.pack",
+      "Length": 365884
+    },
+    {
+      "FullName": "C:\\Users\\28219\\Desktop\\ball\\node_modules\\.cache\\webpack\\default-production\\index.pack.old",
+      "Length": 365884
+    }
+  ],
+  "totalBytes": 257430048.0,
+  "status": "blocked-by-policy",
+  "deletedFiles": 0,
+  "retainedHashesUnchanged": true,
+  "lastRetryUtc": "2026-09-06T13:10:05.6912733Z",
+  "lastRetryResult": "blocked-by-policy; command not executed"
+}

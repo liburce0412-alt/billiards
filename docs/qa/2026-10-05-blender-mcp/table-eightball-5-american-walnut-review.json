@@ -1,0 +1,13 @@
+{
+  "scope": "Blender four-angle table structural review",
+  "passed": true,
+  "evidence": "table-eightball-5-american-walnut-angles-0.png",
+  "notes": [
+    "Four actual views inspected across original and final corrected batches: aligned tabletop, cabinet and supports; no broken frame, large cloth graphic or detached detail.",
+    "Full-view structural approval only: micro-weave/pocket interiors, collision alignment and production/phone performance require separate evidence.",
+    "Final 17:34 rebuild checked: former V-shaped apron normal artifact and broad dark cloth bands are gone; compact body and six pocket decorations now match the visible table footprint."
+  ],
+  "reviewedAt": "2026-10-05T17:43:48.5537300+08:00",
+  "reviewer": "three_asset_inventory",
+  "sha256": "b36bf4d127dedfd0a6f083ce2d70c884063b7e96c5dc4d795aeee8b50034fd84"
+}

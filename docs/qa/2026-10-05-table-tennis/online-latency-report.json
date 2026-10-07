@@ -1,0 +1,175 @@
+{
+  "startedAt": "2026-10-05T10:02:12.208Z",
+  "method": "Two authenticated Chromium contexts, real local Worker, each WS direction delayed by target RTT / 2; no protocol or state replacement",
+  "scenarios": [
+    {
+      "rttMs": 50,
+      "errors": [],
+      "roomId": "28707f1f-891c-4e77-bcc9-4870ebaa9f86",
+      "server": 1,
+      "commonIdenticalSnapshots": 66,
+      "bestRally": 2,
+      "inputs": [
+        [
+          {
+            "seq": 0,
+            "kind": "swing",
+            "at": 1791194536634
+          }
+        ],
+        [
+          {
+            "seq": 0,
+            "kind": "serve",
+            "at": 1791194535801
+          }
+        ]
+      ],
+      "acks": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "roomPhases": [
+        [
+          "waiting",
+          "waiting",
+          "active"
+        ],
+        [
+          "waiting",
+          "waiting",
+          "waiting",
+          "active"
+        ]
+      ],
+      "visibleScores": [
+        "1:0",
+        "0:1"
+      ],
+      "passed": true
+    },
+    {
+      "rttMs": 100,
+      "errors": [],
+      "roomId": "07a0b7e7-fe07-40c7-82ab-e12af807f52a",
+      "server": 0,
+      "commonIdenticalSnapshots": 68,
+      "bestRally": 2,
+      "inputs": [
+        [
+          {
+            "seq": 0,
+            "kind": "serve",
+            "at": 1791194539990
+          }
+        ],
+        [
+          {
+            "seq": 0,
+            "kind": "swing",
+            "at": 1791194540813
+          }
+        ]
+      ],
+      "acks": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "roomPhases": [
+        [
+          "waiting",
+          "waiting",
+          "waiting",
+          "active"
+        ],
+        [
+          "waiting",
+          "waiting",
+          "active"
+        ]
+      ],
+      "visibleScores": [
+        "0:1",
+        "1:0"
+      ],
+      "passed": true
+    },
+    {
+      "rttMs": 150,
+      "errors": [],
+      "roomId": "f45c3d0a-b825-4e9d-b22f-50b79f944560",
+      "server": 0,
+      "commonIdenticalSnapshots": 69,
+      "bestRally": 2,
+      "inputs": [
+        [
+          {
+            "seq": 0,
+            "kind": "serve",
+            "at": 1791194544765
+          }
+        ],
+        [
+          {
+            "seq": 0,
+            "kind": "swing",
+            "at": 1791194545586
+          }
+        ]
+      ],
+      "acks": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          0
+        ]
+      ],
+      "roomPhases": [
+        [
+          "waiting",
+          "waiting",
+          "active"
+        ],
+        [
+          "waiting",
+          "waiting",
+          "waiting",
+          "active"
+        ]
+      ],
+      "visibleScores": [
+        "0:1",
+        "1:0"
+      ],
+      "passed": true
+    }
+  ],
+  "desktopFrameReference": {
+    "elapsedMs": 10002.00000014305,
+    "count": 2400,
+    "medianMs": 4.199999999998909,
+    "p95Ms": 4.299999999999272,
+    "maxMs": 5.699999999998909,
+    "width": 1280,
+    "height": 720,
+    "devicePixelRatio": 1,
+    "note": "Desktop headless Chromium, two rendered 1280x720 courts open, idle serve; RAF interval, not GPU cost or real mobile performance"
+  },
+  "passed": true,
+  "endedAt": "2026-10-05T10:02:37.123Z"
+}

@@ -2,8 +2,9 @@ module.exports = {
   rootDir: "../",
   preset: "ts-jest",
   transformIgnorePatterns: [
-    // Exclude all node_modules except for chai and jsoncrush.
-    "node_modules/(?!(chai|jsoncrush))",
+    // Transform the ESM geometry used by the real robot rig, alongside the
+    // existing ESM utilities; do not replace it with a mock primitive.
+    "node_modules/(?!(chai|jsoncrush|three/examples/jsm/geometries/RoundedBoxGeometry))",
   ],
   transform: {
     // Use SWC for transforming both JavaScript and TypeScript files
@@ -34,7 +35,7 @@ module.exports = {
     "shorten.ts",
     "assets.ts",
   ],
-  testPathIgnorePatterns: ["/e2e/", "/test/worker/"],
+  testPathIgnorePatterns: ["/e2e/", "/test/worker/", "/packages/", "/\\.tmp/"],
   coverageReporters: ["text", "json"],
   testEnvironment: "jsdom",
   moduleNameMapper: {

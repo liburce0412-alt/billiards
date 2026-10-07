@@ -31,6 +31,7 @@ import {
 export class Sliders {
   style
   notify
+  private readonly inputs: HTMLInputElement[] = []
 
   constructor(notify?) {
     this.notify = notify ?? (() => {})
@@ -96,10 +97,17 @@ export class Sliders {
       this.showValue(id, val)
       this.notify()
     }
+    this.inputs.push(slider)
   }
 
   showValue(element, value) {
     const label = document.querySelector(`label[for=${element}]`)
     label && (label.innerHTML = `${element}=${value}`)
+  }
+
+  dispose() {
+    this.inputs.splice(0).forEach((input) => {
+      input.oninput = null
+    })
   }
 }

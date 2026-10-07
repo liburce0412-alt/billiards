@@ -1,7 +1,7 @@
 import { TableGeometry } from "../view/tablegeometry"
 import { Table } from "../model/table"
 import { upCross, unitAtAngle, norm, roundVec } from "../utils/three-utils"
-import { atan2, sin } from "../utils/utils"
+import { atan2 } from "../utils/utils"
 import { AimEvent } from "../events/aimevent"
 import { AimInputs } from "./dom/aiminputs"
 import { Ball, State } from "../model/ball"
@@ -12,6 +12,7 @@ import { maxPower, offCenterLimit, R } from "../model/physics/constants"
 import { cueIntersectsAnything } from "../utils/cueintersect"
 import { id } from "../utils/dom"
 import { savedCueStyleId, saveCueStyleId } from "./cuestyle"
+import { controlFromPowerRatio, powerRatioFromControl } from "./powercontrol"
 
 export class Cue {
   mesh: Object3D
@@ -22,6 +23,7 @@ export class Cue {
   shadowMesh: Mesh
   t = 0
   hittingAnimation = false
+  preStrokeProgress?: number
   aimInputs: AimInputs
   aim: AimEvent = new AimEvent()
   /** Analysis-mode-only limits (set by AnalysisPanel) clamping how far the
@@ -41,8 +43,7 @@ export class Cue {
   private readonly tempVec = new Vector3()
   private readonly tempVec2 = new Vector3()
   private readonly tempVec3 = new Vector3()
-  hitAnimationWeight: number = 0
-  private lastUpdateElapsed = 1 / 60
+  private followingThrough = false
   styleId = savedCueStyleId()
 
   constructor() {
@@ -93,15 +94,22 @@ export class Cue {
     if (!this.aimInputs || this.aimInputs.isDisabled()) {
       return
     }
-    this.aim.power = Math.fround(Math.min(maxPower, this.aim.power + delta))
+    this.aim.power = Math.fround(
+      Math.max(0, Math.min(maxPower, this.aim.power + delta))
+    )
     this.updateAimInput()
+  }
+
+  setControlPower(value: number) {
+    this.setPower(powerRatioFromControl(value))
   }
 
   setPower(value: number) {
     if (!this.aimInputs || this.aimInputs.isDisabled()) {
       return
     }
-    this.aim.power = Math.fround(value * maxPower)
+    const ratio = Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0
+    this.aim.power = Math.fround(ratio * maxPower)
     this.updateAimInput()
   }
 
@@ -109,6 +117,7 @@ export class Cue {
     const { angle, power, offset, elevation } = this.aim
     this.t = 0
     this.hittingAnimation = true
+    this.followingThrough = true
     ball.state = State.Sliding
     const strike = cueStrike(angle, power, offset, elevation)
     ball.vel.copy(strike.vel)
@@ -180,7 +189,9 @@ export class Cue {
 
   updateAimInput() {
     this.aimInputs?.updateVisualState(this.aim.offset.x, this.aim.offset.y)
-    this.aimInputs?.updatePowerSlider(this.aim.power / maxPower)
+    this.aimInputs?.updatePowerSlider(
+      controlFromPowerRatio(this.aim.power / maxPower)
+    )
     this.aimInputs?.updateTiltSlider?.(this.aim.elevation)
     this.aimInputs?.showOverlap()
   }
@@ -193,34 +204,28 @@ export class Cue {
     if (this.shadowMesh) this.shadowMesh.rotation.z = this.aim.angle
   }
 
-  private applyHitAnimation(swing: number) {
-    if (this.hittingAnimation) {
-      this.hitAnimationWeight = 1
-    } else {
-      this.hitAnimationWeight *= Math.pow(
-        0.97,
-        Math.max(0, this.lastUpdateElapsed) * 60
-      )
+  private applyHitAnimation() {
+    let strokeX = 0
+    if (this.preStrokeProgress !== undefined) {
+      const progress = Math.max(0, Math.min(1, this.preStrokeProgress))
+      const pull =
+        progress < 0.72
+          ? (1 - Math.cos((progress / 0.72) * Math.PI)) / 2
+          : Math.cos((((progress - 0.72) / 0.28) * Math.PI) / 2)
+      strokeX = -R * 4 * pull
+    } else if (this.followingThrough) {
+      // The preparation ends at zero. Continue forward from that same position,
+      // then keep the cue still while the player watches and stands up.
+      const progress = Math.max(0, Math.min(1, this.t / 0.18))
+      strokeX = R * 2 * (1 - (1 - progress) ** 2)
     }
-
-    let curveVal = this.hitAnimationCurve(this.t)
-    if (curveVal < 0) {
-      const powerRatio = this.aim.power / maxPower
-      const factor = 0.5 + 0.5 * powerRatio
-      curveVal *= factor
-    }
-    const hitOffset = this.hitAnimationWeight * curveVal * 2 * R
-    const strokeX = (1 - this.hitAnimationWeight) * swing - hitOffset
-    const strokeZ = (0.15 + Math.min(this.t / 5, 0.25)) * hitOffset
-
     if (this.cueBody) {
       this.cueBody.position.set(
         -this.length / 2 - R * 1.1 + strokeX,
         this.aim.offset.x * R,
-        Math.max(-0.5 * R, strokeZ + this.aim.offset.y * R)
+        this.aim.offset.y * R
       )
     }
-
     return strokeX
   }
 
@@ -255,44 +260,17 @@ export class Cue {
 
   moveTo(pos) {
     this.aim.pos.copy(pos)
+    CueMesh.setEnergy(this.cueBody, this.aim.power / maxPower)
     this.updateCueRotation()
-    const swing =
-      (sin(this.t * 1.5 + Math.PI / 2) - 1) *
-      2 *
-      R *
-      (this.aim.power / maxPower)
-    const strokeX = this.applyHitAnimation(swing)
+    const strokeX = this.applyHitAnimation()
     this.updateCuePosition(pos, strokeX)
   }
 
-  hitAnimationCurve(t: number) {
-    const pts = [
-      { t: 0, v: -2 },
-      { t: 1, v: -1 },
-      { t: 2, v: 1 },
-      { t: 3, v: 2 },
-    ]
-    if (t <= pts[0].t) return pts[0].v
-    if (t >= pts[pts.length - 1].t) return pts[pts.length - 1].v
-    const i = pts.findIndex((p, idx) => t >= p.t && t <= pts[idx + 1]?.t)
-    const p1 = pts[i],
-      p2 = pts[i + 1]
-    const p0 = pts[Math.max(0, i - 1)],
-      p3 = pts[Math.min(pts.length - 1, i + 2)]
-    const lt = (t - p1.t) / (p2.t - p1.t),
-      lt2 = lt * lt,
-      lt3 = lt2 * lt
-    return (
-      p0.v * (-0.5 * lt3 + lt2 - 0.5 * lt) +
-      p1.v * (1.5 * lt3 - 2.5 * lt2 + 1) +
-      p2.v * (-1.5 * lt3 + 2 * lt2 + 0.5 * lt) +
-      p3.v * (0.5 * lt3 - 0.5 * lt2)
-    )
-  }
-
   update(t) {
-    this.lastUpdateElapsed = t
     this.t += t
+    if (this.hittingAnimation && this.t >= 0.28) {
+      this.hittingAnimation = false
+    }
     this.moveTo(this.aim.pos)
   }
 
@@ -304,6 +282,8 @@ export class Cue {
   }
 
   aimMode() {
+    this.followingThrough = false
+    this.hittingAnimation = false
     if (this.mesh) this.mesh.visible = true
     if (this.shadowMesh) this.shadowMesh.visible = true
     if (this.placerMesh) this.placerMesh.visible = false

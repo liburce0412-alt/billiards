@@ -1,0 +1,26 @@
+{
+  "time": "2026-10-05T08:04:53.266464+00:00",
+  "tool": "get_addon_status",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Error checking addon status: No module named 'blender_mcp.config'",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Error checking addon status: No module named 'blender_mcp.config'"
+    },
+    "isError": false
+  }
+}

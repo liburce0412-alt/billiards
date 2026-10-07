@@ -78,7 +78,7 @@ describe("ParticleSystem", () => {
     expect((system as any).instancedMesh).toBeNull()
   })
 
-  it("should create a gold confetti rain across the full table", () => {
+  it("creates sparse gold confetti and removes it after eight seconds", () => {
     const system = new ParticleSystem({
       tableWidth: 8,
       tableLength: 4,
@@ -90,10 +90,14 @@ describe("ParticleSystem", () => {
     const mesh = (system as any).instancedMesh as InstancedMesh
     const colour = new Color()
     mesh.getColorAt(0, colour)
-    expect(mesh.count).toBe(32)
+    expect(mesh.count).toBeGreaterThan(0)
+    expect(mesh.count).toBeLessThan(8)
     expect(colour.r).toBeGreaterThan(colour.b)
     expect((mesh.material as MeshStandardMaterial).metalness).toBeGreaterThan(
       0.7
     )
+    for (let i = 0; i < 81; i++) system.update(0.1)
+    expect(scene.remove).toHaveBeenCalledWith(mesh)
+    expect((system as any).instancedMesh).toBeNull()
   })
 })

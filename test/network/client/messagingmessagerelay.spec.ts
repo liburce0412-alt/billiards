@@ -127,6 +127,50 @@ describe("MessagingMessageRelay", () => {
     )
   })
 
+  it("uses the authoritative room state and sends ready independently", () => {
+    const relay = new MessagingMessageRelay("room-1")
+    const onRoomJoined = jest.fn()
+    const onRoomState = jest.fn()
+    const onRoomStarted = jest.fn()
+    relay.onRoomJoined = onRoomJoined
+    relay.onRoomState = onRoomState
+    relay.onRoomStarted = onRoomStarted
+    relay.subscribe("ignored", jest.fn())
+    const socket = FakeWebSocket.instances[0]
+    socket.open()
+
+    relay.setReady(true)
+    const waiting = {
+      version: 1 as const,
+      revision: 2,
+      phase: "waiting" as const,
+      ready: { host: true, player: false },
+      startedAt: null,
+      members: [],
+    }
+    socket.message(
+      JSON.stringify({ type: "room.joined", role: "host", roomState: waiting })
+    )
+    socket.message(
+      JSON.stringify({
+        type: "room.started",
+        breakerUserId: "host-id",
+        roomState: { ...waiting, phase: "active", revision: 3 },
+      })
+    )
+
+    expect(JSON.parse(socket.sent[0])).toEqual({
+      type: "room.ready.set",
+      ready: true,
+    })
+    expect(onRoomJoined).toHaveBeenCalledWith("host")
+    expect(onRoomState).toHaveBeenCalledWith(waiting)
+    expect(onRoomStarted).toHaveBeenCalledWith(
+      "host-id",
+      expect.objectContaining({ phase: "active", revision: 3 })
+    )
+  })
+
   it("does nothing without a server-issued room id", () => {
     const relay = new MessagingMessageRelay()
     relay.subscribe("ignored", jest.fn())

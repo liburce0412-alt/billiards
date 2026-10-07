@@ -1,0 +1,30 @@
+{
+  "time": "2026-10-05T09:59:05.619856+00:00",
+  "tool": "execute_blender_code",
+  "server": {
+    "name": "MCP for Blender",
+    "title": null,
+    "version": "1.30.0",
+    "websiteUrl": null,
+    "icons": null
+  },
+  "result": {
+    "meta": null,
+    "content": [
+      {
+        "type": "text",
+        "text": "Code executed successfully: INSPECTION_READY environment-nebula\n",
+        "annotations": null,
+        "meta": null
+      }
+    ],
+    "structuredContent": {
+      "result": "Code executed successfully: INSPECTION_READY environment-nebula\n"
+    },
+    "isError": false
+  },
+  "inputs": {
+    "file": "C:\\Users\\28219\\Desktop\\ball\\assets\\blender\\legacy\\environment-nebula.blend",
+    "sha256": "2f3ad6704c2ca221da29953d63ea58123bb5d5dbf159955aa98fd8592e09463f"
+  }
+}

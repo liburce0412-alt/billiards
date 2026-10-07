@@ -20,6 +20,35 @@ describe("Runtime diagnostics", () => {
     })
   })
 
+  it("disconnects the long-task observer on disposal", () => {
+    const original = globalThis.PerformanceObserver
+    const disconnect = jest.fn()
+    const observe = jest.fn()
+    class TestPerformanceObserver {
+      constructor(_callback: PerformanceObserverCallback) {}
+      observe = observe
+      disconnect = disconnect
+      takeRecords = () => []
+    }
+    Object.defineProperty(globalThis, "PerformanceObserver", {
+      configurable: true,
+      value: TestPerformanceObserver,
+    })
+
+    try {
+      const diagnostics = new RuntimeDiagnostics()
+      diagnostics.dispose()
+      diagnostics.dispose()
+      expect(observe).toHaveBeenCalledTimes(1)
+      expect(disconnect).toHaveBeenCalledTimes(1)
+    } finally {
+      Object.defineProperty(globalThis, "PerformanceObserver", {
+        configurable: true,
+        value: original,
+      })
+    }
+  })
+
   it("trips only after continuous motion exceeds the limit", () => {
     const watchdog = new MotionWatchdog(100)
     expect(watchdog.update(true, 0)).toBe(false)

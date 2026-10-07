@@ -129,7 +129,7 @@
   display: grid;
   grid-template-rows: auto 1fr auto;
   gap: 1rem;
-  overflow: auto;
+  overflow: hidden auto;
   border-left: 1px solid rgb(222 188 109 / 28%);
   background: linear-gradient(165deg, rgb(27 47 52 / 98%), rgb(11 20 24 / 98%));
   color: #f4efe7;
@@ -176,12 +176,15 @@
 }
 
 .game-settings__body {
+  min-width: 0;
   display: grid;
   align-content: start;
   gap: 1rem;
 }
 
 .game-settings__body section {
+  width: 100%;
+  min-width: 0;
   padding: 0.85rem;
   display: grid;
   gap: 0.6rem;
@@ -198,6 +201,8 @@
 }
 
 .game-settings__field {
+  width: 100%;
+  min-width: 0;
   display: grid;
   gap: 0.4rem;
   color: #c9c1b6;
@@ -205,12 +210,22 @@
 }
 
 .game-settings__field select {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 44px;
   padding-inline: 0.7rem;
   border: 1px solid rgb(255 255 255 / 12%);
   border-radius: 9px;
   background: #17272c;
   color: #f4efe7;
+}
+
+.game-settings__field small {
+  min-width: 0;
+  color: inherit;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 .game-settings__home {

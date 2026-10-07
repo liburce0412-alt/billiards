@@ -11,9 +11,13 @@ export class PlayShot extends ControllerBase {
   override get name() {
     return "PlayShot"
   }
-  constructor(container) {
+  constructor(
+    container,
+    onContact?: () => void,
+    source: "player" | "assist" = "player"
+  ) {
     super(container)
-    this.hit()
+    this.hit(onContact, source === "player")
   }
 
   override onFirst() {

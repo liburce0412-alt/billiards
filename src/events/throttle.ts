@@ -54,6 +54,11 @@ export class Throttle {
     this.sentTime = performance.now()
   }
 
+  dispose() {
+    this.clearTimer()
+    this.pending = undefined
+  }
+
   private copyEvent(event: GameEvent): GameEvent {
     const copy = (event as GameEvent & { copy?: () => GameEvent }).copy
     return typeof copy === "function" ? copy.call(event) : event

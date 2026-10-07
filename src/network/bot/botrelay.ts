@@ -129,4 +129,15 @@ export class BotRelay implements MessageRelay {
       }
     }, delay)
   }
+
+  stop(): void {
+    if (this.queueTimeoutId !== null) clearTimeout(this.queueTimeoutId)
+    if (this.sequenceTimeoutId !== null) clearTimeout(this.sequenceTimeoutId)
+    this.queueTimeoutId = null
+    this.sequenceTimeoutId = null
+    this.messageQueue.length = 0
+    this.callback = null
+    this.eventHandler.dispose()
+    this.logs.dispose()
+  }
 }
