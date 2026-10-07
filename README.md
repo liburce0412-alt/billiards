@@ -1,181 +1,207 @@
 # Break Builder 3D
 
-> 在浏览器里还原击球、走位与解球，而不只是让球“看起来会滚”。
+浏览器里的 3D 台球与乒乓球：练习、AI 对局、好友房间，以及可以自由观察的球场。
 
 [![Build](https://github.com/liburce0412-alt/billiards/actions/workflows/main.yml/badge.svg)](https://github.com/liburce0412-alt/billiards/actions/workflows/main.yml)
 [![License: GPL-3.0](https://img.shields.io/badge/license-GPL--3.0-2ea44f.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178c6.svg)](https://www.typescriptlang.org/)
 [![Three.js](https://img.shields.io/badge/Three.js-WebGL-000000.svg)](https://threejs.org/)
 
-Break Builder 3D 是一个基于 TypeScript、Three.js 和自研台球物理内核的开源浏览器
-台球项目。它支持中式八球、美式九球、四球追分、斯诺克和三库，并提供练习、11 档
-本地 AI、同屏双人、在线房间、录像与回放。主站还集成独立维护的 3D 乒乓球模式。
+[进入主站](https://play.campus3ai.xyz/) · [台球](https://play.campus3ai.xyz/play) · [乒乓球](https://play.campus3ai.xyz/table-tennis) · [操作说明](https://play.campus3ai.xyz/tools) · [问题反馈](https://github.com/liburce0412-alt/billiards/issues)
 
-[在线试玩](https://play.campus3ai.xyz/) ·
-[乒乓球模式](https://play.campus3ai.xyz/table-tennis) ·
-[规则对照](https://play.campus3ai.xyz/rules) ·
-[提交问题](https://github.com/liburce0412-alt/billiards/issues)
+## 可以玩什么
 
-| 首页                                                                        | 高画质对局                                                                 |
-| --------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| ![Break Builder 3D 首页](e2e/visual.spec.ts-snapshots/launcher-desktop.png) | ![Break Builder 3D 高画质对局](e2e/visual.spec.ts-snapshots/game-high.png) |
+| 模式   | 玩法与对局                                                                         | 场景                           |
+| ------ | ---------------------------------------------------------------------------------- | ------------------------------ |
+| 台球   | 中式八球、美式九球、四球追分、斯诺克、三库；练习、11 档本地 AI、同屏双人和在线房间 | 8 套环境，可选择球杆与球桌款式 |
+| 乒乓球 | 练习、3 档 AI、好友双人；11 分制、净胜两分、三局两胜                               | 赛博竞技馆、写实体育馆         |
 
-## 核心能力
+主站统一管理账号、头像、好友、邀请、房间入口及画质和音量。乒乓球由独立仓库
+[psychic-funicular](https://github.com/zjqzdhs/psychic-funicular) 维护，以固定提交的 Git submodule 接入；两种玩法共享 Three.js，按需加载各自游戏。
 
-- **稳定物理**：使用固定 `1/512 s` 物理步长和时间累加器；画质与显示帧率不改变比赛结果。
-- **五套规则**：通过版本化 `RuleProfile` 和共享判定层实现中八、九球、四球追分、斯诺克和三库。
-- **11 档 AI**：AI 在 Web Worker 中调用正式物理内核试打，评估进球、犯规、母球落点、下一杆、安全球和解球。
-- **可自由观察**：玩家击球后和 AI 思考/击球时均可旋转、俯仰、缩放，不再强制在 2D 与 3D 间闪切。
-- **分档渲染**：`low`、`balanced`、`high` 三档画质，包含 PBR 球体、真实阴影、台呢微法线和移动端降级。
-- **个性化外观**：可选择球杆前节、前把纹理、握把、环饰、镶嵌、球台样式及银河、星云、俱乐部环境。
-- **有层次的声音**：击球、球撞球、碰库与落袋均有多采样音频池；AI 和玩家共用同一音效链。
-- **本地与在线对战**：支持同屏轮流击球和双浏览器在线房间；房主可使用中文、表情和符号自定义房间码，并具备准备、占用保护、重连恢复和房内重赛。
+## 台球
 
-## 玩法与规则
+- 物理使用固定 `1/512 s` 步长，推进与画面渲染分离；包含滚动、滑动、旋转、球间碰撞和碰库处理。
+- AI 使用正式物理内核试打候选，按难度调整误差、搜索预算和走位评估。9–11 档增加两层规划；档位不对应经过标定的真人竞技等级。
+- 两位机械球手执行走位、俯身、瞄准、出杆和起身，携带所选球杆。击球后保持姿势约一秒，再过渡起身；对手回合使用旁观视角。
+- 顶部可以直接切换 2D / 3D；支持环绕、俯仰、缩放及第一视角擦巧克动作。
+- 保留球局录像、回放、声音、分档画质，以及移动横屏的瞄准和力度控制。
 
-| 玩法     | 当前实现基线             | 特色                                            |
-| -------- | ------------------------ | ----------------------------------------------- |
-| 中式八球 | 中式台球协会公开规则基线 | 开球后开放球组、混合传球不分组、线后自由球      |
-| 美式九球 | WPA Rules of Play 2025   | 最低号球、Push-out、三犯警告/判负和可选三球线   |
-| 四球追分 | 项目 1/4/7/10 规则集     | 目标顺序与 1/4/7/10 得分、小金/大金、传九、让杆 |
-| 斯诺克   | WPBSA 2024–25 基线       | 红彩交替、自由球、复位选择、贴球状态与争黑      |
-| 三库     | UMB 基线                 | 母球碰第二目标球前至少三次碰库                  |
+| 规则     | 主要目标                                       |
+| -------- | ---------------------------------------------- |
+| 中式八球 | 清完本组后合法打进黑八；开球后开放球组         |
+| 美式九球 | 首先接触最低号球，支持 Push-out 和可选赛事规则 |
+| 四球追分 | 项目的 1 / 4 / 7 / 10 得分与目标顺序规则       |
+| 斯诺克   | 红彩交替、自由球、复位和争黑                   |
+| 三库     | 母球碰第二目标球前至少三次碰库                 |
 
-规则来源、版本、复核日期和项目差异均列在
-[规则对照页](https://play.campus3ai.xyz/rules)。
-规则情景库目前覆盖 265 个可序列化固定场景，人类、AI、本地双人和在线模式共用同一
-判定入口。
+具体版本、犯规和项目差异以[规则页](https://play.campus3ai.xyz/rules)及
+[RuleProfile](src/controller/rules/ruleprofile.ts) 为准。
 
-## 11 档 AI
+### 操作
 
-AI 不依赖云端模型，完全在浏览器本地运行。每次规划会生成合法目标、袋口、力量、杆法、解球、安全球与自由球摆位候选，再用 `1/512 s` 的正式物理配置试打。
+| 动作           | 操作方式                                           |
+| -------------- | -------------------------------------------------- |
+| 瞄准           | 在球场调整方向，或使用局内精细瞄准控制             |
+| 力度与击球     | 拉动力度条蓄力，松手出杆；横屏移动端使用右侧操作区 |
+| 高低杆与左右塞 | 调整母球上的击球点                                 |
+| 镜头           | 顶部切换 2D / 3D，使用拖动、触控手势和滚轮调节     |
+| 自由球         | 移动母球后确认摆位                                 |
+| 个性化与设置   | 局内设置调整球杆、球桌、环境、画质和音量           |
 
-| 档位 | 定位                 | 主要差异                                           |
-| ---- | -------------------- | -------------------------------------------------- |
-| 1–3  | 入门到熟练爱好者     | 较大的瞄准和力量误差，搜索候选较少                 |
-| 4–5  | 偶尔清台到稳定进球   | 开始考虑下一杆和简单走位                           |
-| 6–8  | 县级强手到高水平选手 | 常规球准度接近，主要比较走位、解球和安全球         |
-| 9–11 | 顶尖本地 AI          | 更深候选预算与两层线路评估，但困难球仍保留非零误差 |
+台球详细键盘与手势说明见[台球操作页](https://play.campus3ai.xyz/help.html)。
 
-各档固定候选预算为 `3 / 4 / 6 / 8 / 10 / 14 / 18 / 24 / 30 / 40 / 48`。
-相同局面、档位和输入会产生可重复的选择；Worker 不可用时会回退到几何规划，不会
-故意直打障碍球。
+### 八套环境
 
-## 操作
+| 环境             | URL 标识            |
+| ---------------- | ------------------- |
+| SPECTRA 光谱空间 | `spectra`           |
+| 深空银河         | `galaxy`            |
+| 明亮星云         | `nebula`            |
+| 冠军艺廊         | `club`              |
+| 极光冰庭         | `aurora-hall`       |
+| 浮光神殿         | `sky-temple`        |
+| 深海玻璃宫       | `abyss-palace`      |
+| 月海观测台       | `lunar-observatory` |
 
-| 操作              | 鼠标 / 键盘                |
-| ----------------- | -------------------------- |
-| 调整击球方向      | 移动鼠标或使用瞄准控制     |
-| 环绕观察          | 按住鼠标右键拖动           |
-| 缩放视角          | 鼠标滚轮                   |
-| 调整俯仰          | 局内视角控制或环绕拖动     |
-| 调整击球点 / 杆法 | 点击母球击球点面板         |
-| 蓄力与击球        | 底部力度条                 |
-| 自由球摆位        | 拖动母球；确认前可反复调整 |
-| 打开设置          | 右下角菜单按钮             |
+## 乒乓球
 
-第一次进入比赛会显示一次操作提示。设置抽屉中可以调整视角、音量、画质、球杆、球台与环境。
+乒乓球采用辅助站位与直接挥拍操作。玩家控制落点、出拍时机、力度和旋转；过早、过晚、低球强扣或力量过大都可能失误。
 
-## 快速开始
+| 输入                     | 操作                                         |
+| ------------------------ | -------------------------------------------- |
+| 鼠标左右移动             | 调整方向                                     |
+| 轻点左键                 | 轻挡                                         |
+| 按住左键后松开           | 短蓄力后挥拍                                 |
+| 向上刷 / 向下切          | 上旋 / 下旋                                  |
+| 按住并松开 Q / W / E / R | 轻挡 / 平击 / 上旋 / 扣杀，按住时长影响力度  |
+| 按住 A / D               | 添加侧旋                                     |
+| 空格                     | 使用当前默认球技，松键出拍                   |
+| 触屏                     | 在球场内一笔滑动，松手出拍；上下动作表达旋转 |
 
-### 环境要求
+“操作 / 精调”面板可调整默认球技。练习引导依次检查合法发球、轻重回球和上旋落台，支持跳过、重看及完成记忆。比分分别显示小分、胜局和发球方；离线菜单可重开，主站记住上次场馆、模式和难度。
 
-- Node.js 22 或更高版本
-- Corepack
-- 支持 WebGL 2 的现代浏览器
+![乒乓球第一视角：球桌、对手、托球手与球拍](https://raw.githubusercontent.com/zjqzdhs/psychic-funicular/ba571effedb8e82f35269006d28e13d373ab1851/docs/visual/2026-10-07-correction/game-held.png)
 
-### 本地运行
+上图为 2026-10-07 本地浏览器小样。更多规则、独立运行和接口说明见[乒乓球 README](https://github.com/zjqzdhs/psychic-funicular#readme)。
 
-```bash
+## 3D 资产与界面
+
+Three.js 负责网页渲染、交互、镜头与动画驱动；Blender 负责可编辑模型、材质与骨骼制作。
+Blender MCP 用于开发时的场景修改和视口检查，玩家运行游戏不依赖 Blender 或 MCP。
+
+| 内容                         | 保存位置                                                                                              |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------- |
+| 台球可编辑源                 | `assets/blender/legacy/`                                                                              |
+| 台球运行模型与清单           | `dist/models/legacy-refined/`                                                                         |
+| 资产来源、精修流程           | [台球资产约定](docs/art/legacy-runtime-contract.md)、[资产清单](docs/art/legacy-asset-inventory.json) |
+| Blender 检查凭据             | `docs/qa/2026-10-05-blender-mcp/`                                                                     |
+| 乒乓球源文件、GLB 与制作记录 | [独立仓库资产文档](https://github.com/zjqzdhs/psychic-funicular/blob/main/docs/assets.md)             |
+
+运行时按所选款式加载模型；星云、极光和光照等动态效果继续由着色器处理。
+可编辑源文件体积较大，随仓库保存，但不包含在玩家网页下载包中。
+
+主站提供浅 / 深主题、配色、Classic / Fluid 背景、边缘追光及减少动态效果设置。
+玻璃面板采样实际场景，文字和输入保持独立；局内把折射限制在面板边缘，并提供低画质降级。
+
+## 本地开发
+
+建议使用 Node.js 24.x、Corepack 和支持 WebGL 2 的浏览器。主站由 `package.json` 固定使用 **Yarn 4.9.1**。
+
+### 克隆与构建
+
+```sh
 git clone --recurse-submodules https://github.com/liburce0412-alt/billiards.git
 cd billiards
-corepack enable
-yarn install --immutable
-yarn serve
+corepack yarn install --immutable
+corepack yarn build
 ```
 
-打开 <http://localhost:8080/>。开发服务器会监听源码变化并自动重新构建。
+已有克隆先运行 `git submodule update --init --recursive`。构建会从固定的乒乓球提交生成
+`dist/models/table-tennis/`，该目录不重复入库。不要在生产构建中自动追踪子仓库的浮动分支。
 
-已有克隆先运行 `git submodule update --init --recursive`。乒乓球固定在
-`packages/table-tennis`，来源为 [psychic-funicular](https://github.com/zjqzdhs/psychic-funicular)；
-主站构建自动从该提交复制版本化模型。可编辑台球模型源保留在 `assets/blender/legacy/`，
-不是玩家运行时下载内容。`dist/models/table-tennis/` 是可再生构建资源，不重复入库。
+### 本地离线演示
 
-乒乓球提供练习、三个难度的 AI 和沿用主站账户的好友房间。鼠标左右瞄准，轻点轻挡，
-短蓄力松手出拍，上下刷动加旋；Q/W/E/R 松键出对应球技，A/D 加侧旋。练习模式含可跳过、
-可重看的发球、力度与旋转引导。详细操作和接口见[独立模块说明](packages/table-tennis/README.md)，
-当前修正及未验证边界见[2026-10-07 审计](docs/qa/2026-10-07-followup-audit.md)。
+```sh
+corepack yarn worker:dev --local --port 8787
+```
 
-正式站由 Cloudflare Worker 发布；GitHub Pages 只保留跳转页，不承载账户或实时房间服务。
+打开 <http://localhost:8787/?platformDemo=1>，通过主站入口进入台球或乒乓球。
+该演示开关只在 `localhost` / `127.0.0.1` 生效，使用本地示例身份，不代表已登录线上账号。
+修改源码时，可另开终端运行 `corepack yarn watch` 持续构建。
 
-### 常用 URL 参数
+`corepack yarn serve` 提供 8080 端口的静态预览；从 `/?platformDemo=1` 查看前端页面时可以使用。
+它不提供账号 API、WebSocket 或深层路由回退。完整路由和联机开发请使用 Worker。
 
-| 参数                | 示例                                                           | 说明                                     |
-| ------------------- | -------------------------------------------------------------- | ---------------------------------------- |
-| `ruletype`          | `eightball`、`nineball`、`fourball`、`snooker`、`threecushion` | 玩法                                     |
-| `quality`           | `low`、`balanced`、`high`                                      | 渲染质量，优先级高于旧 `lod`             |
-| `bot`               | `TheFarJaw`                                                    | 开启本地 AI                              |
-| `botLevel`          | `1`–`11`                                                       | AI 档位                                  |
-| `practice`          | `true` / `false`                                               | 练习模式                                 |
-| `environment`       | `galaxy`、`nebula`、`club`                                     | 场景环境                                 |
-| `roomVersion`       | `2`                                                            | 启用自定义房间、准备、恢复与房内重赛协议 |
-| `nineBallPushOut`   | `true` / `false`                                               | 九球 Push-out 赛事选项，默认开启         |
-| `nineBallThreeFoul` | `true` / `false`                                               | 九球连续三犯，默认开启                   |
-| `nineBallBreakBox`  | `true` / `false`                                               | 九球三球线，默认关闭                     |
+### 账号与好友联机开发
 
-示例：[高画质八球 AI 对局](https://play.campus3ai.xyz/play?play=1&ruletype=eightball&quality=high&bot=TheFarJaw&botLevel=8&practice=false)。
+在根目录按 [`.dev.vars.example`](.dev.vars.example) 建立本地 `.dev.vars`，填写独立的开发密钥，保留已有配置。所需项目包括：
 
-## 开发命令
+- `BETTER_AUTH_SECRET`、`RECOVERY_CODE_PEPPER`、`ADMIN_BOOTSTRAP_CODE`。
+- `APP_ORIGIN=http://localhost:8787` 和 `ENVIRONMENT=development`；来源必须与浏览器地址一致。
+- `TURNSTILE_SITE_KEY`、`TURNSTILE_SECRET`：仅本地开发可同时留空；启用时配置有效配对及匹配的 `TURNSTILE_HOSTNAMES`。
 
-| 命令                                                | 用途                             |
-| --------------------------------------------------- | -------------------------------- |
-| `yarn serve`                                        | 启动开发构建和本地静态服务器     |
-| `yarn build`                                        | 生成生产构建并准备 Sites 发布包  |
-| `yarn test`                                         | 运行 Jest 单元与情景测试         |
-| `yarn coverage`                                     | 生成覆盖率报告                   |
-| `yarn lint`                                         | TypeScript 类型检查与 ESLint     |
-| `yarn lint:css`                                     | 检查 HTML/CSS                    |
-| `yarn test:e2e`                                     | 运行 Playwright 视觉与浏览器测试 |
-| `RUN_ONLINE_E2E=1 yarn test:e2e e2e/online.spec.ts` | 使用两个浏览器上下文验证在线房间 |
+```sh
+corepack yarn db:migrate:local
+corepack yarn worker:dev --local --port 8787
+```
 
-当前回归基线为 **98 个 Jest 套件、734 项测试**。Playwright 覆盖 `360×800`、
-`768×1024`、`1200×750`、`1920×1080` 四种视口，并保留低/高画质固定截图。
+不带 `platformDemo` 进入本地站点，使用本地账号流程。D1、KV 和 Durable Objects 由 Wrangler 本地模拟；`.dev.vars` 与 `.wrangler/` 不提交到仓库。
 
-## 项目结构
+### 常用命令
+
+| 命令                        | 用途                               |
+| --------------------------- | ---------------------------------- |
+| `corepack yarn watch`       | 准备乒乓球资产并监听主站源码       |
+| `corepack yarn dev`         | 单次主站构建                       |
+| `corepack yarn build`       | 生成版本、构建并准备正式站静态资源 |
+| `corepack yarn lint`        | TypeScript 与 ESLint               |
+| `corepack yarn prettify`    | 格式化脚本覆盖的源码与静态页面     |
+| `corepack yarn test`        | 主站 Jest 测试                     |
+| `corepack yarn worker:test` | Worker / Durable Object 测试       |
+| `corepack yarn test:e2e`    | Playwright 浏览器测试              |
+| `corepack yarn lint:css`    | 样式检查                           |
+
+独立开发乒乓球可进入 `packages/table-tennis` 后运行 `npm ci`、`npm run dev`；其测试、资源和开发入口独立维护。
+
+## 仓库结构与发布
 
 ```text
-.
-├─ src/
-│  ├─ controller/       # 比赛流程、规则、AI 与输入
-│  ├─ model/            # 球、球桌、碰撞与固定步长物理
-│  ├─ view/             # Three.js 场景、材质、相机和 UI
-│  └─ worker/           # AI 无界面试打与规划
-├─ dist/                # 浏览器入口、样式、模型、纹理与音频资源
-├─ test/                # Jest 单元、规则情景和确定性测试
-├─ e2e/                 # Playwright 多视口、截图和在线对战测试
-├─ scripts/             # 构建与 Sites 发布准备
-└─ docs/                # 架构与测试说明
+src/app/                 React 页面、路由与游戏挂载
+src/controller/          台球流程、规则与输入
+src/model/               台球物理
+src/view/                Three.js 渲染、球手、镜头与 HUD
+src/network/             台球网络与本地 AI
+src/platform/            账号接口与共用界面
+packages/table-tennis/   固定提交的乒乓球子模块
+server/                  Cloudflare Worker API 与实时房间
+migrations/              D1 数据库迁移
+assets/blender/          可编辑台球模型源
+dist/                    网页、样式与发布资源
+test/、e2e/              单元、服务端与浏览器检查
+scripts/art/             模型制作、导出与检查脚本
+docs/                    设计、资产约定、反馈与分日期验收记录
 ```
 
-更多细节见[架构说明](docs/ARCHITECTURE.md)和[测试指南](docs/TESTING.md)。
+正式站部署到 Cloudflare Workers，同源提供页面、模型和服务端接口。GitHub Pages 仅提供正式站跳转页。
+部署命令为 `corepack yarn deploy`；自行部署须先配置自己的域名、绑定和密钥，不能直接使用仓库中维护者的生产资源。
+数据库迁移与回退约束见[发布说明](docs/art/table-tennis-release-readiness.md)。
 
-## 资源与许可证
+修改乒乓球时，先向独立仓库推送提交，再在主站提交更新后的子模块指针。
+开发资料见[架构说明](docs/ARCHITECTURE.md)、[测试指南](docs/TESTING.md)和[贡献指南](.github/CONTRIBUTING.md)。
 
-- 源代码按 [GNU GPL-3.0](LICENSE) 发布。
-- 新增模型与程序化资产的说明见 [`dist/models/MODEL_ASSETS.md`](dist/models/MODEL_ASSETS.md)。
-- 音频来源、处理方式与许可证见 [`dist/sounds/LICENSES.md`](dist/sounds/LICENSES.md)。
-- 项目基于 [tailuge/billiards](https://github.com/tailuge/billiards) 持续开发，保留原作者及贡献者署名。
+## 当前进展与验证范围
 
-提交代码前请阅读[贡献指南](.github/CONTRIBUTING.md)。安全问题请按[安全策略](SECURITY.md)中的非公开方式报告。
+2026-10-07 的更新补充了直接挥拍、按实际落台结果推进的教学、失误提示、重开入口和共用玻璃，
+修正了乒乓球肩根、手腕、躯干转轴与第一视角。实现和遗留问题记录在[本轮审计](docs/qa/2026-10-07-followup-audit.md)。
 
-## v0.4.0 发布重点
+台球动作的本地检查见[2026-10-05 回归记录](docs/qa/2026-10-05-billiards-regression/README.md)。
+这些记录有各自的版本和设备范围，旧测试数量不代表新版本全部通过。
+持续改进的重点包括连续挥拍自然度、近眼手臂构图、球体光照和移动端手感；完整教学难度、真机性能及公网双设备体验仍需实际试玩。
 
-- Unicode 自定义房间码通过 SHA-256 与网络通道分离，旧邀请链接仍可使用。
-- 房间使用认领、加入、双方准备、第三人拒绝、快照恢复和 30 秒重赛确认流程。
-- 9–11 档 AI 进行有限宽度两层物理试打，高档位主要提升走位、安全球和解球质量。
-- 音效池加入公共领域实录事件；球杆增加径向拼接前节、云石纹和星轨珍珠镶嵌。
-- ESLint/TypeScript 零错误作为发布门槛，固定步长、能量和长局稳定性测试继续保留。
+## 来源与许可证
 
----
-
-如果你关心台球物理、规则、AI 走位或 WebGL 表现，欢迎发起 Issue 或 Pull Request。
+- 主仓库代码沿用 [GPL-3.0](LICENSE)，基于 [tailuge/billiards](https://github.com/tailuge/billiards) 持续开发，保留原作者与贡献者署名。
+- 乒乓球子仓库的原型、许可范围及资源说明单独记录在其 [README](https://github.com/zjqzdhs/psychic-funicular#readme)，不因接入主站自动变更。
+- 模型与声音来源见[模型说明](dist/models/MODEL_ASSETS.md)及[音频许可证](dist/sounds/LICENSES.md)。
+- 功能建议可提交 Issue；安全问题请按[安全策略](SECURITY.md)私下报告。

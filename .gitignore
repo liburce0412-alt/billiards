@@ -68,6 +68,9 @@ qa-artifacts/
 
 # dotenv environment variables file
 .env
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
 
 # Kilo
 .kilo/
